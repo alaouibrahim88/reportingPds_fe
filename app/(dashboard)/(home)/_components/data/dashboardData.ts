@@ -1,9 +1,9 @@
 export const colors = {
-  zoneJava: "#8884d8",
-  zonePython: "#EA580C",
-  zoneRust: "#FF8A2D",
-  zoneGo: "#00AFAB",
-  zoneKotlin: "#EB0B66",
+  zoneJava: "#8E98F5", // Red base color
+  zonePython: "#7874F2", // Lightest purple
+  zoneRust: "#8B7BF9", // Light-medium purple
+  zoneGo: "#8B6CF8", // Medium purple
+  zoneKotlin: "#8B5CF6", // Darkest purple
 };
 
 export const dashboardData = {

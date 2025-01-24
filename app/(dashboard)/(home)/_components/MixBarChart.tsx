@@ -11,11 +11,10 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { ChartBarIcon } from "lucide-react";
-// import { DynamicHeader } from "Components/Title";
 
 interface DataPoint {
   name: string;
-  [key: string]: any; // to allow for dynamic zone properties
+  [key: string]: any;
 }
 
 interface MixBarChartProps {
@@ -59,22 +58,11 @@ export const MixBarChart = ({ data }) => {
     return null;
   };
 
-  // Get the zone keys from the first data point (excluding 'name')
   const zoneKeys = Object.keys(data[0] || {}).filter((key) => key !== "name");
 
   return (
     <div className="bg-white p-2 sm:p-4 rounded-lg shadow-sm">
-      <div className="mb-6">
-        {/* <DynamicHeader
-          icon={<ChartBarIcon className="w-5 h-5" />}
-          title="IS"
-          subtitle="Item sold"
-          color="teal"
-          size="default"
-          showSubtitle={true}
-        /> */}
-      </div>
-
+      <div className="mb-6"></div>
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
@@ -112,7 +100,7 @@ export const MixBarChart = ({ data }) => {
                 dataKey={`${zoneKey}.value`}
                 fill={data[0]?.[zoneKey]?.color}
                 stackId="stack"
-                radius={[4, 4, 0, 0]}
+                radius={[0, 0, 0, 0]}
               />
             ))}
           </BarChart>

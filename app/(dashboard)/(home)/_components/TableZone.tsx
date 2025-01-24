@@ -40,6 +40,7 @@ export default function TableZone() {
       type: "Scrap",
       status: "warning",
       color: "bg-yellow-500",
+      visibilityScore: 95,
     },
     {
       time: "2024-01-15 10:19:43 AM",
@@ -51,6 +52,7 @@ export default function TableZone() {
       type: "Scrap",
       status: "alert",
       color: "bg-red-500",
+      visibilityScore: 20,
     },
     {
       time: "2024-01-15 11:30:32 PM",
@@ -62,6 +64,7 @@ export default function TableZone() {
       type: "Scrap",
       status: "good",
       color: "bg-green-500",
+      visibilityScore: 100,
     },
     {
       time: "2024-01-14 08:37:11 PM",
@@ -73,6 +76,7 @@ export default function TableZone() {
       type: "Scrap",
       status: "alert",
       color: "bg-red-500",
+      visibilityScore: 7,
     },
     {
       time: "2024-01-14 03:24:58 PM",
@@ -84,6 +88,7 @@ export default function TableZone() {
       type: "Scrap",
       status: "warning",
       color: "bg-yellow-500",
+      visibilityScore: 90,
     },
     {
       time: "2024-01-14 02:15:32 PM",
@@ -95,6 +100,7 @@ export default function TableZone() {
       type: "Scrap",
       status: "good",
       color: "bg-green-500",
+      visibilityScore: 100,
     },
     {
       time: "2024-01-13 11:45:22 AM",
@@ -106,6 +112,7 @@ export default function TableZone() {
       type: "Scrap",
       status: "warning",
       color: "bg-yellow-500",
+      visibilityScore: 85,
     },
     {
       time: "2024-01-13 09:30:15 AM",
@@ -117,6 +124,7 @@ export default function TableZone() {
       type: "Scrap",
       status: "alert",
       color: "bg-red-500",
+      visibilityScore: 75,
     },
     {
       time: "2024-01-13 08:20:45 AM",
@@ -128,6 +136,7 @@ export default function TableZone() {
       type: "Scrap",
       status: "good",
       color: "bg-green-500",
+      visibilityScore: 95,
     },
     {
       time: "2024-01-12 04:55:33 PM",
@@ -139,6 +148,7 @@ export default function TableZone() {
       type: "Scrap",
       status: "warning",
       color: "bg-yellow-500",
+      visibilityScore: 80,
     },
     {
       time: "2024-01-12 02:40:18 PM",
@@ -150,6 +160,7 @@ export default function TableZone() {
       type: "Scrap",
       status: "alert",
       color: "bg-red-500",
+      visibilityScore: 70,
     },
     {
       time: "2024-01-12 01:15:27 PM",
@@ -161,6 +172,7 @@ export default function TableZone() {
       type: "Scrap",
       status: "good",
       color: "bg-green-500",
+      visibilityScore: 100,
     },
     {
       time: "2024-01-11 10:05:42 AM",
@@ -172,6 +184,7 @@ export default function TableZone() {
       type: "Scrap",
       status: "warning",
       color: "bg-yellow-500",
+      visibilityScore: 90,
     },
     {
       time: "2024-01-11 09:30:55 AM",
@@ -183,6 +196,7 @@ export default function TableZone() {
       type: "Scrap",
       status: "alert",
       color: "bg-red-500",
+      visibilityScore: 75,
     },
     {
       time: "2024-01-11 08:15:20 AM",
@@ -194,6 +208,7 @@ export default function TableZone() {
       type: "Scrap",
       status: "good",
       color: "bg-green-500",
+      visibilityScore: 95,
     },
   ];
 
@@ -224,12 +239,17 @@ export default function TableZone() {
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-gray-50/50">
-              <TableHead className="w-[50px]"></TableHead>
-              <TableHead className="font-medium">Time</TableHead>
-              <TableHead className="font-medium">Machine</TableHead>
-              <TableHead className="font-medium">Job</TableHead>
-              <TableHead className="font-medium">Count</TableHead>
-              <TableHead className="font-medium">Reason</TableHead>
+              <TableHead className="w-[50px] py-2"></TableHead>
+              <TableHead className="font-medium text-xs py-2">Time</TableHead>
+              <TableHead className="font-medium text-xs py-2">
+                Machine
+              </TableHead>
+              <TableHead className="font-medium text-xs py-2">Job</TableHead>
+              <TableHead className="font-medium text-xs py-2">Count</TableHead>
+              <TableHead className="font-medium text-xs py-2">Reason</TableHead>
+              <TableHead className="font-medium text-xs py-2">
+                Critical Level
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -242,7 +262,7 @@ export default function TableZone() {
                   )}
                   onClick={() => toggleRow(index)}
                 >
-                  <TableCell className="w-[50px]">
+                  <TableCell className="w-[50px] py-2">
                     <div className="flex items-center justify-center w-6 h-6 rounded-lg hover:bg-gray-100 transition-colors">
                       {openRows.includes(index) ? (
                         <ChevronDown className="h-4 w-4 text-gray-500" />
@@ -251,15 +271,36 @@ export default function TableZone() {
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="font-medium">{item.time}</TableCell>
-                  <TableCell>{item.machine}</TableCell>
-                  <TableCell>{item.job}</TableCell>
-                  <TableCell>
-                    <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
+                  <TableCell className="font-medium text-xs py-2">
+                    {item.time}
+                  </TableCell>
+                  <TableCell className="text-xs py-2">{item.machine}</TableCell>
+                  <TableCell className="text-xs py-2">{item.job}</TableCell>
+                  <TableCell className="py-2">
+                    <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                       {item.count}
                     </span>
                   </TableCell>
-                  <TableCell>{item.reason}</TableCell>
+                  <TableCell className="text-xs py-2">{item.reason}</TableCell>
+                  <TableCell className="py-2">
+                    {item.visibilityScore > 60 ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-12 bg-gray-100 rounded-full h-1.5">
+                          <div
+                            className={`bg-red-400 h-1.5 rounded-full`}
+                            style={{ width: `${item.visibilityScore}%` }}
+                          />
+                        </div>
+                        <span className="text-xs text-gray-600">
+                          {item.visibilityScore}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-xs text-gray-600">
+                        {item.visibilityScore}
+                      </span>
+                    )}
+                  </TableCell>
                 </TableRow>
                 {openRows.includes(index) && (
                   <TableRow>
@@ -290,19 +331,10 @@ export default function TableZone() {
                               <span
                                 className={cn(
                                   "inline-flex items-center rounded-full px-2 py-1 text-xs font-medium",
-                                  {
-                                    "bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20":
-                                      item.status === "good",
-                                    "bg-yellow-50 text-yellow-700 ring-1 ring-inset ring-yellow-600/20":
-                                      item.status === "warning",
-                                    "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20":
-                                      item.status === "alert",
-                                  }
+                                  item.color
                                 )}
                               >
-                                {item.status === "good" && "Resolved"}
-                                {item.status === "warning" && "Pending"}
-                                {item.status === "alert" && "Critical"}
+                                {item.status}
                               </span>
                             </div>
                           </div>
