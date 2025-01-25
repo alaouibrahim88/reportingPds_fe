@@ -47,7 +47,6 @@ function DesktopSidebar() {
           ? pathname === "/" // Handle home route
           : pathname.startsWith(`/${route.href}`) // Handle other routes
     ) || routes[0];
-
   return (
     <div className="text-muted-foreground relative hidden h-screen w-full min-w-[280px] max-w-[280px] overflow-hidden bg-primary/5 dark:bg-secondary/30 dark:text-foreground md:block border-r-2 border-separate">
       <div className="flex items-center justify-center gap-2 border-b-[1px] border-separate p-2">

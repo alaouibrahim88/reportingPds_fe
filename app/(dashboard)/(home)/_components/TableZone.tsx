@@ -330,11 +330,27 @@ export default function TableZone() {
                               </p>
                               <span
                                 className={cn(
-                                  "inline-flex items-center rounded-full px-2 py-1 text-xs font-medium",
-                                  item.color
+                                  "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-medium",
+                                  {
+                                    "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20":
+                                      item.status === "alert",
+                                    "bg-yellow-50 text-yellow-800 ring-1 ring-inset ring-yellow-600/20":
+                                      item.status === "warning",
+                                    "bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20":
+                                      item.status === "good",
+                                  }
                                 )}
                               >
-                                {item.status}
+                                <div
+                                  className={cn("h-1.5 w-1.5 rounded-full", {
+                                    "bg-red-500 animate-pulse":
+                                      item.status === "alert",
+                                    "bg-yellow-500": item.status === "warning",
+                                    "bg-green-500": item.status === "good",
+                                  })}
+                                />
+                                {item.status.charAt(0).toUpperCase() +
+                                  item.status.slice(1)}
                               </span>
                             </div>
                           </div>
