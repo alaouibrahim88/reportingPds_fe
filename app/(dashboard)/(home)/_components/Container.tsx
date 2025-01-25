@@ -4,7 +4,6 @@ import { MixBarChart } from "./MixBarChart";
 import TableZone from "./TableZone";
 import { dashboardData } from "./data/dashboardData";
 import { ZoneActivity } from "./ZoneActivity";
-import { TableFilter } from "./TableFilter";
 import { AnalyticsHeader } from "./AnalyticsHeader";
 
 function Container() {
@@ -39,11 +38,10 @@ function Container() {
           <ZoneActivity data={zoneData[0]} />
         </div>
 
-        <AnalyticsHeader />
+        {/* <AnalyticsHeader /> */}
 
         {/* Table Section */}
         <div className="bg-card rounded-lg shadow-sm relative border border-border">
-          {/* <TableFilter /> */}
           <TableZone data={zoneData} />
         </div>
       </div>

@@ -20,6 +20,8 @@ import { cn } from "@/lib/utils";
 import { productionIssuesData } from "./data/production-issues";
 import { ExpandedRowDetails } from "./ExpandedRowDetails";
 import { ProductionIssue } from "./types/table-types";
+import { TableFilter } from "./TableFilter";
+import { Button } from "@/components/ui/button";
 
 export default function TableZone() {
   const [openRows, setOpenRows] = useState<number[]>([]);
@@ -70,14 +72,31 @@ export default function TableZone() {
 
 function TableHeaderSection() {
   return (
-    <div className="p-4 border-b border-muted">
-      <div className="flex items-center gap-2 mb-1">
-        <FolderIcon className="w-5 h-5 text-primary" />
-        <h2 className="font-medium">Production Issues</h2>
+    <div className="p-4 border-b border-muted flex items-center justify-between">
+      <div>
+        <div className="flex items-center gap-2 mb-1">
+          <FolderIcon className="w-5 h-5 text-primary" />
+          <h2 className="font-medium">Production Issues</h2>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Track and manage production issues and scrap reports
+        </p>
       </div>
-      <p className="text-sm text-muted-foreground">
-        Track and manage production issues and scrap reports
-      </p>
+      <div className="flex items-center gap-2">
+        <TableFilter />
+        <Button variant="outline" className="flex items-center gap-2">
+          <svg
+            className="w-4 h-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          Export
+        </Button>
+      </div>
     </div>
   );
 }
