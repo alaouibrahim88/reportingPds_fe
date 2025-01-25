@@ -61,7 +61,6 @@ export const productionIssuesData: ProductionIssue[] = [
     color: "bg-red-500",
     visibilityScore: 97,
   },
-  ,
   {
     time: "2024-01-15 11:30:00 AM",
     machine: "CITIZEN 27",
@@ -74,7 +73,6 @@ export const productionIssuesData: ProductionIssue[] = [
     color: "bg-red-500",
     visibilityScore: 97,
   },
-  ,
   {
     time: "2024-01-15 11:30:00 AM",
     machine: "CITIZEN 27",
@@ -87,7 +85,6 @@ export const productionIssuesData: ProductionIssue[] = [
     color: "bg-red-500",
     visibilityScore: 97,
   },
-  ,
   {
     time: "2024-01-15 11:30:00 AM",
     machine: "CITIZEN 27",
@@ -100,7 +97,6 @@ export const productionIssuesData: ProductionIssue[] = [
     color: "bg-red-500",
     visibilityScore: 97,
   },
-  ,
   {
     time: "2024-01-15 11:30:00 AM",
     machine: "CITIZEN 27",
@@ -113,7 +109,6 @@ export const productionIssuesData: ProductionIssue[] = [
     color: "bg-red-500",
     visibilityScore: 97,
   },
-  ,
   {
     time: "2024-01-15 11:30:00 AM",
     machine: "CITIZEN 27",
@@ -126,7 +121,6 @@ export const productionIssuesData: ProductionIssue[] = [
     color: "bg-red-500",
     visibilityScore: 97,
   },
-  ,
   {
     time: "2024-01-15 11:30:00 AM",
     machine: "CITIZEN 27",

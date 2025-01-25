@@ -17,28 +17,44 @@ import {
   ChevronRightIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { productionIssuesData } from "./data/production-issues";
 import { ExpandedRowDetails } from "./ExpandedRowDetails";
 import { ProductionIssue } from "./types/table-types";
 import { TableFilter } from "./TableFilter";
 import { Button } from "@/components/ui/button";
 
-export default function TableZone() {
+interface TableZoneProps {
+  data: Array<{
+    name: string;
+    zoneJava: number;
+    zonePython: number;
+    zoneRust: number;
+    zoneGo: number;
+    zoneKotlin: number;
+    details: Array<any>; // Replace 'any' with proper type if available
+    metrics: any;
+    machines: any[];
+  }>;
+}
+
+export default function TableZone({ data }: TableZoneProps) {
   const [openRows, setOpenRows] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+
+  // Extract details from first zone data entry
+  const productionIssues = data[0]?.details || [];
+
+  // Update pagination to use productionIssues
+  const totalPages = Math.ceil(productionIssues.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentData = productionIssues.slice(startIndex, endIndex);
 
   const toggleRow = (index: number) => {
     setOpenRows((prev) =>
       prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
     );
   };
-
-  // Pagination calculations
-  const totalPages = Math.ceil(productionIssuesData.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentData = productionIssuesData.slice(startIndex, endIndex);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -62,7 +78,7 @@ export default function TableZone() {
           totalPages={totalPages}
           startIndex={startIndex}
           endIndex={endIndex}
-          totalItems={productionIssuesData.length}
+          totalItems={productionIssues.length}
           onPageChange={handlePageChange}
         />
       </div>

@@ -1,3 +1,5 @@
+export type Status = "alert" | "warning" | "good";
+
 export interface ProductionIssue {
   time: string;
   machine: string;
@@ -5,8 +7,8 @@ export interface ProductionIssue {
   count: number;
   reason: string;
   message: string;
-  type: string;
-  status: "alert" | "warning" | "good";
+  type: "Scrap" | "Quality" | "Setup" | "Maintenance";
+  status: Status;
   color: string;
   visibilityScore: number;
 }
@@ -18,4 +20,36 @@ export interface ZoneColor {
 
 export interface ZoneColors {
   [key: string]: ZoneColor;
+}
+
+export interface TableContentProps {
+  data: ProductionIssue[];
+  openRows: number[];
+  toggleRow: (index: number) => void;
+}
+
+export interface TablePaginationProps {
+  currentPage: number;
+  totalPages: number;
+  startIndex: number;
+  endIndex: number;
+  totalItems: number;
+  onPageChange: (page: number) => void;
+}
+
+export interface ExpandedRowDetailsProps {
+  item: ProductionIssue;
+}
+
+export interface InfoCardProps {
+  label: string;
+  value: string;
+}
+
+export interface StatusCardProps {
+  status: Status;
+}
+
+export interface VisibilityScoreProps {
+  score: number;
 }

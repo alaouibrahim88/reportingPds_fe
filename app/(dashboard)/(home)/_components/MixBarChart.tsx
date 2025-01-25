@@ -10,7 +10,6 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { ChartBarIcon } from "lucide-react";
 
 interface DataPoint {
   name: string;
@@ -21,15 +20,26 @@ interface MixBarChartProps {
   data: DataPoint[];
 }
 
-export const MixBarChart = ({ data }) => {
-  const CustomTooltip = ({ active, payload, label }) => {
+interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    value?: number;
+    dataKey?: string;
+    color?: string;
+    payload?: any;
+  }>;
+  label?: string;
+}
+
+export const MixBarChart = ({ data }: MixBarChartProps) => {
+  const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
     console.log("payload", payload);
     if (active && payload && payload.length) {
       return (
         <div className="bg-white p-3 border border-gray-200 shadow-lg rounded-lg">
           <p className="font-medium text-gray-900 mb-2">{label}</p>
           {payload.map((entry, index) => {
-            const value = entry.value;
+            const value = entry.value ?? 0;
             const colorClass =
               value > 50
                 ? "text-red-600"
@@ -46,7 +56,7 @@ export const MixBarChart = ({ data }) => {
                   style={{ backgroundColor: entry.color }}
                 />
                 <span className="text-gray-600">
-                  {entry.dataKey.split(".")[0]} :{" "}
+                  {entry.dataKey?.split(".")[0]} :{" "}
                   <span className={`font-medium ${colorClass}`}>{value}</span>
                 </span>
               </div>
@@ -93,7 +103,16 @@ export const MixBarChart = ({ data }) => {
               tick={{ fontSize: 12, fill: "#64748b" }}
               width={40}
             />
-            <Tooltip content={<CustomTooltip />} cursor={{ fill: "#f8fafc" }} />
+            <Tooltip<any, any>
+              content={({ active, payload, label }) => (
+                <CustomTooltip
+                  active={active}
+                  payload={payload as any}
+                  label={label}
+                />
+              )}
+              cursor={{ fill: "#f8fafc" }}
+            />
             {zoneKeys.map((zoneKey) => (
               <Bar
                 key={zoneKey}

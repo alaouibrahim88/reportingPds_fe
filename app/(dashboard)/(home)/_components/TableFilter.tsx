@@ -14,8 +14,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TableFilterProps } from "./types/dashboard-types";
 
-export function TableFilter() {
+export function TableFilter({ onFilterChange }: TableFilterProps) {
   return (
     <div className="p-4 ">
       <div className="flex items-center justify-between">
