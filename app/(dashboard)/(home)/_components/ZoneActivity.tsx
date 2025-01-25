@@ -6,20 +6,22 @@ interface ZoneActivityProps {
 
 export function ZoneActivity({ data }: ZoneActivityProps) {
   const zones = [
-    { name: "Java", count: data.zoneJava, color: "bg-purple-400" },
-    { name: "Python", count: data.zonePython, color: "bg-orange-400" },
+    { name: "Java", count: data.zoneJava, color: "bg-violet-400" },
+    { name: "Python", count: data.zonePython, color: "bg-orange-300" },
     { name: "Rust", count: data.zoneRust, color: "bg-blue-400" },
-    { name: "Go", count: data.zoneGo, color: "bg-green-400" },
-    { name: "Kotlin", count: data.zoneKotlin, color: "bg-red-400" },
+    { name: "Go", count: data.zoneGo, color: "bg-emerald-400" },
+    { name: "Kotlin", count: data.zoneKotlin, color: "bg-rose-300" },
   ];
 
   const metrics: MetricsType = data.metrics;
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-3">
+    <div className="bg-card rounded-lg shadow-sm p-3">
       <div className="flex items-center justify-between mb-2">
-        <h3 className="text-sm font-semibold">Weekly Zone Activity ⚡️</h3>
-        <span className="text-xs text-green-600">
+        <h3 className="text-sm font-semibold text-foreground">
+          Weekly Zone Activity ⚡️
+        </h3>
+        <span className="text-xs text-primary">
           {metrics.efficiency}% efficiency
         </span>
       </div>
@@ -35,13 +37,17 @@ export function ZoneActivity({ data }: ZoneActivityProps) {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-2 gap-2 mb-3">
-        <div className="bg-gray-50 p-2 rounded-lg">
+        <div className="bg-muted p-2 rounded-lg">
           <div className="text-xs text-muted-foreground">Total Issues</div>
-          <div className="text-sm font-medium">{metrics.totalIssues}</div>
+          <div className="text-sm font-medium text-foreground">
+            {metrics.totalIssues}
+          </div>
         </div>
-        <div className="bg-gray-50 p-2 rounded-lg">
+        <div className="bg-muted p-2 rounded-lg">
           <div className="text-xs text-muted-foreground">Resolved</div>
-          <div className="text-sm font-medium">{metrics.resolvedIssues}</div>
+          <div className="text-sm font-medium text-foreground">
+            {metrics.resolvedIssues}
+          </div>
         </div>
       </div>
 
@@ -50,7 +56,7 @@ export function ZoneActivity({ data }: ZoneActivityProps) {
         {zones.map((zone) => (
           <div
             key={zone.name}
-            className="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
+            className="flex items-center justify-between p-2 bg-muted/50 rounded-lg"
           >
             <div className="flex items-center gap-2">
               <div
@@ -59,19 +65,21 @@ export function ZoneActivity({ data }: ZoneActivityProps) {
                 {zone.name.charAt(0)}
               </div>
               <div className="flex flex-col">
-                <span className="text-sm font-medium">{zone.name}</span>
+                <span className="text-sm font-medium text-foreground">
+                  {zone.name}
+                </span>
                 <span className="text-xs text-muted-foreground">Count</span>
               </div>
             </div>
             <span
               className={`text-sm ${
                 zone.count > 50
-                  ? "text-red-600 font-semibold"
+                  ? "text-red-500"
                   : zone.count > 25
                   ? "text-orange-500"
                   : zone.count > 10
-                  ? "text-yellow-600"
-                  : "text-green-600"
+                  ? "text-green-500"
+                  : "text-blue-500"
               }`}
             >
               {zone.count}
@@ -82,10 +90,10 @@ export function ZoneActivity({ data }: ZoneActivityProps) {
 
       {/* Critical Issues */}
       {metrics.criticalIssues > 0 && (
-        <div className="mt-3 p-2 bg-red-50 rounded-lg">
+        <div className="mt-3 p-2 bg-destructive/10 rounded-lg">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-red-500"></div>
-            <span className="text-xs text-red-600">
+            <div className="w-2 h-2 rounded-full bg-destructive"></div>
+            <span className="text-xs text-destructive">
               {metrics.criticalIssues} Critical Issues
             </span>
           </div>

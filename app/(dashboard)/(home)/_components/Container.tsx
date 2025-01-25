@@ -28,7 +28,7 @@ function Container() {
   const { stats, zoneData, chartData } = dashboardData;
 
   return (
-    <div className="min-h-screen bg-gray-50/40">
+    <div className="min-h-screen">
       <div className="flex flex-col gap-4 p-4 max-w-[2000px] mx-auto">
         {/* Stats Cards */}
         {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -52,9 +52,9 @@ function Container() {
         {/* Charts and Content */}
         <div className="grid grid-cols-1 xl:grid-cols-5 gap-3">
           {/* Chart Section */}
-          <div className="xl:col-span-4 bg-white rounded-lg p-4 shadow-sm">
+          <div className="xl:col-span-4 bg-card rounded-lg p-4 shadow-sm">
             {/* Filter Section */}
-            <div className="flex flex-wrap gap-3 mb-4 pb-4 border-b">
+            <div className="flex flex-wrap gap-3 mb-4 pb-4 border-border">
               <Input placeholder="Search issues..." className="max-w-[200px]" />
               <Select defaultValue="7days">
                 <SelectTrigger className="w-[140px]">
@@ -85,7 +85,7 @@ function Container() {
             </div>
 
             <div className="flex items-center justify-between">
-              <h3 className="text-xl font-semibold text-gray-800">
+              <h3 className="text-xl font-semibold text-foreground">
                 Production Issues
               </h3>
               <button className="text-muted-foreground text-sm">•••</button>
@@ -107,7 +107,7 @@ function Container() {
         </div>
 
         {/* Analytics Filter Bar */}
-        <div className="bg-white rounded-lg shadow-sm p-4 mb-3">
+        <div className="bg-card rounded-lg shadow-sm p-4 mb-3">
           <div className="flex items-center justify-between">
             <div className="flex gap-4">
               <button className="text-gray-900 font-medium">
@@ -194,7 +194,7 @@ function Container() {
         </div>
 
         {/* Table Section */}
-        <div className="bg-white rounded-lg shadow-sm">
+        <div className="bg-card rounded-lg shadow-sm">
           <TableZone data={zoneData} />
         </div>
       </div>

@@ -18,14 +18,14 @@ function Logo({
         fontSize
       )}
     >
-      <div className="rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 p-2">
+      <div className="rounded-xl bg-gradient-to-r from-primary to-primary/80 p-2">
         <SquareDashedMousePointer size={iconSize} className="stroke-white" />
       </div>
       <div>
-        <span className="bg-gradient-to-r from-emerald-500 to-emerald-600 bg-clip-text text-transparent ">
+        <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
           the
         </span>
-        <span className="text-stone-700 dark:text-stone-300">Logo</span>
+        <span className="text-foreground">Logo</span>
       </div>
     </Link>
   );

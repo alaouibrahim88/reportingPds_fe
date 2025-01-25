@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 // import { SignedIn, UserButton } from "@clerk/nextjs";
 import React from "react";
 
-export default function RootLayout({
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -19,17 +19,15 @@ export default function RootLayout({
     <div className="flex h-screen">
       <DesktopSidebar />
       <div className="flex flex-col flex-1 min-h-screen">
-        <header className="flex items-center justify-between px-6 py-4 h-[50px] container">
+        <header className="flex items-center justify-between px-2 sm:px-6 py-2 sm:py-4 h-[50px] container bg-background">
           <BreadCrumbHeader />
-          <div className="gap-4 flex items-center">
+          <div className="gap-2 sm:gap-4 flex items-center">
             <ModeToggle />
           </div>
         </header>
         <Separator />
         <div className="overflow-auto">
-          <div className="flex-1 container p-4 text-accent-foreground">
-            {children}
-          </div>
+          <div className="flex-1 text-foreground">{children}</div>
         </div>
       </div>
     </div>
