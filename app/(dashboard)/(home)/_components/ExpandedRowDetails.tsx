@@ -8,10 +8,7 @@ interface ExpandedRowDetailsProps {
 
 export function ExpandedRowDetails({ item }: ExpandedRowDetailsProps) {
   return (
-    <div
-      className="bg-muted/50 dark:bg-muted/5 border-l-2"
-      style={{ borderColor: zoneColors.Java.color }}
-    >
+    <div className="bg-muted/50 dark:bg-muted/5 border-l-2 border-primary">
       <div className="p-4 space-y-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <InfoCard label="Type" value={item.type} />

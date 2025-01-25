@@ -70,7 +70,7 @@ export default function TableZone() {
 
 function TableHeaderSection() {
   return (
-    <div className="p-4 border-b border-gray-100">
+    <div className="p-4 border-b border-muted">
       <div className="flex items-center gap-2 mb-1">
         <FolderIcon className="w-5 h-5 text-primary" />
         <h2 className="font-medium">Production Issues</h2>
