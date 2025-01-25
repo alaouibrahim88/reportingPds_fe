@@ -33,11 +33,10 @@ interface TooltipProps {
 
 export const MixBarChart = ({ data }: MixBarChartProps) => {
   const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
-    console.log("payload", payload);
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-3 border border-gray-200 shadow-lg rounded-lg">
-          <p className="font-medium text-gray-900 mb-2">{label}</p>
+        <div className="bg-card dark:bg-card p-3 border border-muted shadow-lg rounded-lg">
+          <p className="font-medium text-foreground mb-2">{label}</p>
           {payload.map((entry, index) => {
             const value = entry.value ?? 0;
             const colorClass =
@@ -55,7 +54,7 @@ export const MixBarChart = ({ data }: MixBarChartProps) => {
                   className="w-2 h-2 rounded-full"
                   style={{ backgroundColor: entry.color }}
                 />
-                <span className="text-gray-600">
+                <span className="text-muted-foreground">
                   {entry.dataKey?.split(".")[0]} :{" "}
                   <span className={`font-medium ${colorClass}`}>{value}</span>
                 </span>
@@ -71,7 +70,7 @@ export const MixBarChart = ({ data }: MixBarChartProps) => {
   const zoneKeys = Object.keys(data[0] || {}).filter((key) => key !== "name");
 
   return (
-    <div className="bg-white p-2 sm:p-4 rounded-lg shadow-sm">
+    <div className="bg-card dark:bg-card/50 p-2 sm:p-4 rounded-lg shadow-sm">
       <div className="mb-6"></div>
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
@@ -87,7 +86,7 @@ export const MixBarChart = ({ data }: MixBarChartProps) => {
           >
             <CartesianGrid
               strokeDasharray="3 3"
-              stroke="#f1f5f9"
+              stroke="hsl(var(--border))"
               vertical={false}
             />
             <XAxis
@@ -111,7 +110,7 @@ export const MixBarChart = ({ data }: MixBarChartProps) => {
                   label={label}
                 />
               )}
-              cursor={{ fill: "#f8fafc" }}
+              cursor={{ fill: "hsl(var(--border))" }}
             />
             {zoneKeys.map((zoneKey) => (
               <Bar

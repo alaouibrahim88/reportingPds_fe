@@ -4,6 +4,7 @@ import { MixBarChart } from "./MixBarChart";
 import TableZone from "./TableZone";
 import { dashboardData } from "./data/dashboardData";
 import { ZoneActivity } from "./ZoneActivity";
+import { ChartBar } from "lucide-react";
 
 function Container() {
   const { stats, zoneData, chartData } = dashboardData;
@@ -14,9 +15,11 @@ function Container() {
         <div className="grid grid-cols-1 xl:grid-cols-5 gap-3">
           <div className="xl:col-span-4 bg-card rounded-lg p-4 shadow-sm border border-border">
             <div className="flex items-center justify-between">
-              <h3 className="text-xl font-semibold text-foreground">
-                Production Issues
-              </h3>
+              <div className="flex items-center gap-2 mb-1">
+                <ChartBar className="w-5 h-5 text-primary" />
+                <h2 className="font-medium"> Visualize Production Issues </h2>
+              </div>
+
               <button className="text-muted-foreground text-sm">•••</button>
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2 mb-4">
