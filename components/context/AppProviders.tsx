@@ -12,7 +12,7 @@ export function AppProviders({
   const [queryClient] = React.useState(() => new QueryClient());
   return (
     <QueryClientProvider client={queryClient}>
-      <NextTopLoader color="#10b981" showSpinner={false} />
+      <NextTopLoader color="hsl(var(--primary))" showSpinner={false} />
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         {children}
       </ThemeProvider>

@@ -17,6 +17,9 @@ import {
   ChevronRightIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { productionIssuesData } from "./data/production-issues";
+import { ExpandedRowDetails } from "./ExpandedRowDetails";
+import { ProductionIssue } from "./types/table-types";
 
 export default function TableZone() {
   const [openRows, setOpenRows] = useState<number[]>([]);
@@ -29,194 +32,11 @@ export default function TableZone() {
     );
   };
 
-  const data = [
-    {
-      time: "2024-01-15 06:00:00 AM",
-      machine: "CITIZEN 19",
-      job: "349455|26",
-      count: 18,
-      reason: "Tool Change / Offset Scrap",
-      message: "parts were not put in last night",
-      type: "Scrap",
-      status: "warning",
-      color: "bg-yellow-500",
-      visibilityScore: 95,
-    },
-    {
-      time: "2024-01-15 10:19:43 AM",
-      machine: "CITIZEN 36",
-      job: "31003887-05|6",
-      count: 9,
-      reason: "Dimensional",
-      message: "Boring bar chipped",
-      type: "Scrap",
-      status: "alert",
-      color: "bg-red-500",
-      visibilityScore: 20,
-    },
-    {
-      time: "2024-01-15 11:30:32 PM",
-      machine: "CITIZEN 20",
-      job: "600213-2|15",
-      count: 18,
-      reason: "Dimensional",
-      message: "Step on .4835 diameter",
-      type: "Scrap",
-      status: "good",
-      color: "bg-green-500",
-      visibilityScore: 100,
-    },
-    {
-      time: "2024-01-14 08:37:11 PM",
-      machine: "CITIZEN 53",
-      job: "06-135925-000|99",
-      count: 14,
-      reason: "Dimensional",
-      message: "Thru hole go pin won't go",
-      type: "Scrap",
-      status: "alert",
-      color: "bg-red-500",
-      visibilityScore: 7,
-    },
-    {
-      time: "2024-01-14 03:24:58 PM",
-      machine: "CITIZEN 18",
-      job: "1000879|55",
-      count: 12,
-      reason: "Dimensional",
-      message: "Set up pcs",
-      type: "Scrap",
-      status: "warning",
-      color: "bg-yellow-500",
-      visibilityScore: 90,
-    },
-    {
-      time: "2024-01-14 02:15:32 PM",
-      machine: "CITIZEN 25",
-      job: "450789|12",
-      count: 15,
-      reason: "Surface Finish",
-      message: "Poor surface quality on OD",
-      type: "Scrap",
-      status: "good",
-      color: "bg-green-500",
-      visibilityScore: 100,
-    },
-    {
-      time: "2024-01-13 11:45:22 AM",
-      machine: "CITIZEN 42",
-      job: "789123|33",
-      count: 7,
-      reason: "Tool Life",
-      message: "Insert worn out prematurely",
-      type: "Scrap",
-      status: "warning",
-      color: "bg-yellow-500",
-      visibilityScore: 85,
-    },
-    {
-      time: "2024-01-13 09:30:15 AM",
-      machine: "CITIZEN 31",
-      job: "654321|08",
-      count: 22,
-      reason: "Material Issue",
-      message: "Material hardness out of spec",
-      type: "Scrap",
-      status: "alert",
-      color: "bg-red-500",
-      visibilityScore: 75,
-    },
-    {
-      time: "2024-01-13 08:20:45 AM",
-      machine: "CITIZEN 15",
-      job: "987654|41",
-      count: 11,
-      reason: "Setup Error",
-      message: "Wrong offset applied",
-      type: "Scrap",
-      status: "good",
-      color: "bg-green-500",
-      visibilityScore: 95,
-    },
-    {
-      time: "2024-01-12 04:55:33 PM",
-      machine: "CITIZEN 27",
-      job: "246813|19",
-      count: 16,
-      reason: "Program Error",
-      message: "Wrong program version used",
-      type: "Scrap",
-      status: "warning",
-      color: "bg-yellow-500",
-      visibilityScore: 80,
-    },
-    {
-      time: "2024-01-12 02:40:18 PM",
-      machine: "CITIZEN 33",
-      job: "135790|22",
-      count: 13,
-      reason: "Coolant Issue",
-      message: "Insufficient coolant pressure",
-      type: "Scrap",
-      status: "alert",
-      color: "bg-red-500",
-      visibilityScore: 70,
-    },
-    {
-      time: "2024-01-12 01:15:27 PM",
-      machine: "CITIZEN 48",
-      job: "864209|15",
-      count: 19,
-      reason: "Tool Breakage",
-      message: "Drill broke during operation",
-      type: "Scrap",
-      status: "good",
-      color: "bg-green-500",
-      visibilityScore: 100,
-    },
-    {
-      time: "2024-01-11 10:05:42 AM",
-      machine: "CITIZEN 22",
-      job: "753951|27",
-      count: 8,
-      reason: "Material Handling",
-      message: "Bar feeder misalignment",
-      type: "Scrap",
-      status: "warning",
-      color: "bg-yellow-500",
-      visibilityScore: 90,
-    },
-    {
-      time: "2024-01-11 09:30:55 AM",
-      machine: "CITIZEN 39",
-      job: "159753|36",
-      count: 24,
-      reason: "Quality Check",
-      message: "Failed final inspection",
-      type: "Scrap",
-      status: "alert",
-      color: "bg-red-500",
-      visibilityScore: 75,
-    },
-    {
-      time: "2024-01-11 08:15:20 AM",
-      machine: "CITIZEN 44",
-      job: "951753|48",
-      count: 17,
-      reason: "Machine Maintenance",
-      message: "Spindle alignment issue",
-      type: "Scrap",
-      status: "good",
-      color: "bg-green-500",
-      visibilityScore: 95,
-    },
-  ];
-
   // Pagination calculations
-  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const totalPages = Math.ceil(productionIssuesData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData = data.slice(startIndex, endIndex);
+  const currentData = productionIssuesData.slice(startIndex, endIndex);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -224,190 +44,203 @@ export default function TableZone() {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-      <div className="p-4 border-b border-gray-100">
-        <div className="flex items-center gap-2 mb-1">
-          <FolderIcon className="w-5 h-5 text-primary" />
-          <h2 className="font-medium">Production Issues</h2>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          Track and manage production issues and scrap reports
-        </p>
-      </div>
-
+    <div className="bg-background/50 dark:bg-background/5">
+      <TableHeaderSection />
       <div className="p-4">
         <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-gray-50/50">
-              <TableHead className="w-[50px] py-2"></TableHead>
-              <TableHead className="font-medium text-xs py-2">Time</TableHead>
-              <TableHead className="font-medium text-xs py-2">
-                Machine
-              </TableHead>
-              <TableHead className="font-medium text-xs py-2">Job</TableHead>
-              <TableHead className="font-medium text-xs py-2">Count</TableHead>
-              <TableHead className="font-medium text-xs py-2">Reason</TableHead>
-              <TableHead className="font-medium text-xs py-2">
-                Critical Level
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {currentData.map((item, index) => (
-              <React.Fragment key={index}>
-                <TableRow
-                  className={cn(
-                    "cursor-pointer transition-colors hover:bg-gray-50/50",
-                    openRows.includes(index) && "bg-gray-50/80"
-                  )}
-                  onClick={() => toggleRow(index)}
-                >
-                  <TableCell className="w-[50px] py-2">
-                    <div className="flex items-center justify-center w-6 h-6 rounded-lg hover:bg-gray-100 transition-colors">
-                      {openRows.includes(index) ? (
-                        <ChevronDown className="h-4 w-4 text-gray-500" />
-                      ) : (
-                        <ChevronRight className="h-4 w-4 text-gray-500" />
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell className="font-medium text-xs py-2">
-                    {item.time}
-                  </TableCell>
-                  <TableCell className="text-xs py-2">{item.machine}</TableCell>
-                  <TableCell className="text-xs py-2">{item.job}</TableCell>
-                  <TableCell className="py-2">
-                    <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                      {item.count}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-xs py-2">{item.reason}</TableCell>
-                  <TableCell className="py-2">
-                    {item.visibilityScore > 60 ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-12 bg-gray-100 rounded-full h-1.5">
-                          <div
-                            className={`bg-red-400 h-1.5 rounded-full`}
-                            style={{ width: `${item.visibilityScore}%` }}
-                          />
-                        </div>
-                        <span className="text-xs text-gray-600">
-                          {item.visibilityScore}
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="text-xs text-gray-600">
-                        {item.visibilityScore}
-                      </span>
-                    )}
-                  </TableCell>
-                </TableRow>
-                {openRows.includes(index) && (
-                  <TableRow>
-                    <TableCell colSpan={6} className="p-0">
-                      <div className="bg-gray-50/50 border-l-2 border-primary">
-                        <div className="p-4 space-y-4">
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div className="bg-white rounded-lg p-3 border border-gray-100">
-                              <p className="text-sm text-gray-500 mb-1">Type</p>
-                              <p className="font-medium">{item.type}</p>
-                            </div>
-                            <div className="bg-white rounded-lg p-3 border border-gray-100">
-                              <p className="text-sm text-gray-500 mb-1">
-                                Message
-                              </p>
-                              <p className="font-medium">{item.message}</p>
-                            </div>
-                            <div className="bg-white rounded-lg p-3 border border-gray-100">
-                              <p className="text-sm text-gray-500 mb-1">
-                                Job Details
-                              </p>
-                              <p className="font-medium">{item.job}</p>
-                            </div>
-                            <div className="bg-white rounded-lg p-3 border border-gray-100">
-                              <p className="text-sm text-gray-500 mb-1">
-                                Status
-                              </p>
-                              <span
-                                className={cn(
-                                  "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-medium",
-                                  {
-                                    "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20":
-                                      item.status === "alert",
-                                    "bg-yellow-50 text-yellow-800 ring-1 ring-inset ring-yellow-600/20":
-                                      item.status === "warning",
-                                    "bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20":
-                                      item.status === "good",
-                                  }
-                                )}
-                              >
-                                <div
-                                  className={cn("h-1.5 w-1.5 rounded-full", {
-                                    "bg-red-500 animate-pulse":
-                                      item.status === "alert",
-                                    "bg-yellow-500": item.status === "warning",
-                                    "bg-green-500": item.status === "good",
-                                  })}
-                                />
-                                {item.status.charAt(0).toUpperCase() +
-                                  item.status.slice(1)}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </React.Fragment>
-            ))}
-          </TableBody>
+          <TableColumns />
+          <TableContent
+            data={currentData}
+            openRows={openRows}
+            toggleRow={toggleRow}
+          />
         </Table>
-
-        {/* Pagination */}
-        <div className="mt-4 flex items-center justify-between px-2">
-          <div className="text-sm text-gray-500">
-            Showing {startIndex + 1} to {Math.min(endIndex, data.length)} of{" "}
-            {data.length} entries
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className={cn(
-                "p-2 rounded-lg hover:bg-gray-100 transition-colors",
-                currentPage === 1 && "opacity-50 cursor-not-allowed"
-              )}
-            >
-              <ChevronLeftIcon className="h-4 w-4" />
-            </button>
-            {[...Array(totalPages)].map((_, i) => (
-              <button
-                key={i}
-                onClick={() => handlePageChange(i + 1)}
-                className={cn(
-                  "w-8 h-8 rounded-lg text-sm transition-colors",
-                  currentPage === i + 1
-                    ? "bg-primary text-white"
-                    : "hover:bg-gray-100"
-                )}
-              >
-                {i + 1}
-              </button>
-            ))}
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className={cn(
-                "p-2 rounded-lg hover:bg-gray-100 transition-colors",
-                currentPage === totalPages && "opacity-50 cursor-not-allowed"
-              )}
-            >
-              <ChevronRightIcon className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
+        <TablePagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          startIndex={startIndex}
+          endIndex={endIndex}
+          totalItems={productionIssuesData.length}
+          onPageChange={handlePageChange}
+        />
       </div>
+    </div>
+  );
+}
+
+function TableHeaderSection() {
+  return (
+    <div className="p-4 border-b border-gray-100">
+      <div className="flex items-center gap-2 mb-1">
+        <FolderIcon className="w-5 h-5 text-primary" />
+        <h2 className="font-medium">Production Issues</h2>
+      </div>
+      <p className="text-sm text-muted-foreground">
+        Track and manage production issues and scrap reports
+      </p>
+    </div>
+  );
+}
+
+function TableColumns() {
+  return (
+    <TableHeader>
+      <TableRow className="hover:bg-muted/50 dark:hover:bg-muted/10">
+        <TableHead className="w-[50px] text-muted-foreground"></TableHead>
+        <TableHead className="font-medium text-xs text-muted-foreground">
+          Time
+        </TableHead>
+        <TableHead className="text-xs text-muted-foreground">Machine</TableHead>
+        <TableHead className="text-xs text-muted-foreground">Job</TableHead>
+        <TableHead className="text-xs text-muted-foreground">Count</TableHead>
+        <TableHead className="text-xs text-muted-foreground">Reason</TableHead>
+        <TableHead className="text-xs text-muted-foreground">
+          Critical Level
+        </TableHead>
+      </TableRow>
+    </TableHeader>
+  );
+}
+
+interface TableContentProps {
+  data: ProductionIssue[];
+  openRows: number[];
+  toggleRow: (index: number) => void;
+}
+
+function TableContent({ data, openRows, toggleRow }: TableContentProps) {
+  return (
+    <TableBody>
+      {data.map((item, index) => (
+        <React.Fragment key={index}>
+          <TableRow
+            className={cn(
+              "cursor-pointer transition-colors",
+              "hover:bg-muted/50 dark:hover:bg-muted/10",
+              openRows.includes(index) && "bg-muted/30 dark:bg-muted/5"
+            )}
+            onClick={() => toggleRow(index)}
+          >
+            <TableCell className="w-[50px] py-2">
+              <div className="flex items-center justify-center w-6 h-6 rounded-lg hover:bg-muted/70 dark:hover:bg-muted/20 transition-colors">
+                {openRows.includes(index) ? (
+                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                ) : (
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                )}
+              </div>
+            </TableCell>
+            <TableCell className="font-medium text-xs py-2 text-foreground">
+              {item.time}
+            </TableCell>
+            <TableCell className="text-xs py-2 text-foreground">
+              {item.machine}
+            </TableCell>
+            <TableCell className="text-xs py-2 text-foreground">
+              {item.job}
+            </TableCell>
+            <TableCell className="py-2">
+              <span className="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/20 px-2 py-0.5 text-xs font-medium text-primary">
+                {item.count}
+              </span>
+            </TableCell>
+            <TableCell className="text-xs py-2 text-foreground">
+              {item.reason}
+            </TableCell>
+            <TableCell className="py-2">
+              <VisibilityScore score={item.visibilityScore} />
+            </TableCell>
+          </TableRow>
+          {openRows.includes(index) && (
+            <TableRow>
+              <TableCell colSpan={7} className="p-0">
+                <ExpandedRowDetails item={item} />
+              </TableCell>
+            </TableRow>
+          )}
+        </React.Fragment>
+      ))}
+    </TableBody>
+  );
+}
+
+interface TablePaginationProps {
+  currentPage: number;
+  totalPages: number;
+  startIndex: number;
+  endIndex: number;
+  totalItems: number;
+  onPageChange: (page: number) => void;
+}
+
+function TablePagination({
+  currentPage,
+  totalPages,
+  startIndex,
+  endIndex,
+  totalItems,
+  onPageChange,
+}: TablePaginationProps) {
+  return (
+    <div className="mt-4 flex items-center justify-between px-2">
+      <div className="text-sm text-muted-foreground">
+        Showing {startIndex + 1} to {Math.min(endIndex, totalItems)} of{" "}
+        {totalItems} entries
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className={cn(
+            "p-2 rounded-lg hover:bg-muted/70 dark:hover:bg-muted/20 transition-colors",
+            currentPage === 1 && "opacity-50 cursor-not-allowed"
+          )}
+        >
+          <ChevronLeftIcon className="h-4 w-4 text-muted-foreground" />
+        </button>
+        {[...Array(totalPages)].map((_, i) => (
+          <button
+            key={i}
+            onClick={() => onPageChange(i + 1)}
+            className={cn(
+              "w-8 h-8 rounded-lg text-sm transition-colors",
+              currentPage === i + 1
+                ? "bg-primary/80 dark:bg-primary/20 text-primary-foreground"
+                : "hover:bg-muted/70 dark:hover:bg-muted/20 text-muted-foreground"
+            )}
+          >
+            {i + 1}
+          </button>
+        ))}
+        <button
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className={cn(
+            "p-2 rounded-lg hover:bg-muted/70 dark:hover:bg-muted/20 transition-colors",
+            currentPage === totalPages && "opacity-50 cursor-not-allowed"
+          )}
+        >
+          <ChevronRightIcon className="h-4 w-4 text-muted-foreground" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function VisibilityScore({ score }: { score: number }) {
+  if (score <= 60) {
+    return <span className="text-xs text-gray-600">{score} %</span>;
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <div className="w-12 bg-gray-100 rounded-full h-1.5">
+        <div
+          className="bg-red-400 h-1.5 rounded-full"
+          style={{ width: `${score}%` }}
+        />
+      </div>
+      <span className="text-xs text-gray-600">{score} %</span>
     </div>
   );
 }
