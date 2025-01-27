@@ -1,0 +1,62 @@
+<svg viewBox="0 0 600 800" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4F46E5;stop-opacity:0.2"/>
+      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:0.1"/>
+    </linearGradient>
+    
+    <!-- Pattern for background -->
+    <pattern id="dot-pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#4F46E5" opacity="0.1"/>
+    </pattern>
+  </defs>
+
+  <!-- Background rectangle -->
+  <rect width="600" height="800" fill="url(#bg-gradient)"/>
+  <rect width="600" height="800" fill="url(#dot-pattern)"/>
+
+  <!-- Decorative shapes -->
+  <path d="M300,100 Q450,150 400,300 T300,500 T200,700" 
+        fill="none" 
+        stroke="#4F46E5" 
+        stroke-width="2"
+        opacity="0.3"/>
+
+  <path d="M250,50 Q400,100 350,250 T250,450 T150,650" 
+        fill="none" 
+        stroke="#7C3AED" 
+        stroke-width="2"
+        opacity="0.3"/>
+
+  <!-- Circles -->
+  <circle cx="400" cy="200" r="60" fill="#4F46E5" opacity="0.1"/>
+  <circle cx="420" cy="180" r="40" fill="#7C3AED" opacity="0.1"/>
+  
+  <circle cx="200" cy="600" r="80" fill="#4F46E5" opacity="0.1"/>
+  <circle cx="180" cy="620" r="50" fill="#7C3AED" opacity="0.1"/>
+
+  <!-- Abstract shapes -->
+  <path d="M500,300 Q450,350 500,400 T450,500" 
+        fill="none" 
+        stroke="#4F46E5" 
+        stroke-width="3"
+        opacity="0.2"/>
+
+  <path d="M100,200 Q150,250 100,300 T150,400" 
+        fill="none" 
+        stroke="#7C3AED" 
+        stroke-width="3"
+        opacity="0.2"/>
+
+  <!-- Additional decorative elements -->
+  <rect x="450" y="350" width="40" height="40" 
+        transform="rotate(45 470 370)" 
+        fill="#4F46E5" 
+        opacity="0.1"/>
+
+  <rect x="150" y="450" width="30" height="30" 
+        transform="rotate(45 165 465)" 
+        fill="#7C3AED" 
+        opacity="0.1"/>
+</svg>
