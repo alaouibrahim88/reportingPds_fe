@@ -30,6 +30,8 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
+import { ZoneDataType } from "./data/workflowData";
+
 interface ProcessDamage {
   process: string;
   count: number;
@@ -84,15 +86,7 @@ interface DetailStats {
 }
 
 interface TableZoneProps {
-  data: Array<{
-    name: string;
-    zoneJava: number;
-    zonePython: number;
-    zoneRust: number;
-    zoneGo: number;
-    zoneKotlin: number;
-    details: DetailStats[];
-  }>;
+  data: ZoneDataType[];
 }
 
 export default function TableZone({ data }: TableZoneProps) {

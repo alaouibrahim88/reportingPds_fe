@@ -277,3 +277,214 @@ export const workflowData = {
     // Add more chart data points as needed
   ],
 };
+
+// Basic statistics interface
+interface WorkflowStats {
+  pending: number;
+  running: number;
+  completed: number;
+}
+
+// Damage type interface
+interface DamageType {
+  process: number;
+  machine: number;
+  material: number;
+  quality?: number;
+}
+
+// Efficiency metrics interface
+interface EfficiencyMetrics {
+  nets: number;
+  boots: number;
+  cutting: number;
+  knitting: number;
+}
+
+// Downtime metrics interface
+interface DowntimeMetrics {
+  planned: number;
+  unplanned: number;
+  maintenance: number;
+}
+
+// Quality metrics interface
+interface QualityMetrics {
+  defectRate: number;
+  reworkRate: number;
+  scrapRate: number;
+}
+
+// Operational metrics interface
+interface OperationalMetrics {
+  damageType: DamageType;
+  efficiency: EfficiencyMetrics;
+  downtime: DowntimeMetrics;
+  quality: QualityMetrics;
+}
+
+// Production metrics interface
+interface ProductionMetrics {
+  planned: number;
+  actual: number;
+  variance: number;
+}
+
+// Quality inspection metrics interface
+interface QualityInspectionMetrics {
+  inspected: number;
+  passed: number;
+  failed: number;
+}
+
+// Operational detail metrics interface
+interface OperationalDetailMetrics {
+  damageType: DamageType;
+  production: ProductionMetrics;
+  quality: QualityInspectionMetrics;
+}
+
+// Damage types by process interface
+interface ProcessDamageTypes {
+  material?: number;
+  handling?: number;
+  setup?: number;
+  tension?: number;
+  alignment?: number;
+  wear?: number;
+  specification?: number;
+  appearance?: number;
+  strength?: number;
+  cutting?: number;
+  forming?: number;
+  assembly?: number;
+  temperature?: number;
+  pressure?: number;
+  cooling?: number;
+  fitting?: number;
+  finishing?: number;
+}
+
+// Process damage statistics interface
+interface ProcessDamageStats {
+  process: string;
+  count: number;
+  percentage: number;
+  damageTypes: ProcessDamageTypes;
+}
+
+// Machine operational status interface
+interface MachineOperationalStatus {
+  uptime: number;
+  maintenance: number;
+  repair: number;
+}
+
+// Machine damage statistics interface
+interface MachineDamageStats {
+  machine: string;
+  count: number;
+  percentage: number;
+  operationalStatus: MachineOperationalStatus;
+}
+
+// Combined damage statistics interface
+interface DamageStatistics {
+  byProcess: ProcessDamageStats[];
+  byMachine: MachineDamageStats[];
+}
+
+// Workflow detail interface
+interface WorkflowDetail {
+  time: string;
+  machine: string;
+  job: string;
+  count: number;
+  reason: string;
+  message: string;
+  status: string;
+  priority: string;
+  assignee: string;
+  department: string;
+  op: OperationalDetailMetrics;
+  damageStats: DamageStatistics;
+}
+
+// Machine maintenance interface
+interface MachineMaintenance {
+  lastCheck: string;
+  nextDue: string;
+  status: string;
+}
+
+// Machine performance interface
+interface MachinePerformance {
+  efficiency: number;
+  quality: number;
+  availability: number;
+}
+
+// Machine interface
+interface Machine {
+  id: string;
+  status: string;
+  load: number;
+  temperature: number;
+  maintenance: MachineMaintenance;
+  performance: MachinePerformance;
+}
+
+// Operational metrics for zone interface
+interface ZoneOperationalMetrics {
+  oee: number;
+  mtbf: string;
+  mttr: string;
+  availability: number;
+}
+
+// Zone metrics interface
+interface ZoneMetrics {
+  efficiency: number;
+  uptime: string;
+  throughput: string;
+  latency: string;
+  criticalIssues: number;
+  operational: ZoneOperationalMetrics;
+}
+
+// Zone interface
+export interface ZoneDataType {
+  name: string;
+  zoneNets: number;
+  zoneBoots: number;
+  zoneCutting: number;
+  zoneKnitting: number;
+  zoneInjection: number;
+  op: OperationalMetrics;
+  details: WorkflowDetail[];
+  metrics: ZoneMetrics;
+  machines: Machine[];
+}
+
+// Chart data value interface
+interface ChartDataValue {
+  value: number;
+  color: string;
+}
+
+// Chart data point interface
+interface ChartDataPoint {
+  name: string;
+  zoneJava: ChartDataValue;
+  zonePython: ChartDataValue;
+  zoneRust: ChartDataValue;
+  zoneGo: ChartDataValue;
+  zoneKotlin: ChartDataValue;
+}
+
+// Main workflow data interface
+export interface WorkflowData {
+  stats: WorkflowStats;
+  zoneData: ZoneDataType[];
+  chartData: ChartDataPoint[];
+}

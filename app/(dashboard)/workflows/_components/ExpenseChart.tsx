@@ -42,11 +42,11 @@ import {
 import { ChevronDown } from "lucide-react";
 
 const data = [
-  { name: "Zone A", value: 28, defects: 156, machines: 12, color: "#8E98F5" },
-  { name: "Zone B", value: 25, defects: 123, machines: 10, color: "#7874F2" },
-  { name: "Zone C", value: 20, defects: 98, machines: 8, color: "#8B7BF9" },
-  { name: "Zone D", value: 12, defects: 67, machines: 6, color: "#8B6CF8" },
-  { name: "Zone E", value: 8, defects: 45, machines: 4, color: "#8B5CF6" },
+  { name: "Nets", value: 28, defects: 156, machines: 12, color: "#8E98F5" },
+  { name: "Boots", value: 25, defects: 123, machines: 10, color: "#7874F2" },
+  { name: "Cutting", value: 20, defects: 98, machines: 8, color: "#8B7BF9" },
+  { name: "Knitting", value: 12, defects: 67, machines: 6, color: "#8B6CF8" },
+  { name: "Injection", value: 8, defects: 45, machines: 4, color: "#8B5CF6" },
   { name: "Zone F", value: 7, defects: 34, machines: 3, color: "#9333EA" },
 ];
 
