@@ -30,6 +30,29 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
+interface ProcessDamage {
+  process: string;
+  count: number;
+  percentage: number;
+  damageTypes: Record<string, number>;
+}
+
+interface MachineDamage {
+  machine: string;
+  count: number;
+  percentage: number;
+  operationalStatus: {
+    uptime: number;
+    maintenance: number;
+    repair: number;
+  };
+}
+
+interface DamageStats {
+  byProcess: ProcessDamage[];
+  byMachine: MachineDamage[];
+}
+
 interface DetailStats {
   time: string;
   machine: string;
@@ -57,24 +80,7 @@ interface DetailStats {
       failed: number;
     };
   };
-  damageStats: {
-    byProcess: Array<{
-      process: string;
-      count: number;
-      percentage: number;
-      damageTypes: Record<string, number>;
-    }>;
-    byMachine: Array<{
-      machine: string;
-      count: number;
-      percentage: number;
-      operationalStatus: {
-        uptime: number;
-        maintenance: number;
-        repair: number;
-      };
-    }>;
-  };
+  damageStats: DamageStats;
 }
 
 interface TableZoneProps {
@@ -330,7 +336,7 @@ export default function TableZone({ data }: TableZoneProps) {
                           </h4>
                           <div className="grid grid-cols-3 gap-2">
                             {detail.damageStats.byProcess.map(
-                              (process, idx) => (
+                              (process: ProcessDamage, idx: number) => (
                                 <Card key={idx} className="p-3">
                                   <div className="space-y-1">
                                     <p className="text-xs text-muted-foreground">
@@ -378,7 +384,7 @@ export default function TableZone({ data }: TableZoneProps) {
                           </h4>
                           <div className="grid grid-cols-3 gap-2">
                             {detail.damageStats.byMachine.map(
-                              (machine, idx) => (
+                              (machine: MachineDamage, idx: number) => (
                                 <Card key={idx} className="p-3">
                                   <div className="space-y-1">
                                     <p className="text-xs text-muted-foreground">
