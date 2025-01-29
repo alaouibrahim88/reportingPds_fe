@@ -8,6 +8,7 @@ import {
   ShieldCheckIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  BadgeDollarSign,
 } from "lucide-react";
 import React, { useState } from "react";
 import Logo from "@/components/Logo";
@@ -26,19 +27,19 @@ const routes = [
   },
   {
     href: "workflows",
-    label: "Workflows",
-    icon: Layers2Icon,
+    label: "Costs",
+    icon: CoinsIcon,
   },
   {
     href: "credentials",
     label: "Security",
     icon: ShieldCheckIcon,
   },
-  {
-    href: "billing",
-    label: "Billing",
-    icon: CoinsIcon,
-  },
+  // {
+  //   href: "billing",
+  //   label: "Billing",
+  //   icon: CoinsIcon,
+  // },
 ];
 
 function DesktopSidebar() {

@@ -23,9 +23,9 @@ function Logo({
       </div>
       <div>
         <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-          the
+          Poly
         </span>
-        <span className="text-foreground">Logo</span>
+        <span className="text-foreground">design</span>
       </div>
     </Link>
   );

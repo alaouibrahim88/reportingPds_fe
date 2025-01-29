@@ -2,7 +2,7 @@ import { useMemo } from "react";
 
 const rawData = [
   {
-    name: "Zone 1",
+    name: "Smart Home",
     value: 28,
     defects: 156,
     duration: 12,
@@ -11,7 +11,7 @@ const rawData = [
     utilization: 28,
   },
   {
-    name: "Zone 2",
+    name: "Fitness Tech",
     value: 28,
     defects: 156,
     duration: 12,
@@ -20,7 +20,7 @@ const rawData = [
     utilization: 28,
   },
   {
-    name: "Zone 3",
+    name: "Kids Forniture",
     value: 28,
     defects: 156,
     duration: 12,
@@ -29,7 +29,7 @@ const rawData = [
     utilization: 28,
   },
   {
-    name: "Zone 4",
+    name: "Musical Instruments",
     value: 28,
     defects: 156,
     duration: 12,
@@ -38,7 +38,7 @@ const rawData = [
     utilization: 28,
   },
   {
-    name: "Zone 5",
+    name: "Computer",
     value: 28,
     defects: 156,
     duration: 12,
@@ -48,7 +48,7 @@ const rawData = [
   },
 
   {
-    name: "Zone 6",
+    name: "Furniture",
     value: 28,
     defects: 156,
     duration: 12,
@@ -57,7 +57,7 @@ const rawData = [
     utilization: 28,
   },
   {
-    name: "Zone 7",
+    name: "Clothing",
     value: 28,
     defects: 156,
     duration: 12,

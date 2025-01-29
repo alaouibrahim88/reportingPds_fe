@@ -31,6 +31,7 @@ export const dashboardData = {
           status: "alert",
           priority: "high",
           assignee: null,
+          type: "scrap",
           department: "Manufacturing",
         },
         {
@@ -43,6 +44,7 @@ export const dashboardData = {
           status: "alert",
           priority: "medium",
           assignee: "Alex Smith",
+          type: "lorem",
           department: "Quality Control",
         },
         {
@@ -55,6 +57,7 @@ export const dashboardData = {
           status: "good",
           priority: "low",
           assignee: "Sam Lee",
+          type: "ipsum",
           department: "Manufacturing",
         },
       ],

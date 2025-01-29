@@ -36,18 +36,20 @@ export function ZonePerformance({
                 <div className="flex items-center text-[10px] text-muted-foreground">
                   <span>{item.duration} hours</span>
                   <span className="mx-1">•</span>
-                  <span className="text-[#8B5CF6] font-medium">
+                  <span className=" text-red-500/70 dark:text-red-400/70 font-medium">
                     {item.defects} defects
                   </span>
-                  <span className="mx-1">•</span>
-                  <span className="text-[hsl(var(--primary))] font-medium">
+                  {/* <span className="mx-1">•</span> */}
+                  {/* <span className="text-[hsl(var(--primary))] font-medium">
                     ${item.revenue?.toLocaleString() ?? 0}
-                  </span>
+                  </span> */}
                 </div>
               </div>
               <div className="text-right">
-                <p className="font-medium text-sm">{item.value}%</p>
-                <p className="text-[10px] text-muted-foreground">Utilization</p>
+                <p className="font-medium text-sm">{`$${Math.abs(
+                  item.revenue / 1000
+                )}k`}</p>
+                <p className="text-[10px] text-muted-foreground">Revenue</p>
               </div>
             </div>
 
@@ -55,8 +57,11 @@ export function ZonePerformance({
               <div
                 className="h-1 rounded-full transition-all duration-300"
                 style={{
-                  width: `${item.value}%`,
-                  backgroundColor: "#8B5CF6",
+                  width: `${
+                    (item.revenue / Math.max(...data.map((d) => d.revenue))) *
+                    100
+                  }%`,
+                  backgroundColor: "hsl(var(--primary))",
                   opacity: activeIndex === index ? 1 : 0.7,
                 }}
               />

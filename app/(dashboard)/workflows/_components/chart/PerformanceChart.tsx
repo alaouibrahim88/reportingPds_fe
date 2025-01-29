@@ -53,12 +53,10 @@ export function PerformanceChart({
   isExpanded,
   onToggleExpand,
 }: PerformanceChartProps) {
-  console.log("&&&&", data);
-
   return (
     <Card className="p-4">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold">Zone Performance</h3>
+        <h3 className="font-medium text-sm">Zone Performance</h3>
         <Button
           variant="ghost"
           size="icon"

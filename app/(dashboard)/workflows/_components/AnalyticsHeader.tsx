@@ -2,7 +2,7 @@ interface Stat {
   title: string;
   sales: string;
   quantity: string;
-  previousSales: string;
+  previousSales: number;
   period: string;
 }
 

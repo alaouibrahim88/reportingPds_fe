@@ -15,8 +15,11 @@ export function ChartTooltip({ active, payload }: TooltipProps) {
         <p className="text-sm text-[#8B5CF6]">
           Damage: ${Math.abs(data.damageCost).toLocaleString()}
         </p>
+        {/* <p className="text-sm text-muted-foreground mt-1">
+          Revenue: {`$${Math.abs(data.revenue ?? 0 / 1000)}k  `}
+        </p> */}
         <p className="text-sm text-muted-foreground mt-1">
-          Utilization: {data.utilization ?? 0}%
+          Defects: {data.defects ?? 0}
         </p>
       </div>
     );
