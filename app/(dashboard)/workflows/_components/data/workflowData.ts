@@ -1,11 +1,29 @@
 import { colors } from "@/app/(dashboard)/(home)/_components/data/dashboardData";
 
 export const workflowData = {
-  stats: {
-    pending: 8,
-    running: 15,
-    completed: 45,
-  },
+  stats: [
+    {
+      title: "Daily",
+      sales: 999.83,
+      quantity: "12,625",
+      previousSales: 210.0,
+      period: "Yesterday",
+    },
+    {
+      title: "Weekly",
+      sales: 5199.848,
+      quantity: "104,207",
+      previousSales: 310.0,
+      period: "Last Week",
+    },
+    {
+      title: "Monthly",
+      sales: 7199.848,
+      quantity: "260,530",
+      previousSales: 8721.0,
+      period: "Last Month",
+    },
+  ],
 
   zoneData: [
     {
