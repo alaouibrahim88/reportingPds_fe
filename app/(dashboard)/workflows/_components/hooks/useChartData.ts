@@ -2,7 +2,13 @@ import { useMemo } from "react";
 
 const rawData = [
   {
-    name: "Smart Home",
+    // Wrapping: "#8E98F5", // Red base color
+    // Nets: "#7874F2", // Lightest purple
+    // Boot: "#8B7BF9", // Light-medium purple
+    // Knitting: "#8B6CF8", // Medium purple
+    // Injection: "#8B5CF6", // Darkest purple
+
+    name: "Wrapping",
     value: 28,
     reelHours: 9,
     standardHours: 8,
@@ -16,7 +22,7 @@ const rawData = [
     duration: 12,
   },
   {
-    name: "Fitness Tech",
+    name: "Nets",
     value: 28,
     reelHours: 22,
     standardHours: 8,
@@ -30,7 +36,12 @@ const rawData = [
     defects: 173,
   },
   {
-    name: "Kids Forniture",
+    // Wrapping: "#8E98F5", // Red base color
+    // Nets: "#7874F2", // Lightest purple
+    // Boot: "#8B7BF9", // Light-medium purple
+    // Knitting: "#8B6CF8", // Medium purple
+    // Injection: "#8B5CF6", // Darkest purple
+    name: "Sunvisors",
     value: 28,
     reelHours: 12,
     standardHours: 8,
@@ -44,7 +55,7 @@ const rawData = [
     duration: 23,
   },
   {
-    name: "Musical Instruments",
+    name: "Knitting",
     value: 28,
     reelHours: 7,
     standardHours: 8,
@@ -58,7 +69,7 @@ const rawData = [
     duration: 20,
   },
   {
-    name: "Computer",
+    name: "Injection",
     value: 28,
     reelHours: 10,
     standardHours: 8,
@@ -73,7 +84,7 @@ const rawData = [
   },
 
   {
-    name: "Furniture",
+    name: "RW Nets",
     value: 28,
     reelHours: 2,
     standardHours: 8,
@@ -87,7 +98,7 @@ const rawData = [
     duration: 11,
   },
   {
-    name: "Clothing",
+    name: "RW Boot",
     value: 28,
     reelHours: 7,
     standardHours: 8,
