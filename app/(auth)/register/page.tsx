@@ -5,8 +5,9 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { GoogleIcon } from "@/components/icons/GoogleIcon";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -14,13 +15,11 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate authentication
     try {
-      // Set a cookie to simulate authentication
-      document.cookie = "auth=true; path=/";
-      router.push("/");
+      // Here you would typically make an API call to register the user
+      router.push("/login");
     } catch (error) {
-      console.error("Login failed:", error);
+      console.error("Registration failed:", error);
     } finally {
       setIsLoading(false);
     }
@@ -35,14 +34,18 @@ export default function LoginPage() {
             backgroundImage: "url('/login-bg.jpg')",
           }}
         />
-        <div className="absolute inset-0 bg-black/10" />{" "}
+        <div className="absolute inset-0 bg-black/10" />
       </div>
-      {/* Left side - Login Form */}
+      {/* Right side - Register Form */}
       <div className="flex items-center justify-center p-8">
         <div className="w-full max-w-md space-y-8">
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight">Welcome back!</h1>
-            <p className="text-muted-foreground">Please enter your details</p>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Create an account
+            </h1>
+            <p className="text-muted-foreground">
+              Enter your details to get started
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -71,40 +74,52 @@ export default function LoginPage() {
                   className="mt-1.5"
                 />
               </div>
+              <div>
+                <label
+                  htmlFor="confirmPassword"
+                  className="text-sm font-medium"
+                >
+                  Confirm Password
+                </label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  placeholder="••••••••"
+                  required
+                  className="mt-1.5"
+                />
+              </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="remember"
-                  className="h-4 w-4 rounded border-gray-300"
-                />
-                <label
-                  htmlFor="remember"
-                  className="text-sm text-muted-foreground"
-                >
-                  Remember for 30 days
-                </label>
-              </div>
-              <Link
-                href="/forgot-password"
-                className="text-sm text-primary hover:underline"
-              >
-                Forgot password?
-              </Link>
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="terms"
+                className="h-4 w-4 rounded border-gray-300"
+                required
+              />
+              <label htmlFor="terms" className="text-sm text-muted-foreground">
+                I agree to the{" "}
+                <Link href="/terms" className="text-primary hover:underline">
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link href="/privacy" className="text-primary hover:underline">
+                  Privacy Policy
+                </Link>
+              </label>
             </div>
 
             <div className="space-y-3">
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Signing in..." : "Log in"}
+                {isLoading ? "Creating account..." : "Create account"}
               </Button>
             </div>
 
             <p className="text-center text-sm text-muted-foreground">
-              Don&apos;t have an account?{" "}
-              <Link href="/register" className="text-primary hover:underline">
-                Sign up
+              Already have an account?{" "}
+              <Link href="/login" className="text-primary hover:underline">
+                Log in
               </Link>
             </p>
           </form>
