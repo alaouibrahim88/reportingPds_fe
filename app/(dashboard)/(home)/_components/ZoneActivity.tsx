@@ -16,8 +16,8 @@ export function ZoneActivity({ data }: ZoneActivityProps) {
   const metrics: MetricsType = data.metrics;
 
   return (
-    <div className="bg-card rounded-lg shadow-sm p-3">
-      <div className="flex items-center justify-between mb-2">
+    <div className="bg-card rounded-lg shadow-sm p-2 sm:p-3">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 mb-2">
         <h3 className="text-sm font-semibold text-foreground">
           Weekly Zone Activity ⚡️
         </h3>
@@ -36,7 +36,7 @@ export function ZoneActivity({ data }: ZoneActivityProps) {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-2 gap-2 mb-3">
+      <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 mb-3">
         <div className="bg-muted p-2 rounded-lg">
           <div className="text-xs text-muted-foreground">Total Issues</div>
           <div className="text-sm font-medium text-foreground">
@@ -56,23 +56,25 @@ export function ZoneActivity({ data }: ZoneActivityProps) {
         {zones.map((zone) => (
           <div
             key={zone.name}
-            className="flex items-center justify-between p-2 bg-muted/50 rounded-lg"
+            className="flex items-center justify-between p-1.5 sm:p-2 bg-muted/50 rounded-lg"
           >
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-xs ${zone.color}`}
+                className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-white text-xs ${zone.color}`}
               >
                 {zone.name.charAt(0)}
               </div>
               <div className="flex flex-col">
-                <span className="text-sm font-medium text-foreground">
+                <span className="text-xs sm:text-sm font-medium text-foreground">
                   {zone.name}
                 </span>
-                <span className="text-xs text-muted-foreground">Count</span>
+                <span className="text-[10px] sm:text-xs text-muted-foreground">
+                  Count
+                </span>
               </div>
             </div>
             <span
-              className={`text-sm ${
+              className={`text-xs sm:text-sm ${
                 zone.count > 50
                   ? "text-red-500"
                   : zone.count > 25
@@ -90,8 +92,8 @@ export function ZoneActivity({ data }: ZoneActivityProps) {
 
       {/* Critical Issues */}
       {metrics.criticalIssues > 0 && (
-        <div className="mt-3 p-2 bg-destructive/10 rounded-lg">
-          <div className="flex items-center gap-2">
+        <div className="mt-3 p-1.5 sm:p-2 bg-destructive/10 rounded-lg">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <div className="w-2 h-2 rounded-full bg-destructive"></div>
             <span className="text-xs text-destructive">
               {metrics.criticalIssues} Critical Issues

@@ -6,14 +6,17 @@ import {
   Layers2Icon,
   MenuIcon,
   ShieldCheckIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
 } from "lucide-react";
 import React, { useState } from "react";
 import Logo from "@/components/Logo";
 import Link from "next/link";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 // import UserAvailableCreditsBadge from "@/components/UserAvailableCreditsBadge";
+import { cn } from "@/lib/utils";
 
 const routes = [
   {
@@ -40,31 +43,79 @@ const routes = [
 
 function DesktopSidebar() {
   const pathname = usePathname();
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const activeRoute =
-    routes.find(
-      (route) =>
-        route.href === ""
-          ? pathname === "/" // Handle home route
-          : pathname.startsWith(`/${route.href}`) // Handle other routes
+    routes.find((route) =>
+      route.href === ""
+        ? pathname === "/"
+        : pathname.startsWith(`/${route.href}`)
     ) || routes[0];
+
   return (
-    <div className="text-muted-foreground relative hidden h-screen w-full min-w-[280px] max-w-[280px] overflow-hidden bg-primary/5 dark:bg-secondary/30 dark:text-foreground md:block border-r-2 border-separate">
-      <div className="flex items-center justify-center gap-2 border-b-[1px] border-separate p-2">
-        <Logo />
+    <div
+      className={cn(
+        "relative hidden h-screen border-r bg-background lg:block transition-all duration-300",
+        isCollapsed ? "w-[80px]" : "w-[280px]"
+      )}
+    >
+      {/* Collapse Toggle Button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute -right-4 top-6 z-10 h-8 w-8 rounded-full border bg-background"
+        onClick={() => setIsCollapsed(!isCollapsed)}
+      >
+        {isCollapsed ? (
+          <ChevronRightIcon className="h-4 w-4" />
+        ) : (
+          <ChevronLeftIcon className="h-4 w-4" />
+        )}
+      </Button>
+
+      {/* Header */}
+      <div className="flex h-16 items-center border-b px-4">
+        <div
+          className={cn(
+            "overflow-hidden transition-all duration-300",
+            isCollapsed ? "w-0 opacity-0" : "w-full opacity-100"
+          )}
+        >
+          <Logo />
+        </div>
       </div>
-      <div className="p-2">{/* <UserAvailableCreditsBadge /> */}</div>
-      <div className="flex flex-col p-1 gap-1">
+
+      {/* Navigation Items */}
+      <div className="space-y-2 py-4">
         {routes.map((route) => (
           <Link
             key={route.href}
             href={`/${route.href}`}
-            className={buttonVariants({
-              variant:
-                route === activeRoute ? "sidebarActiveItem" : "sidebarItem",
-            })}
+            className={cn(
+              "group relative flex h-12 items-center px-4 transition-colors hover:bg-accent/50",
+              pathname === `/${route.href}` && "bg-accent",
+              isCollapsed && "justify-center px-0"
+            )}
           >
-            <route.icon size={20} className="mr-2" />
-            {route.label}
+            {pathname === `/${route.href}` && (
+              <div className="absolute left-0 h-full w-1 bg-primary" />
+            )}
+            <route.icon
+              size={20}
+              className={cn(
+                "shrink-0 text-muted-foreground transition-colors",
+                pathname === `/${route.href}` && "text-primary",
+                !isCollapsed && "mr-2"
+              )}
+            />
+            <span
+              className={cn(
+                "text-sm font-medium text-muted-foreground transition-all duration-300",
+                pathname === `/${route.href}` && "text-foreground",
+                isCollapsed && "w-0 opacity-0"
+              )}
+            >
+              {route.label}
+            </span>
           </Link>
         ))}
       </div>
@@ -75,44 +126,50 @@ function DesktopSidebar() {
 export function MobileSidebar() {
   const [isOpen, setOpen] = useState(false);
   const pathname = usePathname();
-  const activeRoute =
-    routes.find(
-      (route) =>
-        route.href === ""
-          ? pathname === "/" // Handle home route
-          : pathname.startsWith(`/${route.href}`) // Handle other routes
-    ) || routes[0];
 
   return (
-    <div className="block border-separate bg-background md:hidden">
-      <nav className="flex items-center justify-between pr-8">
+    <div className="block border-b bg-background lg:hidden">
+      <nav className="flex h-16 items-center px-4">
         <Sheet open={isOpen} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <MenuIcon />
+            <Button variant="ghost" size="icon" className="lg:hidden">
+              <MenuIcon className="h-6 w-6" />
             </Button>
           </SheetTrigger>
-          <SheetContent
-            className="w-[400px] sm:w-[540px] space-y-4"
-            side="left"
-          >
-            <Logo />
+          <SheetContent side="left" className="w-[300px] p-0">
+            <div className="flex h-16 items-center border-b px-6">
+              <Logo />
+            </div>
             {/* <UserAvailableCreditsBadge /> */}
-            <div className="flex flex-col gap-1">
+            <div className="space-y-2 py-4">
               {routes.map((route) => (
                 <Link
                   key={route.href}
                   href={`/${route.href}`}
-                  className={buttonVariants({
-                    variant:
-                      route === activeRoute
-                        ? "sidebarActiveItem"
-                        : "sidebarItem",
-                  })}
-                  onClick={() => setOpen((prev) => !prev)}
+                  className={cn(
+                    "group relative flex h-12 items-center px-6 transition-colors hover:bg-accent/50",
+                    pathname === `/${route.href}` && "bg-accent"
+                  )}
+                  onClick={() => setOpen(false)}
                 >
-                  <route.icon size={20} className="mr-2" />
-                  {route.label}
+                  {pathname === `/${route.href}` && (
+                    <div className="absolute left-0 h-full w-1 bg-primary" />
+                  )}
+                  <route.icon
+                    size={20}
+                    className={cn(
+                      "mr-2 shrink-0 text-muted-foreground transition-colors",
+                      pathname === `/${route.href}` && "text-primary"
+                    )}
+                  />
+                  <span
+                    className={cn(
+                      "text-sm font-medium text-muted-foreground",
+                      pathname === `/${route.href}` && "text-foreground"
+                    )}
+                  >
+                    {route.label}
+                  </span>
                 </Link>
               ))}
             </div>

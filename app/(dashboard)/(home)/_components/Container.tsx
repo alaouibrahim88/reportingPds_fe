@@ -10,20 +10,22 @@ function Container() {
   const { stats, zoneData, chartData } = dashboardData;
 
   return (
-    <div className="min-h-screen ">
-      <div className="flex flex-col gap-4 p-4 max-w-[2000px] mx-auto">
-        <div className="grid grid-cols-1 xl:grid-cols-5 gap-3">
-          <div className="xl:col-span-4 bg-card rounded-lg p-4 shadow-sm border border-border">
+    <div className="min-h-screen">
+      <div className="flex flex-col gap-2 sm:gap-4 p-2 sm:p-4 max-w-[2000px] mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-3">
+          <div className="lg:col-span-3 xl:col-span-4 bg-card rounded-lg p-3 sm:p-4 shadow-sm border border-border">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 mb-1">
-                <ChartBar className="w-5 h-5 text-primary" />
-                <h2 className="font-medium"> Visualize Production Issues </h2>
+              <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
+                <ChartBar className="w-[18px] h-[18px] sm:w-5 sm:h-5 text-primary transition-all duration-200" />
+                <h2 className="font-medium text-sm sm:text-base">
+                  Visualize Production Issues
+                </h2>
               </div>
 
               <button className="text-muted-foreground text-sm">•••</button>
             </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2 mb-4">
-              <svg className="w-4 h-4" viewBox="0 0 24 24">
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-2 mb-2 sm:mb-4">
+              <svg className="w-3 h-3 sm:w-4 sm:h-4" viewBox="0 0 24 24">
                 <path
                   fill="currentColor"
                   d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"

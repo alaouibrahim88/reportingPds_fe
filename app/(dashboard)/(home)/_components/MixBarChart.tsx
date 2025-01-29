@@ -70,37 +70,43 @@ export const MixBarChart = ({ data }: MixBarChartProps) => {
   const zoneKeys = Object.keys(data[0] || {}).filter((key) => key !== "name");
 
   return (
-    <div className="bg-card dark:bg-card/50 p-2 sm:p-4 rounded-lg shadow-sm">
-      <div className="mb-6"></div>
-      <div className="h-64">
+    <div className="bg-card dark:bg-card/50 p-2 sm:p-4 rounded-lg shadow-sm w-full">
+      <div className="mb-2 sm:mb-6"></div>
+      <div className="h-[250px] sm:h-[300px] md:h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={data}
             margin={{
-              top: 10,
-              right: 10,
-              left: 10,
-              bottom: 0,
+              top: 5,
+              right: 0,
+              left: -20,
+              bottom: 5,
             }}
-            barSize={24}
+            barSize={16}
           >
             <CartesianGrid
               strokeDasharray="3 3"
               stroke="hsl(var(--border))"
               vertical={false}
+              opacity={0.5}
             />
             <XAxis
               dataKey="name"
               axisLine={{ stroke: "#e2e8f0" }}
               tickLine={false}
-              tick={{ fontSize: 12, fill: "#64748b" }}
-              dy={8}
+              tick={{ fontSize: 10, fill: "#64748b" }}
+              dy={5}
+              interval="preserveStartEnd"
+              minTickGap={10}
+              angle={-25}
+              textAnchor="end"
+              height={50}
             />
             <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fontSize: 12, fill: "#64748b" }}
-              width={40}
+              tick={{ fontSize: 10, fill: "#64748b" }}
+              width={25}
             />
             <Tooltip<any, any>
               content={({ active, payload, label }) => (
@@ -124,14 +130,19 @@ export const MixBarChart = ({ data }: MixBarChartProps) => {
           </BarChart>
         </ResponsiveContainer>
       </div>
-      <div className="flex flex-wrap gap-4 justify-center sm:justify-start mt-6">
+      <div className="flex flex-wrap gap-2 justify-center sm:justify-start mt-2 sm:mt-6 px-1">
         {zoneKeys.map((zoneKey) => (
-          <div key={zoneKey} className="flex items-center text-xs sm:text-sm">
+          <div
+            key={zoneKey}
+            className="flex items-center text-[10px] sm:text-xs"
+          >
             <div
-              className="w-3 h-3 mr-2 rounded-full"
+              className="w-2 h-2 sm:w-3 sm:h-3 mr-1 sm:mr-2 rounded-full"
               style={{ backgroundColor: data[0]?.[zoneKey]?.color }}
             />
-            <span className="text-gray-600">{zoneKey}</span>
+            <span className="text-muted-foreground whitespace-nowrap">
+              {zoneKey}
+            </span>
           </div>
         ))}
       </div>

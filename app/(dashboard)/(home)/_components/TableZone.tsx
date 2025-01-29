@@ -88,30 +88,32 @@ export default function TableZone({ data }: TableZoneProps) {
 
 function TableHeaderSection() {
   return (
-    <div className="p-4 border-b border-muted flex items-center justify-between">
-      <div>
-        <div className="flex items-center gap-2 mb-1">
-          <FolderIcon className="w-5 h-5 text-primary" />
-          <h2 className="font-medium">Production Issues</h2>
+    <div className="p-4 border-b border-muted">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <FolderIcon className="w-5 h-5 text-primary" />
+            <h2 className="font-medium">Production Issues</h2>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Track and manage production issues and scrap reports
+          </p>
         </div>
-        <p className="text-sm text-muted-foreground">
-          Track and manage production issues and scrap reports
-        </p>
-      </div>
-      <div className="flex items-center gap-2">
-        <TableFilter />
-        <Button variant="outline" className="flex items-center gap-2">
-          <svg
-            className="w-4 h-4"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-          </svg>
-          Export
-        </Button>
+        <div className="flex items-center gap-2">
+          <TableFilter />
+          <Button variant="outline" className="flex items-center gap-2">
+            <svg
+              className="w-4 h-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            <span className="hidden sm:inline">Export</span>
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -125,10 +127,16 @@ function TableColumns() {
         <TableHead className="font-medium text-xs text-muted-foreground">
           Time
         </TableHead>
-        <TableHead className="text-xs text-muted-foreground">Machine</TableHead>
-        <TableHead className="text-xs text-muted-foreground">Job</TableHead>
+        <TableHead className="text-xs text-muted-foreground hidden md:table-cell">
+          Machine
+        </TableHead>
+        <TableHead className="text-xs text-muted-foreground hidden sm:table-cell">
+          Job
+        </TableHead>
         <TableHead className="text-xs text-muted-foreground">Count</TableHead>
-        <TableHead className="text-xs text-muted-foreground">Reason</TableHead>
+        <TableHead className="text-xs text-muted-foreground hidden lg:table-cell">
+          Reason
+        </TableHead>
         <TableHead className="text-xs text-muted-foreground">
           Critical Level
         </TableHead>
@@ -168,10 +176,10 @@ function TableContent({ data, openRows, toggleRow }: TableContentProps) {
             <TableCell className="font-medium text-xs py-2 text-foreground">
               {item.time}
             </TableCell>
-            <TableCell className="text-xs py-2 text-foreground">
+            <TableCell className="text-xs py-2 text-foreground hidden md:table-cell">
               {item.machine}
             </TableCell>
-            <TableCell className="text-xs py-2 text-foreground">
+            <TableCell className="text-xs py-2 text-foreground hidden sm:table-cell">
               {item.job}
             </TableCell>
             <TableCell className="py-2">
@@ -179,7 +187,7 @@ function TableContent({ data, openRows, toggleRow }: TableContentProps) {
                 {item.count}
               </span>
             </TableCell>
-            <TableCell className="text-xs py-2 text-foreground">
+            <TableCell className="text-xs py-2 text-foreground hidden lg:table-cell">
               {item.reason}
             </TableCell>
             <TableCell className="py-2">
@@ -217,12 +225,12 @@ function TablePagination({
   onPageChange,
 }: TablePaginationProps) {
   return (
-    <div className="mt-4 flex items-center justify-between px-2">
-      <div className="text-sm text-muted-foreground">
+    <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-4 px-2">
+      <div className="text-sm text-muted-foreground order-2 sm:order-1">
         Showing {startIndex + 1} to {Math.min(endIndex, totalItems)} of{" "}
         {totalItems} entries
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 order-1 sm:order-2">
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
@@ -233,20 +241,25 @@ function TablePagination({
         >
           <ChevronLeftIcon className="h-4 w-4 text-muted-foreground" />
         </button>
-        {[...Array(totalPages)].map((_, i) => (
-          <button
-            key={i}
-            onClick={() => onPageChange(i + 1)}
-            className={cn(
-              "w-8 h-8 rounded-lg text-sm transition-colors",
-              currentPage === i + 1
-                ? "bg-primary/80 dark:bg-primary/20 text-primary-foreground"
-                : "hover:bg-muted/70 dark:hover:bg-muted/20 text-muted-foreground"
-            )}
-          >
-            {i + 1}
-          </button>
-        ))}
+        <div className="hidden sm:flex items-center gap-2">
+          {[...Array(totalPages)].map((_, i) => (
+            <button
+              key={i}
+              onClick={() => onPageChange(i + 1)}
+              className={cn(
+                "w-8 h-8 rounded-lg text-sm transition-colors",
+                currentPage === i + 1
+                  ? "bg-primary/80 dark:bg-primary/20 text-primary-foreground"
+                  : "hover:bg-muted/70 dark:hover:bg-muted/20 text-muted-foreground"
+              )}
+            >
+              {i + 1}
+            </button>
+          ))}
+        </div>
+        <div className="sm:hidden text-sm text-muted-foreground">
+          Page {currentPage} of {totalPages}
+        </div>
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
