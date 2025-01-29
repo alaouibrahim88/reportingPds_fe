@@ -254,6 +254,7 @@ export function ExpenseChart() {
                       return null;
                     }}
                   />
+                  {/* {<span>test</span>} */}
                   <Area
                     type="monotone"
                     dataKey="gain"
