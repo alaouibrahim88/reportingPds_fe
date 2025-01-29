@@ -1,15 +1,11 @@
 import { AnalyticsHeader } from "./_components/AnalyticsHeader";
-import { MixBarChart } from "./_components/MixBarChart";
 import TableZone from "./_components/TableZone";
-import { ZoneActivity } from "./_components/ZoneActivity";
-import { ChartBar } from "lucide-react";
 import { workflowData } from "./_components/data/workflowData";
-
 import { ExpenseChart } from "./_components/ExpenseChart";
 import { SalesReport } from "./_components/SalesReport";
 
-export default function Workflows() {
-  const { stats, zoneData, chartData } = workflowData;
+export default function WorkflowsPage() {
+  const { stats, zoneData } = workflowData;
 
   return (
     <div className="min-h-screen">
