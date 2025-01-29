@@ -2,7 +2,7 @@ interface Stat {
   title: string;
   sales: string;
   quantity: string;
-  previousSales: string;
+  previousSales: number;
   period: string;
 }
 
@@ -23,7 +23,7 @@ export function AnalyticsHeader({ stats }: AnalyticsHeaderProps) {
 
             <div className="flex flex-col gap-0.5">
               <div className="flex items-baseline gap-1.5">
-                <span className="text-xl font-semibold tracking-tight">
+                <span className={`text-xl font-semibold tracking-tight `}>
                   {stat.sales} MAD
                 </span>
                 <span
@@ -42,7 +42,7 @@ export function AnalyticsHeader({ stats }: AnalyticsHeaderProps) {
                 </span>
               </div>
               <span className="text-xs text-muted-foreground">
-                Compare from previous period
+                Compare from previous {stat.period}
               </span>
             </div>
           </div>

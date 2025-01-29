@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, HTMLAttributes } from "react";
 import {
   Table,
   TableBody,
@@ -124,7 +124,7 @@ export default function TableZone({ data }: TableZoneProps) {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="py-2 px-4">
       {/* Title Section */}
       <div className="flex items-center justify-between">
         <div>
@@ -146,12 +146,15 @@ export default function TableZone({ data }: TableZoneProps) {
             <TableRow>
               <TableHead className="w-[50px]"></TableHead>
               <TableHead>Time</TableHead>
-              <TableHead>Machine</TableHead>
-              <TableHead>Job</TableHead>
-              <TableHead>Department</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Priority</TableHead>
-              <TableHead>Assignee</TableHead>
+              <TableCell>Zone</TableCell>
+              <TableCell>Cells</TableCell>
+              <TableCell>operator</TableCell>
+              <TableHead>Matricule</TableHead>
+              <TableHead>Efficience</TableHead>
+              <TableHead>Rework</TableHead>
+              <TableHead>Scrap</TableHead>
+              <TableHead>Heures travaillées</TableHead>
+              <TableHead>Prime(Jr/dh)</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -171,48 +174,21 @@ export default function TableZone({ data }: TableZoneProps) {
                     </button>
                   </TableCell>
                   <TableCell>{detail.time}</TableCell>
+                  <TableCell>{detail.zone}</TableCell>
+                  <TableCell>{detail.cellule}</TableCell>
+                  <TableCell>{detail.operator}</TableCell>
                   <TableCell>{detail.machine}</TableCell>
                   <TableCell>{detail.job}</TableCell>
                   <TableCell>{detail.department}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        detail.status === "active"
-                          ? "default"
-                          : detail.status === "good"
-                          ? "success"
-                          : "destructive"
-                      }
-                      className="h-5"
-                    >
-                      {detail.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        detail.priority === "high"
-                          ? "destructive"
-                          : detail.priority === "medium"
-                          ? "default"
-                          : "secondary"
-                      }
-                      className="h-5"
-                    >
-                      {detail.priority}
-                    </Badge>
-                  </TableCell>
+                  <TableCell>{detail.status}</TableCell>
+                  <TableCell>{detail.priority}</TableCell>
                   <TableCell>{detail.assignee}</TableCell>
                 </TableRow>
                 {openRows.includes(detailIndex) && (
                   <TableRow className="bg-muted/50">
-                    <TableCell colSpan={8} className="p-4">
-                      <div className="space-y-6">
-                        {/* Production Stats */}
+                    <TableCell colSpan={12} className="p-4 ">
+                      <div className="space-y-6 ">
                         <div>
-                          <h4 className="text-sm font-medium mb-2">
-                            Production Overview
-                          </h4>
                           <div className="grid grid-cols-3 gap-3">
                             <Card className="p-3">
                               <div className="space-y-1">
@@ -324,117 +300,6 @@ export default function TableZone({ data }: TableZoneProps) {
                         </div>
 
                         {/* Existing Damage Stats sections */}
-                        <div>
-                          <h4 className="text-sm font-medium mb-2">
-                            Damage by Process
-                          </h4>
-                          <div className="grid grid-cols-3 gap-2">
-                            {detail.damageStats.byProcess.map(
-                              (process: ProcessDamage, idx: number) => (
-                                <Card key={idx} className="p-3">
-                                  <div className="space-y-1">
-                                    <p className="text-xs text-muted-foreground">
-                                      {process.process}
-                                    </p>
-                                    <div className="flex items-center gap-1.5">
-                                      <p className="text-lg font-semibold">
-                                        {process.count}
-                                      </p>
-                                      <Badge
-                                        variant={
-                                          process.percentage > 10
-                                            ? "destructive"
-                                            : "default"
-                                        }
-                                        className="h-4 text-xs"
-                                      >
-                                        {process.percentage}%
-                                      </Badge>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-1 mt-2">
-                                      {Object.entries(process.damageTypes).map(
-                                        ([type, value]) => (
-                                          <div key={type} className="text-xs">
-                                            <span className="text-muted-foreground">
-                                              {type}:
-                                            </span>{" "}
-                                            <span className="font-medium">
-                                              {value}
-                                            </span>
-                                          </div>
-                                        )
-                                      )}
-                                    </div>
-                                  </div>
-                                </Card>
-                              )
-                            )}
-                          </div>
-                        </div>
-
-                        <div>
-                          <h4 className="text-sm font-medium mb-2">
-                            Damage by Machine
-                          </h4>
-                          <div className="grid grid-cols-3 gap-2">
-                            {detail.damageStats.byMachine.map(
-                              (machine: MachineDamage, idx: number) => (
-                                <Card key={idx} className="p-3">
-                                  <div className="space-y-1">
-                                    <p className="text-xs text-muted-foreground">
-                                      {machine.machine}
-                                    </p>
-                                    <div className="flex items-center gap-1.5">
-                                      <p className="text-lg font-semibold">
-                                        {machine.count}
-                                      </p>
-                                      <Badge
-                                        variant={
-                                          machine.percentage > 10
-                                            ? "destructive"
-                                            : "default"
-                                        }
-                                        className="h-4 text-xs"
-                                      >
-                                        {machine.percentage}%
-                                      </Badge>
-                                    </div>
-                                    <div className="grid grid-cols-3 gap-1 mt-2">
-                                      <div className="text-xs">
-                                        <span className="text-muted-foreground">
-                                          Uptime:
-                                        </span>{" "}
-                                        <span className="font-medium">
-                                          {machine.operationalStatus.uptime}%
-                                        </span>
-                                      </div>
-                                      <div className="text-xs">
-                                        <span className="text-muted-foreground">
-                                          Maint:
-                                        </span>{" "}
-                                        <span className="font-medium">
-                                          {
-                                            machine.operationalStatus
-                                              .maintenance
-                                          }
-                                          %
-                                        </span>
-                                      </div>
-                                      <div className="text-xs">
-                                        <span className="text-muted-foreground">
-                                          Repair:
-                                        </span>{" "}
-                                        <span className="font-medium">
-                                          {machine.operationalStatus.repair}%
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </Card>
-                              )
-                            )}
-                          </div>
-                        </div>
                       </div>
                     </TableCell>
                   </TableRow>

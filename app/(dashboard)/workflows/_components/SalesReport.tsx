@@ -25,12 +25,12 @@ const locationData = [
 
 export function SalesReport() {
   return (
-    <Card className="p-6">
-      <div className="space-y-8">
+    <Card className="p-4">
+      <div className="space-y-4">
         {/* Enhanced Header */}
-        <div className="space-y-1">
+        <div className="space-y-0.5">
           <h3 className="text-sm font-semibold text-foreground">Cost Report</h3>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <svg className="w-3 h-3" viewBox="0 0 24 24">
               <path
                 fill="currentColor"
@@ -42,7 +42,7 @@ export function SalesReport() {
         </div>
 
         {/* Chart */}
-        <div className="h-[240px] w-full">
+        <div className="h-[180px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data}>
               <defs>
@@ -56,15 +56,15 @@ export function SalesReport() {
                 domain={[200, 700]}
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "#94a3b8", fontSize: 12 }}
+                tick={{ fill: "#94a3b8", fontSize: 10 }}
                 tickFormatter={(value) => value.toString()}
-                width={40}
+                width={30}
               />
               <Area
                 type="monotone"
                 dataKey="value"
                 stroke="#8B5CF6"
-                strokeWidth={2}
+                strokeWidth={1.5}
                 fill="url(#colorValue)"
               />
             </AreaChart>
@@ -72,43 +72,43 @@ export function SalesReport() {
         </div>
 
         {/* Stats */}
-        <div className="space-y-1">
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">Monthly</span>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
+        <div className="space-y-0.5">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">Monthly</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
               +19.6%
             </span>
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-semibold">$8,097</span>
-            <span className="text-sm text-muted-foreground">44,214 MAD</span>
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-xl font-semibold">$8,097</span>
+            <span className="text-xs text-muted-foreground">44,214 MAD</span>
           </div>
         </div>
 
-        <div className="space-y-1">
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">Yearly</span>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
+        <div className="space-y-0.5">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">Yearly</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
               +2.5%
             </span>
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-semibold">$312,134</span>
-            <span className="text-sm text-muted-foreground">301,002 MAD</span>
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-xl font-semibold">$312,134</span>
+            <span className="text-xs text-muted-foreground">301,002 MAD</span>
           </div>
         </div>
 
         {/* Location Stats */}
-        <div className="space-y-4 pt-4 border-t border-border">
+        <div className="space-y-2 pt-2 border-t border-border">
           {locationData.map((location) => (
             <div
               key={location.city}
               className="flex items-center justify-between"
             >
-              <span className="text-sm text-muted-foreground">
+              <span className="text-xs text-muted-foreground">
                 {location.city}
               </span>
-              <span className="text-sm font-medium">{location.value} </span>
+              <span className="text-xs font-medium">{location.value}</span>
             </div>
           ))}
         </div>

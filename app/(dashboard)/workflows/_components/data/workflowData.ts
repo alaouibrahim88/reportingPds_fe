@@ -1,11 +1,29 @@
 import { colors } from "@/app/(dashboard)/(home)/_components/data/dashboardData";
 
 export const workflowData = {
-  stats: {
-    pending: 8,
-    running: 15,
-    completed: 45,
-  },
+  stats: [
+    {
+      title: "Daily",
+      sales: "999.83",
+      quantity: "12,625",
+      previousSales: 1234,
+      period: "Yesterday",
+    },
+    {
+      title: "Weekly",
+      sales: "5199.848",
+      quantity: "104,207",
+      previousSales: 310.0,
+      period: "Last Week",
+    },
+    {
+      title: "Monthly",
+      sales: "7199.848",
+      quantity: "260,530",
+      previousSales: 8721.0,
+      period: "Last Month",
+    },
+  ],
 
   zoneData: [
     {
@@ -42,13 +60,114 @@ export const workflowData = {
       details: [
         {
           time: "2024-01-15 08:30:00 AM",
+          zone: "Zone 1",
+          cellule: "Cellule 1",
+          operator: "Operator 1",
           machine: "Knitting Line A",
           job: "Nets Production",
           count: 15,
           reason: "Material Processing",
           message: "Production in progress",
-          status: "active",
-          priority: "medium",
+          status: 12,
+          priority: 9,
+          assignee: "Nets Team",
+          department: "Manufacturing",
+          op: {
+            damageType: {
+              process: 5,
+              machine: 2,
+              material: 3,
+            },
+            production: {
+              planned: 150,
+              actual: 142,
+              variance: -8,
+            },
+            quality: {
+              inspected: 142,
+              passed: 138,
+              failed: 4,
+            },
+          },
+          damageStats: {
+            byProcess: [
+              {
+                process: "Material Processing",
+                count: 45,
+                percentage: 12.5,
+                damageTypes: {
+                  material: 15,
+                  handling: 20,
+                  setup: 10,
+                },
+              },
+              {
+                process: "Knitting",
+                count: 32,
+                percentage: 8.9,
+                damageTypes: {
+                  tension: 12,
+                  alignment: 10,
+                  wear: 10,
+                },
+              },
+              {
+                process: "Quality Control",
+                count: 28,
+                percentage: 7.8,
+                damageTypes: {
+                  specification: 15,
+                  appearance: 8,
+                  strength: 5,
+                },
+              },
+            ],
+            byMachine: [
+              {
+                machine: "Knitting Machine 1",
+                count: 38,
+                percentage: 10.6,
+                operationalStatus: {
+                  uptime: 92,
+                  maintenance: 5,
+                  repair: 3,
+                },
+              },
+              {
+                machine: "Injection Mold A",
+                count: 42,
+                percentage: 11.7,
+                operationalStatus: {
+                  uptime: 88,
+                  maintenance: 8,
+                  repair: 4,
+                },
+              },
+              {
+                machine: "Cutting Station 1",
+                count: 25,
+                percentage: 6.9,
+                operationalStatus: {
+                  uptime: 95,
+                  maintenance: 3,
+                  repair: 2,
+                },
+              },
+            ],
+          },
+        },
+        {
+          time: "2024-01-15 08:30:00 AM",
+          zone: "Zone 1",
+          cellule: "Cellule 1",
+          operator: "Operator 1",
+          machine: "Knitting Line A",
+          job: "Nets Production",
+          count: 15,
+          reason: "Material Processing",
+          message: "Production in progress",
+          status: 0,
+          priority: 7,
           assignee: "Nets Team",
           department: "Manufacturing",
           op: {
@@ -138,12 +257,15 @@ export const workflowData = {
         {
           time: "2024-01-15 09:15:00 AM",
           machine: "Boot Line B",
+          zone: "Zone 2",
+          cellule: "Cellule 2",
+          operator: "Operator 2",
           job: "Boot Production",
           count: 8,
           reason: "Process Validation",
           message: "Quality check in progress",
-          status: "good",
-          priority: "low",
+          status: 10,
+          priority: 88,
           assignee: "Boot Team",
           department: "Production",
           op: {
@@ -402,8 +524,8 @@ interface WorkflowDetail {
   count: number;
   reason: string;
   message: string;
-  status: string;
-  priority: string;
+  status: number;
+  priority: number;
   assignee: string;
   department: string;
   op: OperationalDetailMetrics;
