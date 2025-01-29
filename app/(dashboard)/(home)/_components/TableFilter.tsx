@@ -71,11 +71,11 @@ export function TableFilter({ onFilterChange }: TableFilterProps) {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">All Zones</SelectItem>
-                        <SelectItem value="java">Java</SelectItem>
-                        <SelectItem value="python">Python</SelectItem>
-                        <SelectItem value="rust">Rust</SelectItem>
-                        <SelectItem value="go">Go</SelectItem>
-                        <SelectItem value="kotlin">Kotlin</SelectItem>
+                        <SelectItem value="java">Wrapping</SelectItem>
+                        <SelectItem value="python">Nets</SelectItem>
+                        <SelectItem value="rust">Boot</SelectItem>
+                        <SelectItem value="go">Knitting</SelectItem>
+                        <SelectItem value="kotlin">Injection</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

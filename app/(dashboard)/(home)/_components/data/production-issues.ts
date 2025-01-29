@@ -147,21 +147,25 @@ export const productionIssuesData: ProductionIssue[] = [
 ];
 
 export const zoneColors = {
-  Java: {
+  Wrapping: {
     color: "hsl(var(--violet-500))",
-    letter: "J",
+    letter: "W",
   },
-  Python: {
+  Nets: {
+    color: "hsl(var(--violet-500))",
+    letter: "N",
+  },
+  Boot: {
     color: "hsl(var(--orange-500))",
-    letter: "P",
+    letter: "B",
   },
-  Rust: {
+  Knitting: {
     color: "hsl(var(--blue-500))",
-    letter: "R",
+    letter: "K",
   },
-  Go: {
+  Injection: {
     color: "hsl(var(--emerald-500))",
-    letter: "G",
+    letter: "I",
   },
   Kotlin: {
     color: "hsl(var(--rose-500))",

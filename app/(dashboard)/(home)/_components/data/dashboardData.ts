@@ -24,7 +24,7 @@ export const dashboardData = {
         {
           id: "1",
           time: "2024-01-15 06:00:00 AM",
-          machine: "CITIZEN 19",
+          machine: "Nets",
           job: "349455|26",
           count: 18,
           reason: "Tool Change / Offset Scrap",
@@ -32,13 +32,16 @@ export const dashboardData = {
           status: "alert",
           priority: "high",
           assignee: null,
-          type: "process",
+          type: [
+            { name: "process", count: 10 },
+            { name: "machine", count: 8 },
+          ],
           department: "Manufacturing",
         },
         {
           id: "2",
           time: "2024-01-15 10:19:43 AM",
-          machine: "CITIZEN 36",
+          machine: "Wrapping",
           job: "31003887-05|6",
           count: 9,
           reason: "Dimensional",
@@ -46,13 +49,16 @@ export const dashboardData = {
           status: "alert",
           priority: "medium",
           assignee: "Alex Smith",
-          type: "matière",
+          type: [
+            { name: "process", count: 7 },
+            { name: "machine", count: 2 },
+          ],
           department: "Quality Control",
         },
         {
           id: "3",
           time: "2024-01-15 11:30:32 PM",
-          machine: "CITIZEN 20",
+          machine: "Knitting",
           job: "600213-2|15",
           count: 18,
           reason: "Dimensional",
@@ -60,7 +66,10 @@ export const dashboardData = {
           status: "good",
           priority: "low",
           assignee: "Sam Lee",
-          type: "matière",
+          type: [
+            { name: "process", count: 0 },
+            { name: "machine", count: 0 },
+          ],
 
           department: "Manufacturing",
         },

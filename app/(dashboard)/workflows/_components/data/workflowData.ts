@@ -61,7 +61,7 @@ export const workflowData = {
         {
           id: 1,
           time: "2024-01-15 ",
-          zone: "Zone 1",
+          zone: "Wrapping",
           cellule: "Cellule 1",
           operator: "Operator 1",
           machine: "Knitting Line A",
@@ -162,7 +162,7 @@ export const workflowData = {
         {
           id: 2,
           time: "2024-01-15",
-          zone: "Zone 1",
+          zone: "Nets",
           cellule: "Cellule 1",
           operator: "Operator 1",
           machine: "Knitting Line A",
@@ -264,7 +264,7 @@ export const workflowData = {
           id: 3,
           time: "2024-01-15 ",
           machine: "Boot Line B",
-          zone: "Zone 2",
+          zone: "Boot",
           cellule: "Cellule 2",
           operator: "Operator 2",
           job: "Boot Production",
