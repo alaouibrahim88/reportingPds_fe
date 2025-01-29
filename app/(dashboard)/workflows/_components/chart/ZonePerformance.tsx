@@ -34,13 +34,13 @@ export function ZonePerformance({
               <div>
                 <p className="font-medium text-sm">{item.name}</p>
                 <div className="flex items-center text-[10px] text-muted-foreground">
-                  <span>{item.machines} machines</span>
+                  <span>{item.duration} hours</span>
                   <span className="mx-1">•</span>
-                  <span className="text-rose-500 font-medium">
+                  <span className="text-[#8B5CF6] font-medium">
                     {item.defects} defects
                   </span>
                   <span className="mx-1">•</span>
-                  <span className="text-emerald-500 font-medium">
+                  <span className="text-[hsl(var(--primary))] font-medium">
                     ${item.revenue?.toLocaleString() ?? 0}
                   </span>
                 </div>

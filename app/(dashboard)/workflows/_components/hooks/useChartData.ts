@@ -2,62 +2,69 @@ import { useMemo } from "react";
 
 const rawData = [
   {
-    name: "Nets",
+    name: "Zone 1",
     value: 28,
     defects: 156,
-    machines: 12,
+    duration: 12,
     damageCost: -1200,
     revenue: 45600,
     utilization: 28,
   },
   {
-    name: "java",
+    name: "Zone 2",
     value: 28,
     defects: 156,
-    machines: 12,
+    duration: 12,
     damageCost: 2500,
     revenue: 99600,
     utilization: 28,
   },
   {
-    name: "EMS",
+    name: "Zone 3",
     value: 28,
     defects: 156,
-    machines: 12,
+    duration: 12,
     damageCost: -12500,
     revenue: 12600,
     utilization: 28,
   },
   {
-    name: "JS",
+    name: "Zone 4",
     value: 28,
     defects: 156,
-    machines: 12,
+    duration: 12,
     damageCost: -12500,
     revenue: 41600,
     utilization: 28,
   },
   {
-    name: "JS",
+    name: "Zone 5",
     value: 28,
     defects: 156,
-    machines: 12,
+    duration: 12,
     damageCost: -12500,
     revenue: 600,
     utilization: 28,
   },
 
   {
-    name: "JS",
+    name: "Zone 6",
     value: 28,
     defects: 156,
-    machines: 12,
+    duration: 12,
     damageCost: -12500,
     revenue: 19600,
     utilization: 28,
   },
-
-  // ... rest of the data
+  {
+    name: "Zone 7",
+    value: 28,
+    defects: 156,
+    duration: 12,
+    damageCost: -12500,
+    revenue: 19600,
+    utilization: 28,
+  },
 ];
 
 export function useChartData() {
@@ -67,7 +74,7 @@ export function useChartData() {
       totalDefects: rawData.reduce((sum, zone) => sum + zone.defects, 0),
       activeCells: 847,
       cellsEfficiency: "+15.3%",
-      totalMachines: rawData.reduce((sum, zone) => sum + zone.machines, 0),
+      totalMachines: rawData.reduce((sum, zone) => sum + zone.duration, 0),
       defectRate: "12.5%",
     }),
     []
