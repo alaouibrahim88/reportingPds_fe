@@ -21,7 +21,7 @@ interface TableFilterProps {
 
 export function TableFilter({ onFilterChange }: TableFilterProps) {
   return (
-    <div className="p-4">
+    <div className="px-4 py-2">
       <div className="flex items-center justify-between">
         <div className="flex gap-3">
           <Input placeholder="Search workflows..." className="w-[200px]" />
@@ -44,7 +44,7 @@ export function TableFilter({ onFilterChange }: TableFilterProps) {
               <SheetHeader>
                 <SheetTitle>Filter Workflows</SheetTitle>
               </SheetHeader>
-              <div className="py-4">
+              <div className="py-2">
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Time Period</label>

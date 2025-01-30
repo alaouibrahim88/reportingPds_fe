@@ -58,6 +58,7 @@ export const dashboardData = {
           priority: "low",
           assignee: "Sam Lee",
           type: "ipsum",
+
           department: "Manufacturing",
         },
       ],
