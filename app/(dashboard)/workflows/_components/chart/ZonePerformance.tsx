@@ -34,11 +34,20 @@ export function ZonePerformance({
               <div>
                 <p className="font-medium text-sm">{item.name}</p>
                 <div className="flex items-center text-[10px] text-muted-foreground">
-                  <span>{item.duration} hours</span>
+                  <span>{item.standardHours} standard hours</span>
                   <span className="mx-1">•</span>
                   <span className=" text-red-500/70 dark:text-red-400/70 font-medium">
-                    {item.defects} defects
+                    {item.reelHours} reel Hours
                   </span>
+                  <span className="mx-1">•</span>
+                  <span className="  text-muted-foreground font-medium">
+                    {item.reelTime} reel Time
+                  </span>
+                  <span className="mx-1">•</span>
+                  <span className="text-[hsl(var(--primary))] font-medium">
+                    {item.standardTime} standard Time
+                  </span>
+
                   {/* <span className="mx-1">•</span> */}
                   {/* <span className="text-[hsl(var(--primary))] font-medium">
                     ${item.revenue?.toLocaleString() ?? 0}
@@ -46,10 +55,9 @@ export function ZonePerformance({
                 </div>
               </div>
               <div className="text-right">
-                <p className="font-medium text-sm">{`$${Math.abs(
-                  item.revenue / 1000
-                )}k`}</p>
-                <p className="text-[10px] text-muted-foreground">Revenue</p>
+                <p className="font-medium text-sm">{item.efficiency}%</p>
+
+                <p className="text-[10px] text-muted-foreground">efficiency</p>
               </div>
             </div>
 

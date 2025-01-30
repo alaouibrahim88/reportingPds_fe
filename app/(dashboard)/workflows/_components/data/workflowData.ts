@@ -59,7 +59,8 @@ export const workflowData = {
       },
       details: [
         {
-          time: "2024-01-15 08:30:00 AM",
+          id: 1,
+          time: "2024-01-15 ",
           zone: "Zone 1",
           cellule: "Cellule 1",
           operator: "Operator 1",
@@ -69,8 +70,10 @@ export const workflowData = {
           reason: "Material Processing",
           message: "Production in progress",
           status: 12,
+          hoursWorked: 6,
+          hoursReel: 8,
           priority: 9,
-          assignee: "Nets Team",
+          assignee: "30%",
           department: "Manufacturing",
           op: {
             damageType: {
@@ -157,7 +160,8 @@ export const workflowData = {
           },
         },
         {
-          time: "2024-01-15 08:30:00 AM",
+          id: 2,
+          time: "2024-01-15",
           zone: "Zone 1",
           cellule: "Cellule 1",
           operator: "Operator 1",
@@ -167,8 +171,10 @@ export const workflowData = {
           reason: "Material Processing",
           message: "Production in progress",
           status: 0,
+          hoursWorked: 8,
+          hoursReel: 7,
           priority: 7,
-          assignee: "Nets Team",
+          assignee: "90%",
           department: "Manufacturing",
           op: {
             damageType: {
@@ -255,7 +261,8 @@ export const workflowData = {
           },
         },
         {
-          time: "2024-01-15 09:15:00 AM",
+          id: 3,
+          time: "2024-01-15 ",
           machine: "Boot Line B",
           zone: "Zone 2",
           cellule: "Cellule 2",
@@ -265,8 +272,10 @@ export const workflowData = {
           reason: "Process Validation",
           message: "Quality check in progress",
           status: 10,
+          hoursWorked: 12,
+          hoursReel: 8,
           priority: 88,
-          assignee: "Boot Team",
+          assignee: "98%",
           department: "Production",
           op: {
             damageType: {
@@ -518,7 +527,11 @@ interface DamageStatistics {
 
 // Workflow detail interface
 interface WorkflowDetail {
+  id: number;
   time: string;
+  zone: string;
+  cellule: string;
+  operator: string;
   machine: string;
   job: string;
   count: number;

@@ -29,6 +29,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 import { ZoneDataType } from "./data/workflowData";
 
@@ -154,7 +156,9 @@ export default function TableZone({ data }: TableZoneProps) {
               <TableHead>Rework</TableHead>
               <TableHead>Scrap</TableHead>
               <TableHead>Heures travaillées</TableHead>
+              <TableHead>Heures reels</TableHead>
               <TableHead>Prime(Jr/dh)</TableHead>
+              <TableHead>Details</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -178,11 +182,24 @@ export default function TableZone({ data }: TableZoneProps) {
                   <TableCell>{detail.cellule}</TableCell>
                   <TableCell>{detail.operator}</TableCell>
                   <TableCell>{detail.machine}</TableCell>
-                  <TableCell>{detail.job}</TableCell>
+                  <TableCell>{detail.assignee}</TableCell>
                   <TableCell>{detail.department}</TableCell>
-                  <TableCell>{detail.status}</TableCell>
+                  {/* <TableCell>{detail.status}</TableCell> */}
+                  <TableCell>{detail.hoursWorked}</TableCell>
+                  <TableCell>{detail.hoursReel}</TableCell>
                   <TableCell>{detail.priority}</TableCell>
                   <TableCell>{detail.assignee}</TableCell>
+                  <TableCell>
+                    <Link href={`/workflows/details/${detail.id}`}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-xs px-2.5"
+                      >
+                        Details
+                      </Button>
+                    </Link>
+                  </TableCell>
                 </TableRow>
                 {openRows.includes(detailIndex) && (
                   <TableRow className="bg-muted/50">
