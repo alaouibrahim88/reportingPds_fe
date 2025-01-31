@@ -21,6 +21,8 @@ import {
   Building2,
   Users,
   ArrowLeftRight,
+  Search,
+  X,
 } from "lucide-react";
 import { TableFilter } from "../../_components/TableFilter";
 import { useState } from "react";
@@ -205,8 +207,9 @@ export default function WorkflowDetailsPage({
       .join(" ")
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
-    const matchesCell =
-      selectedCell === "all" || operator.cell === selectedCell;
+    const matchesCell = operator.cell
+      .toLowerCase()
+      .includes(selectedCell.replace("-", " "));
     return matchesSearch && matchesCell;
   });
 
@@ -401,103 +404,206 @@ export default function WorkflowDetailsPage({
         </div>
       </div>
 
-      {/* Operators Performance Table */}
+      {/* Operators Performance Section */}
       <div className="rounded-md border">
-        <div className="flex items-center justify-between h-12 px-3 border-b bg-muted/40">
-          <div className="flex items-center gap-2">
-            <Users className="w-3 h-3 text-primary" />
-            <h3 className="font-medium text-xs">Operators Performance</h3>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Input
-              placeholder="Search operators..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-6 w-[180px] text-xs bg-white/50"
-            />
+        {selectedCell === "all" ? (
+          // Initial state - just the cell selector
+          <div className="flex items-center justify-between h-12 px-3 border-b bg-muted/40">
+            <div className="flex items-center gap-2">
+              <Building2 className="w-3 h-3 text-primary" />
+              <h3 className="font-medium text-xs">Operators Performance</h3>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Select a cell to view operators performance
+            </p>
             <Select value={selectedCell} onValueChange={setSelectedCell}>
-              <SelectTrigger className="h-6 w-[120px] text-xs bg-white/50">
-                <SelectValue placeholder="Select cell" />
+              <SelectTrigger className="h-8 w-[160px] text-xs">
+                <SelectValue placeholder="Select a cell" />
               </SelectTrigger>
               <SelectContent>
-                {cellOptions.map((cell) => (
-                  <SelectItem
-                    key={cell.value}
-                    value={cell.value}
-                    className="text-xs"
-                  >
-                    {cell.label}
-                  </SelectItem>
-                ))}
+                {cellOptions
+                  .filter((cell) => cell.value !== "all")
+                  .map((cell) => (
+                    <SelectItem
+                      key={cell.value}
+                      value={cell.value}
+                      className="text-xs"
+                    >
+                      {cell.label}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>
-        </div>
+        ) : (
+          // Cell details and table view
+          <>
+            {/* Cell Summary Card */}
+            <div className="p-4 border-b">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Building2 className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-sm">
+                      {
+                        cellOptions.find((cell) => cell.value === selectedCell)
+                          ?.label
+                      }
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      Cell Overview
+                    </p>
+                  </div>
+                </div>
+                <Select value={selectedCell} onValueChange={setSelectedCell}>
+                  <SelectTrigger className="h-7 w-[120px] text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {cellOptions
+                      .filter((cell) => cell.value !== "all")
+                      .map((cell) => (
+                        <SelectItem
+                          key={cell.value}
+                          value={cell.value}
+                          className="text-xs"
+                        >
+                          {cell.label}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-        <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-transparent">
-              <TableHead className="h-9 text-xs">Operator</TableHead>
-              <TableHead className="h-9 text-xs">Cell</TableHead>
-              <TableHead className="h-9 text-xs">Shift</TableHead>
-              <TableHead className="h-9 text-xs">Tasks Completed</TableHead>
-              <TableHead className="h-9 text-xs">Efficiency</TableHead>
-              <TableHead className="h-9 text-xs">Quality Score</TableHead>
-              <TableHead className="h-9 text-xs">Status</TableHead>
-              <TableHead className="h-9 text-xs">Hours Worked</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {paginatedOperators.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={8}
-                  className="h-24 text-center text-muted-foreground"
-                >
-                  No results found
-                </TableCell>
-              </TableRow>
-            ) : (
-              paginatedOperators.map((operator, index) => (
-                <TableRow key={index} className="h-10 hover:bg-muted/50">
-                  <TableCell className="text-xs font-medium py-2">
-                    {operator.name}
-                  </TableCell>
-                  <TableCell className="text-xs py-2">
-                    {operator.cell}
-                  </TableCell>
-                  <TableCell className="text-xs py-2">
-                    {operator.shift}
-                  </TableCell>
-                  <TableCell className="text-xs py-2">
-                    {operator.tasksCompleted}
-                  </TableCell>
-                  <TableCell className="text-xs py-2">
-                    {operator.efficiency}
-                  </TableCell>
-                  <TableCell className="text-xs py-2">
-                    {operator.qualityScore}
-                  </TableCell>
-                  <TableCell className="text-xs py-2">
-                    {operator.status}
-                  </TableCell>
-                  <TableCell className="text-xs py-2">
-                    {operator.hoursWorked}
-                  </TableCell>
+              <div className="grid grid-cols-4 gap-4">
+                <div className="p-3 rounded-lg bg-muted/50 border">
+                  <p className="text-xs text-muted-foreground mb-1">
+                    Total Operators
+                  </p>
+                  <p className="text-lg font-medium">12</p>
+                </div>
+                <div className="p-3 rounded-lg bg-muted/50 border">
+                  <p className="text-xs text-muted-foreground mb-1">
+                    Active Now
+                  </p>
+                  <p className="text-lg font-medium">8</p>
+                </div>
+                <div className="p-3 rounded-lg bg-muted/50 border">
+                  <p className="text-xs text-muted-foreground mb-1">
+                    Avg. Efficiency
+                  </p>
+                  <p className="text-lg font-medium">92%</p>
+                </div>
+                <div className="p-3 rounded-lg bg-muted/50 border">
+                  <p className="text-xs text-muted-foreground mb-1">
+                    Tasks Today
+                  </p>
+                  <p className="text-lg font-medium">245</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Existing table code */}
+            <div className="flex items-center justify-between h-8 px-3 border-b bg-muted/40">
+              <div className="flex items-center gap-2">
+                <Users className="w-3 h-3 text-primary" />
+                <h3 className="font-medium text-xs">Operators List</h3>
+              </div>
+
+              <div className="relative flex items-center gap-1.5 bg-white/50 rounded-md px-2 h-6 group focus-within:ring-1 focus-within:ring-primary/20">
+                <Search className="h-3 w-3 text-muted-foreground/50 group-focus-within:text-primary/50" />
+                <Input
+                  placeholder="Search operators..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="h-6 w-[160px] text-xs border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 p-0 placeholder:text-muted-foreground/50"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-2 hover:text-primary"
+                  >
+                    <X className="h-3 w-3 text-muted-foreground/50 hover:text-primary/50" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <Table>
+              <TableHeader>
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="h-9 text-xs">Operator</TableHead>
+                  <TableHead className="h-9 text-xs">Cell</TableHead>
+                  <TableHead className="h-9 text-xs">Shift</TableHead>
+                  <TableHead className="h-9 text-xs">Tasks Completed</TableHead>
+                  <TableHead className="h-9 text-xs">Efficiency</TableHead>
+                  <TableHead className="h-9 text-xs">Quality Score</TableHead>
+                  <TableHead className="h-9 text-xs">Status</TableHead>
+                  <TableHead className="h-9 text-xs">Hours Worked</TableHead>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              </TableHeader>
+              <TableBody>
+                {paginatedOperators.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={8}
+                      className="h-24 text-center text-muted-foreground"
+                    >
+                      No operators found for this cell
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  paginatedOperators.map((operator, index) => (
+                    <TableRow key={index} className="h-10 hover:bg-muted/50">
+                      <TableCell className="text-xs font-medium py-2">
+                        {operator.name}
+                      </TableCell>
+                      <TableCell className="text-xs py-2">
+                        {operator.cell}
+                      </TableCell>
+                      <TableCell className="text-xs py-2">
+                        {operator.shift}
+                      </TableCell>
+                      <TableCell className="text-xs py-2">
+                        {operator.tasksCompleted}
+                      </TableCell>
+                      <TableCell className="text-xs py-2">
+                        {operator.efficiency}
+                      </TableCell>
+                      <TableCell className="text-xs py-2">
+                        {operator.qualityScore}
+                      </TableCell>
+                      <TableCell className="text-xs py-2">
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${
+                            operator.status === "Active"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-yellow-100 text-yellow-700"
+                          }`}
+                        >
+                          {operator.status}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-xs py-2">
+                        {operator.hoursWorked}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
 
-        <div className="border-t">
-          {renderPagination(
-            currentOperatorsPage,
-            Math.ceil(filteredOperators.length / itemsPerPage),
-            setCurrentOperatorsPage
-          )}
-        </div>
+            <div className="border-t">
+              {renderPagination(
+                currentOperatorsPage,
+                Math.ceil(filteredOperators.length / itemsPerPage),
+                setCurrentOperatorsPage
+              )}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
