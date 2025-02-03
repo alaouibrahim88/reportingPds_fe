@@ -89,7 +89,7 @@ const operatorsData = [
   {
     name: "John Smith",
     cell: "Cell 1",
-    shift: "Morning",
+    shift: "8",
     tasksCompleted: 45,
     efficiency: "94%",
     qualityScore: "98%",
@@ -99,7 +99,7 @@ const operatorsData = [
   {
     name: "Sarah Johnson",
     cell: "Cell 2",
-    shift: "Afternoon",
+    shift: "9",
     tasksCompleted: 38,
     efficiency: "91%",
     qualityScore: "96%",
@@ -109,7 +109,7 @@ const operatorsData = [
   {
     name: "Mike Chen",
     cell: "Cell 1",
-    shift: "Night",
+    shift: "12",
     tasksCompleted: 42,
     efficiency: "89%",
     qualityScore: "95%",
@@ -119,7 +119,7 @@ const operatorsData = [
   {
     name: "Emma Davis",
     cell: "Cell 3",
-    shift: "Morning",
+    shift: "12",
     tasksCompleted: 40,
     efficiency: "92%",
     qualityScore: "97%",
@@ -129,7 +129,7 @@ const operatorsData = [
   {
     name: "Alex Turner",
     cell: "Cell 2",
-    shift: "Night",
+    shift: "9",
     tasksCompleted: 35,
     efficiency: "87%",
     qualityScore: "94%",
@@ -536,7 +536,7 @@ export default function WorkflowDetailsPage({
                 <TableRow className="hover:bg-transparent">
                   <TableHead className="h-9 text-xs">Operator</TableHead>
                   <TableHead className="h-9 text-xs">Cell</TableHead>
-                  <TableHead className="h-9 text-xs">Shift</TableHead>
+                  <TableHead className="h-9 text-xs">Hours Standard</TableHead>
                   <TableHead className="h-9 text-xs">Tasks Completed</TableHead>
                   <TableHead className="h-9 text-xs">Efficiency</TableHead>
                   <TableHead className="h-9 text-xs">Quality Score</TableHead>

@@ -12,8 +12,8 @@ export function ExpandedRowDetails({ item }: ExpandedRowDetailsProps) {
       <div className="p-4 space-y-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <InfoCard label="Type" value={item.type} />
-          <InfoCard label="Message" value={item.message} />
-          <InfoCard label="Job Details" value={item.job} />
+          {/* <InfoCard label="Message" value={item.message} />
+          <InfoCard label="Job Details" value={item.job} /> */}
           <StatusCard status={item.status} />
         </div>
       </div>

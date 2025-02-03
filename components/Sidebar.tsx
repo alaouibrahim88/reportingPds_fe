@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 const routes = [
   {
     href: "",
-    label: "Overview",
+    label: "Scrap",
     icon: HomeIcon,
   },
   {

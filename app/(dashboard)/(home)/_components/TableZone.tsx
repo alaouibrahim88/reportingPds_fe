@@ -128,7 +128,7 @@ function TableColumns() {
           Time
         </TableHead>
         <TableHead className="text-xs text-muted-foreground hidden md:table-cell">
-          Machine
+          Zone
         </TableHead>
         <TableHead className="text-xs text-muted-foreground hidden sm:table-cell">
           Job
