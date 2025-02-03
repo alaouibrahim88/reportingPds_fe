@@ -31,8 +31,8 @@ const routes = [
     icon: CoinsIcon,
   },
   {
-    href: "credentials",
-    label: "Security",
+    href: "scrap-setting",
+    label: "Settings",
     icon: ShieldCheckIcon,
   },
   // {
