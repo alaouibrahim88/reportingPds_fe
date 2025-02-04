@@ -22,10 +22,20 @@ export function ExpandedRowDetails({ item }: ExpandedRowDetailsProps) {
 }
 
 function InfoCard({ label, value }: InfoCardProps) {
+  console.log(value);
   return (
     <div className="bg-card dark:bg-card/50 rounded-lg p-3 border border-border/40">
       <p className="text-sm text-muted-foreground mb-1">{label}</p>
-      <p className="font-medium text-foreground">{value}</p>
+      {Array.isArray(value) ? (
+        value.map((el, index) => (
+          <p key={index} className="font-medium text-foreground">
+            {el.name}{" "}
+            <span className="text-xs text-muted-foreground">{el.count}</span>
+          </p>
+        ))
+      ) : (
+        <p className="font-medium text-foreground">{value}</p>
+      )}
     </div>
   );
 }

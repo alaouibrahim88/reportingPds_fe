@@ -149,9 +149,9 @@ const cellOptions = [
 
 // Add this near your other constants
 const zoneOptions = [
-  { value: "zone-1", label: "Zone 1" },
-  { value: "zone-2", label: "Zone 2" },
-  { value: "zone-3", label: "Zone 3" },
+  { value: "zone-1", label: "Wrapping" },
+  { value: "zone-2", label: "Nets" },
+  { value: "zone-3", label: "Boot" },
 ];
 
 // Add this near your other constants

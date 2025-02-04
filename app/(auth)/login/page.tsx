@@ -73,23 +73,15 @@ export default function LoginPage() {
               </div>
             </div>
 
+            <div className="space-y-3">
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Signing in..." : "Log in"}
+              </Button>
+            </div>
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="remember"
-                  className="h-4 w-4 rounded border-gray-300"
-                />
-                <label
-                  htmlFor="remember"
-                  className="text-sm text-muted-foreground"
-                >
-                  Remember for 30 days
-                </label>
-              </div>
               <Link
                 href="/forgot-password"
-                className="text-sm text-primary hover:underline"
+                className="text-sm text-primary hover:underline text-center"
               >
                 Forgot password?
               </Link>

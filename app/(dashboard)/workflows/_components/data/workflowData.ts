@@ -4,21 +4,21 @@ export const workflowData = {
   stats: [
     {
       title: "Daily",
-      sales: "999.83",
+      sales: 999.83,
       quantity: "12,625",
-      previousSales: 1234,
+      previousSales: 210.0,
       period: "Yesterday",
     },
     {
       title: "Weekly",
-      sales: "5199.848",
+      sales: 5199.848,
       quantity: "104,207",
       previousSales: 310.0,
       period: "Last Week",
     },
     {
       title: "Monthly",
-      sales: "7199.848",
+      sales: 7199.848,
       quantity: "260,530",
       previousSales: 8721.0,
       period: "Last Month",
@@ -28,11 +28,11 @@ export const workflowData = {
   zoneData: [
     {
       name: "W-30",
-      zoneNets: 0,
-      zoneBoots: 0,
-      zoneCutting: 0,
-      zoneKnitting: 0,
-      zoneInjection: 0,
+      Wrapping: 0,
+      Nets: 0,
+      Boot: 0,
+      Knitting: 0,
+      Injection: 0,
       op: {
         damageType: {
           process: 12,
@@ -61,7 +61,7 @@ export const workflowData = {
         {
           id: 1,
           time: "2024-01-15 ",
-          zone: "Zone 1",
+          zone: "Wrapping",
           cellule: "Cellule 1",
           operator: "Operator 1",
           machine: "Knitting Line A",
@@ -162,7 +162,7 @@ export const workflowData = {
         {
           id: 2,
           time: "2024-01-15",
-          zone: "Zone 1",
+          zone: "Nets",
           cellule: "Cellule 1",
           operator: "Operator 1",
           machine: "Knitting Line A",
@@ -264,7 +264,7 @@ export const workflowData = {
           id: 3,
           time: "2024-01-15 ",
           machine: "Boot Line B",
-          zone: "Zone 2",
+          zone: "Boot",
           cellule: "Cellule 2",
           operator: "Operator 2",
           job: "Boot Production",

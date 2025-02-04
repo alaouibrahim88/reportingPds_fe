@@ -18,9 +18,11 @@ const data = [
 ];
 
 const locationData = [
-  { city: "JAVA zone", value: "201,192" },
-  { city: "Python zone", value: "192,054" },
-  { city: "GOLANG zone", value: "166,481" },
+  { city: "Wrapping zone", value: "201,192" },
+  { city: "Nets zone", value: "192,054" },
+  { city: "Boot zone", value: "166,481" },
+  { city: "Knitting zone", value: "166,481" },
+  { city: "Injection zone", value: "166,481" },
 ];
 
 export function SalesReport() {
