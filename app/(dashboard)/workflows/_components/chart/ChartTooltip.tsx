@@ -18,9 +18,6 @@ export function ChartTooltip({ active, payload }: TooltipProps) {
         {/* <p className="text-sm text-muted-foreground mt-1">
           Revenue: {`$${Math.abs(data.revenue ?? 0 / 1000)}k  `}
         </p> */}
-        <p className="text-sm text-muted-foreground mt-1">
-          Defects: {data.defects ?? 0}
-        </p>
       </div>
     );
   }

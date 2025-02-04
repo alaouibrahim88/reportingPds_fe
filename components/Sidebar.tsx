@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 const routes = [
   {
     href: "",
-    label: "Overview",
+    label: "Scrap",
     icon: HomeIcon,
   },
   {
@@ -31,8 +31,8 @@ const routes = [
     icon: CoinsIcon,
   },
   {
-    href: "credentials",
-    label: "Security",
+    href: "scrap-setting",
+    label: "Settings",
     icon: ShieldCheckIcon,
   },
   // {

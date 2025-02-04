@@ -84,7 +84,7 @@ export const workflowData = {
             production: {
               planned: 150,
               actual: 142,
-              variance: -8,
+              variance: 8,
             },
             quality: {
               inspected: 142,
@@ -399,11 +399,11 @@ export const workflowData = {
   chartData: [
     {
       name: "W-4",
-      zoneJava: { value: 523, color: colors.zoneJava },
-      zonePython: { value: 234, color: colors.zonePython },
-      zoneRust: { value: 321, color: colors.zoneRust },
-      zoneGo: { value: 432, color: colors.zoneGo },
-      zoneKotlin: { value: 234, color: colors.zoneKotlin },
+      zoneJava: { value: 523, color: colors.Boot },
+      zonePython: { value: 234, color: colors.Nets },
+      zoneRust: { value: 321, color: colors.Wrapping },
+      zoneGo: { value: 432, color: colors.Knitting },
+      zoneKotlin: { value: 234, color: colors.Injection },
     },
     // Add more chart data points as needed
   ],

@@ -2,6 +2,7 @@ import { ProductionIssue } from "../types/table-types";
 
 export const productionIssuesData: ProductionIssue[] = [
   {
+    id: "1",
     time: "2024-01-15 06:00:00 AM",
     machine: "CITIZEN 19",
     job: "349455|26",
@@ -14,6 +15,7 @@ export const productionIssuesData: ProductionIssue[] = [
     visibilityScore: 95,
   },
   {
+    id: "2",
     time: "2024-01-15 08:30:00 AM",
     machine: "CITIZEN 23",
     job: "349487|12",
@@ -26,6 +28,7 @@ export const productionIssuesData: ProductionIssue[] = [
     visibilityScore: 98,
   },
   {
+    id: "3",
     time: "2024-01-15 09:15:00 AM",
     machine: "CITIZEN 15",
     job: "349462|08",
@@ -38,6 +41,7 @@ export const productionIssuesData: ProductionIssue[] = [
     visibilityScore: 85,
   },
   {
+    id: "4",
     time: "2024-01-15 10:45:00 AM",
     machine: "CITIZEN 31",
     job: "349490|15",
@@ -50,6 +54,7 @@ export const productionIssuesData: ProductionIssue[] = [
     visibilityScore: 90,
   },
   {
+    id: "5",
     time: "2024-01-15 11:30:00 AM",
     machine: "CITIZEN 27",
     job: "349475|19",
@@ -62,6 +67,7 @@ export const productionIssuesData: ProductionIssue[] = [
     visibilityScore: 97,
   },
   {
+    id: "6",
     time: "2024-01-15 11:30:00 AM",
     machine: "CITIZEN 27",
     job: "349475|19",
@@ -74,6 +80,7 @@ export const productionIssuesData: ProductionIssue[] = [
     visibilityScore: 97,
   },
   {
+    id: "7",
     time: "2024-01-15 11:30:00 AM",
     machine: "CITIZEN 27",
     job: "349475|19",
@@ -86,6 +93,7 @@ export const productionIssuesData: ProductionIssue[] = [
     visibilityScore: 97,
   },
   {
+    id: "8",
     time: "2024-01-15 11:30:00 AM",
     machine: "CITIZEN 27",
     job: "349475|19",
@@ -98,6 +106,7 @@ export const productionIssuesData: ProductionIssue[] = [
     visibilityScore: 97,
   },
   {
+    id: "9",
     time: "2024-01-15 11:30:00 AM",
     machine: "CITIZEN 27",
     job: "349475|19",
@@ -110,6 +119,7 @@ export const productionIssuesData: ProductionIssue[] = [
     visibilityScore: 97,
   },
   {
+    id: "10",
     time: "2024-01-15 11:30:00 AM",
     machine: "CITIZEN 27",
     job: "349475|19",
@@ -122,6 +132,7 @@ export const productionIssuesData: ProductionIssue[] = [
     visibilityScore: 97,
   },
   {
+    id: "11",
     time: "2024-01-15 11:30:00 AM",
     machine: "CITIZEN 27",
     job: "349475|19",

@@ -153,11 +153,11 @@ export default function TableZone({ data }: TableZoneProps) {
               <TableCell>operator</TableCell>
               <TableHead>Matricule</TableHead>
               <TableHead>Efficience</TableHead>
-              <TableHead>Rework</TableHead>
-              <TableHead>Scrap</TableHead>
+              <TableHead>Direct Cost</TableHead>
+              <TableHead>Indirect Cost</TableHead>
               <TableHead>Heures travaillées</TableHead>
               <TableHead>Heures reels</TableHead>
-              <TableHead>Prime(Jr/dh)</TableHead>
+
               <TableHead>Details</TableHead>
             </TableRow>
           </TableHeader>
@@ -182,13 +182,13 @@ export default function TableZone({ data }: TableZoneProps) {
                   <TableCell>{detail.cellule}</TableCell>
                   <TableCell>{detail.operator}</TableCell>
                   <TableCell>{detail.machine}</TableCell>
-                  <TableCell>{detail.assignee}</TableCell>
-                  <TableCell>{detail.department}</TableCell>
+                  <TableCell>{detail.hoursWorked}</TableCell>
+                  <TableCell>{detail.hoursWorked}</TableCell>
                   {/* <TableCell>{detail.status}</TableCell> */}
                   <TableCell>{detail.hoursWorked}</TableCell>
                   <TableCell>{detail.hoursReel}</TableCell>
-                  <TableCell>{detail.priority}</TableCell>
-                  <TableCell>{detail.assignee}</TableCell>
+
+                  <TableCell>{detail.hoursReel}</TableCell>
                   <TableCell>
                     <Link href={`/workflows/details/${detail.id}`}>
                       <Button
@@ -209,13 +209,13 @@ export default function TableZone({ data }: TableZoneProps) {
                           <div className="grid grid-cols-3 gap-3">
                             <Card className="p-3">
                               <div className="space-y-1">
-                                <p className="text-xs text-muted-foreground">
+                                {/* <p className="text-xs text-muted-foreground">
                                   Production
-                                </p>
+                                </p> */}
                                 <div className="grid grid-cols-3 gap-2">
                                   <div>
                                     <p className="text-xs text-muted-foreground">
-                                      Planned
+                                      Heures travaillées réelles
                                     </p>
                                     <p className="text-sm font-medium">
                                       {detail.op.production.planned}
@@ -223,25 +223,10 @@ export default function TableZone({ data }: TableZoneProps) {
                                   </div>
                                   <div>
                                     <p className="text-xs text-muted-foreground">
-                                      Actual
+                                      Heures travaillées standards
                                     </p>
                                     <p className="text-sm font-medium">
                                       {detail.op.production.actual}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <p className="text-xs text-muted-foreground">
-                                      Variance
-                                    </p>
-                                    <p
-                                      className={cn(
-                                        "text-sm font-medium",
-                                        detail.op.production.variance < 0
-                                          ? "text-red-500"
-                                          : "text-green-500"
-                                      )}
-                                    >
-                                      {detail.op.production.variance}
                                     </p>
                                   </div>
                                 </div>
@@ -249,13 +234,13 @@ export default function TableZone({ data }: TableZoneProps) {
                             </Card>
                             <Card className="p-3">
                               <div className="space-y-1">
-                                <p className="text-xs text-muted-foreground">
+                                {/* <p className="text-xs text-muted-foreground">
                                   Quality Check
-                                </p>
+                                </p> */}
                                 <div className="grid grid-cols-3 gap-2">
                                   <div>
                                     <p className="text-xs text-muted-foreground">
-                                      Inspected
+                                      standard cost
                                     </p>
                                     <p className="text-sm font-medium">
                                       {detail.op.quality.inspected}
@@ -263,28 +248,28 @@ export default function TableZone({ data }: TableZoneProps) {
                                   </div>
                                   <div>
                                     <p className="text-xs text-muted-foreground">
-                                      Passed
+                                      real cost
                                     </p>
                                     <p className="text-sm font-medium text-green-500">
                                       {detail.op.quality.passed}
                                     </p>
                                   </div>
-                                  <div>
+                                  {/* <div>
                                     <p className="text-xs text-muted-foreground">
                                       Failed
                                     </p>
                                     <p className="text-sm font-medium text-red-500">
                                       {detail.op.quality.failed}
                                     </p>
-                                  </div>
+                                  </div> */}
                                 </div>
                               </div>
                             </Card>
                             <Card className="p-3">
                               <div className="space-y-1">
-                                <p className="text-xs text-muted-foreground">
+                                {/* <p className="text-xs text-muted-foreground">
                                   Damage Types
-                                </p>
+                                </p> */}
                                 <div className="grid grid-cols-3 gap-2">
                                   <div>
                                     <p className="text-xs text-muted-foreground">
