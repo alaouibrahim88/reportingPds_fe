@@ -4,21 +4,21 @@ export const workflowData = {
   stats: [
     {
       title: "Daily",
-      sales: 999.83,
+      sales: "999.83",
       quantity: "12,625",
       previousSales: 210.0,
       period: "Yesterday",
     },
     {
       title: "Weekly",
-      sales: 5199.848,
+      sales: "5199.848",
       quantity: "104,207",
       previousSales: 310.0,
       period: "Last Week",
     },
     {
       title: "Monthly",
-      sales: 7199.848,
+      sales: "7199.848",
       quantity: "260,530",
       previousSales: 8721.0,
       period: "Last Month",
@@ -399,11 +399,11 @@ export const workflowData = {
   chartData: [
     {
       name: "W-4",
-      zoneJava: { value: 523, color: colors.Boot },
-      zonePython: { value: 234, color: colors.Nets },
-      zoneRust: { value: 321, color: colors.Wrapping },
-      zoneGo: { value: 432, color: colors.Knitting },
-      zoneKotlin: { value: 234, color: colors.Injection },
+      Boot: { value: 523, color: colors.Boot },
+      Nets: { value: 234, color: colors.Nets },
+      Wrapping: { value: 321, color: colors.Wrapping },
+      Knitting: { value: 432, color: colors.Knitting },
+      Injection: { value: 234, color: colors.Injection },
     },
     // Add more chart data points as needed
   ],
@@ -590,11 +590,11 @@ interface ZoneMetrics {
 // Zone interface
 export interface ZoneDataType {
   name: string;
-  zoneNets: number;
-  zoneBoots: number;
-  zoneCutting: number;
-  zoneKnitting: number;
-  zoneInjection: number;
+  Boot: number;
+  Nets: number;
+  Wrapping: number;
+  Knitting: number;
+  Injection: number;
   op: OperationalMetrics;
   details: WorkflowDetail[];
   metrics: ZoneMetrics;
@@ -610,11 +610,11 @@ interface ChartDataValue {
 // Chart data point interface
 interface ChartDataPoint {
   name: string;
-  zoneJava: ChartDataValue;
-  zonePython: ChartDataValue;
-  zoneRust: ChartDataValue;
-  zoneGo: ChartDataValue;
-  zoneKotlin: ChartDataValue;
+  Boot: ChartDataValue;
+  Nets: ChartDataValue;
+  Wrapping: ChartDataValue;
+  Knitting: ChartDataValue;
+  Injection: ChartDataValue;
 }
 
 // Main workflow data interface
