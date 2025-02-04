@@ -20,6 +20,30 @@ export const dashboardData = {
       Boot: 4,
       Knitting: 295,
       Injection: 27,
+      op: {
+        damageType: {
+          process: 12,
+          machine: 3,
+          material: 8,
+          quality: 5,
+        },
+        efficiency: {
+          nets: 85,
+          boots: 92,
+          cutting: 88,
+          knitting: 90,
+        },
+        downtime: {
+          planned: 120,
+          unplanned: 45,
+          maintenance: 60,
+        },
+        quality: {
+          defectRate: 2.3,
+          reworkRate: 1.5,
+          scrapRate: 0.8,
+        },
+      },
       details: [
         {
           id: "1",

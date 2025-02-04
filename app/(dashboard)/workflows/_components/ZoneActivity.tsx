@@ -6,11 +6,11 @@ interface ZoneActivityProps {
 
 export function ZoneActivity({ data }: ZoneActivityProps) {
   const zones = [
-    { name: "Nets", count: data.zoneNets, color: "bg-violet-400" },
-    { name: "Boots", count: data.zoneBoots, color: "bg-orange-300" },
-    { name: "Cutting", count: data.zoneCutting, color: "bg-blue-400" },
-    { name: "Knitting", count: data.zoneKnitting, color: "bg-emerald-400" },
-    { name: "Injection", count: data.zoneInjection, color: "bg-rose-300" },
+    { name: "Nets", count: data.Nets, color: "bg-violet-400" },
+    { name: "Boots", count: data.Boot, color: "bg-orange-300" },
+    { name: "Cutting", count: data.Wrapping, color: "bg-blue-400" },
+    { name: "Knitting", count: data.Knitting, color: "bg-emerald-400" },
+    { name: "Injection", count: data.Injection, color: "bg-rose-300" },
   ];
 
   const metrics = data.metrics;

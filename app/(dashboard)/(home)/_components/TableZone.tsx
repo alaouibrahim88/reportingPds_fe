@@ -25,11 +25,12 @@ import Link from "next/link";
 
 interface ZoneDataType {
   name: string;
-  Nets: number;
   Wrapping: number;
+  Nets: number;
   Boot: number;
   Knitting: number;
   Injection: number;
+  op: any;
   details: any[];
   metrics: any;
   machines: any[];
