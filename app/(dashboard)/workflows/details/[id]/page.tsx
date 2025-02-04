@@ -178,7 +178,7 @@ export default function WorkflowDetailsPage({
 
   const detail = workflowData.zoneData
     .flatMap((zone) => zone.details)
-    .find((detail) => detail.id === Number(params.id));
+    .find((detail) => detail.id === parseInt(params.id));
 
   if (!detail) {
     return (
@@ -207,9 +207,10 @@ export default function WorkflowDetailsPage({
       .join(" ")
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
-    const matchesCell = operator.cell
-      .toLowerCase()
-      .includes(selectedCell.replace("-", " "));
+    const matchesCell =
+      selectedCell === "all" ||
+      operator.cell ===
+        cellOptions.find((c) => c.value === selectedCell)?.label;
     return matchesSearch && matchesCell;
   });
 

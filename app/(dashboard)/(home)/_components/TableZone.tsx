@@ -21,19 +21,22 @@ import { ExpandedRowDetails } from "./ExpandedRowDetails";
 import { ProductionIssue } from "./types/table-types";
 import { TableFilter } from "./TableFilter";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
+
+interface ZoneDataType {
+  name: string;
+  Nets: number;
+  Wrapping: number;
+  Boot: number;
+  Knitting: number;
+  Injection: number;
+  details: any[];
+  metrics: any;
+  machines: any[];
+}
 
 interface TableZoneProps {
-  data: Array<{
-    name: string;
-    zoneJava: number;
-    zonePython: number;
-    zoneRust: number;
-    zoneGo: number;
-    zoneKotlin: number;
-    details: Array<any>; // Replace 'any' with proper type if available
-    metrics: any;
-    machines: any[];
-  }>;
+  data: ZoneDataType[];
 }
 
 export default function TableZone({ data }: TableZoneProps) {
@@ -140,6 +143,7 @@ function TableColumns() {
         <TableHead className="text-xs text-muted-foreground">
           Critical Level
         </TableHead>
+        <TableHead className="text-xs text-muted-foreground">Details</TableHead>
       </TableRow>
     </TableHeader>
   );
@@ -193,10 +197,24 @@ function TableContent({ data, openRows, toggleRow }: TableContentProps) {
             <TableCell className="py-2">
               <VisibilityScore score={item.visibilityScore} />
             </TableCell>
+            <TableCell className="py-2">
+              {/* <Link href={`/details/${item.id}`}>
+                <a className="text-blue-500 hover:underline">View Details</a>
+              </Link> */}
+              <Link href={`/details/${item.id}`}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs px-2.5"
+                >
+                  Details
+                </Button>
+              </Link>
+            </TableCell>
           </TableRow>
           {openRows.includes(index) && (
             <TableRow>
-              <TableCell colSpan={7} className="p-0">
+              <TableCell colSpan={8} className="p-0">
                 <ExpandedRowDetails item={item} />
               </TableCell>
             </TableRow>

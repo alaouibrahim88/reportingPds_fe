@@ -1,6 +1,7 @@
 export type Status = "alert" | "warning" | "good";
 
 export interface ProductionIssue {
+  id: string;
   time: string;
   machine: string;
   job: string;

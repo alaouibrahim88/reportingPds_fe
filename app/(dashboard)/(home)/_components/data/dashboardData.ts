@@ -22,6 +22,7 @@ export const dashboardData = {
       Injection: 27,
       details: [
         {
+          id: "1",
           time: "2024-01-15 06:00:00 AM",
           machine: "CITIZEN 19",
           job: "349455|26",
@@ -35,6 +36,7 @@ export const dashboardData = {
           department: "Manufacturing",
         },
         {
+          id: "2",
           time: "2024-01-15 10:19:43 AM",
           machine: "CITIZEN 36",
           job: "31003887-05|6",
@@ -48,6 +50,7 @@ export const dashboardData = {
           department: "Quality Control",
         },
         {
+          id: "3",
           time: "2024-01-15 11:30:32 PM",
           machine: "CITIZEN 20",
           job: "600213-2|15",
