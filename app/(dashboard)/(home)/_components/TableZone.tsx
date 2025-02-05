@@ -134,9 +134,9 @@ function TableColumns() {
         <TableHead className="text-xs text-muted-foreground hidden md:table-cell">
           Zone
         </TableHead>
-        <TableHead className="text-xs text-muted-foreground hidden sm:table-cell">
+        {/* <TableHead className="text-xs text-muted-foreground hidden sm:table-cell">
           Job
-        </TableHead>
+        </TableHead> */}
         <TableHead className="text-xs text-muted-foreground">Count</TableHead>
         <TableHead className="text-xs text-muted-foreground hidden lg:table-cell">
           Reason
@@ -184,9 +184,9 @@ function TableContent({ data, openRows, toggleRow }: TableContentProps) {
             <TableCell className="text-xs py-2 text-foreground hidden md:table-cell">
               {item.machine}
             </TableCell>
-            <TableCell className="text-xs py-2 text-foreground hidden sm:table-cell">
+            {/* <TableCell className="text-xs py-2 text-foreground hidden sm:table-cell">
               {item.job}
-            </TableCell>
+            </TableCell> */}
             <TableCell className="py-2">
               <span className="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/20 px-2 py-0.5 text-xs font-medium text-primary">
                 {item.count}

@@ -42,6 +42,10 @@ const cellsData = [
     id: "C1",
     status: "Active",
     efficiency: "92%",
+    directCost: "1000",
+    indirectCost: "500",
+    efficiencyFI: "98%",
+    totalCost: "1500",
     productionRate: "150 units/hour",
     downtime: "1%",
     qualityRate: "98%",
@@ -51,6 +55,10 @@ const cellsData = [
     id: "C2",
     status: "Maintenance",
     efficiency: "85%",
+    directCost: "1000",
+    indirectCost: "500",
+    efficiencyFI: "98%",
+    totalCost: "1500",
     productionRate: "120 units/hour",
     downtime: "4%",
     qualityRate: "95%",
@@ -60,6 +68,10 @@ const cellsData = [
     id: "C3",
     status: "Active",
     efficiency: "88%",
+    directCost: "1000",
+    indirectCost: "500",
+    efficiencyFI: "98%",
+    totalCost: "1500",
     productionRate: "135 units/hour",
     downtime: "2%",
     qualityRate: "97%",
@@ -69,6 +81,10 @@ const cellsData = [
     id: "C4",
     status: "Inactive",
     efficiency: "78%",
+    directCost: "1000",
+    indirectCost: "500",
+    efficiencyFI: "98%",
+    totalCost: "1500",
     productionRate: "110 units/hour",
     downtime: "3%",
     qualityRate: "94%",
@@ -78,6 +94,10 @@ const cellsData = [
     id: "C5",
     status: "Active",
     efficiency: "90%",
+    directCost: "1000",
+    indirectCost: "500",
+    efficiencyFI: "98%",
+    totalCost: "1500",
     productionRate: "145 units/hour",
     downtime: "1%",
     qualityRate: "96%",
@@ -94,7 +114,7 @@ const operatorsData = [
     efficiency: "94%",
     qualityScore: "98%",
     status: "Active",
-    hoursWorked: "7.5",
+    hoursWorked: "30",
   },
   {
     name: "Sarah Johnson",
@@ -104,7 +124,7 @@ const operatorsData = [
     efficiency: "91%",
     qualityScore: "96%",
     status: "Break",
-    hoursWorked: "6.2",
+    hoursWorked: "23",
   },
   {
     name: "Mike Chen",
@@ -114,7 +134,7 @@ const operatorsData = [
     efficiency: "89%",
     qualityScore: "95%",
     status: "Active",
-    hoursWorked: "7.8",
+    hoursWorked: "40",
   },
   {
     name: "Emma Davis",
@@ -124,7 +144,7 @@ const operatorsData = [
     efficiency: "92%",
     qualityScore: "97%",
     status: "Active",
-    hoursWorked: "7.0",
+    hoursWorked: "70",
   },
   {
     name: "Alex Turner",
@@ -134,7 +154,7 @@ const operatorsData = [
     efficiency: "87%",
     qualityScore: "94%",
     status: "Break",
-    hoursWorked: "6.5",
+    hoursWorked: "62",
   },
 ];
 
@@ -364,12 +384,12 @@ export default function WorkflowDetailsPage({
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               <TableHead className="h-9 text-xs">Cell ID</TableHead>
-              <TableHead className="h-9 text-xs">Status</TableHead>
-              <TableHead className="h-9 text-xs">Efficiency</TableHead>
-              <TableHead className="h-9 text-xs">Production Rate</TableHead>
-              <TableHead className="h-9 text-xs">Downtime</TableHead>
-              <TableHead className="h-9 text-xs">Quality Rate</TableHead>
-              <TableHead className="h-9 text-xs">Maintenance</TableHead>
+              <TableHead className="h-9 text-xs">Performance</TableHead>
+              <TableHead className="h-9 text-xs">Efficiency OP</TableHead>
+              <TableHead className="h-9 text-xs">Direct Cost</TableHead>
+              <TableHead className="h-9 text-xs">Indirect Cost</TableHead>
+              <TableHead className="h-9 text-xs">Efficiency FI</TableHead>
+              <TableHead className="h-9 text-xs">Total Cost</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -378,20 +398,39 @@ export default function WorkflowDetailsPage({
                 <TableCell className="text-xs font-medium py-2">
                   {cell.id}
                 </TableCell>
-                <TableCell className="text-xs py-2">{cell.status}</TableCell>
+                <TableCell className="text-xs py-2">
+                  <span
+                    className={cn(
+                      "inline-flex items-center px-1 py-1 rounded-full",
+                      {
+                        "bg-green-100": cell.status === "Active",
+                        "bg-yellow-100": cell.status === "Maintenance",
+                        "bg-red-100": cell.status === "Inactive",
+                      }
+                    )}
+                  >
+                    <span
+                      className={cn("h-1.5 w-1.5 rounded-full", {
+                        "bg-green-500": cell.status === "Active",
+                        "bg-yellow-500": cell.status === "Maintenance",
+                        "bg-red-500": cell.status === "Inactive",
+                      })}
+                    />
+                  </span>
+                </TableCell>
                 <TableCell className="text-xs py-2">
                   {cell.efficiency}
                 </TableCell>
                 <TableCell className="text-xs py-2">
-                  {cell.productionRate}
+                  {cell.directCost}
+                </TableCell>
+
+                <TableCell className="text-xs py-2">
+                  {cell.indirectCost}
                 </TableCell>
                 <TableCell className="text-xs py-2">{cell.downtime}</TableCell>
-                <TableCell className="text-xs py-2">
-                  {cell.qualityRate}
-                </TableCell>
-                <TableCell className="text-xs py-2">
-                  {cell.maintenance}
-                </TableCell>
+
+                <TableCell className="text-xs py-2">{cell.totalCost}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -487,7 +526,7 @@ export default function WorkflowDetailsPage({
                 </div>
                 <div className="p-3 rounded-lg bg-muted/50 border">
                   <p className="text-xs text-muted-foreground mb-1">
-                    Active Now
+                    Total days
                   </p>
                   <p className="text-lg font-medium">8</p>
                 </div>
@@ -499,7 +538,7 @@ export default function WorkflowDetailsPage({
                 </div>
                 <div className="p-3 rounded-lg bg-muted/50 border">
                   <p className="text-xs text-muted-foreground mb-1">
-                    Tasks Today
+                    Total Hours sup
                   </p>
                   <p className="text-lg font-medium">245</p>
                 </div>
@@ -536,12 +575,12 @@ export default function WorkflowDetailsPage({
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
                   <TableHead className="h-9 text-xs">Operator</TableHead>
-                  <TableHead className="h-9 text-xs">Cell</TableHead>
+                  <TableHead className="h-9 text-xs">Matricule</TableHead>
                   <TableHead className="h-9 text-xs">Hours Standard</TableHead>
-                  <TableHead className="h-9 text-xs">Tasks Completed</TableHead>
+                  <TableHead className="h-9 text-xs">Pieces</TableHead>
                   <TableHead className="h-9 text-xs">Efficiency</TableHead>
                   <TableHead className="h-9 text-xs">Quality Score</TableHead>
-                  <TableHead className="h-9 text-xs">Status</TableHead>
+                  <TableHead className="h-9 text-xs">Performance</TableHead>
                   <TableHead className="h-9 text-xs">Hours Worked</TableHead>
                 </TableRow>
               </TableHeader>
