@@ -10,11 +10,11 @@ export function ExpandedRowDetails({ item }: ExpandedRowDetailsProps) {
   return (
     <div className="bg-muted/50 dark:bg-muted/5 border-l-2 border-primary">
       <div className="p-4 space-y-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <InfoCard label="Type" value={item.type} />
-          {/* <InfoCard label="Message" value={item.message} />
-          <InfoCard label="Job Details" value={item.job} /> */}
-          <StatusCard status={item.status} />
+        <div className="flex justify-around gap-4">
+          <InfoCard label="Process" value={item.type} />
+          <InfoCard label="Matière" value={item.type} />
+          <InfoCard label="Machine" value={item.type} />
+          {/* <StatusCard status={item.status} /> */}
         </div>
       </div>
     </div>
@@ -22,17 +22,15 @@ export function ExpandedRowDetails({ item }: ExpandedRowDetailsProps) {
 }
 
 function InfoCard({ label, value }: InfoCardProps) {
-  console.log(value);
   return (
-    <div className="bg-card dark:bg-card/50 rounded-lg p-3 border border-border/40">
-      <p className="text-sm text-muted-foreground mb-1">{label}</p>
+    <div className="bg-card dark:bg-card/50 rounded-lg p-3 border border-border/40 flex justify-between gap-2 items-center">
+      <p className="text-sm text-muted-foreground mb-1">Type: {label}</p>
       {Array.isArray(value) ? (
-        value.map((el, index) => (
-          <p key={index} className="font-medium text-foreground">
-            {el.name}{" "}
-            <span className="text-xs text-muted-foreground">{el.count}</span>
-          </p>
-        ))
+        <p className="font-medium text-foreground">
+          {value.map((el, index) => (
+            <span key={index}>{el.count}</span>
+          ))}
+        </p>
       ) : (
         <p className="font-medium text-foreground">{value}</p>
       )}

@@ -149,14 +149,12 @@ export default function TableZone({ data }: TableZoneProps) {
               <TableHead className="w-[50px]"></TableHead>
               <TableHead>Time</TableHead>
               <TableCell>Zone</TableCell>
-              <TableCell>Cells</TableCell>
-              <TableCell>operator</TableCell>
-              <TableHead>Matricule</TableHead>
+
               <TableHead>Efficience</TableHead>
               <TableHead>Direct Cost</TableHead>
               <TableHead>Indirect Cost</TableHead>
-              <TableHead>Heures travaillées</TableHead>
-              <TableHead>Heures reels</TableHead>
+              {/* <TableHead>HT</TableHead>
+              <TableHead>HR</TableHead> */}
 
               <TableHead>Details</TableHead>
             </TableRow>
@@ -179,16 +177,14 @@ export default function TableZone({ data }: TableZoneProps) {
                   </TableCell>
                   <TableCell>{detail.time}</TableCell>
                   <TableCell>{detail.zone}</TableCell>
-                  <TableCell>{detail.cellule}</TableCell>
-                  <TableCell>{detail.operator}</TableCell>
-                  <TableCell>{detail.machine}</TableCell>
+                  <TableCell>{detail.hoursWorked}%</TableCell>
                   <TableCell>{detail.hoursWorked}</TableCell>
                   <TableCell>{detail.hoursWorked}</TableCell>
                   {/* <TableCell>{detail.status}</TableCell> */}
-                  <TableCell>{detail.hoursWorked}</TableCell>
-                  <TableCell>{detail.hoursReel}</TableCell>
 
-                  <TableCell>{detail.hoursReel}</TableCell>
+                  {/* <TableCell>{detail.hoursReel}</TableCell>
+
+                  <TableCell>{detail.hoursReel}</TableCell> */}
                   <TableCell>
                     <Link href={`/workflows/details/${detail.id}`}>
                       <Button
@@ -215,7 +211,7 @@ export default function TableZone({ data }: TableZoneProps) {
                                 <div className="grid grid-cols-3 gap-2">
                                   <div>
                                     <p className="text-xs text-muted-foreground">
-                                      Heures travaillées réelles
+                                      HR
                                     </p>
                                     <p className="text-sm font-medium">
                                       {detail.op.production.planned}
@@ -223,7 +219,7 @@ export default function TableZone({ data }: TableZoneProps) {
                                   </div>
                                   <div>
                                     <p className="text-xs text-muted-foreground">
-                                      Heures travaillées standards
+                                      HT
                                     </p>
                                     <p className="text-sm font-medium">
                                       {detail.op.production.actual}
@@ -240,7 +236,7 @@ export default function TableZone({ data }: TableZoneProps) {
                                 <div className="grid grid-cols-3 gap-2">
                                   <div>
                                     <p className="text-xs text-muted-foreground">
-                                      standard cost
+                                      Standard cost
                                     </p>
                                     <p className="text-sm font-medium">
                                       {detail.op.quality.inspected}
@@ -248,20 +244,20 @@ export default function TableZone({ data }: TableZoneProps) {
                                   </div>
                                   <div>
                                     <p className="text-xs text-muted-foreground">
-                                      real cost
+                                      Real cost
                                     </p>
                                     <p className="text-sm font-medium text-green-500">
                                       {detail.op.quality.passed}
                                     </p>
                                   </div>
-                                  {/* <div>
+                                  <div>
                                     <p className="text-xs text-muted-foreground">
-                                      Failed
+                                      Total cost
                                     </p>
                                     <p className="text-sm font-medium text-red-500">
-                                      {detail.op.quality.failed}
+                                      {detail.op.quality.inspected}
                                     </p>
-                                  </div> */}
+                                  </div>
                                 </div>
                               </div>
                             </Card>
@@ -273,7 +269,7 @@ export default function TableZone({ data }: TableZoneProps) {
                                 <div className="grid grid-cols-3 gap-2">
                                   <div>
                                     <p className="text-xs text-muted-foreground">
-                                      Process
+                                      Efficience OP
                                     </p>
                                     <p className="text-sm font-medium">
                                       {detail.op.damageType.process}
@@ -281,18 +277,10 @@ export default function TableZone({ data }: TableZoneProps) {
                                   </div>
                                   <div>
                                     <p className="text-xs text-muted-foreground">
-                                      Machine
+                                      Efficience FI
                                     </p>
                                     <p className="text-sm font-medium">
                                       {detail.op.damageType.machine}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <p className="text-xs text-muted-foreground">
-                                      Material
-                                    </p>
-                                    <p className="text-sm font-medium">
-                                      {detail.op.damageType.material}
                                     </p>
                                   </div>
                                 </div>

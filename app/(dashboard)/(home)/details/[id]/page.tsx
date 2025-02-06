@@ -18,6 +18,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronRight,
+  Users2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { dashboardData } from "@/app/(dashboard)/(home)/_components/data/dashboardData";
@@ -113,165 +114,604 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
               <h2 className="font-medium text-sm">Zone Details</h2>
             </div>
             <p className="text-xs text-muted-foreground">
-              Details for {parentZone?.name || " Zone"}
+              Details for 3 last months of {zoneDetail.zone}
             </p>
           </div>
         </div>
       </div>
 
       {/* Details Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <Card className="p-4">
-          <h3 className="font-semibold mb-2">Type</h3>
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">process</span>
-              <span>{zoneDetail.op.production.planned}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">matière</span>
-              <span>{zoneDetail.op.production.actual}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">alert</span>
-              <span className={"text-red-500"}>
-                {zoneDetail.op.production.variance}
-              </span>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-4">
-          <h3 className="font-semibold mb-2">Critical cells</h3>
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Cellule 1</span>
-              <span>{zoneDetail.op.damageType.process}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Cellule 4</span>
-              <span>{zoneDetail.op.damageType.machine}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Cellule 8</span>
-              <span>{zoneDetail.op.damageType.material}</span>
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      {/* Table Section */}
-      <div className="rounded-md border">
-        <div className="flex items-center justify-between p-3 border-b bg-muted/40">
-          <div className="flex items-center gap-2">
-            <FolderIcon className="w-4 h-4 text-primary" />
-            <h2 className="font-medium text-sm">Performance Details</h2>
-          </div>
-
-          {/* Filters */}
-          <div className="flex items-center gap-2">
-            <div className="relative flex items-center">
-              <Search className="absolute left-2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-8 w-[200px] pl-8 text-xs"
-              />
-            </div>
-            <Select value={selectedCell} onValueChange={setSelectedCell}>
-              <SelectTrigger className="h-8 w-[130px] text-xs">
-                <SelectValue placeholder="Select cell" />
-              </SelectTrigger>
-              <SelectContent>
-                {cellOptions.map((cell) => (
-                  <SelectItem
-                    key={cell.value}
-                    value={cell.value}
-                    className="text-xs"
+      <div className="space-y-6">
+        {/* First Table */}
+        <div className="rounded-md border">
+          <Card className="p-3">
+            <Table>
+              <TableHeader>
+                <TableRow className="h-8">
+                  <TableHead className="text-xs" rowSpan={2}>
+                    NATURE
+                  </TableHead>
+                  <TableHead
+                    className="text-xs text-center border-r"
+                    colSpan={5}
                   >
-                    {cell.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select
-              value={selectedOperator}
-              onValueChange={setSelectedOperator}
-            >
-              <SelectTrigger className="h-8 w-[130px] text-xs">
-                <SelectValue placeholder="Select operator" />
-              </SelectTrigger>
-              <SelectContent>
-                {operatorOptions.map((op) => (
-                  <SelectItem
-                    key={op.value}
-                    value={op.value}
-                    className="text-xs"
+                    Octobre
+                  </TableHead>
+                  <TableHead
+                    className="text-xs text-center border-r"
+                    colSpan={5}
                   >
-                    {op.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={selectedTime} onValueChange={setSelectedTime}>
-              <SelectTrigger className="h-8 w-[130px] text-xs">
-                <SelectValue placeholder="Select time" />
-              </SelectTrigger>
-              <SelectContent>
-                {timeOptions.map((time) => (
-                  <SelectItem
-                    key={time.value}
-                    value={time.value}
-                    className="text-xs"
+                    Novembre
+                  </TableHead>
+                  <TableHead className="text-xs text-center" colSpan={5}>
+                    Sept
+                  </TableHead>
+                </TableRow>
+                <TableRow className="h-8">
+                  <TableHead
+                    className="text-xs text-center border-r"
+                    colSpan={5}
                   >
-                    {time.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+                    100
+                  </TableHead>
+                  <TableHead
+                    className="text-xs text-center border-r"
+                    colSpan={5}
+                  >
+                    100
+                  </TableHead>
+                  <TableHead className="text-xs text-center" colSpan={5}>
+                    100
+                  </TableHead>
+                </TableRow>
+                <TableRow className="h-8">
+                  <TableHead className="text-xs"></TableHead>
+                  <TableHead className="text-xs text-center">WK1</TableHead>
+                  <TableHead className="text-xs text-center">WK2</TableHead>
+                  <TableHead className="text-xs text-center">WK3</TableHead>
+                  <TableHead className="text-xs text-center">WK4</TableHead>
+                  <TableHead className="text-xs text-center border-r">
+                    Total M1
+                  </TableHead>
+                  <TableHead className="text-xs text-center">WK5</TableHead>
+                  <TableHead className="text-xs text-center">WK6</TableHead>
+                  <TableHead className="text-xs text-center">WK7</TableHead>
+                  <TableHead className="text-xs text-center">WK8</TableHead>
+                  <TableHead className="text-xs text-center border-r">
+                    Total M2
+                  </TableHead>
+                  <TableHead className="text-xs text-center">WK9</TableHead>
+                  <TableHead className="text-xs text-center">WK10</TableHead>
+                  <TableHead className="text-xs text-center">WK11</TableHead>
+                  <TableHead className="text-xs text-center">WK12</TableHead>
+                  <TableHead className="text-xs text-center">
+                    Total M3
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow className="h-8">
+                  <TableCell className="text-xs font-medium">PROCESS</TableCell>
+                  <TableCell className="text-xs text-center">30</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">40</TableCell>
+                  <TableCell className="text-xs text-center">22</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    112
+                  </TableCell>
+                  <TableCell className="text-xs text-center">30</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">40</TableCell>
+                  <TableCell className="text-xs text-center">22</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    112
+                  </TableCell>
+                  <TableCell className="text-xs text-center">30</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">40</TableCell>
+                  <TableCell className="text-xs text-center">22</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                    112
+                  </TableCell>
+                </TableRow>
+                <TableRow className="h-8">
+                  <TableCell className="text-xs font-medium">MATIERE</TableCell>
+                  <TableCell className="text-xs text-center">30</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">40</TableCell>
+                  <TableCell className="text-xs text-center">22</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    112
+                  </TableCell>
+                  <TableCell className="text-xs text-center">30</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">40</TableCell>
+                  <TableCell className="text-xs text-center">22</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    112
+                  </TableCell>
+                  <TableCell className="text-xs text-center">30</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">40</TableCell>
+                  <TableCell className="text-xs text-center">22</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                    112
+                  </TableCell>
+                </TableRow>
+                <TableRow className="h-8 font-medium">
+                  <TableCell className="text-xs font-medium">TOTAL</TableCell>
+                  <TableCell className="text-xs text-center">60</TableCell>
+                  <TableCell className="text-xs text-center">40</TableCell>
+                  <TableCell className="text-xs text-center">80</TableCell>
+                  <TableCell className="text-xs text-center">44</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    224
+                  </TableCell>
+                  <TableCell className="text-xs text-center">60</TableCell>
+                  <TableCell className="text-xs text-center">40</TableCell>
+                  <TableCell className="text-xs text-center">80</TableCell>
+                  <TableCell className="text-xs text-center">44</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    224
+                  </TableCell>
+                  <TableCell className="text-xs text-center">60</TableCell>
+                  <TableCell className="text-xs text-center">40</TableCell>
+                  <TableCell className="text-xs text-center">80</TableCell>
+                  <TableCell className="text-xs text-center">44</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                    224
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </Card>
         </div>
 
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[50px]"></TableHead>
-              <TableHead>Time</TableHead>
-              <TableCell>Zone</TableCell>
-              <TableCell>Cells</TableCell>
-              <TableCell>operator</TableCell>
-              <TableHead>Matricule</TableHead>
-              <TableHead>Efficience</TableHead>
-              <TableHead>Direct Cost</TableHead>
-              <TableHead>Indirect Cost</TableHead>
-              <TableHead>Heures travaillées</TableHead>
-              <TableHead>Heures reels</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <TableRow>
-              <TableCell>
-                <button
-                  onClick={() => {}}
-                  className="p-1 hover:bg-muted rounded-lg"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </button>
-              </TableCell>
-              <TableCell>{zoneDetail.time}</TableCell>
-              <TableCell>{zoneDetail.zone}</TableCell>
-              <TableCell>{zoneDetail.cellule}</TableCell>
-              <TableCell>{zoneDetail.operator}</TableCell>
-              <TableCell>{zoneDetail.machine}</TableCell>
-              <TableCell>{zoneDetail.hoursWorked}</TableCell>
-              <TableCell>{zoneDetail.hoursWorked}</TableCell>
-              <TableCell>{zoneDetail.hoursWorked}</TableCell>
-              <TableCell>{zoneDetail.hoursReel}</TableCell>
-              <TableCell>{zoneDetail.hoursReel}</TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
+        {/* Second Table - Cell Details */}
+        <div className="rounded-md border">
+          <Card className="p-3">
+            <Table>
+              <TableHeader>
+                <TableRow className="h-8">
+                  <TableHead className="text-xs" rowSpan={3}>
+                    {zoneDetail.zone}
+                  </TableHead>
+                  <TableHead className="text-xs" rowSpan={2}>
+                    NATURE
+                  </TableHead>
+                  <TableHead
+                    className="text-xs text-center border-r"
+                    colSpan={5}
+                  >
+                    Octobre
+                  </TableHead>
+                  <TableHead
+                    className="text-xs text-center border-r"
+                    colSpan={5}
+                  >
+                    Novembre
+                  </TableHead>
+                  <TableHead className="text-xs text-center" colSpan={5}>
+                    Sept
+                  </TableHead>
+                </TableRow>
+                <TableRow className="h-8">
+                  <TableHead
+                    className="text-xs text-center border-r"
+                    colSpan={5}
+                  >
+                    100
+                  </TableHead>
+                  <TableHead
+                    className="text-xs text-center border-r"
+                    colSpan={5}
+                  >
+                    100
+                  </TableHead>
+                  <TableHead className="text-xs text-center" colSpan={5}>
+                    100
+                  </TableHead>
+                </TableRow>
+                <TableRow className="h-8">
+                  <TableHead className="text-xs"></TableHead>
+                  <TableHead className="text-xs text-center">WK1</TableHead>
+                  <TableHead className="text-xs text-center">WK2</TableHead>
+                  <TableHead className="text-xs text-center">WK3</TableHead>
+                  <TableHead className="text-xs text-center">WK4</TableHead>
+                  <TableHead className="text-xs text-center border-r">
+                    Total M1
+                  </TableHead>
+                  <TableHead className="text-xs text-center">WK5</TableHead>
+                  <TableHead className="text-xs text-center">WK6</TableHead>
+                  <TableHead className="text-xs text-center">WK7</TableHead>
+                  <TableHead className="text-xs text-center">WK8</TableHead>
+                  <TableHead className="text-xs text-center border-r">
+                    Total M2
+                  </TableHead>
+                  <TableHead className="text-xs text-center">WK9</TableHead>
+                  <TableHead className="text-xs text-center">WK10</TableHead>
+                  <TableHead className="text-xs text-center">WK11</TableHead>
+                  <TableHead className="text-xs text-center">WK12</TableHead>
+                  <TableHead className="text-xs text-center">
+                    Total M3
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {/* Cell1 Data */}
+                <TableRow className="h-8">
+                  <TableCell className="text-xs font-medium" rowSpan={3}>
+                    Cell1
+                  </TableCell>
+                  <TableCell className="text-xs font-medium">PROCESS</TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">11</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    51
+                  </TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">11</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    51
+                  </TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">11</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                    51
+                  </TableCell>
+                </TableRow>
+                <TableRow className="h-8">
+                  <TableCell className="text-xs font-medium">MATIERE</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">11</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    61
+                  </TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">11</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    61
+                  </TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">11</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                    61
+                  </TableCell>
+                </TableRow>
+                <TableRow className="h-8">
+                  <TableCell className="text-xs font-medium">TOTAL</TableCell>
+                  <TableCell className="text-xs text-center">30</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">40</TableCell>
+                  <TableCell className="text-xs text-center">22</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    112
+                  </TableCell>
+                  <TableCell className="text-xs text-center">30</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">40</TableCell>
+                  <TableCell className="text-xs text-center">22</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    112
+                  </TableCell>
+                  <TableCell className="text-xs text-center">30</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">40</TableCell>
+                  <TableCell className="text-xs text-center">22</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                    112
+                  </TableCell>
+                </TableRow>
+
+                {/* Cell2 Data */}
+                <TableRow className="h-8">
+                  <TableCell className="text-xs font-medium" rowSpan={3}>
+                    Cell2
+                  </TableCell>
+                  <TableCell className="text-xs font-medium">PROCESS</TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">11</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    51
+                  </TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">11</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    51
+                  </TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">11</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                    51
+                  </TableCell>
+                </TableRow>
+                <TableRow className="h-8">
+                  <TableCell className="text-xs font-medium">MATIERE</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">11</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    61
+                  </TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">11</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    61
+                  </TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">11</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                    61
+                  </TableCell>
+                </TableRow>
+                <TableRow className="h-8">
+                  <TableCell className="text-xs font-medium">TOTAL</TableCell>
+                  <TableCell className="text-xs text-center">30</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">40</TableCell>
+                  <TableCell className="text-xs text-center">22</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    112
+                  </TableCell>
+                  <TableCell className="text-xs text-center">30</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">40</TableCell>
+                  <TableCell className="text-xs text-center">22</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    112
+                  </TableCell>
+                  <TableCell className="text-xs text-center">30</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">40</TableCell>
+                  <TableCell className="text-xs text-center">22</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                    112
+                  </TableCell>
+                </TableRow>
+
+                {/* Total Z1 Row */}
+                <TableRow className="h-8 font-medium">
+                  <TableCell className="text-xs font-medium" colSpan={2}>
+                    Total {zoneDetail.zone}
+                  </TableCell>
+                  <TableCell className="text-xs text-center">60</TableCell>
+                  <TableCell className="text-xs text-center">30</TableCell>
+                  <TableCell className="text-xs text-center">80</TableCell>
+                  <TableCell className="text-xs text-center">22</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    224
+                  </TableCell>
+                  <TableCell className="text-xs text-center">60</TableCell>
+                  <TableCell className="text-xs text-center">30</TableCell>
+                  <TableCell className="text-xs text-center">80</TableCell>
+                  <TableCell className="text-xs text-center">22</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    224
+                  </TableCell>
+                  <TableCell className="text-xs text-center">60</TableCell>
+                  <TableCell className="text-xs text-center">30</TableCell>
+                  <TableCell className="text-xs text-center">80</TableCell>
+                  <TableCell className="text-xs text-center">22</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                    224
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </Card>
+        </div>
+
+        {/* Third Table - Employee Details */}
+        <div className="rounded-md border">
+          <div className="flex items-center gap-2 mb-1 py-2">
+            <div className="flex items-center gap-2 px-3">
+              <Users2 className="w-3 h-3 text-primary" />
+              <h3 className="font-medium text-xs">Operator Details</h3>
+            </div>
+            <Select defaultValue="all-operators">
+              <SelectTrigger className="w-[180px] h-8 text-xs">
+                <SelectValue placeholder="Select Operator" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all-operators" className="text-xs">
+                  All Operators
+                </SelectItem>
+                <SelectItem value="MA123" className="text-xs">
+                  BRAHIM ELJADIOUI
+                </SelectItem>
+                <SelectItem value="MA124" className="text-xs">
+                  ADIL 1 ALAOUI 1
+                </SelectItem>
+                <SelectItem value="MA125" className="text-xs">
+                  ADIL 2 ALAOUI 2
+                </SelectItem>
+                <SelectItem value="MA126" className="text-xs">
+                  ADIL 3 ALAOUI 3
+                </SelectItem>
+                <SelectItem value="MA127" className="text-xs">
+                  ADIL 4 ALAOUI 4
+                </SelectItem>
+                <SelectItem value="MA128" className="text-xs">
+                  ADIL 5 ALAOUI 5
+                </SelectItem>
+                <SelectItem value="MA129" className="text-xs">
+                  ADIL 6 ALAOUI 6
+                </SelectItem>
+                <SelectItem value="MA130" className="text-xs">
+                  ADIL 7 ALAOUI 7
+                </SelectItem>
+                <SelectItem value="MA131" className="text-xs">
+                  ADIL 8 ALAOUI 8
+                </SelectItem>
+                <SelectItem value="MA132" className="text-xs">
+                  ADIL 9 ALAOUI 9
+                </SelectItem>
+                <SelectItem value="MA133" className="text-xs">
+                  ADIL 10 ALAOUI 10
+                </SelectItem>
+                <SelectItem value="MA134" className="text-xs">
+                  ADIL 11 ALAOUI 11
+                </SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select defaultValue="all-cells">
+              <SelectTrigger className="w-[180px] h-8 text-xs">
+                <SelectValue placeholder="Select Cell" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all-cells" className="text-xs">
+                  All Cells
+                </SelectItem>
+                <SelectItem value="cell1" className="text-xs">
+                  Cell 1
+                </SelectItem>
+                <SelectItem value="cell2" className="text-xs">
+                  Cell 2
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <Card className="p-3">
+            <Table>
+              <TableHeader>
+                <TableRow className="h-8">
+                  <TableHead className="text-xs">Cellule</TableHead>
+                  <TableHead className="text-xs">MATRICULE</TableHead>
+                  <TableHead className="text-xs">NOM</TableHead>
+                  <TableHead className="text-xs">PRENOM</TableHead>
+                  <TableHead className="text-xs text-center">WK1</TableHead>
+                  <TableHead className="text-xs text-center">WK2</TableHead>
+                  <TableHead className="text-xs text-center">WK3</TableHead>
+                  <TableHead className="text-xs text-center">WK4</TableHead>
+                  <TableHead className="text-xs text-center border-r">
+                    Total M1
+                  </TableHead>
+                  <TableHead className="text-xs text-center">WK5</TableHead>
+                  <TableHead className="text-xs text-center">WK6</TableHead>
+                  <TableHead className="text-xs text-center">WK7</TableHead>
+                  <TableHead className="text-xs text-center">WK8</TableHead>
+                  <TableHead className="text-xs text-center border-r">
+                    Total M2
+                  </TableHead>
+                  <TableHead className="text-xs text-center">WK9</TableHead>
+                  <TableHead className="text-xs text-center">WK10</TableHead>
+                  <TableHead className="text-xs text-center">WK11</TableHead>
+                  <TableHead className="text-xs text-center">WK12</TableHead>
+                  <TableHead className="text-xs text-center">
+                    Total M3
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow className="h-8">
+                  <TableCell className="text-xs" rowSpan={12}>
+                    CELL1
+                  </TableCell>
+                  <TableCell className="text-xs">MA123</TableCell>
+                  <TableCell className="text-xs">BRAHIM</TableCell>
+                  <TableCell className="text-xs">ELJADIOUI</TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">11</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    51
+                  </TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">11</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    51
+                  </TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">11</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                    51
+                  </TableCell>
+                </TableRow>
+                <TableRow className="h-8">
+                  <TableCell className="text-xs">MA124</TableCell>
+                  <TableCell className="text-xs">ADIL 1</TableCell>
+                  <TableCell className="text-xs">ALAOUI 1</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">11</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    61
+                  </TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">11</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    61
+                  </TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">10</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">11</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                    61
+                  </TableCell>
+                </TableRow>
+                <TableRow className="h-8">
+                  <TableCell className="text-xs">MA134</TableCell>
+                  <TableCell className="text-xs">ADIL 11</TableCell>
+                  <TableCell className="text-xs">ALAOUI 11</TableCell>
+                  <TableCell className="text-xs text-center">30</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">40</TableCell>
+                  <TableCell className="text-xs text-center">22</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    112
+                  </TableCell>
+                  <TableCell className="text-xs text-center">30</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">40</TableCell>
+                  <TableCell className="text-xs text-center">22</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                    112
+                  </TableCell>
+                  <TableCell className="text-xs text-center">30</TableCell>
+                  <TableCell className="text-xs text-center">20</TableCell>
+                  <TableCell className="text-xs text-center">40</TableCell>
+                  <TableCell className="text-xs text-center">22</TableCell>
+                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                    112
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </Card>
+        </div>
       </div>
     </div>
   );

@@ -87,12 +87,6 @@ export default function LoginPage() {
               </Link>
             </div>
 
-            <div className="space-y-3">
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Signing in..." : "Log in"}
-              </Button>
-            </div>
-
             <p className="text-center text-sm text-muted-foreground">
               Don&apos;t have an account?{" "}
               <Link href="/register" className="text-primary hover:underline">

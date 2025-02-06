@@ -22,7 +22,8 @@ export function ZoneActivity({ data }: ZoneActivityProps) {
           Weekly Zone Activity ⚡️
         </h3>
         <span className="text-xs text-primary">
-          {metrics.efficiency}% efficiency
+          {/* {metrics.efficiency}% efficiency */}
+          lerem epsum
         </span>
       </div>
       <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
@@ -38,13 +39,13 @@ export function ZoneActivity({ data }: ZoneActivityProps) {
       {/* Quick Stats */}
       <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 mb-3">
         <div className="bg-muted p-2 rounded-lg">
-          <div className="text-xs text-muted-foreground">Total Issues</div>
+          <div className="text-xs text-muted-foreground">Total Process</div>
           <div className="text-sm font-medium text-foreground">
             {metrics.totalIssues}
           </div>
         </div>
         <div className="bg-muted p-2 rounded-lg">
-          <div className="text-xs text-muted-foreground">Resolved</div>
+          <div className="text-xs text-muted-foreground"> Total Matière</div>
           <div className="text-sm font-medium text-foreground">
             {metrics.resolvedIssues}
           </div>

@@ -127,7 +127,7 @@ export function PerformanceChart({
             <Area
               type="monotone"
               dataKey="revenue"
-              name="Revenue"
+              name="Direct Cost"
               stroke={chartColors.revenue.stroke}
               fill="url(#revenueGradient)"
               strokeWidth={2}
@@ -142,7 +142,7 @@ export function PerformanceChart({
             <Area
               type="monotone"
               dataKey="damageCost"
-              name="Damage Cost"
+              name="Indirect Cost"
               stroke={chartColors.damage.stroke}
               fill="url(#damageGradient)"
               strokeWidth={2}
