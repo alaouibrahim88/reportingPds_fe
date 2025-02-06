@@ -24,7 +24,7 @@ export function TableFilter({ onFilterChange }: TableFilterProps) {
     <div className="px-4 py-2">
       <div className="flex items-center justify-between">
         <div className="flex gap-3">
-          <Input placeholder="Search workflows..." className="w-[200px]" />
+          <Input placeholder="Search ..." className="w-[200px]" />
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" className="flex items-center gap-2">

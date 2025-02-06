@@ -579,7 +579,7 @@ export default function WorkflowDetailsPage({
                   <TableHead className="h-9 text-xs">Hours Standard</TableHead>
                   <TableHead className="h-9 text-xs">Pieces</TableHead>
                   <TableHead className="h-9 text-xs">Efficiency</TableHead>
-                  <TableHead className="h-9 text-xs">Quality Score</TableHead>
+                  <TableHead className="h-9 text-xs">Direct Cost</TableHead>
                   <TableHead className="h-9 text-xs">Performance</TableHead>
                   <TableHead className="h-9 text-xs">Hours Worked</TableHead>
                 </TableRow>
@@ -613,7 +613,7 @@ export default function WorkflowDetailsPage({
                         {operator.efficiency}
                       </TableCell>
                       <TableCell className="text-xs py-2">
-                        {operator.qualityScore}
+                        {operator.hoursWorked}
                       </TableCell>
                       <TableCell className="text-xs py-2">
                         <span
