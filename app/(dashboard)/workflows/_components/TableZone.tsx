@@ -153,6 +153,7 @@ export default function TableZone({ data }: TableZoneProps) {
               <TableHead>Efficience</TableHead>
               <TableHead>Direct Cost</TableHead>
               <TableHead>Indirect Cost</TableHead>
+              <TableHead>Total Cost</TableHead>
               {/* <TableHead>HT</TableHead>
               <TableHead>HR</TableHead> */}
 
@@ -180,6 +181,9 @@ export default function TableZone({ data }: TableZoneProps) {
                   <TableCell>{detail.hoursWorked}%</TableCell>
                   <TableCell>{detail.hoursWorked}</TableCell>
                   <TableCell>{detail.hoursWorked}</TableCell>
+                  <TableCell>
+                    {detail.hoursWorked + detail.hoursWorked}
+                  </TableCell>
                   {/* <TableCell>{detail.status}</TableCell> */}
 
                   {/* <TableCell>{detail.hoursReel}</TableCell>
