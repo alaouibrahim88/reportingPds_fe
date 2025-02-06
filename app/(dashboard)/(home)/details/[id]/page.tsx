@@ -148,23 +148,6 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
                   </TableHead>
                 </TableRow>
                 <TableRow className="h-8">
-                  <TableHead
-                    className="text-xs text-center border-r"
-                    colSpan={5}
-                  >
-                    100
-                  </TableHead>
-                  <TableHead
-                    className="text-xs text-center border-r"
-                    colSpan={5}
-                  >
-                    100
-                  </TableHead>
-                  <TableHead className="text-xs text-center" colSpan={5}>
-                    100
-                  </TableHead>
-                </TableRow>
-                <TableRow className="h-8">
                   <TableHead className="text-xs"></TableHead>
                   <TableHead className="text-xs text-center">WK1</TableHead>
                   <TableHead className="text-xs text-center">WK2</TableHead>
@@ -293,23 +276,6 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
                   </TableHead>
                   <TableHead className="text-xs text-center" colSpan={5}>
                     Sept
-                  </TableHead>
-                </TableRow>
-                <TableRow className="h-8">
-                  <TableHead
-                    className="text-xs text-center border-r"
-                    colSpan={5}
-                  >
-                    100
-                  </TableHead>
-                  <TableHead
-                    className="text-xs text-center border-r"
-                    colSpan={5}
-                  >
-                    100
-                  </TableHead>
-                  <TableHead className="text-xs text-center" colSpan={5}>
-                    100
                   </TableHead>
                 </TableRow>
                 <TableRow className="h-8">
