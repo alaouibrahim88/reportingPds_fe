@@ -4,7 +4,14 @@ import { MixBarChart } from "./MixBarChart";
 import TableZone from "./TableZone";
 import { dashboardData } from "./data/dashboardData";
 import { ZoneActivity } from "./ZoneActivity";
-import { ChartBar } from "lucide-react";
+import { ChartBar, Calendar } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 function Container() {
   const { stats, zoneData, chartData } = dashboardData;
@@ -24,15 +31,32 @@ function Container() {
 
               <button className="text-muted-foreground text-sm">•••</button>
             </div>
-            <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-2 mb-2 sm:mb-4">
-              <svg className="w-3 h-3 sm:w-4 sm:h-4" viewBox="0 0 24 24">
-                <path
-                  fill="currentColor"
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span>Track and manage production issues and scrap reports</span>
+            <div className="flex items-center justify-between gap-2 text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-2 mb-2 sm:mb-4">
+              <div className="flex items-center gap-2">
+                <svg className="w-3 h-3 sm:w-4 sm:h-4" viewBox="0 0 24 24">
+                  <path
+                    fill="currentColor"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span>
+                  Track and manage production issues and scrap reports
+                </span>
+              </div>
+
+              <Select defaultValue="30">
+                <SelectTrigger className="w-[160px] h-9 bg-background">
+                  <Calendar className="w-4 h-4 mr-2" />
+                  <SelectValue placeholder="Select period" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="7">Last 7 days</SelectItem>
+                  <SelectItem value="30">Last 30 days</SelectItem>
+                  <SelectItem value="90">Last Year</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
+
             <MixBarChart data={chartData} />
           </div>
           <ZoneActivity data={zoneData[0]} />

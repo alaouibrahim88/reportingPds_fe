@@ -18,6 +18,7 @@ const rawData = [
     reelTime: 12,
     standardTime: 8,
     utilization: 28,
+    diffGlobal: 45600,
     defects: 116,
     duration: 12,
   },
@@ -33,6 +34,7 @@ const rawData = [
     reelTime: 12,
     standardTime: 8,
     utilization: 28,
+    diffGlobal: 79720,
     defects: 173,
   },
   {
@@ -51,6 +53,7 @@ const rawData = [
     reelTime: 12,
     standardTime: 8,
     utilization: 28,
+    diffGlobal: 3704,
     defects: 32,
     duration: 23,
   },
@@ -67,6 +70,7 @@ const rawData = [
     utilization: 28,
     defects: 190,
     duration: 20,
+    diffGlobal: 19720,
   },
   {
     name: "Injection",
@@ -80,6 +84,7 @@ const rawData = [
     standardTime: 8,
     utilization: 28,
     defects: 156,
+    diffGlobal: 830,
     duration: 12,
   },
 
@@ -96,6 +101,7 @@ const rawData = [
     utilization: 28,
     defects: 16,
     duration: 11,
+    diffGlobal: 13720,
   },
   {
     name: "RW Boot",
@@ -109,6 +115,7 @@ const rawData = [
     standardTime: 8,
     utilization: 28,
     defects: 180,
+    diffGlobal: 10,
     duration: 2,
   },
 ];
