@@ -1,4 +1,11 @@
 import { ZoneDataType, MetricsType } from "./data/dashboardData";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ZoneActivityProps {
   data: ZoneDataType;
@@ -18,22 +25,34 @@ export function ZoneActivity({ data }: ZoneActivityProps) {
   return (
     <div className="bg-card rounded-lg shadow-sm p-2 sm:p-3">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 mb-2">
-        <h3 className="text-sm font-semibold text-foreground">
-          Weekly Zone Activity ⚡️
+        <h3 className="text-sm font-semibold text-foreground w-64">
+          {/* Weekly Zone Activity ⚡️ */}
         </h3>
-        <span className="text-xs text-primary">
+        <span className="text-xs text-primary w-full">
           {/* {metrics.efficiency}% efficiency */}
-          lerem epsum
+          {/* lerem epsum */}
         </span>
       </div>
-      <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
+      <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
         <svg className="w-3 h-3" viewBox="0 0 24 24">
           <path
             fill="currentColor"
             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        <span>Current Week: W-30</span>
+        <span>Current Week:</span>
+        <Select defaultValue="30">
+          <SelectTrigger className="w-[80px] h-7 text-xs">
+            <SelectValue placeholder="Select week" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="28">W-28</SelectItem>
+            <SelectItem value="29">W-29</SelectItem>
+            <SelectItem value="30">W-30</SelectItem>
+            <SelectItem value="31">W-31</SelectItem>
+            <SelectItem value="32">W-32</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Quick Stats */}
@@ -49,6 +68,16 @@ export function ZoneActivity({ data }: ZoneActivityProps) {
           <div className="text-sm font-medium text-foreground">
             {metrics.resolvedIssues}
           </div>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 mb-3">
+        <div className="bg-muted p-2 rounded-lg">
+          <div className="text-xs text-muted-foreground">Total Projet </div>
+          <div className="text-sm font-medium text-foreground">76</div>
+        </div>
+        <div className="bg-muted p-2 rounded-lg">
+          <div className="text-xs text-muted-foreground">Total Serie </div>
+          <div className="text-sm font-medium text-foreground">13</div>
         </div>
       </div>
 

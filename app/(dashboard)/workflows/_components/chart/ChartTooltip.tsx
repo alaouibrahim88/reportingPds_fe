@@ -15,6 +15,10 @@ export function ChartTooltip({ active, payload }: TooltipProps) {
         <p className="text-sm text-[#8B5CF6]">
           Indirect Cost: ${Math.abs(data.damageCost).toLocaleString()}
         </p>
+
+        <p className="text-sm text-muted-foreground mt-1 text-[#059669]">
+          Diff Global: ${data.diffGlobal?.toLocaleString()}
+        </p>
         {/* <p className="text-sm text-muted-foreground mt-1">
           Revenue: {`$${Math.abs(data.revenue ?? 0 / 1000)}k  `}
         </p> */}

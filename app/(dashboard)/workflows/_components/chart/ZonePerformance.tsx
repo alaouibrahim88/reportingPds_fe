@@ -16,7 +16,7 @@ export function ZonePerformance({
     <Card className="h-full">
       <div className="p-2 border-b">
         <div className="flex items-center justify-between">
-          <h3 className="font-medium text-sm">Zone Performance</h3>
+          <h3 className="font-medium text-sm">Suivi de l&apos;efficacité</h3>
           <Badge variant="outline" className="h-5 text-xs">
             {data.length} active zones
           </Badge>
@@ -38,14 +38,6 @@ export function ZonePerformance({
                   <span className="mx-1">•</span>
                   <span className=" text-red-500/70 dark:text-red-400/70 font-medium">
                     {item.reelHours} reel Hours
-                  </span>
-                  <span className="mx-1">•</span>
-                  <span className="  text-muted-foreground font-medium">
-                    {item.reelTime} reel Time
-                  </span>
-                  <span className="mx-1">•</span>
-                  <span className="text-[hsl(var(--primary))] font-medium">
-                    {item.standardTime} standard Time
                   </span>
 
                   {/* <span className="mx-1">•</span> */}

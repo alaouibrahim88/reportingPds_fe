@@ -47,10 +47,10 @@ export const dashboardData = {
       details: [
         {
           id: "1",
-          time: "2024-01-15 06:00:00 AM",
+          time: "2024-01-15 to 2024-02-10",
           machine: "Nets",
           job: "349455|26",
-          count: 18,
+          count: "C",
           reason: "Tool Change / Offset Scrap",
           message: "parts were not put in last night",
           status: "alert",
@@ -64,10 +64,10 @@ export const dashboardData = {
         },
         {
           id: "2",
-          time: "2024-01-15 10:19:43 AM",
+          time: "2024-01-15 to 2024-02-10",
           machine: "Wrapping",
           job: "31003887-05|6",
-          count: 9,
+          count: "B",
           reason: "Dimensional",
           message: "Boring bar chipped",
           status: "alert",
@@ -81,10 +81,10 @@ export const dashboardData = {
         },
         {
           id: "3",
-          time: "2024-01-15 11:30:32 PM",
+          time: "2024-01-15 to 2024-02-10",
           machine: "Knitting",
           job: "600213-2|15",
-          count: 18,
+          count: "A",
           reason: "Dimensional",
           message: "Step on .4835 diameter",
           status: "good",

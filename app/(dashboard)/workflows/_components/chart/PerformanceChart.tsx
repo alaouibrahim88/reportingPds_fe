@@ -12,9 +12,17 @@ import {
   YAxis,
 } from "recharts";
 import { ChartTooltip } from "./ChartTooltip";
+import { performanceData } from "./data";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface PerformanceChartProps {
-  data: any[];
+  data?: any[];
   isExpanded: boolean;
   onToggleExpand: () => void;
 }
@@ -27,6 +35,10 @@ const chartColors = {
   damage: {
     stroke: "#9572e5", // rose-500
     fill: "#8B5CF6",
+  },
+  diffGlobal: {
+    stroke: "#10B981", // emerald-500
+    fill: "#059669",
   },
   grid: "hsl(var(--muted))", // Using muted color from globals.css
   text: "hsl(var(--muted-foreground))", // Using muted-foreground from globals.css
@@ -49,26 +61,68 @@ const CustomLegend = ({ payload }: any) => {
 };
 
 export function PerformanceChart({
-  data,
+  data = performanceData,
   isExpanded,
   onToggleExpand,
 }: PerformanceChartProps) {
   return (
     <Card className="p-4">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="font-medium text-sm">Zone Performance</h3>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onToggleExpand}
-          className="h-8 w-8"
-        >
-          {isExpanded ? (
-            <Minimize2 className="h-4 w-4" />
-          ) : (
-            <Maximize2 className="h-4 w-4" />
-          )}
-        </Button>
+        <div>
+          <h3 className="font-medium text-sm">Suivi des coûts</h3>
+          <p className="text-xs text-muted-foreground">
+            Current Date :{" "}
+            {new Date().toLocaleDateString("fr-FR", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Select defaultValue="2024">
+            <SelectTrigger className="w-[100px]">
+              <SelectValue placeholder="Year" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="2022">2022</SelectItem>
+              <SelectItem value="2023">2023</SelectItem>
+              <SelectItem value="2024">2024</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select defaultValue="all">
+            <SelectTrigger className="w-[120px]">
+              <SelectValue placeholder="Month" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Months</SelectItem>
+              <SelectItem value="1">January</SelectItem>
+              <SelectItem value="2">February</SelectItem>
+              <SelectItem value="3">March</SelectItem>
+              <SelectItem value="4">April</SelectItem>
+              <SelectItem value="5">May</SelectItem>
+              <SelectItem value="6">June</SelectItem>
+              <SelectItem value="7">July</SelectItem>
+              <SelectItem value="8">August</SelectItem>
+              <SelectItem value="9">September</SelectItem>
+              <SelectItem value="10">October</SelectItem>
+              <SelectItem value="11">November</SelectItem>
+              <SelectItem value="12">December</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onToggleExpand}
+            className="h-8 w-8"
+          >
+            {isExpanded ? (
+              <Minimize2 className="h-4 w-4" />
+            ) : (
+              <Maximize2 className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
       </div>
       <div style={{ height: isExpanded ? 480 : 360 }}>
         <ResponsiveContainer width="100%" height="100%">
@@ -101,6 +155,24 @@ export function PerformanceChart({
                   stopOpacity={0}
                 />
               </linearGradient>
+              <linearGradient
+                id="diffGlobalGradient"
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
+                <stop
+                  offset="5%"
+                  stopColor={chartColors.diffGlobal.fill}
+                  stopOpacity={0.2}
+                />
+                <stop
+                  offset="95%"
+                  stopColor={chartColors.diffGlobal.fill}
+                  stopOpacity={0}
+                />
+              </linearGradient>
             </defs>
             <CartesianGrid
               strokeDasharray="3 3"
@@ -121,7 +193,7 @@ export function PerformanceChart({
               axisLine={false}
               domain={["auto", "auto"]}
               tick={{ fill: chartColors.text }}
-              tickFormatter={(value) => `$${Math.abs(value / 1000)}k`}
+              tickFormatter={(value) => `${Math.abs(value / 1000)}k €`}
             />
             <Tooltip content={ChartTooltip} />
             <Area
@@ -152,6 +224,21 @@ export function PerformanceChart({
                 r: 4,
                 strokeWidth: 1,
                 stroke: chartColors.damage.stroke,
+                fill: "white",
+              }}
+            />
+            <Area
+              type="monotone"
+              dataKey="diffGlobal"
+              name="DIFF Global"
+              stroke={chartColors.diffGlobal.stroke}
+              fill="url(#diffGlobalGradient)"
+              strokeWidth={2}
+              dot={false}
+              activeDot={{
+                r: 4,
+                strokeWidth: 1,
+                stroke: chartColors.diffGlobal.stroke,
                 fill: "white",
               }}
             />

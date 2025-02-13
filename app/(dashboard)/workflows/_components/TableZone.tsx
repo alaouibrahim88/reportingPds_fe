@@ -147,16 +147,14 @@ export default function TableZone({ data }: TableZoneProps) {
           <TableHeader>
             <TableRow>
               <TableHead className="w-[50px]"></TableHead>
-              <TableHead>Time</TableHead>
               <TableCell>Zone</TableCell>
-
-              <TableHead>Efficience</TableHead>
-              <TableHead>Direct Cost</TableHead>
-              <TableHead>Indirect Cost</TableHead>
-              <TableHead>Total Cost</TableHead>
-              {/* <TableHead>HT</TableHead>
-              <TableHead>HR</TableHead> */}
-
+              <TableHead>Periode</TableHead>
+              <TableHead> EFF.Valorisé</TableHead>
+              <TableHead>EFF.Opérationnel </TableHead>
+              <TableHead>C.Réel </TableHead>
+              <TableHead>C.Standart</TableHead>
+              <TableHead>Ecart</TableHead>
+              <TableHead>Ecart Global</TableHead>
               <TableHead>Details</TableHead>
             </TableRow>
           </TableHeader>
@@ -176,17 +174,23 @@ export default function TableZone({ data }: TableZoneProps) {
                       )}
                     </button>
                   </TableCell>
-                  <TableCell>{detail.time}</TableCell>
                   <TableCell>{detail.zone}</TableCell>
-                  <TableCell>{detail.hoursWorked}%</TableCell>
+                  <TableCell>{detail.time}</TableCell>
                   <TableCell>{detail.hoursWorked}</TableCell>
-                  <TableCell>{detail.hoursWorked}</TableCell>
+                  <TableCell>{detail.hoursWorked} </TableCell>
+                  <TableCell>{detail.hoursWorked} Euro</TableCell>
                   <TableCell>
-                    {detail.hoursWorked + detail.hoursWorked}
+                    {detail.hoursWorked + detail.hoursWorked} Euro
                   </TableCell>
-                  {/* <TableCell>{detail.status}</TableCell> */}
-
-                  {/* <TableCell>{detail.hoursReel}</TableCell>
+                  <TableCell>
+                    {" "}
+                    {detail.hoursWorked + detail.hoursWorked * 2}
+                  </TableCell>
+                  <TableCell>
+                    {" "}
+                    {detail.hoursWorked + detail.hoursWorked * 4}
+                  </TableCell>
+                  {/* 
 
                   <TableCell>{detail.hoursReel}</TableCell> */}
                   <TableCell>
@@ -206,7 +210,7 @@ export default function TableZone({ data }: TableZoneProps) {
                     <TableCell colSpan={12} className="p-4 ">
                       <div className="space-y-6 ">
                         <div>
-                          <div className="grid grid-cols-3 gap-3">
+                          <div className="grid grid-cols-1 gap-3">
                             <Card className="p-3">
                               <div className="space-y-1">
                                 {/* <p className="text-xs text-muted-foreground">
@@ -227,64 +231,6 @@ export default function TableZone({ data }: TableZoneProps) {
                                     </p>
                                     <p className="text-sm font-medium">
                                       {detail.op.production.actual}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            </Card>
-                            <Card className="p-3">
-                              <div className="space-y-1">
-                                {/* <p className="text-xs text-muted-foreground">
-                                  Quality Check
-                                </p> */}
-                                <div className="grid grid-cols-3 gap-2">
-                                  <div>
-                                    <p className="text-xs text-muted-foreground">
-                                      Standard cost
-                                    </p>
-                                    <p className="text-sm font-medium">
-                                      {detail.op.quality.inspected}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <p className="text-xs text-muted-foreground">
-                                      Real cost
-                                    </p>
-                                    <p className="text-sm font-medium text-green-500">
-                                      {detail.op.quality.passed}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <p className="text-xs text-muted-foreground">
-                                      Total cost
-                                    </p>
-                                    <p className="text-sm font-medium text-red-500">
-                                      {detail.op.quality.inspected}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            </Card>
-                            <Card className="p-3">
-                              <div className="space-y-1">
-                                {/* <p className="text-xs text-muted-foreground">
-                                  Damage Types
-                                </p> */}
-                                <div className="grid grid-cols-3 gap-2">
-                                  <div>
-                                    <p className="text-xs text-muted-foreground">
-                                      Efficience OP
-                                    </p>
-                                    <p className="text-sm font-medium">
-                                      {detail.op.damageType.process}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <p className="text-xs text-muted-foreground">
-                                      Efficience FI
-                                    </p>
-                                    <p className="text-sm font-medium">
-                                      {detail.op.damageType.machine}
                                     </p>
                                   </div>
                                 </div>

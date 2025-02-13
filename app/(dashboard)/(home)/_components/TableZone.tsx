@@ -127,23 +127,17 @@ function TableColumns() {
   return (
     <TableHeader>
       <TableRow className="hover:bg-muted/50 dark:hover:bg-muted/10">
-        <TableHead className="w-[50px] text-muted-foreground"></TableHead>
-        <TableHead className="font-medium text-xs text-muted-foreground">
-          Time
-        </TableHead>
         <TableHead className="text-xs text-muted-foreground hidden md:table-cell">
           Zone
         </TableHead>
-        {/* <TableHead className="text-xs text-muted-foreground hidden sm:table-cell">
-          Job
-        </TableHead> */}
-        <TableHead className="text-xs text-muted-foreground">Count</TableHead>
+        <TableHead className="text-xs text-muted-foreground">Periode</TableHead>
         <TableHead className="text-xs text-muted-foreground hidden lg:table-cell">
-          Reason
+          Projet
         </TableHead>
-        <TableHead className="text-xs text-muted-foreground">
-          Critical Level
-        </TableHead>
+        <TableHead className="text-xs text-muted-foreground">Serie</TableHead>
+        <TableHead className="text-xs text-muted-foreground">Process</TableHead>
+        <TableHead className="text-xs text-muted-foreground">Matière</TableHead>
+
         <TableHead className="text-xs text-muted-foreground">Details</TableHead>
       </TableRow>
     </TableHeader>
@@ -169,34 +163,28 @@ function TableContent({ data, openRows, toggleRow }: TableContentProps) {
             )}
             onClick={() => toggleRow(index)}
           >
-            <TableCell className="w-[50px] py-2">
-              <div className="flex items-center justify-center w-6 h-6 rounded-lg hover:bg-muted/70 dark:hover:bg-muted/20 transition-colors">
-                {openRows.includes(index) ? (
-                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                ) : (
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                )}
-              </div>
-            </TableCell>
-            <TableCell className="font-medium text-xs py-2 text-foreground">
-              {item.time}
-            </TableCell>
             <TableCell className="text-xs py-2 text-foreground hidden md:table-cell">
               {item.machine}
             </TableCell>
-            {/* <TableCell className="text-xs py-2 text-foreground hidden sm:table-cell">
-              {item.job}
-            </TableCell> */}
-            <TableCell className="py-2">
-              <span className="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/20 px-2 py-0.5 text-xs font-medium text-primary">
-                {item.count}
-              </span>
+            <TableCell className="font-medium text-xs py-2 text-foreground">
+              {item.time}
             </TableCell>
             <TableCell className="text-xs py-2 text-foreground hidden lg:table-cell">
               {item.reason}
             </TableCell>
             <TableCell className="py-2">
-              <VisibilityScore score={item.visibilityScore} />
+              <span className="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/20 px-2 py-0.5 text-xs font-medium text-primary">
+                {item.count}
+              </span>
+            </TableCell>
+
+            <TableCell className="py-2">
+              {item.job}
+              {/* <VisibilityScore score={item.visibilityScore} /> */}
+            </TableCell>
+            <TableCell className="py-2">
+              {item.reason}
+              {/* <VisibilityScore score={item.visibilityScore} /> */}
             </TableCell>
             <TableCell className="py-2">
               {/* <Link href={`/details/${item.id}`}>
