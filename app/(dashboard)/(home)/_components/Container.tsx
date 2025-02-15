@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { MixBarChart } from "./MixBarChart";
 import TableZone from "./TableZone";
 import { dashboardData } from "./data/dashboardData";
@@ -12,9 +13,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 
 function Container() {
   const { stats, zoneData, chartData } = dashboardData;
+  const [showProject, setShowProject] = useState(false);
+  const [showSeries, setShowSeries] = useState(false);
 
   return (
     <div className="min-h-screen">
@@ -42,6 +46,34 @@ function Container() {
                 <span>
                   Track and manage production issues and scrap reports
                 </span>
+                <div className="flex items-center gap-4 ml-4">
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="project"
+                      checked={showProject}
+                      onCheckedChange={(checked) => setShowProject(!!checked)}
+                    />
+                    <label
+                      htmlFor="project"
+                      className="text-xs sm:text-sm text-muted-foreground cursor-pointer"
+                    >
+                      Projet
+                    </label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="series"
+                      checked={showSeries}
+                      onCheckedChange={(checked) => setShowSeries(!!checked)}
+                    />
+                    <label
+                      htmlFor="series"
+                      className="text-xs sm:text-sm text-muted-foreground cursor-pointer"
+                    >
+                      Series
+                    </label>
+                  </div>
+                </div>
               </div>
 
               <Select defaultValue="30">

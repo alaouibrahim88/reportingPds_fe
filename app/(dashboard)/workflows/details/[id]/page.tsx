@@ -385,11 +385,12 @@ export default function WorkflowDetailsPage({
             <TableRow className="hover:bg-transparent">
               <TableHead className="h-9 text-xs">Cell ID</TableHead>
               <TableHead className="h-9 text-xs">Performance</TableHead>
-              <TableHead className="h-9 text-xs">Efficiency OP</TableHead>
-              <TableHead className="h-9 text-xs">Direct Cost</TableHead>
-              <TableHead className="h-9 text-xs">Indirect Cost</TableHead>
-              <TableHead className="h-9 text-xs">Efficiency FI</TableHead>
-              <TableHead className="h-9 text-xs">Total Cost</TableHead>
+              <TableHead className="h-9 text-xs">Couts Réel</TableHead>
+              <TableHead className="h-9 text-xs">Couts STD</TableHead>
+              <TableHead className="h-9 text-xs">Eff.OPP</TableHead>
+              <TableHead className="h-9 text-xs">EFF.Valorisé</TableHead>
+              <TableHead className="h-9 text-xs">Ecart</TableHead>
+              <TableHead className="h-9 text-xs">Ecart Gllobal</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -431,6 +432,9 @@ export default function WorkflowDetailsPage({
                 <TableCell className="text-xs py-2">{cell.downtime}</TableCell>
 
                 <TableCell className="text-xs py-2">{cell.totalCost}</TableCell>
+                <TableCell className="text-xs py-2">
+                  {Number(cell.totalCost) * 2}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
