@@ -162,17 +162,18 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
   return (
     <div className="py-2 px-4">
       {/* Title Section */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10 py-4">
         <div className="flex items-center gap-4">
           <Link href="/">
             <Button
               variant="ghost"
               size="sm"
-              className="hover:bg-muted/50 -ml-2 h-8 w-8 p-0"
+              className="hover:bg-muted/50 -ml-2 h-8 w-8 p-0 rounded-full"
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
+
           <div>
             <div className="flex items-center gap-2 mb-1">
               <FolderIcon className="w-4 h-4 text-primary" />
@@ -186,27 +187,33 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
         </div>
 
         {/* Add Switch Button */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">Price</span>
+        <div className="flex items-center gap-3 px-4 py-2 rounded-lg border bg-muted/30">
+          <span className="text-xs font-medium text-muted-foreground">
+            Price
+          </span>
           <Switch
             checked={viewMode === "qty"}
             onCheckedChange={(checked) =>
               setViewMode(checked ? "qty" : "price")
             }
+            className="data-[state=checked]:bg-primary"
           />
-          <span className="text-xs text-muted-foreground">QTY</span>
+          <span className="text-xs font-medium text-muted-foreground">QTY</span>
         </div>
       </div>
 
       {/* Details Overview */}
-      <div className="space-y-6">
+      <div className="space-y-8">
         {/* First Table */}
-        <div className="rounded-md border">
-          <Card className="p-3">
+        <div className="rounded-md border shadow-sm hover:shadow-md transition-all">
+          <Card className="p-3 transition-all hover:border-primary/20">
             <Table>
               <TableHeader>
-                <TableRow className="h-8">
-                  <TableHead className="text-xs" rowSpan={2}>
+                <TableRow className="h-8 hover:bg-muted/50 transition-all">
+                  <TableHead
+                    className="text-xs font-medium text-muted-foreground bg-muted/30 transition-all"
+                    rowSpan={2}
+                  >
                     NATURE
                   </TableHead>
                   <TableHead
@@ -225,7 +232,7 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
                     Sept
                   </TableHead>
                 </TableRow>
-                <TableRow className="h-8">
+                <TableRow className="h-8 hover:bg-muted/50 transition-all">
                   <TableHead className="text-xs text-center">WK1</TableHead>
                   <TableHead className="text-xs text-center">WK2</TableHead>
                   <TableHead className="text-xs text-center">WK3</TableHead>
@@ -250,316 +257,352 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow className="h-8">
+                <TableRow className="h-8 hover:bg-muted/50 transition-all">
                   <TableCell className="text-xs font-medium">Projet</TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk1
+                      ? `${priceData.projet.wk1} €`
                       : qtyData.projet.wk1}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk2
+                      ? `${priceData.projet.wk2} €`
                       : qtyData.projet.wk2}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk3
+                      ? `${priceData.projet.wk3} €`
                       : qtyData.projet.wk3}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk4
+                      ? `${priceData.projet.wk4} €`
                       : qtyData.projet.wk4}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.projet.wk1 +
-                        priceData.projet.wk2 +
-                        priceData.projet.wk3 +
-                        priceData.projet.wk4
-                      : qtyData.projet.wk1 +
-                        qtyData.projet.wk2 +
-                        qtyData.projet.wk3 +
-                        qtyData.projet.wk4}
+                      ? `${
+                          priceData.projet.wk1 +
+                          priceData.projet.wk2 +
+                          priceData.projet.wk3 +
+                          priceData.projet.wk4
+                        } €`
+                      : `${
+                          qtyData.projet.wk1 +
+                          qtyData.projet.wk2 +
+                          qtyData.projet.wk3 +
+                          qtyData.projet.wk4
+                        }`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk5
+                      ? `${priceData.projet.wk5} €`
                       : qtyData.projet.wk5}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk6
+                      ? `${priceData.projet.wk6} €`
                       : qtyData.projet.wk6}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk7
+                      ? `${priceData.projet.wk7} €`
                       : qtyData.projet.wk7}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk8
+                      ? `${priceData.projet.wk8} €`
                       : qtyData.projet.wk8}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.projet.wk5 +
-                        priceData.projet.wk6 +
-                        priceData.projet.wk7 +
-                        priceData.projet.wk8
-                      : qtyData.projet.wk5 +
-                        qtyData.projet.wk6 +
-                        qtyData.projet.wk7 +
-                        qtyData.projet.wk8}
+                      ? `${
+                          priceData.projet.wk5 +
+                          priceData.projet.wk6 +
+                          priceData.projet.wk7 +
+                          priceData.projet.wk8
+                        } €`
+                      : `${
+                          qtyData.projet.wk5 +
+                          qtyData.projet.wk6 +
+                          qtyData.projet.wk7 +
+                          qtyData.projet.wk8
+                        }`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk9
+                      ? `${priceData.projet.wk9} €`
                       : qtyData.projet.wk9}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk10
+                      ? `${priceData.projet.wk10} €`
                       : qtyData.projet.wk10}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk11
+                      ? `${priceData.projet.wk11} €`
                       : qtyData.projet.wk11}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk12
+                      ? `${priceData.projet.wk12} €`
                       : qtyData.projet.wk12}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all">
                     {viewMode === "price"
-                      ? priceData.projet.wk9 +
-                        priceData.projet.wk10 +
-                        priceData.projet.wk11 +
-                        priceData.projet.wk12
-                      : qtyData.projet.wk9 +
-                        qtyData.projet.wk10 +
-                        qtyData.projet.wk11 +
-                        qtyData.projet.wk12}
+                      ? `${
+                          priceData.projet.wk9 +
+                          priceData.projet.wk10 +
+                          priceData.projet.wk11 +
+                          priceData.projet.wk12
+                        } €`
+                      : `${
+                          qtyData.projet.wk9 +
+                          qtyData.projet.wk10 +
+                          qtyData.projet.wk11 +
+                          qtyData.projet.wk12
+                        }`}
                   </TableCell>
                 </TableRow>
-                <TableRow className="h-8">
+                <TableRow className="h-8 hover:bg-muted/50 transition-all">
                   <TableCell className="text-xs font-medium">Serie</TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk1
+                      ? `${priceData.serie.wk1} €`
                       : qtyData.serie.wk1}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk2
+                      ? `${priceData.serie.wk2} €`
                       : qtyData.serie.wk2}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk3
+                      ? `${priceData.serie.wk3} €`
                       : qtyData.serie.wk3}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk4
+                      ? `${priceData.serie.wk4} €`
                       : qtyData.serie.wk4}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.serie.wk1 +
-                        priceData.serie.wk2 +
-                        priceData.serie.wk3 +
-                        priceData.serie.wk4
-                      : qtyData.serie.wk1 +
-                        qtyData.serie.wk2 +
-                        qtyData.serie.wk3 +
-                        qtyData.serie.wk4}
+                      ? `${
+                          priceData.serie.wk1 +
+                          priceData.serie.wk2 +
+                          priceData.serie.wk3 +
+                          priceData.serie.wk4
+                        } €`
+                      : `${
+                          qtyData.serie.wk1 +
+                          qtyData.serie.wk2 +
+                          qtyData.serie.wk3 +
+                          qtyData.serie.wk4
+                        }`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk5
+                      ? `${priceData.serie.wk5} €`
                       : qtyData.serie.wk5}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk6
+                      ? `${priceData.serie.wk6} €`
                       : qtyData.serie.wk6}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk7
+                      ? `${priceData.serie.wk7} €`
                       : qtyData.serie.wk7}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk8
+                      ? `${priceData.serie.wk8} €`
                       : qtyData.serie.wk8}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.serie.wk5 +
-                        priceData.serie.wk6 +
-                        priceData.serie.wk7 +
-                        priceData.serie.wk8
-                      : qtyData.serie.wk5 +
-                        qtyData.serie.wk6 +
-                        qtyData.serie.wk7 +
-                        qtyData.serie.wk8}
+                      ? `${
+                          priceData.serie.wk5 +
+                          priceData.serie.wk6 +
+                          priceData.serie.wk7 +
+                          priceData.serie.wk8
+                        } €`
+                      : `${
+                          qtyData.serie.wk5 +
+                          qtyData.serie.wk6 +
+                          qtyData.serie.wk7 +
+                          qtyData.serie.wk8
+                        }`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk9
+                      ? `${priceData.serie.wk9} €`
                       : qtyData.serie.wk9}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk10
+                      ? `${priceData.serie.wk10} €`
                       : qtyData.serie.wk10}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk11
+                      ? `${priceData.serie.wk11} €`
                       : qtyData.serie.wk11}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk12
+                      ? `${priceData.serie.wk12} €`
                       : qtyData.serie.wk12}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all">
                     {viewMode === "price"
-                      ? priceData.serie.wk9 +
-                        priceData.serie.wk10 +
-                        priceData.serie.wk11 +
-                        priceData.serie.wk12
-                      : qtyData.serie.wk9 +
-                        qtyData.serie.wk10 +
-                        qtyData.serie.wk11 +
-                        qtyData.serie.wk12}
+                      ? `${
+                          priceData.serie.wk9 +
+                          priceData.serie.wk10 +
+                          priceData.serie.wk11 +
+                          priceData.serie.wk12
+                        } €`
+                      : `${
+                          qtyData.serie.wk9 +
+                          qtyData.serie.wk10 +
+                          qtyData.serie.wk11 +
+                          qtyData.serie.wk12
+                        }`}
                   </TableCell>
                 </TableRow>
-                <TableRow className="h-8 font-medium">
+                <TableRow className="h-8 font-medium hover:bg-muted/50 transition-all">
                   <TableCell className="text-xs font-medium">TOTAL</TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk1 + priceData.serie.wk1
-                      : qtyData.projet.wk1 + qtyData.serie.wk1}
+                      ? `${priceData.projet.wk1 + priceData.serie.wk1} €`
+                      : `${qtyData.projet.wk1 + qtyData.serie.wk1}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk2 + priceData.serie.wk2
-                      : qtyData.projet.wk2 + qtyData.serie.wk2}
+                      ? `${priceData.projet.wk2 + priceData.serie.wk2} €`
+                      : `${qtyData.projet.wk2 + qtyData.serie.wk2}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk3 + priceData.serie.wk3
-                      : qtyData.projet.wk3 + qtyData.serie.wk3}
+                      ? `${priceData.projet.wk3 + priceData.serie.wk3} €`
+                      : `${qtyData.projet.wk3 + qtyData.serie.wk3}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk4 + priceData.serie.wk4
-                      : qtyData.projet.wk4 + qtyData.serie.wk4}
+                      ? `${priceData.projet.wk4 + priceData.serie.wk4} €`
+                      : `${qtyData.projet.wk4 + qtyData.serie.wk4}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.projet.wk1 +
-                        priceData.projet.wk2 +
-                        priceData.projet.wk3 +
-                        priceData.projet.wk4 +
-                        priceData.serie.wk1 +
-                        priceData.serie.wk2 +
-                        priceData.serie.wk3 +
-                        priceData.serie.wk4
-                      : qtyData.projet.wk1 +
-                        qtyData.projet.wk2 +
-                        qtyData.projet.wk3 +
-                        qtyData.projet.wk4 +
-                        qtyData.serie.wk1 +
-                        qtyData.serie.wk2 +
-                        qtyData.serie.wk3 +
-                        qtyData.serie.wk4}
+                      ? `${
+                          priceData.projet.wk1 +
+                          priceData.projet.wk2 +
+                          priceData.projet.wk3 +
+                          priceData.projet.wk4 +
+                          priceData.serie.wk1 +
+                          priceData.serie.wk2 +
+                          priceData.serie.wk3 +
+                          priceData.serie.wk4
+                        } €`
+                      : `${
+                          qtyData.projet.wk1 +
+                          qtyData.projet.wk2 +
+                          qtyData.projet.wk3 +
+                          qtyData.projet.wk4 +
+                          qtyData.serie.wk1 +
+                          qtyData.serie.wk2 +
+                          qtyData.serie.wk3 +
+                          qtyData.serie.wk4
+                        } `}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk5 + priceData.serie.wk5
-                      : qtyData.projet.wk5 + qtyData.serie.wk5}
+                      ? `${priceData.projet.wk5 + priceData.serie.wk5} €`
+                      : `${qtyData.projet.wk5 + qtyData.serie.wk5}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk6 + priceData.serie.wk6
-                      : qtyData.projet.wk6 + qtyData.serie.wk6}
+                      ? `${priceData.projet.wk6 + priceData.serie.wk6} €`
+                      : `${qtyData.projet.wk6 + qtyData.serie.wk6}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk7 + priceData.serie.wk7
-                      : qtyData.projet.wk7 + qtyData.serie.wk7}
+                      ? `${priceData.projet.wk7 + priceData.serie.wk7} €`
+                      : `${qtyData.projet.wk7 + qtyData.serie.wk7}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk8 + priceData.serie.wk8
-                      : qtyData.projet.wk8 + qtyData.serie.wk8}
+                      ? `${priceData.projet.wk8 + priceData.serie.wk8} €`
+                      : `${qtyData.projet.wk8 + qtyData.serie.wk8}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.projet.wk5 +
-                        priceData.projet.wk6 +
-                        priceData.projet.wk7 +
-                        priceData.projet.wk8 +
-                        priceData.serie.wk5 +
-                        priceData.serie.wk6 +
-                        priceData.serie.wk7 +
-                        priceData.serie.wk8
-                      : qtyData.projet.wk5 +
-                        qtyData.projet.wk6 +
-                        qtyData.projet.wk7 +
-                        qtyData.projet.wk8 +
-                        qtyData.serie.wk5 +
-                        qtyData.serie.wk6 +
-                        qtyData.serie.wk7 +
-                        qtyData.serie.wk8}
+                      ? `${
+                          priceData.projet.wk5 +
+                          priceData.projet.wk6 +
+                          priceData.projet.wk7 +
+                          priceData.projet.wk8 +
+                          priceData.serie.wk5 +
+                          priceData.serie.wk6 +
+                          priceData.serie.wk7 +
+                          priceData.serie.wk8
+                        } €`
+                      : `${
+                          qtyData.projet.wk5 +
+                          qtyData.projet.wk6 +
+                          qtyData.projet.wk7 +
+                          qtyData.projet.wk8 +
+                          qtyData.serie.wk5 +
+                          qtyData.serie.wk6 +
+                          qtyData.serie.wk7 +
+                          qtyData.serie.wk8
+                        } `}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk9 + priceData.serie.wk9
-                      : qtyData.projet.wk9 + qtyData.serie.wk9}
+                      ? `${priceData.projet.wk9 + priceData.serie.wk9} €`
+                      : `${qtyData.projet.wk9 + qtyData.serie.wk9}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk10 + priceData.serie.wk10
-                      : qtyData.projet.wk10 + qtyData.serie.wk10}
+                      ? `${priceData.projet.wk10 + priceData.serie.wk10} €`
+                      : `${qtyData.projet.wk10 + qtyData.serie.wk10}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk11 + priceData.serie.wk11
-                      : qtyData.projet.wk11 + qtyData.serie.wk11}
+                      ? `${priceData.projet.wk11 + priceData.serie.wk11} €`
+                      : `${qtyData.projet.wk11 + qtyData.serie.wk11}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk12 + priceData.serie.wk12
-                      : qtyData.projet.wk12 + qtyData.serie.wk12}
+                      ? `${priceData.projet.wk12 + priceData.serie.wk12} €`
+                      : `${qtyData.projet.wk12 + qtyData.serie.wk12}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all">
                     {viewMode === "price"
-                      ? priceData.projet.wk9 +
-                        priceData.projet.wk10 +
-                        priceData.projet.wk11 +
-                        priceData.projet.wk12 +
-                        priceData.serie.wk9 +
-                        priceData.serie.wk10 +
-                        priceData.serie.wk11 +
-                        priceData.serie.wk12
-                      : qtyData.projet.wk9 +
-                        qtyData.projet.wk10 +
-                        qtyData.projet.wk11 +
-                        qtyData.projet.wk12 +
-                        qtyData.serie.wk9 +
-                        qtyData.serie.wk10 +
-                        qtyData.serie.wk11 +
-                        qtyData.serie.wk12}
+                      ? `${
+                          priceData.projet.wk9 +
+                          priceData.projet.wk10 +
+                          priceData.projet.wk11 +
+                          priceData.projet.wk12 +
+                          priceData.serie.wk9 +
+                          priceData.serie.wk10 +
+                          priceData.serie.wk11 +
+                          priceData.serie.wk12
+                        } €`
+                      : `${
+                          qtyData.projet.wk9 +
+                          qtyData.projet.wk10 +
+                          qtyData.projet.wk11 +
+                          qtyData.projet.wk12 +
+                          qtyData.serie.wk9 +
+                          qtyData.serie.wk10 +
+                          qtyData.serie.wk11 +
+                          qtyData.serie.wk12
+                        } `}
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -568,15 +611,21 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
         </div>
 
         {/* Second Table - Cell Details */}
-        <div className="rounded-md border">
-          <Card className="p-3">
+        <div className="rounded-md border shadow-sm hover:shadow-md transition-all">
+          <Card className="p-3 transition-all hover:border-primary/20">
             <Table>
               <TableHeader>
-                <TableRow className="h-8">
-                  <TableHead className="text-xs" rowSpan={3}>
+                <TableRow className="h-8 hover:bg-muted/50 transition-all">
+                  <TableHead
+                    className="text-xs font-medium text-muted-foreground bg-muted/30 transition-all"
+                    rowSpan={3}
+                  >
                     {zoneDetail.zone}
                   </TableHead>
-                  <TableHead className="text-xs" rowSpan={2}>
+                  <TableHead
+                    className="text-xs font-medium text-muted-foreground bg-muted/30 transition-all"
+                    rowSpan={2}
+                  >
                     NATURE
                   </TableHead>
                   <TableHead
@@ -595,7 +644,7 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
                     Sept
                   </TableHead>
                 </TableRow>
-                <TableRow className="h-8">
+                <TableRow className="h-8 hover:bg-muted/50 transition-all">
                   <TableHead className="text-xs text-center">WK1</TableHead>
                   <TableHead className="text-xs text-center">WK2</TableHead>
                   <TableHead className="text-xs text-center">WK3</TableHead>
@@ -621,760 +670,844 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
               </TableHeader>
               <TableBody>
                 {/* Cell1 Data */}
-                <TableRow className="h-8">
+                <TableRow className="h-8 hover:bg-muted/50 transition-all">
                   <TableCell className="text-xs font-medium" rowSpan={3}>
                     Cell1
                   </TableCell>
                   <TableCell className="text-xs font-medium">Projet</TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk1
+                      ? `${priceData.projet.wk1} €`
                       : qtyData.projet.wk1}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk2
+                      ? `${priceData.projet.wk2} €`
                       : qtyData.projet.wk2}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk3
+                      ? `${priceData.projet.wk3} €`
                       : qtyData.projet.wk3}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk4
+                      ? `${priceData.projet.wk4} €`
                       : qtyData.projet.wk4}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.projet.wk1 +
-                        priceData.projet.wk2 +
-                        priceData.projet.wk3 +
-                        priceData.projet.wk4
-                      : qtyData.projet.wk1 +
-                        qtyData.projet.wk2 +
-                        qtyData.projet.wk3 +
-                        qtyData.projet.wk4}
+                      ? `${
+                          priceData.projet.wk1 +
+                          priceData.projet.wk2 +
+                          priceData.projet.wk3 +
+                          priceData.projet.wk4
+                        } €`
+                      : `${
+                          qtyData.projet.wk1 +
+                          qtyData.projet.wk2 +
+                          qtyData.projet.wk3 +
+                          qtyData.projet.wk4
+                        }`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk5
+                      ? `${priceData.projet.wk5} €`
                       : qtyData.projet.wk5}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk6
+                      ? `${priceData.projet.wk6} €`
                       : qtyData.projet.wk6}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk7
+                      ? `${priceData.projet.wk7} €`
                       : qtyData.projet.wk7}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk8
+                      ? `${priceData.projet.wk8} €`
                       : qtyData.projet.wk8}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.projet.wk5 +
-                        priceData.projet.wk6 +
-                        priceData.projet.wk7 +
-                        priceData.projet.wk8
-                      : qtyData.projet.wk5 +
-                        qtyData.projet.wk6 +
-                        qtyData.projet.wk7 +
-                        qtyData.projet.wk8}
+                      ? `${
+                          priceData.projet.wk5 +
+                          priceData.projet.wk6 +
+                          priceData.projet.wk7 +
+                          priceData.projet.wk8
+                        } €`
+                      : `${
+                          qtyData.projet.wk5 +
+                          qtyData.projet.wk6 +
+                          qtyData.projet.wk7 +
+                          qtyData.projet.wk8
+                        }`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk9
+                      ? `${priceData.projet.wk9} €`
                       : qtyData.projet.wk9}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk10
+                      ? `${priceData.projet.wk10} €`
                       : qtyData.projet.wk10}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk11
+                      ? `${priceData.projet.wk11} €`
                       : qtyData.projet.wk11}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk12
+                      ? `${priceData.projet.wk12} €`
                       : qtyData.projet.wk12}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all">
                     {viewMode === "price"
-                      ? priceData.projet.wk9 +
-                        priceData.projet.wk10 +
-                        priceData.projet.wk11 +
-                        priceData.projet.wk12
-                      : qtyData.projet.wk9 +
-                        qtyData.projet.wk10 +
-                        qtyData.projet.wk11 +
-                        qtyData.projet.wk12}
+                      ? `${
+                          priceData.projet.wk9 +
+                          priceData.projet.wk10 +
+                          priceData.projet.wk11 +
+                          priceData.projet.wk12
+                        } €`
+                      : `${
+                          qtyData.projet.wk9 +
+                          qtyData.projet.wk10 +
+                          qtyData.projet.wk11 +
+                          qtyData.projet.wk12
+                        }`}
                   </TableCell>
                 </TableRow>
-                <TableRow className="h-8">
+                <TableRow className="h-8 hover:bg-muted/50 transition-all">
                   <TableCell className="text-xs font-medium">Serie</TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk1
+                      ? `${priceData.serie.wk1} €`
                       : qtyData.serie.wk1}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk2
+                      ? `${priceData.serie.wk2} €`
                       : qtyData.serie.wk2}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk3
+                      ? `${priceData.serie.wk3} €`
                       : qtyData.serie.wk3}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk4
+                      ? `${priceData.serie.wk4} €`
                       : qtyData.serie.wk4}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.serie.wk1 +
-                        priceData.serie.wk2 +
-                        priceData.serie.wk3 +
-                        priceData.serie.wk4
-                      : qtyData.serie.wk1 +
-                        qtyData.serie.wk2 +
-                        qtyData.serie.wk3 +
-                        qtyData.serie.wk4}
+                      ? `${
+                          priceData.serie.wk1 +
+                          priceData.serie.wk2 +
+                          priceData.serie.wk3 +
+                          priceData.serie.wk4
+                        } €`
+                      : `${
+                          qtyData.serie.wk1 +
+                          qtyData.serie.wk2 +
+                          qtyData.serie.wk3 +
+                          qtyData.serie.wk4
+                        }`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk5
+                      ? `${priceData.serie.wk5} €`
                       : qtyData.serie.wk5}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk6
+                      ? `${priceData.serie.wk6} €`
                       : qtyData.serie.wk6}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk7
+                      ? `${priceData.serie.wk7} €`
                       : qtyData.serie.wk7}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk8
+                      ? `${priceData.serie.wk8} €`
                       : qtyData.serie.wk8}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.serie.wk5 +
-                        priceData.serie.wk6 +
-                        priceData.serie.wk7 +
-                        priceData.serie.wk8
-                      : qtyData.serie.wk5 +
-                        qtyData.serie.wk6 +
-                        qtyData.serie.wk7 +
-                        qtyData.serie.wk8}
+                      ? `${
+                          priceData.serie.wk5 +
+                          priceData.serie.wk6 +
+                          priceData.serie.wk7 +
+                          priceData.serie.wk8
+                        } €`
+                      : `${
+                          qtyData.serie.wk5 +
+                          qtyData.serie.wk6 +
+                          qtyData.serie.wk7 +
+                          qtyData.serie.wk8
+                        }`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk9
+                      ? `${priceData.serie.wk9} €`
                       : qtyData.serie.wk9}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk10
+                      ? `${priceData.serie.wk10} €`
                       : qtyData.serie.wk10}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk11
+                      ? `${priceData.serie.wk11} €`
                       : qtyData.serie.wk11}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk12
+                      ? `${priceData.serie.wk12} €`
                       : qtyData.serie.wk12}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all">
                     {viewMode === "price"
-                      ? priceData.serie.wk9 +
-                        priceData.serie.wk10 +
-                        priceData.serie.wk11 +
-                        priceData.serie.wk12
-                      : qtyData.serie.wk9 +
-                        qtyData.serie.wk10 +
-                        qtyData.serie.wk11 +
-                        qtyData.serie.wk12}
+                      ? `${
+                          priceData.serie.wk9 +
+                          priceData.serie.wk10 +
+                          priceData.serie.wk11 +
+                          priceData.serie.wk12
+                        } €`
+                      : `${
+                          qtyData.serie.wk9 +
+                          qtyData.serie.wk10 +
+                          qtyData.serie.wk11 +
+                          qtyData.serie.wk12
+                        }`}
                   </TableCell>
                 </TableRow>
-                <TableRow className="h-8">
+                <TableRow className="h-8 hover:bg-muted/50 transition-all">
                   <TableCell className="text-xs font-medium">TOTAL</TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk1 + priceData.serie.wk1
-                      : qtyData.projet.wk1 + qtyData.serie.wk1}
+                      ? `${priceData.projet.wk1 + priceData.serie.wk1} €`
+                      : `${qtyData.projet.wk1 + qtyData.serie.wk1}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk2 + priceData.serie.wk2
-                      : qtyData.projet.wk2 + qtyData.serie.wk2}
+                      ? `${priceData.projet.wk2 + priceData.serie.wk2} €`
+                      : `${qtyData.projet.wk2 + qtyData.serie.wk2}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk3 + priceData.serie.wk3
-                      : qtyData.projet.wk3 + qtyData.serie.wk3}
+                      ? `${priceData.projet.wk3 + priceData.serie.wk3} €`
+                      : `${qtyData.projet.wk3 + qtyData.serie.wk3}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk4 + priceData.serie.wk4
-                      : qtyData.projet.wk4 + qtyData.serie.wk4}
+                      ? `${priceData.projet.wk4 + priceData.serie.wk4} €`
+                      : `${qtyData.projet.wk4 + qtyData.serie.wk4}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.projet.wk1 +
-                        priceData.projet.wk2 +
-                        priceData.projet.wk3 +
-                        priceData.projet.wk4 +
-                        priceData.serie.wk1 +
-                        priceData.serie.wk2 +
-                        priceData.serie.wk3 +
-                        priceData.serie.wk4
-                      : qtyData.projet.wk1 +
-                        qtyData.projet.wk2 +
-                        qtyData.projet.wk3 +
-                        qtyData.projet.wk4 +
-                        qtyData.serie.wk1 +
-                        qtyData.serie.wk2 +
-                        qtyData.serie.wk3 +
-                        qtyData.serie.wk4}
+                      ? `${
+                          priceData.projet.wk1 +
+                          priceData.projet.wk2 +
+                          priceData.projet.wk3 +
+                          priceData.projet.wk4 +
+                          priceData.serie.wk1 +
+                          priceData.serie.wk2 +
+                          priceData.serie.wk3 +
+                          priceData.serie.wk4
+                        } €`
+                      : `${
+                          qtyData.projet.wk1 +
+                          qtyData.projet.wk2 +
+                          qtyData.projet.wk3 +
+                          qtyData.projet.wk4 +
+                          qtyData.serie.wk1 +
+                          qtyData.serie.wk2 +
+                          qtyData.serie.wk3 +
+                          qtyData.serie.wk4
+                        } `}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk5 + priceData.serie.wk5
-                      : qtyData.projet.wk5 + qtyData.serie.wk5}
+                      ? `${priceData.projet.wk5 + priceData.serie.wk5} €`
+                      : `${qtyData.projet.wk5 + qtyData.serie.wk5}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk6 + priceData.serie.wk6
-                      : qtyData.projet.wk6 + qtyData.serie.wk6}
+                      ? `${priceData.projet.wk6 + priceData.serie.wk6} €`
+                      : `${qtyData.projet.wk6 + qtyData.serie.wk6}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk7 + priceData.serie.wk7
-                      : qtyData.projet.wk7 + qtyData.serie.wk7}
+                      ? `${priceData.projet.wk7 + priceData.serie.wk7} €`
+                      : `${qtyData.projet.wk7 + qtyData.serie.wk7}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk8 + priceData.serie.wk8
-                      : qtyData.projet.wk8 + qtyData.serie.wk8}
+                      ? `${priceData.projet.wk8 + priceData.serie.wk8} €`
+                      : `${qtyData.projet.wk8 + qtyData.serie.wk8}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.projet.wk5 +
-                        priceData.projet.wk6 +
-                        priceData.projet.wk7 +
-                        priceData.projet.wk8 +
-                        priceData.serie.wk5 +
-                        priceData.serie.wk6 +
-                        priceData.serie.wk7 +
-                        priceData.serie.wk8
-                      : qtyData.projet.wk5 +
-                        qtyData.projet.wk6 +
-                        qtyData.projet.wk7 +
-                        qtyData.projet.wk8 +
-                        qtyData.serie.wk5 +
-                        qtyData.serie.wk6 +
-                        qtyData.serie.wk7 +
-                        qtyData.serie.wk8}
+                      ? `${
+                          priceData.projet.wk5 +
+                          priceData.projet.wk6 +
+                          priceData.projet.wk7 +
+                          priceData.projet.wk8 +
+                          priceData.serie.wk5 +
+                          priceData.serie.wk6 +
+                          priceData.serie.wk7 +
+                          priceData.serie.wk8
+                        } €`
+                      : `${
+                          qtyData.projet.wk5 +
+                          qtyData.projet.wk6 +
+                          qtyData.projet.wk7 +
+                          qtyData.projet.wk8 +
+                          qtyData.serie.wk5 +
+                          qtyData.serie.wk6 +
+                          qtyData.serie.wk7 +
+                          qtyData.serie.wk8
+                        } `}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk9 + priceData.serie.wk9
-                      : qtyData.projet.wk9 + qtyData.serie.wk9}
+                      ? `${priceData.projet.wk9 + priceData.serie.wk9} €`
+                      : `${qtyData.projet.wk9 + qtyData.serie.wk9}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk10 + priceData.serie.wk10
-                      : qtyData.projet.wk10 + qtyData.serie.wk10}
+                      ? `${priceData.projet.wk10 + priceData.serie.wk10} €`
+                      : `${qtyData.projet.wk10 + qtyData.serie.wk10}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk11 + priceData.serie.wk11
-                      : qtyData.projet.wk11 + qtyData.serie.wk11}
+                      ? `${priceData.projet.wk11 + priceData.serie.wk11} €`
+                      : `${qtyData.projet.wk11 + qtyData.serie.wk11}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk12 + priceData.serie.wk12
-                      : qtyData.projet.wk12 + qtyData.serie.wk12}
+                      ? `${priceData.projet.wk12 + priceData.serie.wk12} €`
+                      : `${qtyData.projet.wk12 + qtyData.serie.wk12}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all">
                     {viewMode === "price"
-                      ? priceData.projet.wk9 +
-                        priceData.projet.wk10 +
-                        priceData.projet.wk11 +
-                        priceData.projet.wk12 +
-                        priceData.serie.wk9 +
-                        priceData.serie.wk10 +
-                        priceData.serie.wk11 +
-                        priceData.serie.wk12
-                      : qtyData.projet.wk9 +
-                        qtyData.projet.wk10 +
-                        qtyData.projet.wk11 +
-                        qtyData.projet.wk12 +
-                        qtyData.serie.wk9 +
-                        qtyData.serie.wk10 +
-                        qtyData.serie.wk11 +
-                        qtyData.serie.wk12}
+                      ? `${
+                          priceData.projet.wk9 +
+                          priceData.projet.wk10 +
+                          priceData.projet.wk11 +
+                          priceData.projet.wk12 +
+                          priceData.serie.wk9 +
+                          priceData.serie.wk10 +
+                          priceData.serie.wk11 +
+                          priceData.serie.wk12
+                        } €`
+                      : `${
+                          qtyData.projet.wk9 +
+                          qtyData.projet.wk10 +
+                          qtyData.projet.wk11 +
+                          qtyData.projet.wk12 +
+                          qtyData.serie.wk9 +
+                          qtyData.serie.wk10 +
+                          qtyData.serie.wk11 +
+                          qtyData.serie.wk12
+                        } `}
                   </TableCell>
                 </TableRow>
 
                 {/* Cell2 Data */}
-                <TableRow className="h-8">
+                <TableRow className="h-8 hover:bg-muted/50 transition-all">
                   <TableCell className="text-xs font-medium" rowSpan={3}>
                     Cell2
                   </TableCell>
                   <TableCell className="text-xs font-medium">Projet</TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk1
+                      ? `${priceData.projet.wk1} €`
                       : qtyData.projet.wk1}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk2
+                      ? `${priceData.projet.wk2} €`
                       : qtyData.projet.wk2}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk3
+                      ? `${priceData.projet.wk3} €`
                       : qtyData.projet.wk3}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk4
+                      ? `${priceData.projet.wk4} €`
                       : qtyData.projet.wk4}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.projet.wk1 +
-                        priceData.projet.wk2 +
-                        priceData.projet.wk3 +
-                        priceData.projet.wk4
-                      : qtyData.projet.wk1 +
-                        qtyData.projet.wk2 +
-                        qtyData.projet.wk3 +
-                        qtyData.projet.wk4}
+                      ? `${
+                          priceData.projet.wk1 +
+                          priceData.projet.wk2 +
+                          priceData.projet.wk3 +
+                          priceData.projet.wk4
+                        } €`
+                      : `${
+                          qtyData.projet.wk1 +
+                          qtyData.projet.wk2 +
+                          qtyData.projet.wk3 +
+                          qtyData.projet.wk4
+                        }`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk5
+                      ? `${priceData.projet.wk5} €`
                       : qtyData.projet.wk5}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk6
+                      ? `${priceData.projet.wk6} €`
                       : qtyData.projet.wk6}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk7
+                      ? `${priceData.projet.wk7} €`
                       : qtyData.projet.wk7}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk8
+                      ? `${priceData.projet.wk8} €`
                       : qtyData.projet.wk8}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.projet.wk5 +
-                        priceData.projet.wk6 +
-                        priceData.projet.wk7 +
-                        priceData.projet.wk8
-                      : qtyData.projet.wk5 +
-                        qtyData.projet.wk6 +
-                        qtyData.projet.wk7 +
-                        qtyData.projet.wk8}
+                      ? `${
+                          priceData.projet.wk5 +
+                          priceData.projet.wk6 +
+                          priceData.projet.wk7 +
+                          priceData.projet.wk8
+                        } €`
+                      : `${
+                          qtyData.projet.wk5 +
+                          qtyData.projet.wk6 +
+                          qtyData.projet.wk7 +
+                          qtyData.projet.wk8
+                        }`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk9
+                      ? `${priceData.projet.wk9} €`
                       : qtyData.projet.wk9}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk10
+                      ? `${priceData.projet.wk10} €`
                       : qtyData.projet.wk10}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk11
+                      ? `${priceData.projet.wk11} €`
                       : qtyData.projet.wk11}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk12
+                      ? `${priceData.projet.wk12} €`
                       : qtyData.projet.wk12}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all">
                     {viewMode === "price"
-                      ? priceData.projet.wk9 +
-                        priceData.projet.wk10 +
-                        priceData.projet.wk11 +
-                        priceData.projet.wk12
-                      : qtyData.projet.wk9 +
-                        qtyData.projet.wk10 +
-                        qtyData.projet.wk11 +
-                        qtyData.projet.wk12}
+                      ? `${
+                          priceData.projet.wk9 +
+                          priceData.projet.wk10 +
+                          priceData.projet.wk11 +
+                          priceData.projet.wk12
+                        } €`
+                      : `${
+                          qtyData.projet.wk9 +
+                          qtyData.projet.wk10 +
+                          qtyData.projet.wk11 +
+                          qtyData.projet.wk12
+                        }`}
                   </TableCell>
                 </TableRow>
-                <TableRow className="h-8">
+                <TableRow className="h-8 hover:bg-muted/50 transition-all">
                   <TableCell className="text-xs font-medium">Serie</TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk1
+                      ? `${priceData.serie.wk1} €`
                       : qtyData.serie.wk1}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk2
+                      ? `${priceData.serie.wk2} €`
                       : qtyData.serie.wk2}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk3
+                      ? `${priceData.serie.wk3} €`
                       : qtyData.serie.wk3}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk4
+                      ? `${priceData.serie.wk4} €`
                       : qtyData.serie.wk4}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.serie.wk1 +
-                        priceData.serie.wk2 +
-                        priceData.serie.wk3 +
-                        priceData.serie.wk4
-                      : qtyData.serie.wk1 +
-                        qtyData.serie.wk2 +
-                        qtyData.serie.wk3 +
-                        qtyData.serie.wk4}
+                      ? `${
+                          priceData.serie.wk1 +
+                          priceData.serie.wk2 +
+                          priceData.serie.wk3 +
+                          priceData.serie.wk4
+                        } €`
+                      : `${
+                          qtyData.serie.wk1 +
+                          qtyData.serie.wk2 +
+                          qtyData.serie.wk3 +
+                          qtyData.serie.wk4
+                        }`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk5
+                      ? `${priceData.serie.wk5} €`
                       : qtyData.serie.wk5}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk6
+                      ? `${priceData.serie.wk6} €`
                       : qtyData.serie.wk6}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk7
+                      ? `${priceData.serie.wk7} €`
                       : qtyData.serie.wk7}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk8
+                      ? `${priceData.serie.wk8} €`
                       : qtyData.serie.wk8}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.serie.wk5 +
-                        priceData.serie.wk6 +
-                        priceData.serie.wk7 +
-                        priceData.serie.wk8
-                      : qtyData.serie.wk5 +
-                        qtyData.serie.wk6 +
-                        qtyData.serie.wk7 +
-                        qtyData.serie.wk8}
+                      ? `${
+                          priceData.serie.wk5 +
+                          priceData.serie.wk6 +
+                          priceData.serie.wk7 +
+                          priceData.serie.wk8
+                        } €`
+                      : `${
+                          qtyData.serie.wk5 +
+                          qtyData.serie.wk6 +
+                          qtyData.serie.wk7 +
+                          qtyData.serie.wk8
+                        }`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk9
+                      ? `${priceData.serie.wk9} €`
                       : qtyData.serie.wk9}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk10
+                      ? `${priceData.serie.wk10} €`
                       : qtyData.serie.wk10}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk11
+                      ? `${priceData.serie.wk11} €`
                       : qtyData.serie.wk11}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.serie.wk12
+                      ? `${priceData.serie.wk12} €`
                       : qtyData.serie.wk12}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all">
                     {viewMode === "price"
-                      ? priceData.serie.wk9 +
-                        priceData.serie.wk10 +
-                        priceData.serie.wk11 +
-                        priceData.serie.wk12
-                      : qtyData.serie.wk9 +
-                        qtyData.serie.wk10 +
-                        qtyData.serie.wk11 +
-                        qtyData.serie.wk12}
+                      ? `${
+                          priceData.serie.wk9 +
+                          priceData.serie.wk10 +
+                          priceData.serie.wk11 +
+                          priceData.serie.wk12
+                        } €`
+                      : `${
+                          qtyData.serie.wk9 +
+                          qtyData.serie.wk10 +
+                          qtyData.serie.wk11 +
+                          qtyData.serie.wk12
+                        }`}
                   </TableCell>
                 </TableRow>
-                <TableRow className="h-8">
+                <TableRow className="h-8 hover:bg-muted/50 transition-all">
                   <TableCell className="text-xs font-medium">TOTAL</TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk1 + priceData.serie.wk1
-                      : qtyData.projet.wk1 + qtyData.serie.wk1}
+                      ? `${priceData.projet.wk1 + priceData.serie.wk1} €`
+                      : `${qtyData.projet.wk1 + qtyData.serie.wk1}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk2 + priceData.serie.wk2
-                      : qtyData.projet.wk2 + qtyData.serie.wk2}
+                      ? `${priceData.projet.wk2 + priceData.serie.wk2} €`
+                      : `${qtyData.projet.wk2 + qtyData.serie.wk2}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk3 + priceData.serie.wk3
-                      : qtyData.projet.wk3 + qtyData.serie.wk3}
+                      ? `${priceData.projet.wk3 + priceData.serie.wk3} €`
+                      : `${qtyData.projet.wk3 + qtyData.serie.wk3}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk4 + priceData.serie.wk4
-                      : qtyData.projet.wk4 + qtyData.serie.wk4}
+                      ? `${priceData.projet.wk4 + priceData.serie.wk4} €`
+                      : `${qtyData.projet.wk4 + qtyData.serie.wk4}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.projet.wk1 +
-                        priceData.projet.wk2 +
-                        priceData.projet.wk3 +
-                        priceData.projet.wk4 +
-                        priceData.serie.wk1 +
-                        priceData.serie.wk2 +
-                        priceData.serie.wk3 +
-                        priceData.serie.wk4
-                      : qtyData.projet.wk1 +
-                        qtyData.projet.wk2 +
-                        qtyData.projet.wk3 +
-                        qtyData.projet.wk4 +
-                        qtyData.serie.wk1 +
-                        qtyData.serie.wk2 +
-                        qtyData.serie.wk3 +
-                        qtyData.serie.wk4}
+                      ? `${
+                          priceData.projet.wk1 +
+                          priceData.projet.wk2 +
+                          priceData.projet.wk3 +
+                          priceData.projet.wk4 +
+                          priceData.serie.wk1 +
+                          priceData.serie.wk2 +
+                          priceData.serie.wk3 +
+                          priceData.serie.wk4
+                        } €`
+                      : `${
+                          qtyData.projet.wk1 +
+                          qtyData.projet.wk2 +
+                          qtyData.projet.wk3 +
+                          qtyData.projet.wk4 +
+                          qtyData.serie.wk1 +
+                          qtyData.serie.wk2 +
+                          qtyData.serie.wk3 +
+                          qtyData.serie.wk4
+                        } `}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk5 + priceData.serie.wk5
-                      : qtyData.projet.wk5 + qtyData.serie.wk5}
+                      ? `${priceData.projet.wk5 + priceData.serie.wk5} €`
+                      : `${qtyData.projet.wk5 + qtyData.serie.wk5}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk6 + priceData.serie.wk6
-                      : qtyData.projet.wk6 + qtyData.serie.wk6}
+                      ? `${priceData.projet.wk6 + priceData.serie.wk6} €`
+                      : `${qtyData.projet.wk6 + qtyData.serie.wk6}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk7 + priceData.serie.wk7
-                      : qtyData.projet.wk7 + qtyData.serie.wk7}
+                      ? `${priceData.projet.wk7 + priceData.serie.wk7} €`
+                      : `${qtyData.projet.wk7 + qtyData.serie.wk7}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk8 + priceData.serie.wk8
-                      : qtyData.projet.wk8 + qtyData.serie.wk8}
+                      ? `${priceData.projet.wk8 + priceData.serie.wk8} €`
+                      : `${qtyData.projet.wk8 + qtyData.serie.wk8}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.projet.wk5 +
-                        priceData.projet.wk6 +
-                        priceData.projet.wk7 +
-                        priceData.projet.wk8 +
-                        priceData.serie.wk5 +
-                        priceData.serie.wk6 +
-                        priceData.serie.wk7 +
-                        priceData.serie.wk8
-                      : qtyData.projet.wk5 +
-                        qtyData.projet.wk6 +
-                        qtyData.projet.wk7 +
-                        qtyData.projet.wk8 +
-                        qtyData.serie.wk5 +
-                        qtyData.serie.wk6 +
-                        qtyData.serie.wk7 +
-                        qtyData.serie.wk8}
+                      ? `${
+                          priceData.projet.wk5 +
+                          priceData.projet.wk6 +
+                          priceData.projet.wk7 +
+                          priceData.projet.wk8 +
+                          priceData.serie.wk5 +
+                          priceData.serie.wk6 +
+                          priceData.serie.wk7 +
+                          priceData.serie.wk8
+                        } €`
+                      : `${
+                          qtyData.projet.wk5 +
+                          qtyData.projet.wk6 +
+                          qtyData.projet.wk7 +
+                          qtyData.projet.wk8 +
+                          qtyData.serie.wk5 +
+                          qtyData.serie.wk6 +
+                          qtyData.serie.wk7 +
+                          qtyData.serie.wk8
+                        } `}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk9 + priceData.serie.wk9
-                      : qtyData.projet.wk9 + qtyData.serie.wk9}
+                      ? `${priceData.projet.wk9 + priceData.serie.wk9} €`
+                      : `${qtyData.projet.wk9 + qtyData.serie.wk9}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk10 + priceData.serie.wk10
-                      : qtyData.projet.wk10 + qtyData.serie.wk10}
+                      ? `${priceData.projet.wk10 + priceData.serie.wk10} €`
+                      : `${qtyData.projet.wk10 + qtyData.serie.wk10}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk11 + priceData.serie.wk11
-                      : qtyData.projet.wk11 + qtyData.serie.wk11}
+                      ? `${priceData.projet.wk11 + priceData.serie.wk11} €`
+                      : `${qtyData.projet.wk11 + qtyData.serie.wk11}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk12 + priceData.serie.wk12
-                      : qtyData.projet.wk12 + qtyData.serie.wk12}
+                      ? `${priceData.projet.wk12 + priceData.serie.wk12} €`
+                      : `${qtyData.projet.wk12 + qtyData.serie.wk12}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all">
                     {viewMode === "price"
-                      ? priceData.projet.wk9 +
-                        priceData.projet.wk10 +
-                        priceData.projet.wk11 +
-                        priceData.projet.wk12 +
-                        priceData.serie.wk9 +
-                        priceData.serie.wk10 +
-                        priceData.serie.wk11 +
-                        priceData.serie.wk12
-                      : qtyData.projet.wk9 +
-                        qtyData.projet.wk10 +
-                        qtyData.projet.wk11 +
-                        qtyData.projet.wk12 +
-                        qtyData.serie.wk9 +
-                        qtyData.serie.wk10 +
-                        qtyData.serie.wk11 +
-                        qtyData.serie.wk12}
+                      ? `${
+                          priceData.projet.wk9 +
+                          priceData.projet.wk10 +
+                          priceData.projet.wk11 +
+                          priceData.projet.wk12 +
+                          priceData.serie.wk9 +
+                          priceData.serie.wk10 +
+                          priceData.serie.wk11 +
+                          priceData.serie.wk12
+                        } €`
+                      : `${
+                          qtyData.projet.wk9 +
+                          qtyData.projet.wk10 +
+                          qtyData.projet.wk11 +
+                          qtyData.projet.wk12 +
+                          qtyData.serie.wk9 +
+                          qtyData.serie.wk10 +
+                          qtyData.serie.wk11 +
+                          qtyData.serie.wk12
+                        } `}
                   </TableCell>
                 </TableRow>
 
                 {/* Total Z1 Row */}
-                <TableRow className="h-8 font-medium">
+                <TableRow className="h-8 font-medium hover:bg-muted/50 transition-all">
                   <TableCell className="text-xs font-medium" colSpan={2}>
                     Total {zoneDetail.zone}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk1 + priceData.serie.wk1
-                      : qtyData.projet.wk1 + qtyData.serie.wk1}
+                      ? `${priceData.projet.wk1 + priceData.serie.wk1} €`
+                      : `${qtyData.projet.wk1 + qtyData.serie.wk1}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk2 + priceData.serie.wk2
-                      : qtyData.projet.wk2 + qtyData.serie.wk2}
+                      ? `${priceData.projet.wk2 + priceData.serie.wk2} €`
+                      : `${qtyData.projet.wk2 + qtyData.serie.wk2}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk3 + priceData.serie.wk3
-                      : qtyData.projet.wk3 + qtyData.serie.wk3}
+                      ? `${priceData.projet.wk3 + priceData.serie.wk3} €`
+                      : `${qtyData.projet.wk3 + qtyData.serie.wk3}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk4 + priceData.serie.wk4
-                      : qtyData.projet.wk4 + qtyData.serie.wk4}
+                      ? `${priceData.projet.wk4 + priceData.serie.wk4} €`
+                      : `${qtyData.projet.wk4 + qtyData.serie.wk4}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.projet.wk1 +
-                        priceData.projet.wk2 +
-                        priceData.projet.wk3 +
-                        priceData.projet.wk4 +
-                        priceData.serie.wk1 +
-                        priceData.serie.wk2 +
-                        priceData.serie.wk3 +
-                        priceData.serie.wk4
-                      : qtyData.projet.wk1 +
-                        qtyData.projet.wk2 +
-                        qtyData.projet.wk3 +
-                        qtyData.projet.wk4 +
-                        qtyData.serie.wk1 +
-                        qtyData.serie.wk2 +
-                        qtyData.serie.wk3 +
-                        qtyData.serie.wk4}
+                      ? `${
+                          priceData.projet.wk1 +
+                          priceData.projet.wk2 +
+                          priceData.projet.wk3 +
+                          priceData.projet.wk4 +
+                          priceData.serie.wk1 +
+                          priceData.serie.wk2 +
+                          priceData.serie.wk3 +
+                          priceData.serie.wk4
+                        } €`
+                      : `${
+                          qtyData.projet.wk1 +
+                          qtyData.projet.wk2 +
+                          qtyData.projet.wk3 +
+                          qtyData.projet.wk4 +
+                          qtyData.serie.wk1 +
+                          qtyData.serie.wk2 +
+                          qtyData.serie.wk3 +
+                          qtyData.serie.wk4
+                        } `}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk5 + priceData.serie.wk5
-                      : qtyData.projet.wk5 + qtyData.serie.wk5}
+                      ? `${priceData.projet.wk5 + priceData.serie.wk5} €`
+                      : `${qtyData.projet.wk5 + qtyData.serie.wk5}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk6 + priceData.serie.wk6
-                      : qtyData.projet.wk6 + qtyData.serie.wk6}
+                      ? `${priceData.projet.wk6 + priceData.serie.wk6} €`
+                      : `${qtyData.projet.wk6 + qtyData.serie.wk6}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk7 + priceData.serie.wk7
-                      : qtyData.projet.wk7 + qtyData.serie.wk7}
+                      ? `${priceData.projet.wk7 + priceData.serie.wk7} €`
+                      : `${qtyData.projet.wk7 + qtyData.serie.wk7}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk8 + priceData.serie.wk8
-                      : qtyData.projet.wk8 + qtyData.serie.wk8}
+                      ? `${priceData.projet.wk8 + priceData.serie.wk8} €`
+                      : `${qtyData.projet.wk8 + qtyData.serie.wk8}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.projet.wk5 +
-                        priceData.projet.wk6 +
-                        priceData.projet.wk7 +
-                        priceData.projet.wk8 +
-                        priceData.serie.wk5 +
-                        priceData.serie.wk6 +
-                        priceData.serie.wk7 +
-                        priceData.serie.wk8
-                      : qtyData.projet.wk5 +
-                        qtyData.projet.wk6 +
-                        qtyData.projet.wk7 +
-                        qtyData.projet.wk8 +
-                        qtyData.serie.wk5 +
-                        qtyData.serie.wk6 +
-                        qtyData.serie.wk7 +
-                        qtyData.serie.wk8}
+                      ? `${
+                          priceData.projet.wk5 +
+                          priceData.projet.wk6 +
+                          priceData.projet.wk7 +
+                          priceData.projet.wk8 +
+                          priceData.serie.wk5 +
+                          priceData.serie.wk6 +
+                          priceData.serie.wk7 +
+                          priceData.serie.wk8
+                        } €`
+                      : `${
+                          qtyData.projet.wk5 +
+                          qtyData.projet.wk6 +
+                          qtyData.projet.wk7 +
+                          qtyData.projet.wk8 +
+                          qtyData.serie.wk5 +
+                          qtyData.serie.wk6 +
+                          qtyData.serie.wk7 +
+                          qtyData.serie.wk8
+                        } `}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk9 + priceData.serie.wk9
-                      : qtyData.projet.wk9 + qtyData.serie.wk9}
+                      ? `${priceData.projet.wk9 + priceData.serie.wk9} €`
+                      : `${qtyData.projet.wk9 + qtyData.serie.wk9}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk10 + priceData.serie.wk10
-                      : qtyData.projet.wk10 + qtyData.serie.wk10}
+                      ? `${priceData.projet.wk10 + priceData.serie.wk10} €`
+                      : `${qtyData.projet.wk10 + qtyData.serie.wk10}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk11 + priceData.serie.wk11
-                      : qtyData.projet.wk11 + qtyData.serie.wk11}
+                      ? `${priceData.projet.wk11 + priceData.serie.wk11} €`
+                      : `${qtyData.projet.wk11 + qtyData.serie.wk11}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk12 + priceData.serie.wk12
-                      : qtyData.projet.wk12 + qtyData.serie.wk12}
+                      ? `${priceData.projet.wk12 + priceData.serie.wk12} €`
+                      : `${qtyData.projet.wk12 + qtyData.serie.wk12}`}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all">
                     {viewMode === "price"
-                      ? priceData.projet.wk9 +
-                        priceData.projet.wk10 +
-                        priceData.projet.wk11 +
-                        priceData.projet.wk12 +
-                        priceData.serie.wk9 +
-                        priceData.serie.wk10 +
-                        priceData.serie.wk11 +
-                        priceData.serie.wk12
-                      : qtyData.projet.wk9 +
-                        qtyData.projet.wk10 +
-                        qtyData.projet.wk11 +
-                        qtyData.projet.wk12 +
-                        qtyData.serie.wk9 +
-                        qtyData.serie.wk10 +
-                        qtyData.serie.wk11 +
-                        qtyData.serie.wk12}
+                      ? `${
+                          priceData.projet.wk9 +
+                          priceData.projet.wk10 +
+                          priceData.projet.wk11 +
+                          priceData.projet.wk12 +
+                          priceData.serie.wk9 +
+                          priceData.serie.wk10 +
+                          priceData.serie.wk11 +
+                          priceData.serie.wk12
+                        } €`
+                      : `${
+                          qtyData.projet.wk9 +
+                          qtyData.projet.wk10 +
+                          qtyData.projet.wk11 +
+                          qtyData.projet.wk12 +
+                          qtyData.serie.wk9 +
+                          qtyData.serie.wk10 +
+                          qtyData.serie.wk11 +
+                          qtyData.serie.wk12
+                        } `}
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -1383,80 +1516,82 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
         </div>
 
         {/* Third Table - Employee Details */}
-        <div className="rounded-md border">
-          <div className="flex items-center gap-2 mb-1 py-2">
-            <div className="flex items-center gap-2 px-3">
-              <Users2 className="w-3 h-3 text-primary" />
-              <h3 className="font-medium text-xs">Operator Details</h3>
+        <div className="rounded-md border shadow-sm hover:shadow-md transition-all">
+          <div className="flex items-center gap-2 mb-1 py-3 px-4 bg-muted/30 rounded-t-md">
+            <div className="flex items-center gap-2">
+              <Users2 className="w-4 h-4 text-primary" />
+              <h3 className="font-medium text-sm">Operator Details</h3>
             </div>
-            <Select defaultValue="all-operators">
-              <SelectTrigger className="w-[180px] h-8 text-xs">
-                <SelectValue placeholder="Select Operator" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all-operators" className="text-xs">
-                  All Operators
-                </SelectItem>
-                <SelectItem value="MA123" className="text-xs">
-                  BRAHIM ELJADIOUI
-                </SelectItem>
-                <SelectItem value="MA124" className="text-xs">
-                  ADIL 1 ALAOUI 1
-                </SelectItem>
-                <SelectItem value="MA125" className="text-xs">
-                  ADIL 2 ALAOUI 2
-                </SelectItem>
-                <SelectItem value="MA126" className="text-xs">
-                  ADIL 3 ALAOUI 3
-                </SelectItem>
-                <SelectItem value="MA127" className="text-xs">
-                  ADIL 4 ALAOUI 4
-                </SelectItem>
-                <SelectItem value="MA128" className="text-xs">
-                  ADIL 5 ALAOUI 5
-                </SelectItem>
-                <SelectItem value="MA129" className="text-xs">
-                  ADIL 6 ALAOUI 6
-                </SelectItem>
-                <SelectItem value="MA130" className="text-xs">
-                  ADIL 7 ALAOUI 7
-                </SelectItem>
-                <SelectItem value="MA131" className="text-xs">
-                  ADIL 8 ALAOUI 8
-                </SelectItem>
-                <SelectItem value="MA132" className="text-xs">
-                  ADIL 9 ALAOUI 9
-                </SelectItem>
-                <SelectItem value="MA133" className="text-xs">
-                  ADIL 10 ALAOUI 10
-                </SelectItem>
-                <SelectItem value="MA134" className="text-xs">
-                  ADIL 11 ALAOUI 11
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-2 ml-auto">
+              <Select defaultValue="all-operators">
+                <SelectTrigger className="w-[180px] h-8 text-xs bg-background">
+                  <SelectValue placeholder="Select Operator" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all-operators" className="text-xs">
+                    All Operators
+                  </SelectItem>
+                  <SelectItem value="MA123" className="text-xs">
+                    BRAHIM ELJADIOUI
+                  </SelectItem>
+                  <SelectItem value="MA124" className="text-xs">
+                    ADIL 1 ALAOUI 1
+                  </SelectItem>
+                  <SelectItem value="MA125" className="text-xs">
+                    ADIL 2 ALAOUI 2
+                  </SelectItem>
+                  <SelectItem value="MA126" className="text-xs">
+                    ADIL 3 ALAOUI 3
+                  </SelectItem>
+                  <SelectItem value="MA127" className="text-xs">
+                    ADIL 4 ALAOUI 4
+                  </SelectItem>
+                  <SelectItem value="MA128" className="text-xs">
+                    ADIL 5 ALAOUI 5
+                  </SelectItem>
+                  <SelectItem value="MA129" className="text-xs">
+                    ADIL 6 ALAOUI 6
+                  </SelectItem>
+                  <SelectItem value="MA130" className="text-xs">
+                    ADIL 7 ALAOUI 7
+                  </SelectItem>
+                  <SelectItem value="MA131" className="text-xs">
+                    ADIL 8 ALAOUI 8
+                  </SelectItem>
+                  <SelectItem value="MA132" className="text-xs">
+                    ADIL 9 ALAOUI 9
+                  </SelectItem>
+                  <SelectItem value="MA133" className="text-xs">
+                    ADIL 10 ALAOUI 10
+                  </SelectItem>
+                  <SelectItem value="MA134" className="text-xs">
+                    ADIL 11 ALAOUI 11
+                  </SelectItem>
+                </SelectContent>
+              </Select>
 
-            <Select defaultValue="all-cells">
-              <SelectTrigger className="w-[180px] h-8 text-xs">
-                <SelectValue placeholder="Select Cell" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all-cells" className="text-xs">
-                  All Cells
-                </SelectItem>
-                <SelectItem value="cell1" className="text-xs">
-                  Cell 1
-                </SelectItem>
-                <SelectItem value="cell2" className="text-xs">
-                  Cell 2
-                </SelectItem>
-              </SelectContent>
-            </Select>
+              <Select defaultValue="all-cells">
+                <SelectTrigger className="w-[180px] h-8 text-xs bg-background">
+                  <SelectValue placeholder="Select Cell" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all-cells" className="text-xs">
+                    All Cells
+                  </SelectItem>
+                  <SelectItem value="cell1" className="text-xs">
+                    Cell 1
+                  </SelectItem>
+                  <SelectItem value="cell2" className="text-xs">
+                    Cell 2
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-          <Card className="p-3">
+          <Card className="p-3 transition-all hover:border-primary/20">
             <Table>
               <TableHeader>
-                <TableRow className="h-8">
+                <TableRow className="h-8 hover:bg-muted/50 transition-all">
                   <TableHead className="text-xs">Cellule</TableHead>
                   <TableHead className="text-xs">MATRICULE</TableHead>
                   <TableHead className="text-xs">NOM</TableHead>
@@ -1485,301 +1620,337 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow className="h-8">
+                <TableRow className="h-8 hover:bg-muted/50 transition-all">
                   <TableCell className="text-xs" rowSpan={12}>
                     CELL1
                   </TableCell>
                   <TableCell className="text-xs">MA123</TableCell>
                   <TableCell className="text-xs">BRAHIM</TableCell>
                   <TableCell className="text-xs">ELJADIOUI</TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk1
+                      ? `${priceData.projet.wk1} €`
                       : qtyData.projet.wk1}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk2
+                      ? `${priceData.projet.wk2} €`
                       : qtyData.projet.wk2}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk3
+                      ? `${priceData.projet.wk3} €`
                       : qtyData.projet.wk3}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk4
+                      ? `${priceData.projet.wk4} €`
                       : qtyData.projet.wk4}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.projet.wk1 +
-                        priceData.projet.wk2 +
-                        priceData.projet.wk3 +
-                        priceData.projet.wk4
-                      : qtyData.projet.wk1 +
-                        qtyData.projet.wk2 +
-                        qtyData.projet.wk3 +
-                        qtyData.projet.wk4}
+                      ? `${
+                          priceData.projet.wk1 +
+                          priceData.projet.wk2 +
+                          priceData.projet.wk3 +
+                          priceData.projet.wk4
+                        } €`
+                      : `${
+                          qtyData.projet.wk1 +
+                          qtyData.projet.wk2 +
+                          qtyData.projet.wk3 +
+                          qtyData.projet.wk4
+                        }`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk5
+                      ? `${priceData.projet.wk5} €`
                       : qtyData.projet.wk5}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk6
+                      ? `${priceData.projet.wk6} €`
                       : qtyData.projet.wk6}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk7
+                      ? `${priceData.projet.wk7} €`
                       : qtyData.projet.wk7}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk8
+                      ? `${priceData.projet.wk8} €`
                       : qtyData.projet.wk8}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.projet.wk5 +
-                        priceData.projet.wk6 +
-                        priceData.projet.wk7 +
-                        priceData.projet.wk8
-                      : qtyData.projet.wk5 +
-                        qtyData.projet.wk6 +
-                        qtyData.projet.wk7 +
-                        qtyData.projet.wk8}
+                      ? `${
+                          priceData.projet.wk5 +
+                          priceData.projet.wk6 +
+                          priceData.projet.wk7 +
+                          priceData.projet.wk8
+                        } €`
+                      : `${
+                          qtyData.projet.wk5 +
+                          qtyData.projet.wk6 +
+                          qtyData.projet.wk7 +
+                          qtyData.projet.wk8
+                        }`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk9
+                      ? `${priceData.projet.wk9} €`
                       : qtyData.projet.wk9}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk10
+                      ? `${priceData.projet.wk10} €`
                       : qtyData.projet.wk10}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk11
+                      ? `${priceData.projet.wk11} €`
                       : qtyData.projet.wk11}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk12
+                      ? `${priceData.projet.wk12} €`
                       : qtyData.projet.wk12}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all">
                     {viewMode === "price"
-                      ? priceData.projet.wk9 +
-                        priceData.projet.wk10 +
-                        priceData.projet.wk11 +
-                        priceData.projet.wk12
-                      : qtyData.projet.wk9 +
-                        qtyData.projet.wk10 +
-                        qtyData.projet.wk11 +
-                        qtyData.projet.wk12}
+                      ? `${
+                          priceData.projet.wk9 +
+                          priceData.projet.wk10 +
+                          priceData.projet.wk11 +
+                          priceData.projet.wk12
+                        } €`
+                      : `${
+                          qtyData.projet.wk9 +
+                          qtyData.projet.wk10 +
+                          qtyData.projet.wk11 +
+                          qtyData.projet.wk12
+                        }`}
                   </TableCell>
                 </TableRow>
-                <TableRow className="h-8">
+                <TableRow className="h-8 hover:bg-muted/50 transition-all">
                   <TableCell className="text-xs">MA124</TableCell>
                   <TableCell className="text-xs">ADIL 1</TableCell>
                   <TableCell className="text-xs">ALAOUI 1</TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk1
+                      ? `${priceData.projet.wk1} €`
                       : qtyData.projet.wk1}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk2
+                      ? `${priceData.projet.wk2} €`
                       : qtyData.projet.wk2}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk3
+                      ? `${priceData.projet.wk3} €`
                       : qtyData.projet.wk3}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk4
+                      ? `${priceData.projet.wk4} €`
                       : qtyData.projet.wk4}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.projet.wk1 +
-                        priceData.projet.wk2 +
-                        priceData.projet.wk3 +
-                        priceData.projet.wk4
-                      : qtyData.projet.wk1 +
-                        qtyData.projet.wk2 +
-                        qtyData.projet.wk3 +
-                        qtyData.projet.wk4}
+                      ? `${
+                          priceData.projet.wk1 +
+                          priceData.projet.wk2 +
+                          priceData.projet.wk3 +
+                          priceData.projet.wk4
+                        } €`
+                      : `${
+                          qtyData.projet.wk1 +
+                          qtyData.projet.wk2 +
+                          qtyData.projet.wk3 +
+                          qtyData.projet.wk4
+                        }`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk5
+                      ? `${priceData.projet.wk5} €`
                       : qtyData.projet.wk5}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk6
+                      ? `${priceData.projet.wk6} €`
                       : qtyData.projet.wk6}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk7
+                      ? `${priceData.projet.wk7} €`
                       : qtyData.projet.wk7}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk8
+                      ? `${priceData.projet.wk8} €`
                       : qtyData.projet.wk8}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.projet.wk5 +
-                        priceData.projet.wk6 +
-                        priceData.projet.wk7 +
-                        priceData.projet.wk8
-                      : qtyData.projet.wk5 +
-                        qtyData.projet.wk6 +
-                        qtyData.projet.wk7 +
-                        qtyData.projet.wk8}
+                      ? `${
+                          priceData.projet.wk5 +
+                          priceData.projet.wk6 +
+                          priceData.projet.wk7 +
+                          priceData.projet.wk8
+                        } €`
+                      : `${
+                          qtyData.projet.wk5 +
+                          qtyData.projet.wk6 +
+                          qtyData.projet.wk7 +
+                          qtyData.projet.wk8
+                        }`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk9
+                      ? `${priceData.projet.wk9} €`
                       : qtyData.projet.wk9}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk10
+                      ? `${priceData.projet.wk10} €`
                       : qtyData.projet.wk10}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk11
+                      ? `${priceData.projet.wk11} €`
                       : qtyData.projet.wk11}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk12
+                      ? `${priceData.projet.wk12} €`
                       : qtyData.projet.wk12}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all">
                     {viewMode === "price"
-                      ? priceData.projet.wk9 +
-                        priceData.projet.wk10 +
-                        priceData.projet.wk11 +
-                        priceData.projet.wk12
-                      : qtyData.projet.wk9 +
-                        qtyData.projet.wk10 +
-                        qtyData.projet.wk11 +
-                        qtyData.projet.wk12}
+                      ? `${
+                          priceData.projet.wk9 +
+                          priceData.projet.wk10 +
+                          priceData.projet.wk11 +
+                          priceData.projet.wk12
+                        } €`
+                      : `${
+                          qtyData.projet.wk9 +
+                          qtyData.projet.wk10 +
+                          qtyData.projet.wk11 +
+                          qtyData.projet.wk12
+                        }`}
                   </TableCell>
                 </TableRow>
-                <TableRow className="h-8">
+                <TableRow className="h-8 hover:bg-muted/50 transition-all">
                   <TableCell className="text-xs">MA134</TableCell>
                   <TableCell className="text-xs">ADIL 11</TableCell>
                   <TableCell className="text-xs">ALAOUI 11</TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk1
+                      ? `${priceData.projet.wk1} €`
                       : qtyData.projet.wk1}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk2
+                      ? `${priceData.projet.wk2} €`
                       : qtyData.projet.wk2}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk3
+                      ? `${priceData.projet.wk3} €`
                       : qtyData.projet.wk3}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk4
+                      ? `${priceData.projet.wk4} €`
                       : qtyData.projet.wk4}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.projet.wk1 +
-                        priceData.projet.wk2 +
-                        priceData.projet.wk3 +
-                        priceData.projet.wk4
-                      : qtyData.projet.wk1 +
-                        qtyData.projet.wk2 +
-                        qtyData.projet.wk3 +
-                        qtyData.projet.wk4}
+                      ? `${
+                          priceData.projet.wk1 +
+                          priceData.projet.wk2 +
+                          priceData.projet.wk3 +
+                          priceData.projet.wk4
+                        } €`
+                      : `${
+                          qtyData.projet.wk1 +
+                          qtyData.projet.wk2 +
+                          qtyData.projet.wk3 +
+                          qtyData.projet.wk4
+                        }`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk5
+                      ? `${priceData.projet.wk5} €`
                       : qtyData.projet.wk5}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk6
+                      ? `${priceData.projet.wk6} €`
                       : qtyData.projet.wk6}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk7
+                      ? `${priceData.projet.wk7} €`
                       : qtyData.projet.wk7}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk8
+                      ? `${priceData.projet.wk8} €`
                       : qtyData.projet.wk8}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30 border-r">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
                     {viewMode === "price"
-                      ? priceData.projet.wk5 +
-                        priceData.projet.wk6 +
-                        priceData.projet.wk7 +
-                        priceData.projet.wk8
-                      : qtyData.projet.wk5 +
-                        qtyData.projet.wk6 +
-                        qtyData.projet.wk7 +
-                        qtyData.projet.wk8}
+                      ? `${
+                          priceData.projet.wk5 +
+                          priceData.projet.wk6 +
+                          priceData.projet.wk7 +
+                          priceData.projet.wk8
+                        } €`
+                      : `${
+                          qtyData.projet.wk5 +
+                          qtyData.projet.wk6 +
+                          qtyData.projet.wk7 +
+                          qtyData.projet.wk8
+                        }`}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk9
+                      ? `${priceData.projet.wk9} €`
                       : qtyData.projet.wk9}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk10
+                      ? `${priceData.projet.wk10} €`
                       : qtyData.projet.wk10}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk11
+                      ? `${priceData.projet.wk11} €`
                       : qtyData.projet.wk11}
                   </TableCell>
-                  <TableCell className="text-xs text-center">
+                  <TableCell className="text-xs text-center font-mono">
                     {viewMode === "price"
-                      ? priceData.projet.wk12
+                      ? `${priceData.projet.wk12} €`
                       : qtyData.projet.wk12}
                   </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/30">
+                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all">
                     {viewMode === "price"
-                      ? priceData.projet.wk9 +
-                        priceData.projet.wk10 +
-                        priceData.projet.wk11 +
-                        priceData.projet.wk12
-                      : qtyData.projet.wk9 +
-                        qtyData.projet.wk10 +
-                        qtyData.projet.wk11 +
-                        qtyData.projet.wk12}
+                      ? `${
+                          priceData.projet.wk9 +
+                          priceData.projet.wk10 +
+                          priceData.projet.wk11 +
+                          priceData.projet.wk12
+                        } €`
+                      : `${
+                          qtyData.projet.wk9 +
+                          qtyData.projet.wk10 +
+                          qtyData.projet.wk11 +
+                          qtyData.projet.wk12
+                        }`}
                   </TableCell>
                 </TableRow>
               </TableBody>

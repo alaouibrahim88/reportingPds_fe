@@ -97,7 +97,7 @@ function TableHeaderSection() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <FolderIcon className="w-5 h-5 text-primary" />
-            <h2 className="font-medium">Production Issues</h2>
+            <h2 className="font-medium">Détail Par Zone (Encours)</h2>
           </div>
           <p className="text-sm text-muted-foreground">
             Track and manage production issues and scrap reports

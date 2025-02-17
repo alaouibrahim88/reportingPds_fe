@@ -29,7 +29,7 @@ function Container() {
               <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
                 <ChartBar className="w-[18px] h-[18px] sm:w-5 sm:h-5 text-primary transition-all duration-200" />
                 <h2 className="font-medium text-sm sm:text-base">
-                  Visualize Production Issues
+                  Synthèse Globale Scrap
                 </h2>
               </div>
 
@@ -82,9 +82,9 @@ function Container() {
                   <SelectValue placeholder="Select period" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="7">Last 7 days</SelectItem>
-                  <SelectItem value="30">Last 30 days</SelectItem>
-                  <SelectItem value="90">Last Year</SelectItem>
+                  <SelectItem value="7">Last week</SelectItem>
+                  <SelectItem value="30">Last month</SelectItem>
+                  <SelectItem value="90">Last year</SelectItem>
                 </SelectContent>
               </Select>
             </div>

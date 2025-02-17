@@ -33,6 +33,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectGroup,
+  SelectLabel,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 
@@ -174,12 +176,27 @@ const zoneOptions = [
   { value: "zone-3", label: "Boot" },
 ];
 
-// Add this near your other constants
-const cellStatusOptions = [
-  { value: "all", label: "All Status" },
-  { value: "Active", label: "Active" },
-  { value: "Maintenance", label: "Maintenance" },
-  { value: "Inactive", label: "Inactive" },
+// First, let's update the filter options
+const monthOptions = [
+  { value: "01", label: "Janvier" },
+  { value: "02", label: "Février" },
+  { value: "03", label: "Mars" },
+  { value: "04", label: "Avril" },
+  { value: "05", label: "Mai" },
+  { value: "06", label: "Juin" },
+  { value: "07", label: "Juillet" },
+  { value: "08", label: "Août" },
+  { value: "09", label: "Septembre" },
+  { value: "10", label: "Octobre" },
+  { value: "11", label: "Novembre" },
+  { value: "12", label: "Décembre" },
+];
+
+const yearOptions = [
+  { value: "2025", label: "2025" },
+  { value: "2024", label: "2024" },
+  { value: "2023", label: "2023" },
+  { value: "2022", label: "2022" },
 ];
 
 export default function WorkflowDetailsPage({
@@ -194,7 +211,8 @@ export default function WorkflowDetailsPage({
   const [selectedCell, setSelectedCell] = useState("all");
   const [selectedZone, setSelectedZone] = useState("zone-1");
   const [cellSearchQuery, setCellSearchQuery] = useState("");
-  const [cellStatusFilter, setCellStatusFilter] = useState("all");
+  const [selectedMonth, setSelectedMonth] = useState<string>("all");
+  const [selectedYear, setSelectedYear] = useState<string>("2025");
 
   const detail = workflowData.zoneData
     .flatMap((zone) => zone.details)
@@ -359,21 +377,38 @@ export default function WorkflowDetailsPage({
               onChange={(e) => setCellSearchQuery(e.target.value)}
               className="h-6 w-[180px] text-xs bg-white/50"
             />
-            <Select
-              value={cellStatusFilter}
-              onValueChange={setCellStatusFilter}
-            >
+            <Select value={selectedMonth} onValueChange={setSelectedMonth}>
               <SelectTrigger className="h-6 w-[120px] text-xs bg-white/50">
-                <SelectValue placeholder="Select status" />
+                <SelectValue placeholder="Mois" />
               </SelectTrigger>
               <SelectContent>
-                {cellStatusOptions.map((status) => (
+                <SelectItem value="all" className="text-xs">
+                  Tous les mois
+                </SelectItem>
+                {monthOptions.map((month) => (
                   <SelectItem
-                    key={status.value}
-                    value={status.value}
+                    key={month.value}
+                    value={month.value}
                     className="text-xs"
                   >
-                    {status.label}
+                    {month.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={selectedYear} onValueChange={setSelectedYear}>
+              <SelectTrigger className="h-6 w-[100px] text-xs bg-white/50">
+                <SelectValue placeholder="Année" />
+              </SelectTrigger>
+              <SelectContent>
+                {yearOptions.map((year) => (
+                  <SelectItem
+                    key={year.value}
+                    value={year.value}
+                    className="text-xs"
+                  >
+                    {year.label}
                   </SelectItem>
                 ))}
               </SelectContent>

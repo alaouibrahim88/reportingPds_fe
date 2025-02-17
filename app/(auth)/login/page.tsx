@@ -30,20 +30,21 @@ export default function LoginPage() {
   return (
     <div className="h-screen w-full grid lg:grid-cols-2">
       <div className="hidden lg:block relative">
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-primary/20 to-primary/10">
-          <h2 className="text-4xl font-bold text-primary/80 mb-4">
-            Reporting PDS
-          </h2>
-          <BarChart3 className="w-72 h-72 text-primary/40" />
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-primary/10 to-transparent" />
-        </div>
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: "url('/login-bg.jpg')",
+          }}
+        />
+        <div className="absolute inset-0 bg-black/10" />{" "}
       </div>
       {/* Left side - Login Form */}
       <div className="flex items-center justify-center p-8">
         <div className="w-full max-w-md space-y-8">
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight">Welcome back!</h1>
-            <p className="text-muted-foreground">Please enter your details</p>
+            <h1 className="text-4xl font-bold tracking-tight">Reporting PDS</h1>
+            {/* <h2 className="text-3xl font-bold tracking-tight">Welcome back!</h2> */}
+            <p className="text-muted-foreground"> Please enter your details</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
