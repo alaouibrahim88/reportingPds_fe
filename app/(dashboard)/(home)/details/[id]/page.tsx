@@ -181,7 +181,7 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
               <h2 className="font-medium text-sm">Zone Details</h2>
             </div>
             <p className="text-xs text-muted-foreground">
-              Details for 3 last months of {zoneDetail.zone} per
+              Details for 3 last months per{" "}
               <strong>{viewMode === "price" ? "Price" : "Quantity"}</strong>
             </p>
           </div>
@@ -206,7 +206,7 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
       {/* Details Overview */}
       <div className="space-y-8">
         {/* First Table */}
-        <CollapsibleZoneTable />
+        <CollapsibleZoneTable viewMode={viewMode} />
 
         {/* Third Table - Employee Details */}
         <div className="rounded-md border shadow-sm hover:shadow-md transition-all">
