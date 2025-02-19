@@ -15,6 +15,7 @@ import {
   FolderIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ListCollapse,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ExpandedRowDetails } from "./ExpandedRowDetails";
@@ -105,18 +106,13 @@ function TableHeaderSection() {
         </div>
         <div className="flex items-center gap-2">
           <TableFilter />
-          <Button variant="outline" className="flex items-center gap-2">
-            <svg
-              className="w-4 h-4"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
-            <span className="hidden sm:inline">Export</span>
-          </Button>
+
+          <Link href={`/details/1`}>
+            <Button variant="outline" className="flex items-center gap-2">
+              <ListCollapse />
+              <span className="hidden sm:inline">Details</span>
+            </Button>
+          </Link>
         </div>
       </div>
     </div>
@@ -138,7 +134,7 @@ function TableColumns() {
         <TableHead className="text-xs text-muted-foreground">Process</TableHead>
         <TableHead className="text-xs text-muted-foreground">Matière</TableHead>
 
-        <TableHead className="text-xs text-muted-foreground">Details</TableHead>
+        {/* <TableHead className="text-xs text-muted-foreground">Details</TableHead> */}
       </TableRow>
     </TableHeader>
   );
@@ -183,13 +179,11 @@ function TableContent({ data, openRows, toggleRow }: TableContentProps) {
               {/* <VisibilityScore score={item.visibilityScore} /> */}
             </TableCell>
             <TableCell className="py-2">
-              {item.reason}
+              {item.priority}
               {/* <VisibilityScore score={item.visibilityScore} /> */}
             </TableCell>
-            <TableCell className="py-2">
-              {/* <Link href={`/details/${item.id}`}>
-                <a className="text-blue-500 hover:underline">View Details</a>
-              </Link> */}
+            {/* <TableCell className="py-2">
+         
               <Link href={`/details/${item.id}`}>
                 <Button
                   variant="outline"
@@ -199,15 +193,15 @@ function TableContent({ data, openRows, toggleRow }: TableContentProps) {
                   Details
                 </Button>
               </Link>
-            </TableCell>
+            </TableCell> */}
           </TableRow>
-          {openRows.includes(index) && (
+          {/* {openRows.includes(index) && (
             <TableRow>
               <TableCell colSpan={8} className="p-0">
                 <ExpandedRowDetails item={item} />
               </TableCell>
             </TableRow>
-          )}
+          )} */}
         </React.Fragment>
       ))}
     </TableBody>
