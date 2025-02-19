@@ -13,6 +13,7 @@ export const productionIssuesData: ProductionIssue[] = [
     status: "warning",
     color: "bg-yellow-500",
     visibilityScore: 95,
+    priority: "high",
   },
   {
     id: "2",
@@ -26,6 +27,7 @@ export const productionIssuesData: ProductionIssue[] = [
     status: "alert",
     color: "bg-red-500",
     visibilityScore: 98,
+    priority: "high",
   },
   {
     id: "3",
@@ -39,6 +41,7 @@ export const productionIssuesData: ProductionIssue[] = [
     status: "warning",
     color: "bg-blue-500",
     visibilityScore: 85,
+    priority: "high",
   },
   {
     id: "4",
@@ -52,6 +55,7 @@ export const productionIssuesData: ProductionIssue[] = [
     status: "warning",
     color: "bg-yellow-500",
     visibilityScore: 90,
+    priority: "high",
   },
   {
     id: "5",
@@ -65,6 +69,7 @@ export const productionIssuesData: ProductionIssue[] = [
     status: "alert",
     color: "bg-red-500",
     visibilityScore: 97,
+    priority: "high",
   },
   {
     id: "6",
@@ -78,6 +83,7 @@ export const productionIssuesData: ProductionIssue[] = [
     status: "alert",
     color: "bg-red-500",
     visibilityScore: 97,
+    priority: "high",
   },
   {
     id: "7",
@@ -91,6 +97,7 @@ export const productionIssuesData: ProductionIssue[] = [
     status: "alert",
     color: "bg-red-500",
     visibilityScore: 97,
+    priority: "high",
   },
   {
     id: "8",
@@ -104,6 +111,7 @@ export const productionIssuesData: ProductionIssue[] = [
     status: "alert",
     color: "bg-red-500",
     visibilityScore: 97,
+    priority: "high",
   },
   {
     id: "9",
@@ -117,6 +125,7 @@ export const productionIssuesData: ProductionIssue[] = [
     status: "alert",
     color: "bg-red-500",
     visibilityScore: 97,
+    priority: "high",
   },
   {
     id: "10",
@@ -130,6 +139,7 @@ export const productionIssuesData: ProductionIssue[] = [
     status: "alert",
     color: "bg-red-500",
     visibilityScore: 97,
+    priority: "high",
   },
   {
     id: "11",
@@ -143,6 +153,7 @@ export const productionIssuesData: ProductionIssue[] = [
     status: "alert",
     color: "bg-red-500",
     visibilityScore: 97,
+    priority: "high",
   },
 ];
 
