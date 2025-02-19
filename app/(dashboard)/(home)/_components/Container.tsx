@@ -19,6 +19,22 @@ function Container() {
   const { stats, zoneData, chartData } = dashboardData;
   const [showProject, setShowProject] = useState(false);
   const [showSeries, setShowSeries] = useState(false);
+  const [showAll, setShowAll] = useState(true);
+
+  const handleCheckboxChange = (
+    type: "all" | "project" | "series",
+    checked: boolean
+  ) => {
+    if (type === "all") {
+      setShowAll(checked);
+      setShowProject(false);
+      setShowSeries(false);
+    } else {
+      setShowAll(false);
+      if (type === "project") setShowProject(checked);
+      if (type === "series") setShowSeries(checked);
+    }
+  };
 
   return (
     <div className="min-h-screen">
@@ -47,46 +63,80 @@ function Container() {
                   Track and manage production issues and scrap reports
                 </span>
                 <div className="flex items-center gap-4 ml-4">
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      id="project"
-                      checked={showProject}
-                      onCheckedChange={(checked) => setShowProject(!!checked)}
-                    />
-                    <label
-                      htmlFor="project"
-                      className="text-xs sm:text-sm text-muted-foreground cursor-pointer"
+                  <div className="flex items-center border rounded-md overflow-hidden">
+                    <div
+                      className="flex items-center px-3 py-1.5 cursor-pointer hover:bg-accent"
+                      onClick={() => handleCheckboxChange("all", true)}
+                      style={{
+                        backgroundColor: showAll
+                          ? "rgb(0, 112, 243)"
+                          : "transparent",
+                        color: showAll ? "white" : "inherit",
+                      }}
                     >
-                      Projet
-                    </label>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      id="series"
-                      checked={showSeries}
-                      onCheckedChange={(checked) => setShowSeries(!!checked)}
-                    />
-                    <label
-                      htmlFor="series"
-                      className="text-xs sm:text-sm text-muted-foreground cursor-pointer"
+                      <span className="text-xs sm:text-sm">All</span>
+                    </div>
+                    <div
+                      className="flex items-center px-3 py-1.5 cursor-pointer hover:bg-accent"
+                      onClick={() => handleCheckboxChange("project", true)}
+                      style={{
+                        backgroundColor: showProject
+                          ? "rgb(0, 112, 243)"
+                          : "transparent",
+                        color: showProject ? "white" : "inherit",
+                      }}
                     >
-                      Series
-                    </label>
+                      <span className="text-xs sm:text-sm">Projet</span>
+                    </div>
+                    <div
+                      className="flex items-center px-3 py-1.5 cursor-pointer hover:bg-accent"
+                      onClick={() => handleCheckboxChange("series", true)}
+                      style={{
+                        backgroundColor: showSeries
+                          ? "rgb(0, 112, 243)"
+                          : "transparent",
+                        color: showSeries ? "white" : "inherit",
+                      }}
+                    >
+                      <span className="text-xs sm:text-sm">Series</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <Select defaultValue="30">
-                <SelectTrigger className="w-[160px] h-9 bg-background">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  <SelectValue placeholder="Select period" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="7">Last week</SelectItem>
-                  <SelectItem value="30">Last month</SelectItem>
-                  <SelectItem value="90">Last year</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="flex gap-2">
+                <Select defaultValue="2025">
+                  <SelectTrigger className="w-[120px] h-9 bg-background">
+                    <SelectValue placeholder="Select year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2022">2022</SelectItem>
+                    <SelectItem value="2023">2023</SelectItem>
+                    <SelectItem value="2024">2024</SelectItem>
+                    <SelectItem value="2025">2025</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select defaultValue="3">
+                  <SelectTrigger className="w-[120px] h-9 bg-background">
+                    <SelectValue placeholder="Select month" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">January</SelectItem>
+                    <SelectItem value="2">February</SelectItem>
+                    <SelectItem value="3">March</SelectItem>
+                    <SelectItem value="4">April</SelectItem>
+                    <SelectItem value="5">May</SelectItem>
+                    <SelectItem value="6">June</SelectItem>
+                    <SelectItem value="7">July</SelectItem>
+                    <SelectItem value="8">August</SelectItem>
+                    <SelectItem value="9">September</SelectItem>
+                    <SelectItem value="10">October</SelectItem>
+                    <SelectItem value="11">November</SelectItem>
+                    <SelectItem value="12">December</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <MixBarChart data={chartData} />

@@ -12,6 +12,7 @@ export interface ProductionIssue {
   status: Status;
   color: string;
   visibilityScore: number;
+  priority: string;
 }
 
 export interface ZoneColor {

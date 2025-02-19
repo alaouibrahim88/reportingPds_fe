@@ -48,34 +48,39 @@ export function TableFilter({ onFilterChange }: TableFilterProps) {
               <div className="py-4">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Date Range</label>
-                    <Select defaultValue="7days">
+                    <label className="text-sm font-medium">Year</label>
+                    <Select defaultValue="2024">
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select period" />
+                        <SelectValue placeholder="Select year" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="today">Today</SelectItem>
-                        <SelectItem value="7days">Last 7 days</SelectItem>
-                        <SelectItem value="30days">Last 30 days</SelectItem>
-                        <SelectItem value="90days">Last 90 days</SelectItem>
-                        <SelectItem value="year">This year</SelectItem>
+                        <SelectItem value="2022">2022</SelectItem>
+                        <SelectItem value="2023">2023</SelectItem>
+                        <SelectItem value="2024">2024</SelectItem>
+                        <SelectItem value="2025">2025</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Zone</label>
-                    <Select defaultValue="all">
+                    <label className="text-sm font-medium">Month</label>
+                    <Select defaultValue="3">
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select zone" />
+                        <SelectValue placeholder="Select month" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">All Zones</SelectItem>
-                        <SelectItem value="java">Wrapping</SelectItem>
-                        <SelectItem value="python">Nets</SelectItem>
-                        <SelectItem value="rust">Boot</SelectItem>
-                        <SelectItem value="go">Knitting</SelectItem>
-                        <SelectItem value="kotlin">Injection</SelectItem>
+                        <SelectItem value="1">January</SelectItem>
+                        <SelectItem value="2">February</SelectItem>
+                        <SelectItem value="3">March</SelectItem>
+                        <SelectItem value="4">April</SelectItem>
+                        <SelectItem value="5">May</SelectItem>
+                        <SelectItem value="6">June</SelectItem>
+                        <SelectItem value="7">July</SelectItem>
+                        <SelectItem value="8">August</SelectItem>
+                        <SelectItem value="9">September</SelectItem>
+                        <SelectItem value="10">October</SelectItem>
+                        <SelectItem value="11">November</SelectItem>
+                        <SelectItem value="12">December</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
