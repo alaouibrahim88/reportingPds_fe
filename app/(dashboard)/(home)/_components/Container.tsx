@@ -17,22 +17,22 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 function Container() {
   const { stats, zoneData, chartData } = dashboardData;
-  const [showProject, setShowProject] = useState(false);
-  const [showSeries, setShowSeries] = useState(false);
-  const [showAll, setShowAll] = useState(true);
+  const [showZone, setShowZone] = useState(true);
+  const [showProjet, setShowProjet] = useState(false);
+  const [showSerie, setShowSerie] = useState(false);
 
   const handleCheckboxChange = (
-    type: "all" | "project" | "series",
+    type: "zone" | "projet" | "serie",
     checked: boolean
   ) => {
-    if (type === "all") {
-      setShowAll(checked);
-      setShowProject(false);
-      setShowSeries(false);
+    if (type === "zone") {
+      setShowZone(checked);
+      setShowProjet(false);
+      setShowSerie(false);
     } else {
-      setShowAll(false);
-      if (type === "project") setShowProject(checked);
-      if (type === "series") setShowSeries(checked);
+      setShowZone(false);
+      if (type === "projet") setShowProjet(checked);
+      if (type === "serie") setShowSerie(checked);
     }
   };
 
@@ -68,39 +68,39 @@ function Container() {
                   <div className="flex items-center justify-center border rounded-md overflow-hidden">
                     <div
                       className="flex items-center px-3 py-1.5 cursor-pointer hover:bg-accent"
-                      onClick={() => handleCheckboxChange("all", true)}
+                      onClick={() => handleCheckboxChange("zone", true)}
                       style={{
-                        backgroundColor: showAll
+                        backgroundColor: showZone
                           ? "hsl(var(--primary))"
                           : "transparent",
-                        color: showAll ? "white" : "inherit",
+                        color: showZone ? "white" : "inherit",
                       }}
                     >
-                      <span className="text-xs sm:text-sm">All</span>
+                      <span className="text-xs sm:text-sm">Zone</span>
                     </div>
                     <div
                       className="flex items-center px-3 py-1.5 cursor-pointer hover:bg-accent"
-                      onClick={() => handleCheckboxChange("project", true)}
+                      onClick={() => handleCheckboxChange("projet", true)}
                       style={{
-                        backgroundColor: showProject
+                        backgroundColor: showProjet
                           ? "hsl(var(--primary))"
                           : "transparent",
-                        color: showProject ? "white" : "inherit",
+                        color: showProjet ? "white" : "inherit",
                       }}
                     >
                       <span className="text-xs sm:text-sm">Projet</span>
                     </div>
                     <div
                       className="flex items-center px-3 py-1.5 cursor-pointer hover:bg-accent"
-                      onClick={() => handleCheckboxChange("series", true)}
+                      onClick={() => handleCheckboxChange("serie", true)}
                       style={{
-                        backgroundColor: showSeries
+                        backgroundColor: showSerie
                           ? "hsl(var(--primary))"
                           : "transparent",
-                        color: showSeries ? "white" : "inherit",
+                        color: showSerie ? "white" : "inherit",
                       }}
                     >
-                      <span className="text-xs sm:text-sm">Series</span>
+                      <span className="text-xs sm:text-sm">Serie</span>
                     </div>
                   </div>
                 </div>

@@ -160,40 +160,21 @@ function TableContent({ data, openRows, toggleRow }: TableContentProps) {
             onClick={() => toggleRow(index)}
           >
             <TableCell className="text-xs py-2 text-foreground hidden md:table-cell">
-              {item.machine}
+              {item.zone}
             </TableCell>
             <TableCell className="font-medium text-xs py-2 text-foreground">
-              {item.time}
+              {item.periode}
             </TableCell>
             <TableCell className="text-xs py-2 text-foreground hidden lg:table-cell">
-              {item.reason}
+              {item.projet}
             </TableCell>
             <TableCell className="py-2">
               <span className="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/20 px-2 py-0.5 text-xs font-medium text-primary">
-                {item.count}
+                {item.serie}
               </span>
             </TableCell>
-
-            <TableCell className="py-2">
-              {item.job}
-              {/* <VisibilityScore score={item.visibilityScore} /> */}
-            </TableCell>
-            <TableCell className="py-2">
-              {item.priority}
-              {/* <VisibilityScore score={item.visibilityScore} /> */}
-            </TableCell>
-            {/* <TableCell className="py-2">
-         
-              <Link href={`/details/${item.id}`}>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-7 text-xs px-2.5"
-                >
-                  Details
-                </Button>
-              </Link>
-            </TableCell> */}
+            <TableCell className="py-2">{item.process}</TableCell>
+            <TableCell className="py-2">{item.matiere}</TableCell>
           </TableRow>
           {/* {openRows.includes(index) && (
             <TableRow>

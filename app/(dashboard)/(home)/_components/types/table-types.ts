@@ -2,17 +2,17 @@ export type Status = "alert" | "warning" | "good";
 
 export interface ProductionIssue {
   id: string;
-  time: string;
-  machine: string;
-  job: string;
-  count: number;
-  reason: string;
-  message: string;
-  type: "Scrap" | "Quality" | "Setup" | "Maintenance";
-  status: Status;
-  color: string;
-  visibilityScore: number;
-  priority: string;
+  zone: string;
+  periode: string;
+  projet: string;
+  serie: string;
+  process: string;
+  matiere: string;
+  status: string;
+  message?: string;
+  assignee: string | null;
+  type: Array<{ name: string; count: number }>;
+  department: string;
 }
 
 export interface ZoneColor {
