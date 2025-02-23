@@ -52,24 +52,26 @@ function Container() {
               <button className="text-muted-foreground text-sm">•••</button>
             </div>
             <div className="flex items-center justify-between gap-2 text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-2 mb-2 sm:mb-4">
-              <div className="flex items-center gap-2">
-                <svg className="w-3 h-3 sm:w-4 sm:h-4" viewBox="0 0 24 24">
-                  <path
-                    fill="currentColor"
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <span>
-                  Track and manage production issues and scrap reports
-                </span>
-                <div className="flex items-center gap-4 ml-4">
-                  <div className="flex items-center border rounded-md overflow-hidden">
+              <div className="flex items-center gap-2 flex-1">
+                <div className="flex items-center gap-2">
+                  <svg className="w-3 h-3 sm:w-4 sm:h-4" viewBox="0 0 24 24">
+                    <path
+                      fill="currentColor"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <span>
+                    Track and manage production issues and scrap reports
+                  </span>
+                </div>
+                <div className="flex items-center justify-center flex-1">
+                  <div className="flex items-center justify-center border rounded-md overflow-hidden">
                     <div
                       className="flex items-center px-3 py-1.5 cursor-pointer hover:bg-accent"
                       onClick={() => handleCheckboxChange("all", true)}
                       style={{
                         backgroundColor: showAll
-                          ? "rgb(0, 112, 243)"
+                          ? "hsl(var(--primary))"
                           : "transparent",
                         color: showAll ? "white" : "inherit",
                       }}
@@ -81,7 +83,7 @@ function Container() {
                       onClick={() => handleCheckboxChange("project", true)}
                       style={{
                         backgroundColor: showProject
-                          ? "rgb(0, 112, 243)"
+                          ? "hsl(var(--primary))"
                           : "transparent",
                         color: showProject ? "white" : "inherit",
                       }}
@@ -93,7 +95,7 @@ function Container() {
                       onClick={() => handleCheckboxChange("series", true)}
                       style={{
                         backgroundColor: showSeries
-                          ? "rgb(0, 112, 243)"
+                          ? "hsl(var(--primary))"
                           : "transparent",
                         color: showSeries ? "white" : "inherit",
                       }}
