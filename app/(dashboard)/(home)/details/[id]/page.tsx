@@ -209,15 +209,15 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
         <CollapsibleZoneTable viewMode={viewMode} />
 
         {/* Third Table - Employee Details */}
-        <div className="rounded-md border shadow-sm hover:shadow-md transition-all">
-          <div className="flex items-center gap-2 mb-1 py-3 px-4 bg-muted/30 rounded-t-md">
+        <div className="rounded-md border">
+          <div className="flex items-center justify-between p-4 bg-muted/30">
             <div className="flex items-center gap-2">
               <Users2 className="w-4 h-4 text-primary" />
               <h3 className="font-medium text-sm">Operator Details</h3>
             </div>
-            <div className="flex items-center gap-2 ml-auto">
+            <div className="flex items-center gap-2">
               <Select defaultValue="all-operators">
-                <SelectTrigger className="w-[180px] h-8 text-xs bg-background">
+                <SelectTrigger className="w-[180px] h-8 text-xs">
                   <SelectValue placeholder="Select Operator" />
                 </SelectTrigger>
                 <SelectContent>
@@ -264,7 +264,7 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
               </Select>
 
               <Select defaultValue="all-cells">
-                <SelectTrigger className="w-[180px] h-8 text-xs bg-background">
+                <SelectTrigger className="w-[180px] h-8 text-xs">
                   <SelectValue placeholder="Select Cell" />
                 </SelectTrigger>
                 <SelectContent>
@@ -281,374 +281,357 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
               </Select>
             </div>
           </div>
-          <Card className="p-3 transition-all hover:border-primary/20">
-            <Table>
-              <TableHeader>
-                <TableRow className="h-8 hover:bg-muted/50 transition-all">
-                  <TableHead className="text-xs">Cellule</TableHead>
-                  <TableHead className="text-xs">MATRICULE</TableHead>
-                  <TableHead className="text-xs">NOM</TableHead>
-                  <TableHead className="text-xs">PRENOM</TableHead>
-                  <TableHead className="text-xs text-center">WK1</TableHead>
-                  <TableHead className="text-xs text-center">WK2</TableHead>
-                  <TableHead className="text-xs text-center">WK3</TableHead>
-                  <TableHead className="text-xs text-center">WK4</TableHead>
-                  <TableHead className="text-xs text-center border-r">
-                    Total M1
-                  </TableHead>
-                  <TableHead className="text-xs text-center">WK5</TableHead>
-                  <TableHead className="text-xs text-center">WK6</TableHead>
-                  <TableHead className="text-xs text-center">WK7</TableHead>
-                  <TableHead className="text-xs text-center">WK8</TableHead>
-                  <TableHead className="text-xs text-center border-r">
-                    Total M2
-                  </TableHead>
-                  <TableHead className="text-xs text-center">WK9</TableHead>
-                  <TableHead className="text-xs text-center">WK10</TableHead>
-                  <TableHead className="text-xs text-center">WK11</TableHead>
-                  <TableHead className="text-xs text-center">WK12</TableHead>
-                  <TableHead className="text-xs text-center">
-                    Total M3
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow className="h-8 hover:bg-muted/50 transition-all">
-                  <TableCell className="text-xs" rowSpan={12}>
-                    CELL1
-                  </TableCell>
-                  <TableCell className="text-xs">MA123</TableCell>
-                  <TableCell className="text-xs">BRAHIM</TableCell>
-                  <TableCell className="text-xs">ELJADIOUI</TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk1} €`
-                      : qtyData.projet.wk1}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk2} €`
-                      : qtyData.projet.wk2}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk3} €`
-                      : qtyData.projet.wk3}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk4} €`
-                      : qtyData.projet.wk4}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
-                    {viewMode === "price"
-                      ? `${
-                          priceData.projet.wk1 +
-                          priceData.projet.wk2 +
-                          priceData.projet.wk3 +
-                          priceData.projet.wk4
-                        } €`
-                      : `${
-                          qtyData.projet.wk1 +
+
+          <div className="p-3">
+            <div className="rounded-lg border bg-card text-card-foreground">
+              <Table>
+                <TableHeader>
+                  <TableRow className="hover:bg-muted/50 [&>*]:!text-[11px] [&>*]:font-medium [&>*]:!h-4 [&>*]:!py-[1px] [&>*]:!px-3 [&>*]:text-muted-foreground">
+                    <TableHead>Cellule</TableHead>
+                    <TableHead>MATRICULE</TableHead>
+                    <TableHead>NOM</TableHead>
+                    <TableHead>PRENOM</TableHead>
+                    <TableHead className="text-center">WK1</TableHead>
+                    <TableHead className="text-center">WK2</TableHead>
+                    <TableHead className="text-center">WK3</TableHead>
+                    <TableHead className="text-center">WK4</TableHead>
+                    <TableHead className="text-center border-l border-r bg-yellow-50">
+                      Total M1
+                    </TableHead>
+                    <TableHead className="text-center">WK5</TableHead>
+                    <TableHead className="text-center">WK6</TableHead>
+                    <TableHead className="text-center">WK7</TableHead>
+                    <TableHead className="text-center">WK8</TableHead>
+                    <TableHead className="text-center border-l border-r bg-yellow-50">
+                      Total M2
+                    </TableHead>
+                    <TableHead className="text-center">WK9</TableHead>
+                    <TableHead className="text-center">WK10</TableHead>
+                    <TableHead className="text-center">WK11</TableHead>
+                    <TableHead className="text-center">WK12</TableHead>
+                    <TableHead className="text-center border-l bg-yellow-50">
+                      Total M3
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow className="hover:bg-muted/50 [&>*]:!text-[11px] [&>*]:!h-4 [&>*]:!py-[1px] [&>*]:!px-3 [&>*]:text-muted-foreground">
+                    <TableCell rowSpan={12}>CELL1</TableCell>
+                    <TableCell>MA123</TableCell>
+                    <TableCell>BRAHIM</TableCell>
+                    <TableCell>ELJADIOUI</TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk1} €`
+                        : qtyData.projet.wk1}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk2} €`
+                        : qtyData.projet.wk2}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk3} €`
+                        : qtyData.projet.wk3}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk4} €`
+                        : qtyData.projet.wk4}
+                    </TableCell>
+                    <TableCell className="text-center font-medium border-l border-r bg-yellow-50">
+                      {viewMode === "price"
+                        ? `${
+                            priceData.projet.wk1 +
+                            priceData.projet.wk2 +
+                            priceData.projet.wk3 +
+                            priceData.projet.wk4
+                          } €`
+                        : qtyData.projet.wk1 +
                           qtyData.projet.wk2 +
                           qtyData.projet.wk3 +
-                          qtyData.projet.wk4
-                        }`}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk5} €`
-                      : qtyData.projet.wk5}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk6} €`
-                      : qtyData.projet.wk6}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk7} €`
-                      : qtyData.projet.wk7}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk8} €`
-                      : qtyData.projet.wk8}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
-                    {viewMode === "price"
-                      ? `${
-                          priceData.projet.wk5 +
-                          priceData.projet.wk6 +
-                          priceData.projet.wk7 +
-                          priceData.projet.wk8
-                        } €`
-                      : `${
-                          qtyData.projet.wk5 +
+                          qtyData.projet.wk4}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk5} €`
+                        : qtyData.projet.wk5}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk6} €`
+                        : qtyData.projet.wk6}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk7} €`
+                        : qtyData.projet.wk7}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk8} €`
+                        : qtyData.projet.wk8}
+                    </TableCell>
+                    <TableCell className="text-center font-medium border-l border-r bg-yellow-50">
+                      {viewMode === "price"
+                        ? `${
+                            priceData.projet.wk5 +
+                            priceData.projet.wk6 +
+                            priceData.projet.wk7 +
+                            priceData.projet.wk8
+                          } €`
+                        : qtyData.projet.wk5 +
                           qtyData.projet.wk6 +
                           qtyData.projet.wk7 +
-                          qtyData.projet.wk8
-                        }`}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk9} €`
-                      : qtyData.projet.wk9}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk10} €`
-                      : qtyData.projet.wk10}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk11} €`
-                      : qtyData.projet.wk11}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk12} €`
-                      : qtyData.projet.wk12}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all">
-                    {viewMode === "price"
-                      ? `${
-                          priceData.projet.wk9 +
-                          priceData.projet.wk10 +
-                          priceData.projet.wk11 +
-                          priceData.projet.wk12
-                        } €`
-                      : `${
-                          qtyData.projet.wk9 +
+                          qtyData.projet.wk8}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk9} €`
+                        : qtyData.projet.wk9}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk10} €`
+                        : qtyData.projet.wk10}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk11} €`
+                        : qtyData.projet.wk11}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk12} €`
+                        : qtyData.projet.wk12}
+                    </TableCell>
+                    <TableCell className="text-center font-medium border-l bg-yellow-50">
+                      {viewMode === "price"
+                        ? `${
+                            priceData.projet.wk9 +
+                            priceData.projet.wk10 +
+                            priceData.projet.wk11 +
+                            priceData.projet.wk12
+                          } €`
+                        : qtyData.projet.wk9 +
                           qtyData.projet.wk10 +
                           qtyData.projet.wk11 +
-                          qtyData.projet.wk12
-                        }`}
-                  </TableCell>
-                </TableRow>
-                <TableRow className="h-8 hover:bg-muted/50 transition-all">
-                  <TableCell className="text-xs">MA124</TableCell>
-                  <TableCell className="text-xs">ADIL 1</TableCell>
-                  <TableCell className="text-xs">ALAOUI 1</TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk1} €`
-                      : qtyData.projet.wk1}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk2} €`
-                      : qtyData.projet.wk2}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk3} €`
-                      : qtyData.projet.wk3}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk4} €`
-                      : qtyData.projet.wk4}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
-                    {viewMode === "price"
-                      ? `${
-                          priceData.projet.wk1 +
-                          priceData.projet.wk2 +
-                          priceData.projet.wk3 +
-                          priceData.projet.wk4
-                        } €`
-                      : `${
-                          qtyData.projet.wk1 +
+                          qtyData.projet.wk12}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow className="hover:bg-muted/50 [&>*]:!text-[11px] [&>*]:!h-4 [&>*]:!py-[1px] [&>*]:!px-3 [&>*]:text-muted-foreground">
+                    <TableCell>MA124</TableCell>
+                    <TableCell>ADIL 1</TableCell>
+                    <TableCell>ALAOUI 1</TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk1} €`
+                        : qtyData.projet.wk1}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk2} €`
+                        : qtyData.projet.wk2}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk3} €`
+                        : qtyData.projet.wk3}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk4} €`
+                        : qtyData.projet.wk4}
+                    </TableCell>
+                    <TableCell className="text-center font-medium border-l border-r bg-yellow-50">
+                      {viewMode === "price"
+                        ? `${
+                            priceData.projet.wk1 +
+                            priceData.projet.wk2 +
+                            priceData.projet.wk3 +
+                            priceData.projet.wk4
+                          } €`
+                        : qtyData.projet.wk1 +
                           qtyData.projet.wk2 +
                           qtyData.projet.wk3 +
-                          qtyData.projet.wk4
-                        }`}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk5} €`
-                      : qtyData.projet.wk5}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk6} €`
-                      : qtyData.projet.wk6}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk7} €`
-                      : qtyData.projet.wk7}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk8} €`
-                      : qtyData.projet.wk8}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
-                    {viewMode === "price"
-                      ? `${
-                          priceData.projet.wk5 +
-                          priceData.projet.wk6 +
-                          priceData.projet.wk7 +
-                          priceData.projet.wk8
-                        } €`
-                      : `${
-                          qtyData.projet.wk5 +
+                          qtyData.projet.wk4}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk5} €`
+                        : qtyData.projet.wk5}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk6} €`
+                        : qtyData.projet.wk6}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk7} €`
+                        : qtyData.projet.wk7}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk8} €`
+                        : qtyData.projet.wk8}
+                    </TableCell>
+                    <TableCell className="text-center font-medium border-l border-r bg-yellow-50">
+                      {viewMode === "price"
+                        ? `${
+                            priceData.projet.wk5 +
+                            priceData.projet.wk6 +
+                            priceData.projet.wk7 +
+                            priceData.projet.wk8
+                          } €`
+                        : qtyData.projet.wk5 +
                           qtyData.projet.wk6 +
                           qtyData.projet.wk7 +
-                          qtyData.projet.wk8
-                        }`}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk9} €`
-                      : qtyData.projet.wk9}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk10} €`
-                      : qtyData.projet.wk10}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk11} €`
-                      : qtyData.projet.wk11}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk12} €`
-                      : qtyData.projet.wk12}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all">
-                    {viewMode === "price"
-                      ? `${
-                          priceData.projet.wk9 +
-                          priceData.projet.wk10 +
-                          priceData.projet.wk11 +
-                          priceData.projet.wk12
-                        } €`
-                      : `${
-                          qtyData.projet.wk9 +
+                          qtyData.projet.wk8}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk9} €`
+                        : qtyData.projet.wk9}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk10} €`
+                        : qtyData.projet.wk10}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk11} €`
+                        : qtyData.projet.wk11}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk12} €`
+                        : qtyData.projet.wk12}
+                    </TableCell>
+                    <TableCell className="text-center font-medium border-l bg-yellow-50">
+                      {viewMode === "price"
+                        ? `${
+                            priceData.projet.wk9 +
+                            priceData.projet.wk10 +
+                            priceData.projet.wk11 +
+                            priceData.projet.wk12
+                          } €`
+                        : qtyData.projet.wk9 +
                           qtyData.projet.wk10 +
                           qtyData.projet.wk11 +
-                          qtyData.projet.wk12
-                        }`}
-                  </TableCell>
-                </TableRow>
-                <TableRow className="h-8 hover:bg-muted/50 transition-all">
-                  <TableCell className="text-xs">MA134</TableCell>
-                  <TableCell className="text-xs">ADIL 11</TableCell>
-                  <TableCell className="text-xs">ALAOUI 11</TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk1} €`
-                      : qtyData.projet.wk1}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk2} €`
-                      : qtyData.projet.wk2}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk3} €`
-                      : qtyData.projet.wk3}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk4} €`
-                      : qtyData.projet.wk4}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
-                    {viewMode === "price"
-                      ? `${
-                          priceData.projet.wk1 +
-                          priceData.projet.wk2 +
-                          priceData.projet.wk3 +
-                          priceData.projet.wk4
-                        } €`
-                      : `${
-                          qtyData.projet.wk1 +
+                          qtyData.projet.wk12}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow className="hover:bg-muted/50 [&>*]:!text-[11px] [&>*]:!h-4 [&>*]:!py-[1px] [&>*]:!px-3 [&>*]:text-muted-foreground">
+                    <TableCell>MA134</TableCell>
+                    <TableCell>ADIL 11</TableCell>
+                    <TableCell>ALAOUI 11</TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk1} €`
+                        : qtyData.projet.wk1}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk2} €`
+                        : qtyData.projet.wk2}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk3} €`
+                        : qtyData.projet.wk3}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk4} €`
+                        : qtyData.projet.wk4}
+                    </TableCell>
+                    <TableCell className="text-center font-medium border-l border-r bg-yellow-50">
+                      {viewMode === "price"
+                        ? `${
+                            priceData.projet.wk1 +
+                            priceData.projet.wk2 +
+                            priceData.projet.wk3 +
+                            priceData.projet.wk4
+                          } €`
+                        : qtyData.projet.wk1 +
                           qtyData.projet.wk2 +
                           qtyData.projet.wk3 +
-                          qtyData.projet.wk4
-                        }`}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk5} €`
-                      : qtyData.projet.wk5}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk6} €`
-                      : qtyData.projet.wk6}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk7} €`
-                      : qtyData.projet.wk7}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk8} €`
-                      : qtyData.projet.wk8}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all border-r">
-                    {viewMode === "price"
-                      ? `${
-                          priceData.projet.wk5 +
-                          priceData.projet.wk6 +
-                          priceData.projet.wk7 +
-                          priceData.projet.wk8
-                        } €`
-                      : `${
-                          qtyData.projet.wk5 +
+                          qtyData.projet.wk4}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk5} €`
+                        : qtyData.projet.wk5}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk6} €`
+                        : qtyData.projet.wk6}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk7} €`
+                        : qtyData.projet.wk7}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk8} €`
+                        : qtyData.projet.wk8}
+                    </TableCell>
+                    <TableCell className="text-center font-medium border-l border-r bg-yellow-50">
+                      {viewMode === "price"
+                        ? `${
+                            priceData.projet.wk5 +
+                            priceData.projet.wk6 +
+                            priceData.projet.wk7 +
+                            priceData.projet.wk8
+                          } €`
+                        : qtyData.projet.wk5 +
                           qtyData.projet.wk6 +
                           qtyData.projet.wk7 +
-                          qtyData.projet.wk8
-                        }`}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk9} €`
-                      : qtyData.projet.wk9}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk10} €`
-                      : qtyData.projet.wk10}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk11} €`
-                      : qtyData.projet.wk11}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-mono">
-                    {viewMode === "price"
-                      ? `${priceData.projet.wk12} €`
-                      : qtyData.projet.wk12}
-                  </TableCell>
-                  <TableCell className="text-xs text-center font-medium bg-muted/40 transition-all">
-                    {viewMode === "price"
-                      ? `${
-                          priceData.projet.wk9 +
-                          priceData.projet.wk10 +
-                          priceData.projet.wk11 +
-                          priceData.projet.wk12
-                        } €`
-                      : `${
-                          qtyData.projet.wk9 +
+                          qtyData.projet.wk8}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk9} €`
+                        : qtyData.projet.wk9}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk10} €`
+                        : qtyData.projet.wk10}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk11} €`
+                        : qtyData.projet.wk11}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">
+                      {viewMode === "price"
+                        ? `${priceData.projet.wk12} €`
+                        : qtyData.projet.wk12}
+                    </TableCell>
+                    <TableCell className="text-center font-medium border-l bg-yellow-50">
+                      {viewMode === "price"
+                        ? `${
+                            priceData.projet.wk9 +
+                            priceData.projet.wk10 +
+                            priceData.projet.wk11 +
+                            priceData.projet.wk12
+                          } €`
+                        : qtyData.projet.wk9 +
                           qtyData.projet.wk10 +
                           qtyData.projet.wk11 +
-                          qtyData.projet.wk12
-                        }`}
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </Card>
+                          qtyData.projet.wk12}
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </div>
+          </div>
         </div>
       </div>
     </div>
