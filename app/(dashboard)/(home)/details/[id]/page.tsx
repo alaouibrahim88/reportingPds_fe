@@ -286,7 +286,7 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
             <div className="rounded-lg border bg-card text-card-foreground">
               <Table>
                 <TableHeader>
-                  <TableRow className="hover:bg-muted/50 [&>*]:!text-[11px] [&>*]:font-medium [&>*]:!h-5 [&>*]:!py-[1px] [&>*]:!px-3 [&>*]:text-muted-foreground">
+                  <TableRow className="hover:bg-muted/50 [&>*]:!text-[11px] [&>*]:font-medium [&>*]:!h-4 [&>*]:!py-[1px] [&>*]:!px-3 [&>*]:text-muted-foreground">
                     <TableHead>Cellule</TableHead>
                     <TableHead>MATRICULE</TableHead>
                     <TableHead>NOM</TableHead>
@@ -315,7 +315,7 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <TableRow className="hover:bg-muted/50 [&>*]:!text-[11px] [&>*]:!h-5 [&>*]:!py-[1px] [&>*]:!px-3 [&>*]:text-muted-foreground">
+                  <TableRow className="hover:bg-muted/50 [&>*]:!text-[11px] [&>*]:!h-4 [&>*]:!py-[1px] [&>*]:!px-3 [&>*]:text-muted-foreground">
                     <TableCell rowSpan={12}>CELL1</TableCell>
                     <TableCell>MA123</TableCell>
                     <TableCell>BRAHIM</TableCell>
@@ -420,7 +420,7 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
                           qtyData.projet.wk12}
                     </TableCell>
                   </TableRow>
-                  <TableRow className="hover:bg-muted/50 [&>*]:!text-[11px] [&>*]:!h-5 [&>*]:!py-[1px] [&>*]:!px-3 [&>*]:text-muted-foreground">
+                  <TableRow className="hover:bg-muted/50 [&>*]:!text-[11px] [&>*]:!h-4 [&>*]:!py-[1px] [&>*]:!px-3 [&>*]:text-muted-foreground">
                     <TableCell>MA124</TableCell>
                     <TableCell>ADIL 1</TableCell>
                     <TableCell>ALAOUI 1</TableCell>
@@ -524,7 +524,7 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
                           qtyData.projet.wk12}
                     </TableCell>
                   </TableRow>
-                  <TableRow className="hover:bg-muted/50 [&>*]:!text-[11px] [&>*]:!h-5 [&>*]:!py-[1px] [&>*]:!px-3 [&>*]:text-muted-foreground">
+                  <TableRow className="hover:bg-muted/50 [&>*]:!text-[11px] [&>*]:!h-4 [&>*]:!py-[1px] [&>*]:!px-3 [&>*]:text-muted-foreground">
                     <TableCell>MA134</TableCell>
                     <TableCell>ADIL 11</TableCell>
                     <TableCell>ALAOUI 11</TableCell>

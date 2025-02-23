@@ -145,60 +145,61 @@ export default function TableZone({ data }: TableZoneProps) {
       <div className="rounded-md border">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead className="w-[50px]"></TableHead>
-              <TableCell>Zone</TableCell>
-              <TableHead>Periode</TableHead>
-              <TableHead> EFF.Valorisé</TableHead>
-              <TableHead>EFF.Opérationnel </TableHead>
-              <TableHead>C.Réel </TableHead>
-              <TableHead>C.Standart</TableHead>
-              <TableHead>Ecart</TableHead>
-              <TableHead>Ecart Global</TableHead>
-              <TableHead>Details</TableHead>
+            <TableRow className="h-9">
+              <TableHead className="py-1 w-[50px] text-sm"></TableHead>
+              <TableCell className="py-1 text-sm">Zone</TableCell>
+              <TableHead className="py-1 text-sm">Periode</TableHead>
+              <TableHead className="py-1 text-sm"> EFF.Valorisé</TableHead>
+              <TableHead className="py-1 text-sm">EFF.Opérationnel </TableHead>
+              <TableHead className="py-1 text-sm">C.Réel </TableHead>
+              <TableHead className="py-1 text-sm">C.Standart</TableHead>
+              <TableHead className="py-1 text-sm">Ecart</TableHead>
+              <TableHead className="py-1 text-sm">Ecart Global</TableHead>
+              <TableHead className="py-1 text-sm">Details</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {paginatedData.map((detail, detailIndex) => (
               <React.Fragment key={detailIndex}>
-                <TableRow>
-                  <TableCell>
+                <TableRow className="h-9">
+                  <TableCell className="py-1 text-sm">
                     <button
                       onClick={() => toggleRow(detailIndex)}
-                      className="p-1 hover:bg-muted rounded-lg"
+                      className="p-0.5 hover:bg-muted rounded-lg"
                     >
                       {openRows.includes(detailIndex) ? (
-                        <ChevronDown className="h-4 w-4" />
+                        <ChevronDown className="h-3 w-3" />
                       ) : (
-                        <ChevronRight className="h-4 w-4" />
+                        <ChevronRight className="h-3 w-3" />
                       )}
                     </button>
                   </TableCell>
-                  <TableCell>{detail.zone}</TableCell>
-                  <TableCell>{detail.time}</TableCell>
-                  <TableCell>{detail.hoursWorked}</TableCell>
-                  <TableCell>{detail.hoursWorked} </TableCell>
-                  <TableCell>{detail.hoursWorked} Euro</TableCell>
-                  <TableCell>
+                  <TableCell className="py-1 text-sm">{detail.zone}</TableCell>
+                  <TableCell className="py-1 text-sm">{detail.time}</TableCell>
+                  <TableCell className="py-1 text-sm">
+                    {detail.hoursWorked}
+                  </TableCell>
+                  <TableCell className="py-1 text-sm">
+                    {detail.hoursWorked}{" "}
+                  </TableCell>
+                  <TableCell className="py-1 text-sm">
+                    {detail.hoursWorked} Euro
+                  </TableCell>
+                  <TableCell className="py-1 text-sm">
                     {detail.hoursWorked + detail.hoursWorked} Euro
                   </TableCell>
-                  <TableCell>
-                    {" "}
+                  <TableCell className="py-1 text-sm">
                     {detail.hoursWorked + detail.hoursWorked * 2}
                   </TableCell>
-                  <TableCell>
-                    {" "}
+                  <TableCell className="py-1 text-sm">
                     {detail.hoursWorked + detail.hoursWorked * 4}
                   </TableCell>
-                  {/* 
-
-                  <TableCell>{detail.hoursReel}</TableCell> */}
-                  <TableCell>
+                  <TableCell className="py-1 text-sm">
                     <Link href={`/workflows/details/${detail.id}`}>
                       <Button
                         variant="outline"
                         size="sm"
-                        className="h-7 text-xs px-2.5"
+                        className="h-6 text-xs px-2"
                       >
                         Details
                       </Button>
@@ -213,9 +214,6 @@ export default function TableZone({ data }: TableZoneProps) {
                           <div className="grid grid-cols-1 gap-3">
                             <Card className="p-3">
                               <div className="space-y-1">
-                                {/* <p className="text-xs text-muted-foreground">
-                                  Production
-                                </p> */}
                                 <div className="grid grid-cols-3 gap-2">
                                   <div>
                                     <p className="text-xs text-muted-foreground">
