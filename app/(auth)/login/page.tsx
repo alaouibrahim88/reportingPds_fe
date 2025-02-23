@@ -39,7 +39,7 @@ export default function LoginPage() {
   return (
     <div className="h-screen w-full flex bg-gray-50">
       {/* Left side - Welcome Message */}
-      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-blue-600 to-blue-700 p-12 relative overflow-hidden">
+      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-[#054177] to-blue-700 p-12 relative overflow-hidden">
         <div className="space-y-6 text-white z-10 my-auto">
           <div className="flex items-center gap-3">
             <h1 className="text-4xl font-bold tracking-tight animate-fade-in">
@@ -101,7 +101,7 @@ export default function LoginPage() {
                   type="email"
                   placeholder="User Name"
                   required
-                  className="w-full transition-all border-gray-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                  className="w-full transition-all border-gray-200 focus:border-primary focus:ring-2 focus:ring-blue-100"
                 />
               </div>
               <div className="relative group">
@@ -110,12 +110,12 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"}
                   placeholder="Password"
                   required
-                  className="w-full pr-12 transition-all border-gray-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                  className="w-full pr-12 transition-all border-gray-200 focus:border-primary focus:ring-2 focus:ring-blue-100"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-600 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -127,7 +127,7 @@ export default function LoginPage() {
                 <input
                   type="checkbox"
                   id="remember"
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-gray-300 text-primary focus:ring-blue-500"
                 />
                 <label htmlFor="remember" className="text-gray-600">
                   Remember me
@@ -135,7 +135,7 @@ export default function LoginPage() {
               </div>
               <Link
                 href="/forgot-password"
-                className="text-blue-600 hover:text-blue-700 transition-colors font-medium"
+                className="text-primary hover:text-blue-700 transition-colors font-medium"
               >
                 Forgot Password?
               </Link>
@@ -143,7 +143,7 @@ export default function LoginPage() {
 
             <Button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 transition-colors py-6 text-base font-medium"
+              className="w-full bg-primary hover:bg-blue-700 transition-colors py-6 text-base font-medium"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -160,7 +160,7 @@ export default function LoginPage() {
               Don&apos;t have an account?{" "}
               <Link
                 href="/register"
-                className="text-blue-600 hover:text-blue-700 transition-colors font-medium"
+                className="text-primary hover:text-blue-700 transition-colors font-medium"
               >
                 Sign Up
               </Link>
