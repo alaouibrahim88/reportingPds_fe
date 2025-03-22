@@ -14,23 +14,35 @@ import {
   LayoutDashboard,
   TrendingUp,
 } from "lucide-react";
+import { login } from "@/actions/auth";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
 
-    // Simulate authentication
     try {
-      // Set a cookie to simulate authentication
-      document.cookie = "auth=true; path=/";
-      router.push("/");
+      const result = await login({ username, password });
+
+      if (result.success) {
+        router.push("/");
+        router.refresh();
+      } else {
+        setError(
+          result.error || "Login failed. Please check your credentials."
+        );
+      }
     } catch (error) {
       console.error("Login failed:", error);
+      setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -93,14 +105,22 @@ export default function LoginPage() {
             </p>
           </div>
 
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-md text-sm">
+              {error}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-4">
               <div className="relative group">
                 <Input
-                  id="email"
-                  type="email"
+                  id="username"
+                  type="text"
                   placeholder="User Name"
                   required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   className="w-full transition-all border-gray-200 focus:border-primary focus:ring-2 focus:ring-blue-100"
                 />
               </div>
@@ -110,6 +130,8 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"}
                   placeholder="Password"
                   required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full pr-12 transition-all border-gray-200 focus:border-primary focus:ring-2 focus:ring-blue-100"
                 />
                 <button

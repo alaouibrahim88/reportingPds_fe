@@ -13,6 +13,9 @@ export interface ProductionIssue {
   assignee: string | null;
   type: Array<{ name: string; count: number }>;
   department: string;
+  color?: string;
+  visibilityScore?: number;
+  priority?: string;
 }
 
 export interface ZoneColor {
