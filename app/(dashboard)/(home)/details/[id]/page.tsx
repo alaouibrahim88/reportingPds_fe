@@ -11,19 +11,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  ArrowLeft,
-  Building2,
-  FolderIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ChevronRight,
-  Users2,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+import { ArrowLeft, FolderIcon, Users2 } from "lucide-react";
+
 import { dashboardData } from "@/app/(dashboard)/(home)/_components/data/dashboardData";
 import { workflowData } from "@/app/(dashboard)/workflows/_components/data/workflowData";
-import { Card } from "@/components/ui/card";
+
 import {
   Select,
   SelectContent,
@@ -35,8 +27,8 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import CollapsibleZoneTable from "./CollapsibleZoneTable";
+import { getZoneDetails } from "@/actions/scrap";
 
-// Add these sample data objects near the top of your component
 const priceData = {
   projet: {
     wk1: 30,
@@ -107,6 +99,9 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
   const [selectedOperator, setSelectedOperator] = useState("all");
   const [selectedTime, setSelectedTime] = useState("all");
   const [viewMode, setViewMode] = useState<"price" | "qty">("price");
+  const [selectedYear, setSelectedYear] = useState(2025); // Default year
+  const [selectedMonth, setSelectedMonth] = useState("1"); // Changed default to December (12)
+  const [zoneDetails, setZoneDetails] = useState(null);
 
   // Find the zone data based on the ID
   const zoneDetail = workflowData.zoneData
@@ -187,26 +182,103 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
           </div>
         </div>
 
-        {/* Add Switch Button */}
-        <div className="flex items-center gap-3 px-4 py-2 rounded-lg border bg-muted/30">
-          <span className="text-xs font-medium text-muted-foreground">
-            Price
-          </span>
-          <Switch
-            checked={viewMode === "qty"}
-            onCheckedChange={(checked) =>
-              setViewMode(checked ? "qty" : "price")
-            }
-            className="data-[state=checked]:bg-primary"
-          />
-          <span className="text-xs font-medium text-muted-foreground">QTY</span>
+        <div className="flex items-center gap-3">
+          {/* Year Selector */}
+          <Select
+            value={selectedYear.toString()}
+            onValueChange={(value) => setSelectedYear(parseInt(value))}
+          >
+            <SelectTrigger className="w-[100px] h-8 text-xs">
+              <SelectValue placeholder="Select Year" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="2023" className="text-xs">
+                2023
+              </SelectItem>
+              <SelectItem value="2024" className="text-xs">
+                2024
+              </SelectItem>
+              <SelectItem value="2025" className="text-xs">
+                2025
+              </SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Month Selector - Replace the duplicate year selector */}
+          <Select
+            value={selectedMonth}
+            onValueChange={(value) => setSelectedMonth(value)}
+          >
+            <SelectTrigger className="w-[120px] h-8 text-xs">
+              <SelectValue placeholder="Select Month" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1" className="text-xs">
+                January
+              </SelectItem>
+              <SelectItem value="2" className="text-xs">
+                February
+              </SelectItem>
+              <SelectItem value="3" className="text-xs">
+                March
+              </SelectItem>
+              <SelectItem value="4" className="text-xs">
+                April
+              </SelectItem>
+              <SelectItem value="5" className="text-xs">
+                May
+              </SelectItem>
+              <SelectItem value="6" className="text-xs">
+                June
+              </SelectItem>
+              <SelectItem value="7" className="text-xs">
+                July
+              </SelectItem>
+              <SelectItem value="8" className="text-xs">
+                August
+              </SelectItem>
+              <SelectItem value="9" className="text-xs">
+                September
+              </SelectItem>
+              <SelectItem value="10" className="text-xs">
+                October
+              </SelectItem>
+              <SelectItem value="11" className="text-xs">
+                November
+              </SelectItem>
+              <SelectItem value="12" className="text-xs">
+                December
+              </SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* View Mode Switch */}
+          <div className="flex items-center gap-3 px-4 py-2 rounded-lg border bg-muted/30">
+            <span className="text-xs font-medium text-muted-foreground">
+              Price
+            </span>
+            <Switch
+              checked={viewMode === "qty"}
+              onCheckedChange={(checked) =>
+                setViewMode(checked ? "qty" : "price")
+              }
+              className="data-[state=checked]:bg-primary"
+            />
+            <span className="text-xs font-medium text-muted-foreground">
+              QTY
+            </span>
+          </div>
         </div>
       </div>
 
       {/* Details Overview */}
       <div className="space-y-8">
         {/* First Table */}
-        <CollapsibleZoneTable viewMode={viewMode} />
+        <CollapsibleZoneTable
+          viewMode={viewMode}
+          year={selectedYear}
+          month={selectedMonth}
+        />
 
         {/* Third Table - Employee Details */}
         <div className="rounded-md border">

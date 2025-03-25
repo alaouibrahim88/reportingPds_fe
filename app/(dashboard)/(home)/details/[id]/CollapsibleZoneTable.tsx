@@ -1,33 +1,348 @@
-import React, { useState } from "react";
-import { ChevronDown, Plus, Users2 } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Users2 } from "lucide-react";
+import { getZoneDetails } from "@/actions/scrap";
 
-// Add this type at the top
-type ZoneState = {
-  [key in "Wrapping" | "Nets" | "Knitting"]: boolean;
+// Improved type definitions
+type ZoneKey = "Wrapping" | "Nets" | "Knitting";
+type ZoneState = Record<ZoneKey, boolean>;
+
+// Define data structure types
+type WeekData = {
+  value: number;
+};
+
+type MonthData = {
+  name: string;
+  weeks: WeekData[];
+  total: number;
+};
+
+type CellData = {
+  name: string;
+  type: "Serie" | "Projet";
+  months: MonthData[];
+};
+
+type ZoneData = {
+  key: ZoneKey;
+  projectValue: number;
+  cells: CellData[];
+  totals: number[][];
+};
+
+// Type for the API response
+type ApiZoneDetail = {
+  typeCell: "Projet" | "Serie";
+  semaine: number;
+  mois: string;
+  annee: number;
+  couts: number;
+  total_mois: number;
+};
+
+type ApiZoneType = {
+  zone: string;
+  details: ApiZoneDetail[];
+};
+
+type ApiResponse = {
+  zonesType: ApiZoneType[];
+  returnMessage: string;
+  returnCode: string;
 };
 
 interface CollapsibleZoneTableProps {
   viewMode: "price" | "qty";
+  year: number;
+  month: string;
 }
 
-const CollapsibleZoneTable = ({ viewMode }: CollapsibleZoneTableProps) => {
+const CollapsibleZoneTable = ({
+  viewMode,
+  year,
+  month,
+}: CollapsibleZoneTableProps) => {
   const [expandedZones, setExpandedZones] = useState<ZoneState>({
     Wrapping: false,
     Nets: false,
     Knitting: false,
   });
 
-  const toggleZone = (zone: keyof ZoneState) => {
+  const [zonesData, setZonesData] = useState<ZoneData[]>([]);
+  const [months, setMonths] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  // Fetch data on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await getZoneDetails(year, viewMode, month);
+
+        if (response) {
+          const transformedData = transformApiDataToZonesData(response);
+          setZonesData(transformedData);
+
+          if (
+            transformedData.length > 0 &&
+            transformedData[0].cells.length > 0
+          ) {
+            setMonths(
+              transformedData[0].cells[0].months.map((month) => month.name)
+            );
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching zone details:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [year, viewMode, month]);
+
+  // Helper functions
+  const toggleZone = (zone: ZoneKey) => {
     setExpandedZones((prev) => ({
       ...prev,
       [zone]: !prev[zone],
     }));
   };
 
-  // Helper function to format values
   const formatValue = (value: number) => {
     return viewMode === "price" ? `${value} €` : value;
   };
+
+  // Component for table header
+  const TableHeader = () => (
+    <thead>
+      <tr>
+        <th
+          className="border p-1 text-xs font-medium text-muted-foreground"
+          colSpan={2}
+        >
+          NATURE
+        </th>
+        {months.map((month) => (
+          <th
+            key={month}
+            className="border p-1 text-center text-xs font-medium text-muted-foreground bg-muted/30"
+            colSpan={5}
+          >
+            {month}
+          </th>
+        ))}
+      </tr>
+      <tr>
+        <th
+          className="border p-1 text-xs font-medium text-muted-foreground"
+          colSpan={2}
+        ></th>
+        {Array.from({ length: months.length }).flatMap((_, monthIndex) => [
+          ...Array.from({ length: 4 }).map((_, weekIndex) => (
+            <th
+              key={`wk${monthIndex * 4 + weekIndex + 1}`}
+              className="border p-1 text-center text-xs font-medium text-muted-foreground"
+            >
+              WK{monthIndex * 4 + weekIndex + 1}
+            </th>
+          )),
+          <th
+            key={`total-m${monthIndex + 1}`}
+            className="border p-1 text-center text-xs font-medium text-muted-foreground"
+          >
+            Total M{monthIndex + 1}
+          </th>,
+        ])}
+      </tr>
+    </thead>
+  );
+
+  // Component for a data cell
+  const DataCell = ({ value }: { value: number }) => (
+    <td className="border p-1 text-center text-xs text-muted-foreground">
+      {formatValue(value)}
+    </td>
+  );
+
+  // Component for a total cell (with yellow background)
+  const TotalCell = ({ value }: { value: number }) => (
+    <td className="border p-1 text-center text-xs text-muted-foreground bg-yellow-50">
+      {formatValue(value)}
+    </td>
+  );
+
+  // Component for a row total cell (with blue background)
+  const RowTotalCell = ({ value }: { value: number }) => (
+    <td className="border p-1 text-center text-xs text-muted-foreground font-medium bg-blue-100">
+      {formatValue(value)}
+    </td>
+  );
+
+  // Component for a zone row
+  const ZoneRow = ({ zone }: { zone: ZoneData }) => {
+    const isExpanded = expandedZones[zone.key];
+
+    // Find the Projet cell
+    const projetCell = zone.cells.find((cell) => cell.type === "Projet");
+
+    return (
+      <tr className="hover:bg-muted/50 transition-colors">
+        <td
+          className="border p-1 cursor-pointer text-xs text-muted-foreground"
+          onClick={() => toggleZone(zone.key)}
+        >
+          {isExpanded ? "▼" : "+"} {zone.key}
+        </td>
+        <td className="border p-1 text-xs text-muted-foreground">Projet</td>
+        {months.map((month, monthIndex) => {
+          const actualMonthIndex = months.indexOf(month);
+          const monthData = projetCell?.months[actualMonthIndex];
+
+          return (
+            <React.Fragment key={`${zone.key}-${month}`}>
+              {monthData?.weeks.map((week, weekIndex) => (
+                <DataCell
+                  key={`${zone.key}-${month}-wk${weekIndex}`}
+                  value={week.value}
+                />
+              ))}
+              <TotalCell value={monthData?.total || 0} />
+            </React.Fragment>
+          );
+        })}
+      </tr>
+    );
+  };
+
+  // Component for expanded zone details
+  const ExpandedZoneDetails = ({ zone }: { zone: ZoneData }) => {
+    // Find the Serie cell
+    const serieCell = zone.cells.find((cell) => cell.type === "Serie");
+
+    return (
+      <>
+        <tr className="hover:bg-muted/50 transition-colors">
+          <td className="border p-1 text-xs text-muted-foreground"></td>
+          <td className="border p-1 text-xs text-muted-foreground">Serie</td>
+          {months.map((month, monthIndex) => {
+            const actualMonthIndex = months.indexOf(month);
+            const monthData = serieCell?.months[actualMonthIndex];
+
+            return (
+              <React.Fragment key={`${zone.key}-serie-${month}`}>
+                {monthData?.weeks.map((week, weekIndex) => (
+                  <DataCell
+                    key={`${zone.key}-serie-${month}-wk${weekIndex}`}
+                    value={week.value}
+                  />
+                ))}
+                <TotalCell value={monthData?.total || 0} />
+              </React.Fragment>
+            );
+          })}
+        </tr>
+        <tr className="hover:bg-muted/50 transition-colors bg-blue-50">
+          <td className="border p-1 text-xs text-muted-foreground"></td>
+          <td className="border p-1 text-xs text-muted-foreground font-medium">
+            TOTAL
+          </td>
+          {months.map((month, monthIndex) => {
+            const actualMonthIndex = months.indexOf(month);
+
+            return (
+              <React.Fragment key={`${zone.key}-total-${month}`}>
+                {zone.totals[actualMonthIndex].map((value, valueIndex) =>
+                  valueIndex === 4 ? (
+                    <RowTotalCell
+                      key={`${zone.key}-total-${month}-${valueIndex}`}
+                      value={value}
+                    />
+                  ) : (
+                    <td
+                      key={`${zone.key}-total-${month}-${valueIndex}`}
+                      className="border p-1 text-center text-xs text-muted-foreground font-medium"
+                    >
+                      {formatValue(value)}
+                    </td>
+                  )
+                )}
+              </React.Fragment>
+            );
+          })}
+        </tr>
+      </>
+    );
+  };
+
+  // Component for collapsed zone summary (just show the TOTAL row)
+  const CollapsedZoneSummary = ({ zone }: { zone: ZoneData }) => {
+    // Find the Serie cell
+    const serieCell = zone.cells.find((cell) => cell.type === "Serie");
+
+    return (
+      <>
+        <tr className="hover:bg-muted/50 transition-colors">
+          <td className="border p-1 text-xs text-muted-foreground"></td>
+          <td className="border p-1 text-xs text-muted-foreground">Serie</td>
+          {months.map((month, monthIndex) => {
+            const actualMonthIndex = months.indexOf(month);
+            const monthData = serieCell?.months[actualMonthIndex];
+
+            return (
+              <React.Fragment key={`summary-${month}`}>
+                {monthData?.weeks.map((week, weekIndex) => (
+                  <DataCell
+                    key={`summary-${month}-wk${weekIndex}`}
+                    value={week.value}
+                  />
+                ))}
+                <TotalCell value={monthData?.total || 0} />
+              </React.Fragment>
+            );
+          })}
+        </tr>
+        <tr className="hover:bg-muted/50 transition-colors bg-blue-50">
+          <td className="border p-1 text-xs text-muted-foreground"></td>
+          <td className="border p-1 text-xs text-muted-foreground font-medium">
+            TOTAL
+          </td>
+          {months.map((month, monthIndex) => {
+            const actualMonthIndex = months.indexOf(month);
+
+            return (
+              <React.Fragment key={`summary-total-${month}`}>
+                {zone.totals[actualMonthIndex].map((value, valueIndex) =>
+                  valueIndex === 4 ? (
+                    <RowTotalCell
+                      key={`summary-total-${month}-${valueIndex}`}
+                      value={value}
+                    />
+                  ) : (
+                    <td
+                      key={`summary-total-${month}-${valueIndex}`}
+                      className="border p-1 text-center text-xs text-muted-foreground font-medium"
+                    >
+                      {formatValue(value)}
+                    </td>
+                  )
+                )}
+              </React.Fragment>
+            );
+          })}
+        </tr>
+      </>
+    );
+  };
+
+  if (loading) {
+    return <div className="p-4 text-center">Loading zone details...</div>;
+  }
+
+  if (zonesData.length === 0) {
+    return <div className="p-4 text-center">No zone data available.</div>;
+  }
 
   return (
     <div className="rounded-md border shadow-sm hover:shadow-md transition-all">
@@ -41,463 +356,15 @@ const CollapsibleZoneTable = ({ viewMode }: CollapsibleZoneTableProps) => {
       <div className="p-3 transition-all hover:border-primary/20">
         <div className="overflow-x-auto w-full">
           <table className="w-full border-collapse">
-            <thead>
-              <tr>
-                <th
-                  className="border p-1 text-xs font-medium text-muted-foreground"
-                  colSpan={2}
-                >
-                  NATURE
-                </th>
-                <th
-                  className="border p-1 text-center text-xs font-medium text-muted-foreground bg-muted/30"
-                  colSpan={5}
-                >
-                  Octobre
-                </th>
-                <th
-                  className="border p-1 text-center text-xs font-medium text-muted-foreground bg-muted/30"
-                  colSpan={5}
-                >
-                  Novembre
-                </th>
-                <th
-                  className="border p-1 text-center text-xs font-medium text-muted-foreground bg-muted/30"
-                  colSpan={5}
-                >
-                  Sept
-                </th>
-              </tr>
-              <tr>
-                <th
-                  className="border p-1 text-xs font-medium text-muted-foreground"
-                  colSpan={2}
-                ></th>
-                <th className="border p-1 text-center text-xs font-medium text-muted-foreground">
-                  WK1
-                </th>
-                <th className="border p-1 text-center text-xs font-medium text-muted-foreground">
-                  WK2
-                </th>
-                <th className="border p-1 text-center text-xs font-medium text-muted-foreground">
-                  WK3
-                </th>
-                <th className="border p-1 text-center text-xs font-medium text-muted-foreground">
-                  WK4
-                </th>
-                <th className="border p-1 text-center text-xs font-medium text-muted-foreground">
-                  Total M1
-                </th>
-                <th className="border p-1 text-center text-xs font-medium text-muted-foreground">
-                  WK5
-                </th>
-                <th className="border p-1 text-center text-xs font-medium text-muted-foreground">
-                  WK6
-                </th>
-                <th className="border p-1 text-center text-xs font-medium text-muted-foreground">
-                  WK7
-                </th>
-                <th className="border p-1 text-center text-xs font-medium text-muted-foreground">
-                  WK8
-                </th>
-                <th className="border p-1 text-center text-xs font-medium text-muted-foreground">
-                  Total M2
-                </th>
-                <th className="border p-1 text-center text-xs font-medium text-muted-foreground">
-                  WK9
-                </th>
-                <th className="border p-1 text-center text-xs font-medium text-muted-foreground">
-                  WK10
-                </th>
-                <th className="border p-1 text-center text-xs font-medium text-muted-foreground">
-                  WK11
-                </th>
-                <th className="border p-1 text-center text-xs font-medium text-muted-foreground">
-                  WK12
-                </th>
-                <th className="border p-1 text-center text-xs font-medium text-muted-foreground">
-                  Total M3
-                </th>
-              </tr>
-            </thead>
+            <TableHeader />
             <tbody>
-              {Object.entries(expandedZones).map(([zone, isExpanded]) => (
-                <React.Fragment key={zone}>
-                  <tr className="hover:bg-muted/50 transition-colors">
-                    <td
-                      className="border p-1 cursor-pointer text-xs text-muted-foreground"
-                      onClick={() => toggleZone(zone as keyof ZoneState)}
-                    >
-                      {isExpanded ? "▼" : "+"} {zone}
-                    </td>
-                    <td className="border p-1 text-xs text-muted-foreground">
-                      Projet
-                    </td>
-                    <td className="border p-1 text-center text-xs text-muted-foreground">
-                      {formatValue(10)}
-                    </td>
-                    <td className="border p-1 text-center text-xs text-muted-foreground">
-                      {formatValue(10)}
-                    </td>
-                    <td className="border p-1 text-center text-xs text-muted-foreground">
-                      {formatValue(20)}
-                    </td>
-                    <td className="border p-1 text-center text-xs text-muted-foreground">
-                      {formatValue(11)}
-                    </td>
-                    <td className="border p-1 text-center text-xs text-muted-foreground bg-yellow-50">
-                      {formatValue(51)}
-                    </td>
-                    <td className="border p-1 text-center text-xs text-muted-foreground">
-                      {formatValue(10)}
-                    </td>
-                    <td className="border p-1 text-center text-xs text-muted-foreground">
-                      {formatValue(10)}
-                    </td>
-                    <td className="border p-1 text-center text-xs text-muted-foreground">
-                      {formatValue(20)}
-                    </td>
-                    <td className="border p-1 text-center text-xs text-muted-foreground">
-                      {formatValue(11)}
-                    </td>
-                    <td className="border p-1 text-center text-xs text-muted-foreground bg-yellow-50">
-                      {formatValue(51)}
-                    </td>
-                    <td className="border p-1 text-center text-xs text-muted-foreground">
-                      {formatValue(10)}
-                    </td>
-                    <td className="border p-1 text-center text-xs text-muted-foreground">
-                      {formatValue(10)}
-                    </td>
-                    <td className="border p-1 text-center text-xs text-muted-foreground">
-                      {formatValue(20)}
-                    </td>
-                    <td className="border p-1 text-center text-xs text-muted-foreground">
-                      {formatValue(11)}
-                    </td>
-                    <td className="border p-1 text-center text-xs text-muted-foreground bg-yellow-50">
-                      {formatValue(51)}
-                    </td>
-                  </tr>
-                  {isExpanded && (
-                    <>
-                      <tr className="hover:bg-muted/50 transition-colors">
-                        <td className="border p-1 text-xs text-muted-foreground">
-                          Cell1
-                        </td>
-                        <td className="border p-1 text-xs text-muted-foreground">
-                          Serie
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(20)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(10)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(20)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(11)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground bg-yellow-50">
-                          {formatValue(61)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(20)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(10)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(20)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(11)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground bg-yellow-50">
-                          {formatValue(61)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(20)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(10)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(20)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(11)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground bg-yellow-50">
-                          {formatValue(61)}
-                        </td>
-                      </tr>
-                      <tr className="hover:bg-muted/50 transition-colors">
-                        <td className="border p-1 text-xs text-muted-foreground">
-                          Cell2
-                        </td>
-                        <td className="border p-1 text-xs text-muted-foreground">
-                          Projet
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(15)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(15)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(25)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(15)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground bg-yellow-50">
-                          {formatValue(70)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(15)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(15)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(25)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(15)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground bg-yellow-50">
-                          {formatValue(70)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(15)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(15)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(25)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(15)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground bg-yellow-50">
-                          {formatValue(70)}
-                        </td>
-                      </tr>
-                      <tr className="hover:bg-muted/50 transition-colors">
-                        <td className="border p-1 text-xs text-muted-foreground">
-                          Cell3
-                        </td>
-                        <td className="border p-1 text-xs text-muted-foreground">
-                          Serie
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(25)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(15)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(30)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(20)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground bg-yellow-50">
-                          {formatValue(90)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(25)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(15)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(30)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(20)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground bg-yellow-50">
-                          {formatValue(90)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(25)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(15)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(30)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(20)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground bg-yellow-50">
-                          {formatValue(90)}
-                        </td>
-                      </tr>
-                      <tr className="hover:bg-muted/50 transition-colors bg-blue-50">
-                        <td className="border p-1 text-xs text-muted-foreground"></td>
-                        <td className="border p-1 text-xs text-muted-foreground font-medium">
-                          TOTAL
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium">
-                          {formatValue(60)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium">
-                          {formatValue(40)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium">
-                          {formatValue(75)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium">
-                          {formatValue(46)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium bg-blue-100">
-                          {formatValue(221)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium">
-                          {formatValue(60)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium">
-                          {formatValue(40)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium">
-                          {formatValue(75)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium">
-                          {formatValue(46)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium bg-blue-100">
-                          {formatValue(221)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium">
-                          {formatValue(60)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium">
-                          {formatValue(40)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium">
-                          {formatValue(75)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium">
-                          {formatValue(46)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium bg-blue-100">
-                          {formatValue(221)}
-                        </td>
-                      </tr>
-                    </>
-                  )}
-                  {!isExpanded && (
-                    <>
-                      <tr className="hover:bg-muted/50 transition-colors">
-                        <td className="border p-1 text-xs text-muted-foreground"></td>
-                        <td className="border p-1 text-xs text-muted-foreground">
-                          Serie
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(20)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(10)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(20)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(11)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground bg-yellow-50">
-                          {formatValue(61)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(20)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(10)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(20)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(11)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground bg-yellow-50">
-                          {formatValue(61)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(20)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(10)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(20)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground">
-                          {formatValue(11)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground bg-yellow-50">
-                          {formatValue(61)}
-                        </td>
-                      </tr>
-                      <tr className="hover:bg-muted/50 transition-colors bg-blue-50">
-                        <td className="border p-1 text-xs text-muted-foreground"></td>
-                        <td className="border p-1 text-xs text-muted-foreground font-medium">
-                          TOTAL
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium">
-                          {formatValue(30)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium">
-                          {formatValue(20)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium">
-                          {formatValue(40)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium">
-                          {formatValue(22)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium bg-blue-100">
-                          {formatValue(112)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium">
-                          {formatValue(30)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium">
-                          {formatValue(20)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium">
-                          {formatValue(40)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium">
-                          {formatValue(22)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium bg-blue-100">
-                          {formatValue(112)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium">
-                          {formatValue(30)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium">
-                          {formatValue(20)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium">
-                          {formatValue(40)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium">
-                          {formatValue(22)}
-                        </td>
-                        <td className="border p-1 text-center text-xs text-muted-foreground font-medium bg-blue-100">
-                          {formatValue(112)}
-                        </td>
-                      </tr>
-                    </>
+              {zonesData.map((zone) => (
+                <React.Fragment key={zone.key}>
+                  <ZoneRow zone={zone} />
+                  {expandedZones[zone.key] ? (
+                    <ExpandedZoneDetails zone={zone} />
+                  ) : (
+                    <CollapsedZoneSummary zone={zone} />
                   )}
                 </React.Fragment>
               ))}
@@ -507,6 +374,136 @@ const CollapsibleZoneTable = ({ viewMode }: CollapsibleZoneTableProps) => {
       </div>
     </div>
   );
+};
+
+// Transform API data to the format needed for the component
+const transformApiDataToZonesData = (apiData: ApiResponse): ZoneData[] => {
+  // Extract unique months from the data
+  const uniqueMonths = Array.from(
+    new Set(
+      apiData.zonesType.flatMap((zone) =>
+        zone.details.map((detail) => detail.mois)
+      )
+    )
+  ).sort((a, b) => {
+    // Custom sort for French month names
+    const monthOrder = [
+      "janvier",
+      "février",
+      "mars",
+      "avril",
+      "mai",
+      "juin",
+      "juillet",
+      "août",
+      "septembre",
+      "octobre",
+      "novembre",
+      "décembre",
+    ];
+    return monthOrder.indexOf(a) - monthOrder.indexOf(b);
+  });
+
+  // Transform each zone
+  return apiData.zonesType.map((zoneType) => {
+    // Convert zone name to ZoneKey format
+    const zoneKey = zoneType.zone as ZoneKey;
+
+    // Group details by cell type (Projet/Serie)
+    const cellTypes = ["Projet", "Serie"];
+
+    // Create cells array
+    const cells = cellTypes.map((cellType) => {
+      // Filter details for this cell type
+      const cellDetails = zoneType.details.filter(
+        (detail) => detail.typeCell === cellType
+      );
+
+      // Create months data for this cell
+      const months = uniqueMonths.map((month) => {
+        // Get all weeks for this month and cell type
+        const monthDetails = cellDetails.filter(
+          (detail) => detail.mois === month
+        );
+
+        // Sort by week number
+        monthDetails.sort((a, b) => a.semaine - b.semaine);
+
+        // Create week data - we need exactly 4 weeks per month
+        const weeks = Array.from({ length: 4 }, (_, i) => {
+          // Find the corresponding week detail for this week index
+          const weekDetail = monthDetails.find((detail) => {
+            // Calculate the week index within the month (1-4)
+            const weekInMonth = ((detail.semaine - 1) % 4) + 1;
+            return weekInMonth === i + 1;
+          });
+
+          return { value: weekDetail?.couts || 0 };
+        });
+
+        // Get total for this month from the first detail (they all have the same total_mois)
+        const monthTotal =
+          monthDetails.length > 0
+            ? monthDetails[0].total_mois
+            : // If no details, calculate from weeks
+              weeks.reduce((sum, week) => sum + week.value, 0);
+
+        return {
+          name: month,
+          weeks,
+          total: monthTotal,
+        };
+      });
+
+      return {
+        name: cellType,
+        type: cellType as "Projet" | "Serie",
+        months,
+      };
+    });
+
+    // Calculate totals for each month and week
+    const totals = uniqueMonths.map((month) => {
+      // Get all details for this month
+      const monthDetails = zoneType.details.filter(
+        (detail) => detail.mois === month
+      );
+
+      // Group by week and calculate totals for each week
+      const weekTotals = Array.from({ length: 4 }, (_, weekIndex) => {
+        // Calculate the actual week number
+        const weekInMonth = weekIndex + 1;
+
+        // Get all details for this week (both Projet and Serie)
+        const weekDetails = monthDetails.filter((detail) => {
+          const detailWeekInMonth = ((detail.semaine - 1) % 4) + 1;
+          return detailWeekInMonth === weekInMonth;
+        });
+
+        // Sum costs for this week
+        return weekDetails.reduce((sum, detail) => sum + detail.couts, 0);
+      });
+
+      // Get the month total from the API if available
+      const monthTotal =
+        monthDetails.length > 0
+          ? monthDetails[0].total_mois
+          : weekTotals.reduce((sum, weekTotal) => sum + weekTotal, 0);
+
+      return [...weekTotals, monthTotal];
+    });
+
+    // Calculate project value (first week value for Projet type)
+    const projectCell = cells.find((cell) => cell.type === "Projet");
+    const projectValue = projectCell?.months[0]?.weeks[0]?.value || 0;
+
+    return {
+      key: zoneKey,
+      projectValue,
+      cells,
+      totals,
+    };
+  });
 };
 
 export default CollapsibleZoneTable;
