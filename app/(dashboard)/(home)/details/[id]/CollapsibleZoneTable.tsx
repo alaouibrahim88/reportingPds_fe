@@ -115,49 +115,79 @@ const CollapsibleZoneTable = ({
   };
 
   // Component for table header
-  const TableHeader = () => (
-    <thead>
-      <tr>
-        <th
-          className="border p-1 text-xs font-medium text-muted-foreground"
-          colSpan={2}
-        >
-          NATURE
-        </th>
-        {months.map((month) => (
+  const TableHeader = () => {
+    // Group weeks by month
+    const weeksByMonth: Record<string, number[]> = {};
+
+    zonesData.forEach((zone) => {
+      zone.cells.forEach((cell) => {
+        cell.months.forEach((month) => {
+          if (!weeksByMonth[month.name]) {
+            weeksByMonth[month.name] = [];
+          }
+
+          month.weeks.forEach((week, weekIndex) => {
+            // Calculate the actual week number based on month position
+            const monthIndex = months.indexOf(month.name);
+            const weekNumber = monthIndex * 4 + weekIndex + 1;
+
+            if (!weeksByMonth[month.name].includes(weekNumber)) {
+              weeksByMonth[month.name].push(weekNumber);
+            }
+          });
+        });
+      });
+    });
+
+    // Sort week numbers within each month
+    Object.keys(weeksByMonth).forEach((month) => {
+      weeksByMonth[month].sort((a, b) => a - b);
+    });
+
+    return (
+      <thead>
+        <tr>
           <th
-            key={month}
-            className="border p-1 text-center text-xs font-medium text-muted-foreground bg-muted/30"
-            colSpan={5}
+            className="border p-1 text-xs font-medium text-muted-foreground"
+            colSpan={2}
           >
-            {month}
+            NATURE
           </th>
-        ))}
-      </tr>
-      <tr>
-        <th
-          className="border p-1 text-xs font-medium text-muted-foreground"
-          colSpan={2}
-        ></th>
-        {Array.from({ length: months.length }).flatMap((_, monthIndex) => [
-          ...Array.from({ length: 4 }).map((_, weekIndex) => (
+          {months.map((month) => (
             <th
-              key={`wk${monthIndex * 4 + weekIndex + 1}`}
+              key={month}
+              className="border p-1 text-center text-xs font-medium text-muted-foreground bg-muted/30"
+              colSpan={weeksByMonth[month]?.length + 1 || 5} // +1 for the total column
+            >
+              {month}
+            </th>
+          ))}
+        </tr>
+        <tr>
+          <th
+            className="border p-1 text-xs font-medium text-muted-foreground"
+            colSpan={2}
+          ></th>
+          {months.flatMap((month) => [
+            ...(weeksByMonth[month] || []).map((weekNum) => (
+              <th
+                key={`wk${weekNum}`}
+                className="border p-1 text-center text-xs font-medium text-muted-foreground"
+              >
+                WK{weekNum}
+              </th>
+            )),
+            <th
+              key={`total-${month}`}
               className="border p-1 text-center text-xs font-medium text-muted-foreground"
             >
-              WK{monthIndex * 4 + weekIndex + 1}
-            </th>
-          )),
-          <th
-            key={`total-m${monthIndex + 1}`}
-            className="border p-1 text-center text-xs font-medium text-muted-foreground"
-          >
-            Total M{monthIndex + 1}
-          </th>,
-        ])}
-      </tr>
-    </thead>
-  );
+              Total {month}
+            </th>,
+          ])}
+        </tr>
+      </thead>
+    );
+  };
 
   // Component for a data cell
   const DataCell = ({ value }: { value: number }) => (
@@ -196,7 +226,7 @@ const CollapsibleZoneTable = ({
           {isExpanded ? "▼" : "+"} {zone.key}
         </td>
         <td className="border p-1 text-xs text-muted-foreground">Projet</td>
-        {months.map((month, monthIndex) => {
+        {months.map((month) => {
           const actualMonthIndex = months.indexOf(month);
           const monthData = projetCell?.months[actualMonthIndex];
 
@@ -404,6 +434,26 @@ const transformApiDataToZonesData = (apiData: ApiResponse): ZoneData[] => {
     return monthOrder.indexOf(a) - monthOrder.indexOf(b);
   });
 
+  // Get weeks per month
+  const weeksPerMonth: Record<string, number[]> = {};
+
+  apiData.zonesType.forEach((zone) => {
+    zone.details.forEach((detail) => {
+      if (!weeksPerMonth[detail.mois]) {
+        weeksPerMonth[detail.mois] = [];
+      }
+
+      if (!weeksPerMonth[detail.mois].includes(detail.semaine)) {
+        weeksPerMonth[detail.mois].push(detail.semaine);
+      }
+    });
+  });
+
+  // Sort weeks within each month
+  Object.keys(weeksPerMonth).forEach((month) => {
+    weeksPerMonth[month].sort((a, b) => a - b);
+  });
+
   // Transform each zone
   return apiData.zonesType.map((zoneType) => {
     // Convert zone name to ZoneKey format
@@ -426,18 +476,14 @@ const transformApiDataToZonesData = (apiData: ApiResponse): ZoneData[] => {
           (detail) => detail.mois === month
         );
 
-        // Sort by week number
-        monthDetails.sort((a, b) => a.semaine - b.semaine);
+        // Get the actual weeks for this month
+        const monthWeeks = weeksPerMonth[month] || [];
 
-        // Create week data - we need exactly 4 weeks per month
-        const weeks = Array.from({ length: 4 }, (_, i) => {
-          // Find the corresponding week detail for this week index
-          const weekDetail = monthDetails.find((detail) => {
-            // Calculate the week index within the month (1-4)
-            const weekInMonth = ((detail.semaine - 1) % 4) + 1;
-            return weekInMonth === i + 1;
-          });
-
+        // Create week data with the actual weeks for this month
+        const weeks = monthWeeks.map((weekNum) => {
+          const weekDetail = monthDetails.find(
+            (detail) => detail.semaine === weekNum
+          );
           return { value: weekDetail?.couts || 0 };
         });
 
@@ -469,18 +515,14 @@ const transformApiDataToZonesData = (apiData: ApiResponse): ZoneData[] => {
         (detail) => detail.mois === month
       );
 
-      // Group by week and calculate totals for each week
-      const weekTotals = Array.from({ length: 4 }, (_, weekIndex) => {
-        // Calculate the actual week number
-        const weekInMonth = weekIndex + 1;
+      // Get the actual weeks for this month
+      const monthWeeks = weeksPerMonth[month] || [];
 
-        // Get all details for this week (both Projet and Serie)
-        const weekDetails = monthDetails.filter((detail) => {
-          const detailWeekInMonth = ((detail.semaine - 1) % 4) + 1;
-          return detailWeekInMonth === weekInMonth;
-        });
-
-        // Sum costs for this week
+      // Calculate totals for each week in this month
+      const weekTotals = monthWeeks.map((weekNum) => {
+        const weekDetails = monthDetails.filter(
+          (detail) => detail.semaine === weekNum
+        );
         return weekDetails.reduce((sum, detail) => sum + detail.couts, 0);
       });
 
