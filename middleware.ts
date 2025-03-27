@@ -2,16 +2,26 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-  const isAuthenticated = request.cookies.get("auth");
-  const isAuthPage =
-    request.nextUrl.pathname.startsWith("/login") ||
-    request.nextUrl.pathname.startsWith("/register");
+  const currentUser = request.cookies.get("access_token")?.value;
 
-  if (!isAuthenticated && !isAuthPage) {
+  // If the user is not logged in and trying to access a protected route
+  if (
+    !currentUser &&
+    !request.nextUrl.pathname.startsWith("/login") &&
+    !request.nextUrl.pathname.startsWith("/register") &&
+    !request.nextUrl.pathname.startsWith("/forgot-password")
+  ) {
+    // Redirect to the login page
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (isAuthenticated && isAuthPage) {
+  // If the user is logged in and trying to access auth pages
+  if (
+    currentUser &&
+    (request.nextUrl.pathname.startsWith("/login") ||
+      request.nextUrl.pathname.startsWith("/register"))
+  ) {
+    // Redirect to the home page
     return NextResponse.redirect(new URL("/", request.url));
   }
 
@@ -19,5 +29,14 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+  ],
 };
