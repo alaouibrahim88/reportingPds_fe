@@ -26,11 +26,13 @@ function InfoCard({ label, value }: InfoCardProps) {
     <div className="bg-card dark:bg-card/50 rounded-lg p-3 border border-border/40 flex justify-between gap-2 items-center">
       <p className="text-sm text-muted-foreground mb-1">Type: {label}</p>
       {Array.isArray(value) ? (
-        <p className="font-medium text-foreground">
-          {value.map((el, index) => (
-            <span key={index}>{el.count}</span>
+        <div className="font-medium text-foreground">
+          {value.map((item, index) => (
+            <span key={index} className="mr-1">
+              {item.name}: {item.count}
+            </span>
           ))}
-        </p>
+        </div>
       ) : (
         <p className="font-medium text-foreground">{value}</p>
       )}
