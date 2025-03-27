@@ -48,7 +48,7 @@ export interface ExpandedRowDetailsProps {
 
 export interface InfoCardProps {
   label: string;
-  value: string;
+  value: string | { name: string; count: number }[];
 }
 
 export interface StatusCardProps {
