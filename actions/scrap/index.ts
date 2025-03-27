@@ -563,6 +563,7 @@ export async function processZoneData(data: ZoneResponse) {
   weeksAndMonths.sort((a, b) => a.weekNum - b.weekNum);
 
   // Add to result object
+  // @ts-ignore
   result.headers = weeksAndMonths;
 
   // Continue with existing processing logic

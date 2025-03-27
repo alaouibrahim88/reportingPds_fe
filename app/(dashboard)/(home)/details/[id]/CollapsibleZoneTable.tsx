@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Users2 } from "lucide-react";
-import { getZoneDetails } from "@/actions/scrap";
+import { getZoneDetails, getDetailsPerZone } from "@/actions/scrap";
 
 // Improved type definitions
 type ZoneKey = "Wrapping" | "Nets" | "Knitting";
@@ -69,6 +69,7 @@ const CollapsibleZoneTable = ({
   });
 
   const [zonesData, setZonesData] = useState<ZoneData[]>([]);
+  const [detailedData, setDetailedData] = useState<Record<string, any>>({});
   const [months, setMonths] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -77,10 +78,16 @@ const CollapsibleZoneTable = ({
     const fetchData = async () => {
       try {
         setLoading(true);
+        // Fetch summary data
         const response = await getZoneDetails(year, viewMode, month);
 
+        // Fetch detailed data
+        const detailsResponse = await getDetailsPerZone(year, viewMode, month);
+
         if (response) {
+          // @ts-ignore
           const transformedData = transformApiDataToZonesData(response);
+
           setZonesData(transformedData);
 
           if (
@@ -90,6 +97,14 @@ const CollapsibleZoneTable = ({
             setMonths(
               transformedData[0].cells[0].months.map((month) => month.name)
             );
+          }
+
+          // Process and store detailed data
+          // @ts-ignore
+          if (detailsResponse && detailsResponse.zones) {
+            // @ts-ignore
+            const processedDetails = processDetailedData(detailsResponse.zones);
+            setDetailedData(processedDetails);
           }
         }
       } catch (error) {
@@ -101,6 +116,45 @@ const CollapsibleZoneTable = ({
 
     fetchData();
   }, [year, viewMode, month]);
+
+  // Process detailed data from getDetailsPerZone
+  const processDetailedData = (zonesDetails: any[]) => {
+    const result: Record<string, any> = {};
+
+    zonesDetails.forEach((zone) => {
+      const zoneName = zone.zone;
+      result[zoneName] = {
+        cells: {},
+      };
+
+      // Group details by cell and type
+      zone.details.forEach((detail: any) => {
+        const cellName = detail.cellule;
+        const cellType = detail.typeCell;
+
+        if (!result[zoneName].cells[cellName]) {
+          result[zoneName].cells[cellName] = {
+            type: cellType,
+            months: {},
+          };
+        }
+
+        if (!result[zoneName].cells[cellName].months[detail.mois]) {
+          result[zoneName].cells[cellName].months[detail.mois] = {
+            weeks: {},
+            total: detail.total_mois,
+          };
+        }
+
+        // Add week data
+        result[zoneName].cells[cellName].months[detail.mois].weeks[
+          detail.semaine
+        ] = detail.couts;
+      });
+    });
+
+    return result;
+  };
 
   // Helper functions
   const toggleZone = (zone: ZoneKey) => {
@@ -246,33 +300,64 @@ const CollapsibleZoneTable = ({
     );
   };
 
-  // Component for expanded zone details
+  // Component for expanded zone details with cells
   const ExpandedZoneDetails = ({ zone }: { zone: ZoneData }) => {
-    // Find the Serie cell
-    const serieCell = zone.cells.find((cell) => cell.type === "Serie");
+    // Get detailed data for this zone
+    const zoneDetails = detailedData[zone.key];
+
+    if (!zoneDetails) {
+      // Fallback to original implementation if no detailed data
+      return <CollapsedZoneSummary zone={zone} />;
+    }
+
+    // Get all cells for this zone
+    const cellNames = Object.keys(zoneDetails.cells);
 
     return (
       <>
-        <tr className="hover:bg-muted/50 transition-colors">
-          <td className="border p-1 text-xs text-muted-foreground"></td>
-          <td className="border p-1 text-xs text-muted-foreground">Serie</td>
-          {months.map((month, monthIndex) => {
-            const actualMonthIndex = months.indexOf(month);
-            const monthData = serieCell?.months[actualMonthIndex];
+        {cellNames.map((cellName) => {
+          const cellData = zoneDetails.cells[cellName];
+          return (
+            <tr
+              key={`${zone.key}-${cellName}`}
+              className="hover:bg-muted/50 transition-colors"
+            >
+              <td className="border p-1 text-xs text-muted-foreground">
+                {cellName}
+              </td>
+              <td className="border p-1 text-xs text-muted-foreground">
+                {cellData.type}
+              </td>
+              {months.map((month) => {
+                const monthData = cellData.months[month] || {
+                  weeks: {},
+                  total: 0,
+                };
+                const weeksInMonth =
+                  Object.keys(monthData.weeks).length > 0
+                    ? Object.keys(monthData.weeks)
+                        .map(Number)
+                        .sort((a, b) => a - b)
+                    : Array.from(
+                        { length: 4 },
+                        (_, i) => i + 1 + months.indexOf(month) * 4
+                      );
 
-            return (
-              <React.Fragment key={`${zone.key}-serie-${month}`}>
-                {monthData?.weeks.map((week, weekIndex) => (
-                  <DataCell
-                    key={`${zone.key}-serie-${month}-wk${weekIndex}`}
-                    value={week.value}
-                  />
-                ))}
-                <TotalCell value={monthData?.total || 0} />
-              </React.Fragment>
-            );
-          })}
-        </tr>
+                return (
+                  <React.Fragment key={`${zone.key}-${cellName}-${month}`}>
+                    {weeksInMonth.map((weekNum) => (
+                      <DataCell
+                        key={`${zone.key}-${cellName}-${month}-wk${weekNum}`}
+                        value={monthData.weeks[weekNum] || 0}
+                      />
+                    ))}
+                    <TotalCell value={monthData.total || 0} />
+                  </React.Fragment>
+                );
+              })}
+            </tr>
+          );
+        })}
         <tr className="hover:bg-muted/50 transition-colors bg-blue-50">
           <td className="border p-1 text-xs text-muted-foreground"></td>
           <td className="border p-1 text-xs text-muted-foreground font-medium">
