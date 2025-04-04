@@ -15,108 +15,41 @@ interface AuthResponse {
   refresh_token?: string;
 }
 
-// Mock user data for testing
-const MOCK_USERS = [
-  {
-    username: "admin",
-    password: "admin123",
-    name: "Admin User",
-    role: "admin",
-  },
-  {
-    username: "Polydesign",
-    password: "Polydesign123*123",
-    name: "Regular User",
-    role: "user",
-  },
-];
-
-export async function login({ username, password }: LoginCredentials) {
-  try {
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // Mock authentication logic
-    const user = MOCK_USERS.find(
-      (u) => u.username === username && u.password === password
-    );
-
-    if (!user) {
-      throw new Error("Invalid username or password");
-    }
-
-    // Create a mock token with user info
-    const mockToken = btoa(
-      JSON.stringify({
-        sub: user.username,
-        name: user.name,
-        role: user.role,
-        exp: Math.floor(Date.now() / 1000) + 3600, // 1 hour from now
-      })
-    );
-
-    const mockRefreshToken = btoa(
-      JSON.stringify({
-        sub: user.username,
-        exp: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60, // 30 days
-      })
-    );
-
-    // Mock response data
-    const data: AuthResponse = {
-      access_token: mockToken,
-      token_type: "Bearer",
-      expires_in: 3600, // 1 hour
-      refresh_token: mockRefreshToken,
-    };
-
-    // Set the auth token in cookies
-    const cookieStore = cookies();
-    cookieStore.set("access_token", data.access_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: data.expires_in,
-      path: "/",
-    });
-
-    if (data.refresh_token) {
-      cookieStore.set("refresh_token", data.refresh_token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        // Typically refresh tokens last longer than access tokens
-        maxAge: 30 * 24 * 60 * 60, // 30 days
-        path: "/",
-      });
-    }
-
-    // Also store user info in a non-httpOnly cookie for client access
-    cookieStore.set(
-      "user_info",
-      JSON.stringify({
-        username: user.username,
-        name: user.name,
-        role: user.role,
-      }),
-      {
-        httpOnly: false,
-        secure: process.env.NODE_ENV === "production",
-        maxAge: data.expires_in,
-        path: "/",
-      }
-    );
-
-    return {
-      success: true,
-      user: { username: user.username, name: user.name, role: user.role },
-    };
-  } catch (error) {
-    console.error("Login error:", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Authentication failed",
-    };
-  }
+interface LoginResponse  {
+  access_token: string;
+  expires_in: string;
+  token_type: string;
+  refresh_token: string;
+  scope: string;
+  error?: string
 }
+
+// In a real application, you would connect to a database or authentication service
+// instead of using hardcoded credentials
+export const login = async (username: string, password: string): Promise<LoginResponse> => {
+  debugger;
+  const url = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4500";
+  const response: Response = await fetch(`${url}/api/login/authentication`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded', // Correct content type for URLSearchParams
+    },
+    body: new URLSearchParams({
+      grant_type: 'password',
+      client_id: 'PolydesignAPIWebClient',
+      client_secret: 'MIGsAAiEAn5JeMVQQWXRnznNZlR2vcLPRo1HwL9K',
+      username,
+      password,
+    }).toString(),
+  });
+
+  // Parse the response body to JSON
+  const data = await response.json();
+
+  // Otherwise, return the successful login data
+  return data as LoginResponse;
+};
+
 
 export async function logout() {
   const cookieStore = cookies();
@@ -125,7 +58,7 @@ export async function logout() {
   cookieStore.delete("user_info");
   cookieStore.delete("auth");
 
-  redirect("/login");
+  redirect("/register");
 }
 
 export async function getSession() {

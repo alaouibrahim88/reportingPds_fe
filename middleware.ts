@@ -9,6 +9,7 @@ export function middleware(request: NextRequest) {
     !currentUser &&
     !request.nextUrl.pathname.startsWith("/login") &&
     !request.nextUrl.pathname.startsWith("/register") &&
+    !request.nextUrl.pathname.startsWith("/") &&
     !request.nextUrl.pathname.startsWith("/forgot-password")
   ) {
     // Redirect to the login page

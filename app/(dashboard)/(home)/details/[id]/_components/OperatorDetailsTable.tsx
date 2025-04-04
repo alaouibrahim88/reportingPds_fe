@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Users2 } from "lucide-react";
+import { FaSearch } from 'react-icons/fa';
+import { FaFileExcel } from 'react-icons/fa'; 
 import {
   Table,
   TableBody,
@@ -18,6 +20,7 @@ import {
 import { getAllZones, getAllCells, getOperators } from "@/actions/scrap";
 import { Zone, Cell } from "../types";
 import { formatCurrency } from "../_utils/formatters";
+import { z } from "zod"; 
 
 interface OperatorDetailsTableProps {
   selectedYear: number;
@@ -37,18 +40,52 @@ export default function OperatorDetailsTable({
   const [weekNumbers, setWeekNumbers] = useState<number[]>([]);
   const [monthData, setMonthData] = useState<{ [key: string]: string[] }>({});
 
+  // Input validation schemas
+  const yearSchema = z.number().int().min(2000).max(2100);
+  const displayTypeSchema = z.string().default("Qte");
+  const monthSchema = z.string().default("1");
+  const cellSchema = z.string();
+
+
   useEffect(() => {
     const fetchAllZones = async () => {
-      const allZones = await getAllZones();
-      setAllZones(allZones.getlistZone);
+      const url = process.env.NEXT_PUBLIC_API_URL || "https://localhost:7000";
+      const token = localStorage.getItem('access_token');
+      const response = await fetch(`https://localhost:7000/api/BridgeHubMTO/GetLisZone`, {
+      method: "GET",
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },   
+        cache: "no-store",
+        next: { revalidate: 0 },   
+      });
+
+      const allZones = await response.json(); //await getAllZones();
+      setAllZones(allZones.getlistZone); 
+      //const allZones = await getAllZones();
     };
     fetchAllZones();
   }, []);
 
   useEffect(() => {
     const fetchAllCells = async () => {
-      const allCells = await getAllCells(selectedZone);
+      
+      const validZone = (selectedZone).toString();
+      const token = localStorage.getItem('access_token');
+      const response = await fetch(`https://localhost:7000/api/BridgeHubMTO/GetListCell?zone=${validZone}`, 
+      {
+      method: "GET",
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },   
+        cache: "no-store",
+        next: { revalidate: 0 },   
+      });
+      const allCells = await response.json(); // getAllCells(selectedZone);
       setAllCells(allCells.getlistcell);
+
     };
     fetchAllCells();
   }, [selectedZone]);
@@ -62,12 +99,29 @@ export default function OperatorDetailsTable({
 
       setIsLoading(true);
       try {
-        const data = await getOperators(
-          selectedYear,
-          parseInt(selectedMonth),
-          selectedCell
-        );
 
+        const monthAsNumber = parseInt(selectedMonth, 10);
+        const validYear = yearSchema.parse(selectedYear);
+        const validMonth = z.number().int().min(1).max(12).parse(monthAsNumber);
+        const validCell = cellSchema.parse(selectedCell);
+ 
+        const token = localStorage.getItem('access_token');
+        const url = process.env.NEXT_PUBLIC_API_URL || "http://localhost7000";
+        //const response = await fetch(`https://localhost:7000/api/BridgeHubMTO/GetStockCodeCellScrap?annee=${validYear}&mois=${validMonth}&cell=${validCell}&typeaffich=Couts`,
+        const response=await fetch(`https://localhost:7000/api/BridgeHubMTO/GetStockCodeCellScrap?annee=${validYear}&mois=${validMonth}&cell=${validCell}&typeaffich=Couts`,
+        {
+          method: "GET",
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },   
+            cache: "no-store",
+            next: { revalidate: 0 },   
+          });
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status} - ${response.statusText}`);
+        }   
+        const data = await response.json();
         if (
           data &&
           data.getDataStockCodeCell &&
@@ -114,7 +168,29 @@ export default function OperatorDetailsTable({
           <h3 className="font-medium text-sm">Operator Details</h3>
         </div>
         <div className="flex items-center gap-2">
-          <Select
+        <div className="relative w-[80px]">      
+        <button 
+       
+      className="mt-0 flex items-center justify-center space-x-2 w-[80px] h-7  text-sm bg-green-600 text-white rounded-md hover:bg-green-500 border border-gray-200">   
+     <FaFileExcel className="absolute left-2 text-white-800"/> {/* Icône Excel */}
+     <span className="text-white hover:text-white 300">Export</span>
+    </button>      
+   
+    </div> 
+
+  <div className="relative w-[180px]">
+  <input
+  type="text"
+  value=''
+  onChange={(e) => setSelectedZone(e.target.value)}
+  placeholder="        Recherche Article..."
+  className="w-[180px] h-8 text-xs bg-gray-60 border border-gray-200 rounded-md"
+  />
+ <FaSearch className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 scale-75" />
+ </div>
+
+
+ <Select
             value={selectedZone}
             onValueChange={setSelectedZone}
             defaultValue="all"
@@ -198,10 +274,10 @@ function OperatorDataTable({
     <Table>
       <TableHeader>
         <TableRow className="hover:bg-muted/50 [&>*]:!text-[11px] [&>*]:font-medium [&>*]:!h-4 [&>*]:!py-[1px] [&>*]:!px-3 [&>*]:text-muted-foreground">
-          <TableHead>stockCode</TableHead>
-          <TableHead>coutUnitaire</TableHead>
-          <TableHead>process</TableHead>
-          <TableHead>matiere</TableHead>
+          <TableHead>Code Article</TableHead>
+          <TableHead>C.Unitaire</TableHead>
+          <TableHead>Process</TableHead>
+          <TableHead>Matière</TableHead>
 
           {/* Dynamically generate columns for each month and its weeks */}
           {Object.entries(monthData).map(([month, weeks], monthIndex) => (
@@ -304,14 +380,14 @@ function getWeekValue(details: any[], weekNumber: number) {
   if (!weekData) return "0.00 €";
 
   const value = parseFloat(weekData.couts.replace(",", "."));
-  return `${value.toFixed(2)} €`;
+  return `${value.toFixed(1)}`;
 }
 
 // Helper function to get month total
 function getMonthTotal(details: any[], monthName: string) {
   const monthData = details.find((d) => d.mois === monthName);
-  if (!monthData) return "0.00 €";
+  if (!monthData) return "00 €";
 
   const total = parseFloat(monthData.total_mois.replace(",", "."));
-  return `${total.toFixed(2)} €`;
+  return `${total.toFixed(0)} €`;
 }

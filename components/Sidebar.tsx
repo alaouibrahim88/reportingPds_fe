@@ -6,6 +6,7 @@ import {
   Layers2Icon,
   MenuIcon,
   ShieldCheckIcon,
+  ShieldXIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   BadgeDollarSign,
@@ -27,19 +28,19 @@ const routes = [
   },
   {
     href: "workflows",
-    label: "Costs",
+    label: "Coûts",
     icon: CoinsIcon,
   },
   {
     href: "scrap-setting",
-    label: "Settings",
+    label: "Paramétrage",
     icon: ShieldCheckIcon,
   },
-  // {
-  //   href: "billing",
-  //   label: "Billing",
-  //   icon: CoinsIcon,
-  // },
+  {
+    href: "billing",
+    label: "Contrôle d'accès",
+    icon: ShieldXIcon,
+   },
 ];
 
 function DesktopSidebar() {
@@ -54,10 +55,10 @@ function DesktopSidebar() {
 
   return (
     <div
-      className={cn(
-        "relative hidden h-screen border-r bg-background lg:block transition-all duration-300",
-        isCollapsed ? "w-[80px]" : "w-[280px]"
-      )}
+    className={cn(
+      "relative hidden h-screen border-r bg-background lg:block transition-all duration-300",
+      isCollapsed ? "w-[60px]" : "w-[220px]"
+    )}
     >
       {/* Collapse Toggle Button */}
       <Button

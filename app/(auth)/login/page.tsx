@@ -1,10 +1,15 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { NextPageContext } from 'next';
+import type { NextRequest } from "next/server";
+import { revalidatePath } from 'next/cache'
+
+
+
 import {
   BarChart3,
   Eye,
@@ -14,7 +19,40 @@ import {
   LayoutDashboard,
   TrendingUp,
 } from "lucide-react";
-import { login } from "@/actions/auth";
+
+
+interface LoginResponse  {
+  access_token: string;
+  expires_in: string;
+  token_type: string;
+  refresh_token: string;
+  scope: string;
+  error?: string
+}
+
+  const login = async (user: string, pass: string): Promise<LoginResponse> => {
+
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+    const url = process.env.NEXT_PUBLIC_API_URL || "https://localhost:4500";
+    const response = await fetch(`${url}/api/login/authentication`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',  // Utiliser 'x-www-form-urlencoded' pour OAuth
+      },
+      body: new URLSearchParams({
+        client_Id: 'PolydesignAPIWebClient',
+        grant_type: 'password',
+        username: user,
+        password: pass,
+        client_secret: 'MIGsAAiEAn5JeMVQQWXRnznNZlR2vcLPRo1HwL9K',
+      }).toString(),
+    });
+  
+
+  const data = await response.json();
+  return data as LoginResponse;
+
+};
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,20 +62,28 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const router = useRouter();
 
+
+ 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
 
-    try {
-      const result = await login({ username, password });
+   
+    
 
-      if (result.success) {
-        router.push("/");
-        router.refresh();
+    try {
+      const result = await login(username, password);
+
+      if (result.access_token) {
+
+     localStorage.setItem('access_token', result.access_token);
+     document.cookie="auth=true;";
+     router.push('/');
+
       } else {
         setError(
-          result.error || "Login failed. Please check your credentials."
+          result?.error || "Login failed. Please check your credentials."
         );
       }
     } catch (error) {
@@ -62,7 +108,7 @@ export default function LoginPage() {
 
           <div className="flex items-center gap-3">
             <h2 className="text-2xl font-semibold animate-fade-in-delay-1">
-              Reporting PDS
+              Reporting Polydesign Systems
             </h2>
             <LayoutDashboard className="w-6 h-6 animate-fade-in-delay-1" />
           </div>
@@ -128,7 +174,7 @@ export default function LoginPage() {
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Password"
+                  placeholder="Mot de Passe "
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
