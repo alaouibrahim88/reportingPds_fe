@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Users2 } from "lucide-react";
 import { getZoneDetails, getDetailsPerZone } from "@/actions/scrap";
+import { z } from "zod"; 
 
 // Improved type definitions
 type ZoneKey = "Wrapping" | "Nets" | "Knitting";
@@ -75,16 +76,100 @@ const CollapsibleZoneTable = ({
   const [months, setMonths] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
+  // Input validation schemas
+  const yearSchema = z.number().int().min(2000).max(2100);
+  const displayTypeSchema = z.string().default("Qte");
+  const monthSchema = z.string().default("1");
+  const cellSchema = z.string();
+
+  // Fonction2 *********************************
+
+  async function GetZoneDetails(
+    year: number,
+    displayType: string = "Qte",
+    month: string = "3"
+  ) {
+    try {
+      // Validate inputs
+      const validYear = yearSchema.parse(year);
+      const validDisplayType = displayTypeSchema.parse(displayType);
+      const validMonth = monthSchema.parse(month);
+  
+      // Make sure the API URL is correctly configured
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4500";
+      const token = localStorage.getItem('access_token');
+      const response = await fetch(`https://localhost:7000/api/BridgeHubMTO/GetZoneDetailType?annee=${validYear}&typeaffichage=${validDisplayType}&mois=${validMonth}`,
+        {
+          method: "GET",
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },   
+          cache: "no-store",
+          next: { revalidate: 0 },  
+        });
+  
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status} - ${response.statusText}`);
+      }
+  
+      const data: ApiResponse = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Failed to fetch zone details:", error);
+      throw error;
+    }
+  }
+
+  async function GetZoneDetailsCll(
+    year: number,
+    displayType: string = "Qte",
+    month: string = "3",
+    zonename: string,
+  ) {
+    try {
+      // Validate inputs
+      const validYear = yearSchema.parse(year);
+      const validDisplayType = displayTypeSchema.parse(displayType);
+      const validMonth = monthSchema.parse(month);
+  
+      // Make sure the API URL is correctly configured
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4500";
+      const token = localStorage.getItem('access_token');
+      const response = await fetch(`https://localhost:7000/api/BridgeHubMTO/GetZoneDetail?annee=${validYear}&typeaffichage=${validDisplayType}&mois=${validMonth}&zone=${zonename}`,
+        {
+          method: "GET",
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },   
+          cache: "no-store",
+          next: { revalidate: 0 },  
+        });
+  
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status} - ${response.statusText}`);
+      }
+  
+      const data: ZoneData = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Failed to fetch zone details:", error);
+      throw error;
+    }
+  }
+
+
   // Fetch data on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         // Fetch summary data
-        const response = await getZoneDetails(year, viewMode, month);
+        const response = await GetZoneDetails(year, viewMode, month);
 
         // Fetch detailed data
-        const detailsResponse = await getDetailsPerZone(year, viewMode, month);
+       // const detailsResponse = await getDetailsPerZone(year, viewMode, month);
 
         if (response) {
           // @ts-ignore
@@ -99,14 +184,6 @@ const CollapsibleZoneTable = ({
             setMonths(
               transformedData[0].cells[0].months.map((month) => month.name)
             );
-          }
-
-          // Process and store detailed data
-          // @ts-ignore
-          if (detailsResponse && detailsResponse.zones) {
-            // @ts-ignore
-            const processedDetails = processDetailedData(detailsResponse.zones);
-            setDetailedData(processedDetails);
           }
         }
       } catch (error) {
@@ -124,34 +201,35 @@ const CollapsibleZoneTable = ({
     const result: Record<string, any> = {};
 
     zonesDetails.forEach((zone) => {
-      const zoneName = zone.zone;
+      const zoneName = zone[0].zone;
       result[zoneName] = {
         cells: {},
       };
 
       // Group details by cell and type
-      zone.details.forEach((detail: any) => {
-        const cellName = detail.cellule;
-        const cellType = detail.typeCell;
+      const detailsArrayTab = Array.isArray(zone[0]?.details) ? zone[0]?.details : [zone[0]?.details];
+      detailsArrayTab.forEach((detail: any) => {
+        const cellName = detail?.cellule;
+        const cellType = detail?.typeCell;
 
-        if (!result[zoneName].cells[cellName]) {
+        if (!result[zoneName]?.cells[cellName]) {
           result[zoneName].cells[cellName] = {
             type: cellType,
             months: {},
           };
         }
 
-        if (!result[zoneName].cells[cellName].months[detail.mois]) {
-          result[zoneName].cells[cellName].months[detail.mois] = {
+        if (!result[zoneName].cells[cellName].months[detail?.mois]) {
+          result[zoneName].cells[cellName].months[detail?.mois] = {
             weeks: {},
-            total: detail.total_mois,
+            total: detail?.total_mois,
           };
         }
 
         // Add week data
-        result[zoneName].cells[cellName].months[detail.mois].weeks[
-          detail.semaine
-        ] = detail.couts;
+        result[zoneName].cells[cellName].months[detail?.mois].weeks[
+          detail?.semaine
+        ] = detail?.couts;
       });
     });
 
@@ -159,12 +237,26 @@ const CollapsibleZoneTable = ({
   };
 
   // Helper functions
-  const toggleZone = (zone: ZoneKey) => {
+  const toggleZone = async (zone: ZoneKey) => {
     setExpandedZones((prev) => ({
+      
       ...prev,
       [zone]: !prev[zone],
+   
     }));
+    
+    //console.log(`Zone sélectionnée : ${zoneKey}`);
+    const detailsResponse = await GetZoneDetailsCll(year, viewMode, month,"HEAD REST");
+    const zonesDetailsArray = Object.values(detailsResponse);
+
+
+  if (detailsResponse) {
+      const processedDetails = processDetailedData(zonesDetailsArray);
+     setDetailedData(processedDetails);
+  }
   };
+
+
 
   const formatValue = (value: number) => {
     return viewMode === "price" ? `${value} €` : value;
@@ -355,9 +447,9 @@ const CollapsibleZoneTable = ({
   };
 
   // Component for expanded zone details with cells
-  const ExpandedZoneDetails = ({ zone }: { zone: ZoneData }) => {
+  const ExpandedZoneDetails = ({ zone, data }: { zone: ZoneData, data: Record<string, any> }) => {
     // Get detailed data for this zone
-    const zoneDetails = detailedData[zone.key];
+    const zoneDetails = data[zone.key];
     const weeksPerMonth = zone.weeksPerMonth || {};
 
     if (!zoneDetails) {
@@ -463,7 +555,7 @@ const CollapsibleZoneTable = ({
                 <React.Fragment key={zone.key}>
                   <ZoneRow zone={zone} />
                   {expandedZones[zone.key] ? (
-                    <ExpandedZoneDetails zone={zone} />
+                    <ExpandedZoneDetails zone={zone} data={detailedData} />
                   ) : (
                     <CollapsedZoneSummary zone={zone} />
                   )}
