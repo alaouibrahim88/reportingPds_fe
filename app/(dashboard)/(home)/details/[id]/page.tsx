@@ -39,8 +39,6 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
   useEffect(() => {
     const fetchAllZones = async () => {
       try {
-      
-    
 
         const url = process.env.NEXT_PUBLIC_API_URL || "https://localhost:7000";
         const token = localStorage.getItem('access_token');
@@ -49,11 +47,9 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
-          },
-    
+          },   
           cache: "no-store",
-          next: { revalidate: 0 },
-    
+          next: { revalidate: 0 },   
         });
 
         const allZones = await response.json(); //await getAllZones();

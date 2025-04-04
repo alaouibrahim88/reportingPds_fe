@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Users2 } from "lucide-react";
 import { getZoneDetails, getDetailsPerZone } from "@/actions/scrap";
 import { z } from "zod"; 
+import { FaFileExcel } from 'react-icons/fa'; 
 
 // Improved type definitions
 type ZoneKey = "Wrapping" | "Nets" | "Knitting";
@@ -544,7 +545,15 @@ const CollapsibleZoneTable = ({
           <Users2 className="w-4 h-4 text-primary" />
           <h3 className="font-medium text-sm">Zone Details</h3>
         </div>
+           <div className="relative w-[80px] ml-auto">      
+      <button 
+      className="mt-0 flex items-center justify-center space-x-2 w-[70px] h-6  text-sm bg-green-600 text-white rounded-md hover:bg-green-500 border border-gray-200">   
+      <FaFileExcel className="absolute left-2 text-white-800"/> {/* Icône Excel */}
+      <span className="text-white hover:text-white 300 text-xs">Export</span>
+      </button>         
+      </div> 
       </div>
+      
 
       <div className="p-3 transition-all hover:border-primary/20">
         <div className="overflow-x-auto w-full">

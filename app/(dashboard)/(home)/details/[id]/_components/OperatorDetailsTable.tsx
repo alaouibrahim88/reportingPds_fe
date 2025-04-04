@@ -165,15 +165,15 @@ export default function OperatorDetailsTable({
       <div className="flex items-center justify-between p-4 bg-muted/30">
         <div className="flex items-center gap-2">
           <Users2 className="w-4 h-4 text-primary" />
-          <h3 className="font-medium text-sm">Operator Details</h3>
+          <h3 className="font-medium text-sm">Code Article Details</h3>
         </div>
         <div className="flex items-center gap-2">
         <div className="relative w-[80px]">      
         <button 
        
-      className="mt-0 flex items-center justify-center space-x-2 w-[80px] h-7  text-sm bg-green-600 text-white rounded-md hover:bg-green-500 border border-gray-200">   
+      className="mt-0 flex items-center justify-center space-x-2 w-[70px] h-6  text-sm bg-green-600 text-white rounded-md hover:bg-green-500 border border-gray-200">   
      <FaFileExcel className="absolute left-2 text-white-800"/> {/* Icône Excel */}
-     <span className="text-white hover:text-white 300">Export</span>
+     <span className="text-white hover:text-white 300 text-xs">Export</span>
     </button>      
    
     </div> 

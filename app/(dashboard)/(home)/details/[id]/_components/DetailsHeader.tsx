@@ -1,5 +1,8 @@
+import { useState } from "react";
 import React from "react";
 import { FolderIcon } from "lucide-react";
+import { FaSearch } from 'react-icons/fa';
+
 import {
   Select,
   SelectContent,
@@ -49,6 +52,17 @@ const Controls: React.FC<ControlsProps> = ({
 }) => {
   return (
     <>
+   
+      <div className="relative w-[180px]">
+      <input
+      type="text"
+      value=''
+      placeholder="        Recherche Cellule..."
+      className="w-[180px] h-8 text-xs bg-gray-60 border border-gray-200 rounded-md"
+      />
+     <FaSearch className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 scale-75" />
+     </div>
+
       {/* Year Selector */}
       <Select
         value={selectedYear.toString()}
@@ -72,7 +86,7 @@ const Controls: React.FC<ControlsProps> = ({
 
       {/* Month Selector */}
       <Select
-        value={selectedMonth}
+        value={selectedMonth} 
         onValueChange={(value) => setSelectedMonth(value)}
       >
         <SelectTrigger className="w-[120px] h-8 text-xs">

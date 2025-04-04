@@ -275,6 +275,7 @@ export async function getDetailsPerZone(
   year: number,
   displayType: string = "Qte",
   month: string = "1"
+  
 ) {
   try {
     // Validate inputs
