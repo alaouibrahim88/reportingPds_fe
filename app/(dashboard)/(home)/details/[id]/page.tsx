@@ -36,12 +36,9 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
   const [weekNumbers, setWeekNumbers] = useState<number[]>([]);
   const [monthData, setMonthData] = useState<{ [key: string]: string[] }>({});
   
-
   useEffect(() => {
     fetchAllZones().then((result) => setAllZones(result));
   }, []);
-
-
 
   useEffect(() => {
     const fetchAllCells = async () => {
