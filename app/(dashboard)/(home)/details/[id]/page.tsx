@@ -26,6 +26,7 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
 
   const [viewMode, setViewMode] = useState<"price" | "qty">("price");
   const [selectedYear, setSelectedYear] = useState(2025);
+
   const [selectedMonth, setSelectedMonth] = useState("1");
 
   const [allZones, setAllZones] = useState<Zone[]>([]);
@@ -161,6 +162,8 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
             selectedYear={selectedYear}
             setSelectedYear={setSelectedYear}
             selectedMonth={selectedMonth}
+            selectedCell={selectedCell}
+            setSelectedCell={setSelectedCell}
             setSelectedMonth={setSelectedMonth}
           />
         </div>

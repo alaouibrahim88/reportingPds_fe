@@ -1,7 +1,7 @@
 import { dashboardData } from "@/app/(dashboard)/(home)/_components/data/dashboardData";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
   const yearlyData = {
     weekDataAnnee: [
       {

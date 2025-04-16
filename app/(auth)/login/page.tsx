@@ -33,7 +33,7 @@ interface LoginResponse  {
 const login = async (user: string, pass: string): Promise<LoginResponse> => {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/login/authentication`,
+    `${process.env.NEXT_PUBLIC_API_URL_LOGIN}/api/login/authentication`,
     {
       method: "POST",
       headers: {

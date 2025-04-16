@@ -26,9 +26,6 @@ function Container() {
     YearlyZoneDataType[] | undefined
   >();
   const [selectedType, setSelectedType] = useState<scrapType>("zone");
-  const [showZone, setShowZone] = useState(true);
-  const [showProjet, setShowProjet] = useState(false);
-  const [showSerie, setShowSerie] = useState(false);
   const [month, setMonth] = useState(new Date().getMonth().toString());
   const [year, setYear] = useState(new Date().getFullYear().toString());
   const [week, setWeek] = useState(30);
@@ -39,19 +36,9 @@ function Container() {
   });
 
   const handleCheckboxChange = (
-    type: "zone" | "projet" | "serie",
-    checked: boolean
+    type: "zone" | "projet" | "serie"
   ) => {
     setSelectedType(type);
-    if (type === "zone") {
-      setShowZone(checked);
-      setShowProjet(false);
-      setShowSerie(false);
-    } else {
-      setShowZone(false);
-      if (type === "projet") setShowProjet(checked);
-      if (type === "serie") setShowSerie(checked);
-    }
   };
 
   const handleFilterChange = (type: string, value: string) => {
@@ -77,7 +64,7 @@ function Container() {
         setGlobalData
       );
     }, 1000);
-  }, [showZone, showProjet, showSerie, month, year]);
+  }, [selectedType, month, year]);
 
   useEffect(() => {
     fetchWeeklyScrap(week).then(setWeeklyData);
@@ -119,36 +106,36 @@ function Container() {
                   <div className="flex items-center justify-center border rounded-md overflow-hidden">
                     <div
                       className="flex items-center px-3 py-1.5 cursor-pointer hover:bg-accent"
-                      onClick={() => handleCheckboxChange("zone", true)}
+                      onClick={() => handleCheckboxChange("zone")}
                       style={{
-                        backgroundColor: showZone
+                        backgroundColor: selectedType === 'zone'
                           ? "hsl(var(--primary))"
                           : "transparent",
-                        color: showZone ? "white" : "inherit",
+                        color: selectedType === 'zone' ? "white" : "inherit",
                       }}
                     >
                       <span className="text-xs sm:text-sm">Zone</span>
                     </div>
                     <div
                       className="flex items-center px-3 py-1.5 cursor-pointer hover:bg-accent"
-                      onClick={() => handleCheckboxChange("projet", true)}
+                      onClick={() => handleCheckboxChange("projet")}
                       style={{
-                        backgroundColor: showProjet
+                        backgroundColor: selectedType === 'projet'
                           ? "hsl(var(--primary))"
                           : "transparent",
-                        color: showProjet ? "white" : "inherit",
+                        color: selectedType === 'projet' ? "white" : "inherit",
                       }}
                     >
                       <span className="text-xs sm:text-sm">Projet</span>
                     </div>
                     <div
                       className="flex items-center px-3 py-1.5 cursor-pointer hover:bg-accent"
-                      onClick={() => handleCheckboxChange("serie", true)}
+                      onClick={() => handleCheckboxChange("serie")}
                       style={{
-                        backgroundColor: showSerie
+                        backgroundColor: selectedType === 'serie'
                           ? "hsl(var(--primary))"
                           : "transparent",
-                        color: showSerie ? "white" : "inherit",
+                        color: selectedType === 'serie' ? "white" : "inherit",
                       }}
                     >
                       <span className="text-xs sm:text-sm">Serie</span>

@@ -1,12 +1,12 @@
 export const Endpoints = {
   scrap: {
-    global: "/api/getDataWeekZone",
-    statsPerWeek: "/api/getCurrentDataWeekScrap",
-    statsPerYear: "/api/getCurrentDataAnneeScrap",
+    global: "/api/BridgeHubMTO/GetCurrDataWeekZoneScrap",
+    statsPerWeek: "/api/BridgeHubMTO/GetCurrDataWeekScrap",
+    statsPerYear: "/api/BridgeHubMTO/getDataAnneeScrap",
     details: {
-      codeArticle: "/api/getdataStockcodeDetail",
-      zoneDetailType: "api/GetZoneDetailType",
-      listZone: "api/GetLisZone",
+      codeArticle: "/api/BridgeHubMTO/getdataStockcodeDetail",
+      zoneDetailType: "/api/BridgeHubMTO/GetZoneDetailType",
+      listZone: "/api/BridgeHubMTO/GetLisZone",
     },
   },
 };

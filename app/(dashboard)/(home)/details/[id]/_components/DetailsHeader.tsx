@@ -1,7 +1,8 @@
 import { useState } from "react";
 import React from "react";
 import { FolderIcon } from "lucide-react";
-import { FaSearch } from 'react-icons/fa';
+import { FaFileExcel, FaSearch } from 'react-icons/fa';
+import { Button } from "@/components/ui/button";
 
 import {
   Select,
@@ -11,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { exportToExcel } from "@/utils/excel";
 
 interface DetailsHeaderProps {
   viewMode: "price" | "qty";
@@ -38,9 +40,15 @@ interface ControlsProps {
   setViewMode: (mode: "price" | "qty") => void;
   selectedYear: number;
   setSelectedYear: (year: number) => void;
-  selectedMonth: string;
+  selectedMonth: string;  
+  selectedCell: string;  
+  setSelectedCell: (cell: string) => void;
   setSelectedMonth: (month: string) => void;
 }
+
+const handleExport = (data: any) => {
+  exportToExcel(data, "zoneDetail.xlsx");
+};
 
 const Controls: React.FC<ControlsProps> = ({
   viewMode,
@@ -48,19 +56,31 @@ const Controls: React.FC<ControlsProps> = ({
   selectedYear,
   setSelectedYear,
   selectedMonth,
+  selectedCell,
+  setSelectedCell,
   setSelectedMonth,
 }) => {
   return (
     <>
-   
+      <div className="relative w-[80px] mr-5">
+        <Button
+          variant="success"
+          className="flex items-center"
+          onClick={handleExport}
+        >
+          <FaFileExcel className="text-white-800" />
+          Export
+        </Button>
+      </div>
       <div className="relative w-[180px]">
-      <input
-      type="text"
-      value=''
-      placeholder="        Recherche Cellule..."
-      className="w-[180px] h-8 text-xs bg-gray-60 border border-gray-200 rounded-md"
-      />
-     <FaSearch className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 scale-75" />
+        <input
+        type="text"
+        value={selectedCell}
+        onChange={(e) => setSelectedCell(e.target.value)}
+        placeholder="        Recherche Cellule..."
+        className="w-[180px] h-8 text-xs bg-gray-60 border border-gray-200 rounded-md"
+        />
+        <FaSearch className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 scale-75" />
      </div>
 
       {/* Year Selector */}
