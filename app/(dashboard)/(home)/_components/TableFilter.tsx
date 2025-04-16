@@ -15,13 +15,37 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TableFilterProps } from "./types/dashboard-types";
+import { exportToExcel } from "@/utils/excel";
+import { FaFileExcel } from "react-icons/fa";
 
-export function TableFilter({ onFilterChange }: TableFilterProps) {
+export function TableFilter({ data,filters ,onFilterChange }: TableFilterProps) {
+  const handleFilterChange = (type: string, value: string): void => {
+    if (onFilterChange){
+      onFilterChange(type,value);
+    }
+  };
+
+  const handleExport = () => {
+    exportToExcel(data, "detailsParZone.xlsx");
+  };
+
   return (
-    <div className="p-4 ">
+    <div className="p-4">
       <div className="flex items-center justify-between">
         <div className="flex gap-3">
-          <Input placeholder="Search..." className="w-[200px]" />
+          <Button
+            variant="success"
+            className="flex items-center"
+            onClick={handleExport}
+          >
+            <FaFileExcel className="text-white-800" />
+            Export
+          </Button>
+          <Input
+            placeholder="Search..."
+            onChange={(val) => handleFilterChange("query", val.target.value)}
+            className="w-[200px]"
+          />
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" className="flex items-center gap-2">
@@ -43,13 +67,16 @@ export function TableFilter({ onFilterChange }: TableFilterProps) {
               style={{ position: "absolute", bottom: "auto" }}
             >
               <SheetHeader>
-                <SheetTitle>Filter Options</SheetTitle>
+                <SheetTitle>Filter +{filters.year}+ Options</SheetTitle>
               </SheetHeader>
               <div className="py-4">
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Year</label>
-                    <Select defaultValue="2024">
+                    <Select
+                      defaultValue={filters.year.toString()}
+                      onValueChange={(val) => handleFilterChange("year", val)}
+                    >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select year" />
                       </SelectTrigger>
@@ -64,7 +91,10 @@ export function TableFilter({ onFilterChange }: TableFilterProps) {
 
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Month</label>
-                    <Select defaultValue="3">
+                    <Select
+                      defaultValue={filters.month.toString()}
+                      onValueChange={(val) => handleFilterChange("month", val)}
+                    >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select month" />
                       </SelectTrigger>

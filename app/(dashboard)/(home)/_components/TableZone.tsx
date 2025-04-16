@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import {
   Table,
   TableBody,
@@ -10,50 +10,41 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  ChevronDown,
-  ChevronRight,
-  FolderIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  FolderIcon,
   ListCollapse,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ExpandedRowDetails } from "./ExpandedRowDetails";
-import { ProductionIssue } from "./types/table-types";
 import { TableFilter } from "./TableFilter";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Filters } from "@/actions/scrap/dashboard";
 
-interface ZoneDataType {
-  name: string;
-  Wrapping: number;
-  Nets: number;
-  Boot: number;
-  Knitting: number;
-  Injection: number;
-  op: any;
-  details: any[];
-  metrics: any;
-  machines: any[];
+export interface YearlyZoneDataType {
+  zone: string;
+  periode: number;
+  projetEuro: number;
+  serieEuro: number;
+  process: number;
+  matiere: number;
 }
 
-interface TableZoneProps {
-  data: ZoneDataType[];
+export interface TableZoneProps {
+  data: YearlyZoneDataType[] | undefined;
+  filters: Filters;
+  onFilterChange: (type: string, value: string) => void;
 }
 
-export default function TableZone({ data }: TableZoneProps) {
+export default function TableZone({ data = [], filters, onFilterChange }: TableZoneProps) {
   const [openRows, setOpenRows] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  // Extract details from first zone data entry
-  const productionIssues = data[0]?.details || [];
-
-  // Update pagination to use productionIssues
-  const totalPages = Math.ceil(productionIssues.length / itemsPerPage);
+  const totalPages = Math.ceil(data.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData = productionIssues.slice(startIndex, endIndex);
+  const currentData = data?.slice(startIndex, endIndex);
 
   const toggleRow = (index: number) => {
     setOpenRows((prev) =>
@@ -68,7 +59,11 @@ export default function TableZone({ data }: TableZoneProps) {
 
   return (
     <div className="bg-background/50 dark:bg-background/5">
-      <TableHeaderSection />
+      <TableHeaderSection
+        data={currentData}
+        filters={filters}
+        onFilterChange={onFilterChange}
+      />
       <div className="p-4">
         <Table>
           <TableColumns />
@@ -83,7 +78,7 @@ export default function TableZone({ data }: TableZoneProps) {
           totalPages={totalPages}
           startIndex={startIndex}
           endIndex={endIndex}
-          totalItems={productionIssues.length}
+          totalItems={data.length}
           onPageChange={handlePageChange}
         />
       </div>
@@ -91,7 +86,15 @@ export default function TableZone({ data }: TableZoneProps) {
   );
 }
 
-function TableHeaderSection() {
+function TableHeaderSection({
+  data,
+  filters,
+  onFilterChange,
+}: {
+  data: any;
+  filters: Filters;
+  onFilterChange: (type: string, value: string) => void;
+}) {
   return (
     <div className="p-4 border-b border-muted">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -105,8 +108,7 @@ function TableHeaderSection() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <TableFilter />
-
+          <TableFilter data={data} filters={filters} onFilterChange={onFilterChange} />
           <Link href={`/details/1`}>
             <Button variant="outline" className="flex items-center gap-2">
               <ListCollapse />
@@ -133,15 +135,13 @@ function TableColumns() {
         <TableHead className="text-xs text-muted-foreground">Serie</TableHead>
         <TableHead className="text-xs text-muted-foreground">Process</TableHead>
         <TableHead className="text-xs text-muted-foreground">Matière</TableHead>
-
-        {/* <TableHead className="text-xs text-muted-foreground">Details</TableHead> */}
       </TableRow>
     </TableHeader>
   );
 }
 
 interface TableContentProps {
-  data: ProductionIssue[];
+  data: YearlyZoneDataType[];
   openRows: number[];
   toggleRow: (index: number) => void;
 }
@@ -166,23 +166,16 @@ function TableContent({ data, openRows, toggleRow }: TableContentProps) {
               {item.periode}
             </TableCell>
             <TableCell className="text-xs py-2 text-foreground hidden lg:table-cell">
-              {item.projet}
+              {item.projetEuro}
             </TableCell>
             <TableCell className="py-2">
               <span className="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/20 px-2 py-0.5 text-xs font-medium text-primary">
-                {item.serie}
+                {item.serieEuro}
               </span>
             </TableCell>
             <TableCell className="py-2">{item.process}</TableCell>
             <TableCell className="py-2">{item.matiere}</TableCell>
           </TableRow>
-          {/* {openRows.includes(index) && (
-            <TableRow>
-              <TableCell colSpan={8} className="p-0">
-                <ExpandedRowDetails item={item} />
-              </TableCell>
-            </TableRow>
-          )} */}
         </React.Fragment>
       ))}
     </TableBody>
@@ -224,7 +217,7 @@ function TablePagination({
           <ChevronLeftIcon className="h-4 w-4 text-muted-foreground" />
         </button>
         <div className="hidden sm:flex items-center gap-2">
-          {[...Array(totalPages)].map((_, i) => (
+          {Array.from({ length: totalPages }, (_, i) => (
             <button
               key={i}
               onClick={() => onPageChange(i + 1)}
@@ -253,24 +246,6 @@ function TablePagination({
           <ChevronRightIcon className="h-4 w-4 text-muted-foreground" />
         </button>
       </div>
-    </div>
-  );
-}
-
-function VisibilityScore({ score }: { score: number }) {
-  if (score <= 60) {
-    return <span className="text-xs text-gray-600">{score} %</span>;
-  }
-
-  return (
-    <div className="flex items-center gap-2">
-      <div className="w-12 bg-gray-100 rounded-full h-1.5">
-        <div
-          className="bg-red-400 h-1.5 rounded-full"
-          style={{ width: `${score}%` }}
-        />
-      </div>
-      <span className="text-xs text-gray-600">{score} %</span>
     </div>
   );
 }

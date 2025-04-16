@@ -129,6 +129,122 @@ export const dashboardData = {
         },
       ],
     },
+    {
+      name: "W-31",
+      Nets: 612,
+      Wrapping: 0,
+      Boot: 4,
+      Knitting: 3000,
+      Injection: 27,
+      op: {
+        damageType: {
+          process: 12,
+          machine: 3,
+          material: 8,
+          quality: 5,
+        },
+        efficiency: {
+          nets: 85,
+          boots: 92,
+          cutting: 88,
+          knitting: 90,
+        },
+        downtime: {
+          planned: 120,
+          unplanned: 45,
+          maintenance: 60,
+        },
+        quality: {
+          defectRate: 2.3,
+          reworkRate: 1.5,
+          scrapRate: 0.8,
+        },
+      },
+      details: [
+        {
+          id: "1",
+          zone: "Nets",
+          periode: "Week 1",
+          projet: "100 Euro",
+          serie: "210 Euro",
+          process: "100",
+          matiere: "340",
+          status: "alert",
+          message: "parts were not put in last night",
+          assignee: null,
+          type: [
+            { name: "process", count: 10 },
+            { name: "machine", count: 8 },
+          ],
+          department: "Manufacturing",
+        },
+        {
+          id: "2",
+          zone: "Wrapping",
+          periode: "Week 2",
+          projet: "200 euro",
+          serie: "300 Euro",
+          process: "2390",
+          matiere: "340",
+          status: "alert",
+          message: "Boring bar chipped",
+          assignee: "Alex Smith",
+          type: [
+            { name: "process", count: 7 },
+            { name: "machine", count: 2 },
+          ],
+          department: "Quality Control",
+        },
+        {
+          id: "3",
+          zone: "Knitting",
+          periode: "Week 3",
+          projet: "220 euro",
+          serie: "200 Euro",
+          process: "6900",
+          matiere: "140",
+          status: "good",
+          message: "Step on .4835 diameter",
+          assignee: "Sam Lee",
+          type: [
+            { name: "process", count: 0 },
+            { name: "machine", count: 0 },
+          ],
+          department: "Manufacturing",
+        },
+      ],
+      metrics: {
+        totalIssues: 45,
+        resolvedIssues: 32,
+        averageResolutionTime: "4.5h",
+        criticalIssues: 3,
+        efficiency: 89.5,
+        downtime: "2.3h",
+      },
+      machines: [
+        {
+          id: "CITIZEN 19",
+          status: "operational",
+          uptime: "98.2%",
+          lastMaintenance: "2024-01-10",
+          nextMaintenance: "2024-02-10",
+        },
+        {
+          id: "CITIZEN 36",
+          status: "warning",
+          uptime: "92.5%",
+          lastMaintenance: "2024-01-05",
+          nextMaintenance: "2024-02-05",
+        },
+        {
+          id: "CITIZEN 20",
+          status: "error",
+          uptime: "85.7%",
+          lastMaintenance: "2024-01-01",
+          nextMaintenance: "2024-02-01",
+        },
+      ],
+    },
     // ... rest of existing data ...
   ],
 
@@ -376,10 +492,20 @@ export const dashboardData = {
   ],
 };
 
-export type ZoneDataType = (typeof dashboardData.zoneData)[0];
-export type DetailType = ZoneDataType["details"][0];
-export type MachineType = ZoneDataType["machines"][0];
-export type MetricsType = ZoneDataType["metrics"];
+export type weekData = {
+  libelle: string;
+  projetEuro: number;
+  serieEuro: number;
+  process: number;
+  matiere: number;
+  qteParZone: number;
+};
+
+export type ZoneDataType = {
+  currWeekData: weekData[];
+  returnMessage: string;
+  returnCode: string;
+};
 
 export type ChartDataItem = {
   name: string;

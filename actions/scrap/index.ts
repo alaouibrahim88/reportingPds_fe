@@ -48,18 +48,19 @@ export async function getZoneDetails(
     const validMonth = monthSchema.parse(month);
 
     // Make sure the API URL is correctly configured
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4500";
-    const token = localStorage.getItem('access_token');
-    const response = await fetch(`https://localhost:7000/api/BridgeHubMTO/GetZoneDetailType?annee=${validYear}&typeaffichage=${validDisplayType}&mois=${validMonth}`,
+    const token = localStorage?.getItem('access_token');
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/BridgeHubMTO/GetZoneDetailType?annee=${validYear}&typeaffichage=${validDisplayType}&mois=${validMonth}`,
       {
         method: "GET",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },   
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         cache: "no-store",
-        next: { revalidate: 0 },  
-      });
+        next: { revalidate: 0 },
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`API error: ${response.status} - ${response.statusText}`);
@@ -153,30 +154,19 @@ export async function processZoneData(data: ZoneResponse) {
  */
 export async function getAllZones() {
   try {
-     // debugger;
-     // const url = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4500";
-     // const response = await fetch(`${url}/api/BridgePolydesign/GetAllZones`, {
-     //   method: "GET",
-     //   headers: {
-     //   "Content-Type": "application/json",
-     //   },
-     //   cache: "no-store",
-     //   next: { revalidate: 0 },
-     //   });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/BridgeHubMTO/GetLisZone`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
 
-    const url = process.env.NEXT_PUBLIC_API_URL || "https://localhost:7000";
-    const token = localStorage.getItem('access_token');
-    const response = await fetch(`https://localhost:7000/api/BridgeHubMTO/GetLisZone`, {
-    method: "GET",
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-
-      cache: "no-store",
-      next: { revalidate: 0 },
-
-    });
+        cache: "no-store",
+        next: { revalidate: 0 },
+      }
+    );
     if (!response.ok) {
       throw new Error(`API error: ${response.status} - ${response.statusText}`);
     }
@@ -197,18 +187,20 @@ export async function getAllCells(zone: string) {
   try {
     // Validate input
     const validZone = cellSchema.parse(zone);
-    const token = localStorage.getItem('access_token');
-    const response = await fetch(`https://localhost:7000/api/BridgeHubMTO/GetListCell?zone=${encodeURIComponent(
+    const response = await fetch(
+      `https://localhost:7000/api/BridgeHubMTO/GetListCell?zone=${encodeURIComponent(
         validZone
-      )}`, {
-    method: "GET",
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },   
-      cache: "no-store",
-      next: { revalidate: 0 },   
-    });
+      )}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+        cache: "no-store",
+        next: { revalidate: 0 },
+      }
+    );
 
 
     if (!response.ok) {
@@ -237,9 +229,10 @@ export async function getOperators(year: number, month: number, cell: string) {
     const validMonth = z.number().int().min(1).max(12).parse(month);
     const validCell = cellSchema.parse(cell);
 
-    const url = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4500";
     const response = await fetch(
-      `${url}/api/BridgePolydesign/GetStockCodeCellScrap?annee=${validYear}&mois=${validMonth}&cell=${encodeURIComponent(
+      `${
+        process.env.NEXT_PUBLIC_API_URL
+      }/api/BridgePolydesign/GetStockCodeCellScrap?annee=${validYear}&mois=${validMonth}&cell=${encodeURIComponent(
         validCell
       )}&typeaffich=Couts`,
       {

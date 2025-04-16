@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Users2 } from "lucide-react";
 import { getZoneDetails, getDetailsPerZone } from "@/actions/scrap";
-import { z } from "zod"; 
-import { FaFileExcel } from 'react-icons/fa'; 
+import { z } from "zod";
+import { FaFileExcel } from "react-icons/fa";
 
 // Improved type definitions
 type ZoneKey = "Wrapping" | "Nets" | "Knitting";
@@ -49,7 +49,7 @@ type ApiZoneType = {
   details: ApiZoneDetail[];
 };
 
-type ApiResponse = {
+export type ApiResponse = {
   zonesType: ApiZoneType[];
   returnMessage: string;
   returnCode: string;
@@ -84,7 +84,6 @@ const CollapsibleZoneTable = ({
   const cellSchema = z.string();
 
   // Fonction2 *********************************
-
   async function GetZoneDetails(
     year: number,
     displayType: string = "Qte",
@@ -95,25 +94,29 @@ const CollapsibleZoneTable = ({
       const validYear = yearSchema.parse(year);
       const validDisplayType = displayTypeSchema.parse(displayType);
       const validMonth = monthSchema.parse(month);
-  
+
       // Make sure the API URL is correctly configured
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4500";
-      const token = localStorage.getItem('access_token');
-      const response = await fetch(`https://localhost:7000/api/BridgeHubMTO/GetZoneDetailType?annee=${validYear}&typeaffichage=${validDisplayType}&mois=${validMonth}`,
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(
+        `https://localhost:7000/api/BridgeHubMTO/GetZoneDetailType?annee=${validYear}&typeaffichage=${validDisplayType}&mois=${validMonth}`,
         {
           method: "GET",
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },   
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
           cache: "no-store",
-          next: { revalidate: 0 },  
-        });
-  
+          next: { revalidate: 0 },
+        }
+      );
+
       if (!response.ok) {
-        throw new Error(`API error: ${response.status} - ${response.statusText}`);
+        throw new Error(
+          `API error: ${response.status} - ${response.statusText}`
+        );
       }
-  
+
       const data: ApiResponse = await response.json();
       return data;
     } catch (error) {
@@ -126,32 +129,36 @@ const CollapsibleZoneTable = ({
     year: number,
     displayType: string = "Qte",
     month: string = "3",
-    zonename: string,
+    zonename: string
   ) {
     try {
       // Validate inputs
       const validYear = yearSchema.parse(year);
       const validDisplayType = displayTypeSchema.parse(displayType);
       const validMonth = monthSchema.parse(month);
-  
+
       // Make sure the API URL is correctly configured
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4500";
-      const token = localStorage.getItem('access_token');
-      const response = await fetch(`https://localhost:7000/api/BridgeHubMTO/GetZoneDetail?annee=${validYear}&typeaffichage=${validDisplayType}&mois=${validMonth}&zone=${zonename}`,
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(
+        `https://localhost:7000/api/BridgeHubMTO/GetZoneDetail?annee=${validYear}&typeaffichage=${validDisplayType}&mois=${validMonth}&zone=${zonename}`,
         {
           method: "GET",
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },   
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
           cache: "no-store",
-          next: { revalidate: 0 },  
-        });
-  
+          next: { revalidate: 0 },
+        }
+      );
+
       if (!response.ok) {
-        throw new Error(`API error: ${response.status} - ${response.statusText}`);
+        throw new Error(
+          `API error: ${response.status} - ${response.statusText}`
+        );
       }
-  
+
       const data: ZoneData = await response.json();
       return data;
     } catch (error) {
@@ -159,7 +166,6 @@ const CollapsibleZoneTable = ({
       throw error;
     }
   }
-
 
   // Fetch data on component mount
   useEffect(() => {
@@ -170,7 +176,7 @@ const CollapsibleZoneTable = ({
         const response = await GetZoneDetails(year, viewMode, month);
 
         // Fetch detailed data
-       // const detailsResponse = await getDetailsPerZone(year, viewMode, month);
+        // const detailsResponse = await getDetailsPerZone(year, viewMode, month);
 
         if (response) {
           // @ts-ignore
@@ -208,7 +214,9 @@ const CollapsibleZoneTable = ({
       };
 
       // Group details by cell and type
-      const detailsArrayTab = Array.isArray(zone[0]?.details) ? zone[0]?.details : [zone[0]?.details];
+      const detailsArrayTab = Array.isArray(zone[0]?.details)
+        ? zone[0]?.details
+        : [zone[0]?.details];
       detailsArrayTab.forEach((detail: any) => {
         const cellName = detail?.cellule;
         const cellType = detail?.typeCell;
@@ -240,24 +248,24 @@ const CollapsibleZoneTable = ({
   // Helper functions
   const toggleZone = async (zone: ZoneKey) => {
     setExpandedZones((prev) => ({
-      
       ...prev,
       [zone]: !prev[zone],
-   
     }));
-    
+
     //console.log(`Zone sélectionnée : ${zoneKey}`);
-    const detailsResponse = await GetZoneDetailsCll(year, viewMode, month,"HEAD REST");
+    const detailsResponse = await GetZoneDetailsCll(
+      year,
+      viewMode,
+      month,
+      "HEAD REST"
+    );
     const zonesDetailsArray = Object.values(detailsResponse);
 
-
-  if (detailsResponse) {
+    if (detailsResponse) {
       const processedDetails = processDetailedData(zonesDetailsArray);
-     setDetailedData(processedDetails);
-  }
+      setDetailedData(processedDetails);
+    }
   };
-
-
 
   const formatValue = (value: number) => {
     return viewMode === "price" ? `${value} €` : value;
@@ -448,7 +456,13 @@ const CollapsibleZoneTable = ({
   };
 
   // Component for expanded zone details with cells
-  const ExpandedZoneDetails = ({ zone, data }: { zone: ZoneData, data: Record<string, any> }) => {
+  const ExpandedZoneDetails = ({
+    zone,
+    data,
+  }: {
+    zone: ZoneData;
+    data: Record<string, any>;
+  }) => {
     // Get detailed data for this zone
     const zoneDetails = data[zone.key];
     const weeksPerMonth = zone.weeksPerMonth || {};
@@ -545,15 +559,15 @@ const CollapsibleZoneTable = ({
           <Users2 className="w-4 h-4 text-primary" />
           <h3 className="font-medium text-sm">Zone Details</h3>
         </div>
-           <div className="relative w-[80px] ml-auto">      
-      <button 
-      className="mt-0 flex items-center justify-center space-x-2 w-[70px] h-6  text-sm bg-green-600 text-white rounded-md hover:bg-green-500 border border-gray-200">   
-      <FaFileExcel className="absolute left-2 text-white-800"/> {/* Icône Excel */}
-      <span className="text-white hover:text-white 300 text-xs">Export</span>
-      </button>         
-      </div> 
+        <div className="relative w-[80px] ml-auto">
+          <button className="mt-0 flex items-center justify-center space-x-2 w-[70px] h-6  text-sm bg-green-600 text-white rounded-md hover:bg-green-500 border border-gray-200">
+            <FaFileExcel className="text-white-800" />
+            <span className="text-white hover:text-white 300 text-xs">
+              Export
+            </span>
+          </button>
+        </div>
       </div>
-      
 
       <div className="p-3 transition-all hover:border-primary/20">
         <div className="overflow-x-auto w-full">

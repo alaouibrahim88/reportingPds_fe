@@ -15,6 +15,7 @@ import { Zone, Cell } from "./types";
 import DetailsHeader from "./_components/DetailsHeader";
 import OperatorDetailsTable from "./_components/OperatorDetailsTable";
 import { getSession } from "@/actions/auth";
+import { fetchAllZones } from "@/actions/scrap/details";
 
 export default function DetailsPage({ params }: { params: { id: string } }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -37,30 +38,7 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
   
 
   useEffect(() => {
-    const fetchAllZones = async () => {
-      try {
-
-        const url = process.env.NEXT_PUBLIC_API_URL || "https://localhost:7000";
-        const token = localStorage.getItem('access_token');
-        const response = await fetch(`https://localhost:7000/api/BridgeHubMTO/GetLisZone`, {
-        method: "GET",
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },   
-          cache: "no-store",
-          next: { revalidate: 0 },   
-        });
-
-        const allZones = await response.json(); //await getAllZones();
-        setAllZones(allZones.getlistZone); 
-
-      } catch (error) {
-        
-        console.error(error);
-      }
-    };
-    fetchAllZones();
+    fetchAllZones().then((result) => setAllZones(result));
   }, []);
 
 

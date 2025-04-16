@@ -21,6 +21,7 @@ import { getAllZones, getAllCells, getOperators } from "@/actions/scrap";
 import { Zone, Cell } from "../types";
 import { formatCurrency } from "../_utils/formatters";
 import { z } from "zod"; 
+import { exportToExcel } from "@/utils/excel";
 
 interface OperatorDetailsTableProps {
   selectedYear: number;
@@ -45,6 +46,10 @@ export default function OperatorDetailsTable({
   const displayTypeSchema = z.string().default("Qte");
   const monthSchema = z.string().default("1");
   const cellSchema = z.string();
+
+  const handleExport = () => {
+    exportToExcel(operatorData, "CodeArticleDetails.xlsx");
+  };
 
 
   useEffect(() => {
@@ -168,29 +173,30 @@ export default function OperatorDetailsTable({
           <h3 className="font-medium text-sm">Code Article Details</h3>
         </div>
         <div className="flex items-center gap-2">
-        <div className="relative w-[80px]">      
-        <button 
-       
-      className="mt-0 flex items-center justify-center space-x-2 w-[70px] h-6  text-sm bg-green-600 text-white rounded-md hover:bg-green-500 border border-gray-200">   
-     <FaFileExcel className="absolute left-2 text-white-800"/> {/* Icône Excel */}
-     <span className="text-white hover:text-white 300 text-xs">Export</span>
-    </button>      
-   
-    </div> 
+          <div className="relative w-[80px]">
+            <button
+              className="mt-0 flex items-center justify-center space-x-2 w-[70px] h-6  text-sm bg-green-600 text-white rounded-md hover:bg-green-500 border border-gray-200"
+              onClick={handleExport}
+            >
+              <FaFileExcel className="text-white-800" />
+              <span className="text-white hover:text-white 300 text-xs">
+                Export
+              </span>
+            </button>
+          </div>
 
-  <div className="relative w-[180px]">
-  <input
-  type="text"
-  value=''
-  onChange={(e) => setSelectedZone(e.target.value)}
-  placeholder="        Recherche Article..."
-  className="w-[180px] h-8 text-xs bg-gray-60 border border-gray-200 rounded-md"
-  />
- <FaSearch className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 scale-75" />
- </div>
+          <div className="relative w-[180px]">
+            <input
+              type="text"
+              value=""
+              onChange={(e) => setSelectedZone(e.target.value)}
+              placeholder="        Recherche Article..."
+              className="w-[180px] h-8 text-xs bg-gray-60 border border-gray-200 rounded-md"
+            />
+            <FaSearch className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 scale-75" />
+          </div>
 
-
- <Select
+          <Select
             value={selectedZone}
             onValueChange={setSelectedZone}
             defaultValue="all"

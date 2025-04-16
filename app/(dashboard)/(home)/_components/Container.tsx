@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { MixBarChart } from "./MixBarChart";
-import TableZone from "./TableZone";
-import { dashboardData } from "./data/dashboardData";
+import { useEffect, useState } from "react";
+import { MixBarChart, RawData } from "./MixBarChart";
+import TableZone, { YearlyZoneDataType } from "./TableZone";
+import { ZoneDataType, dashboardData } from "./data/dashboardData";
 import { ZoneActivity } from "./ZoneActivity";
 import { ChartBar, Calendar } from "lucide-react";
 import {
@@ -14,17 +14,35 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Endpoints } from "@/constants/api";
+import { scrapType } from "@/types";
+import { fetchGlobalScrap, fetchWeeklyScrap, fetchYearlyScrap } from "@/actions/scrap/dashboard";
 
 function Container() {
   const { stats, zoneData, chartData } = dashboardData;
+  const [globalData, setGlobalData] = useState<RawData | undefined>();
+  const [weeklyData, setWeeklyData] = useState<ZoneDataType | undefined>();
+  const [yearlyData, setYearlyData] = useState<
+    YearlyZoneDataType[] | undefined
+  >();
+  const [selectedType, setSelectedType] = useState<scrapType>("zone");
   const [showZone, setShowZone] = useState(true);
   const [showProjet, setShowProjet] = useState(false);
   const [showSerie, setShowSerie] = useState(false);
+  const [month, setMonth] = useState(new Date().getMonth().toString());
+  const [year, setYear] = useState(new Date().getFullYear().toString());
+  const [week, setWeek] = useState(30);
+  const [yearlyFilter, setYearlyFilter] = useState({
+    year: new Date().getFullYear(),
+    month: new Date().getMonth(),
+    query: '',
+  });
 
   const handleCheckboxChange = (
     type: "zone" | "projet" | "serie",
     checked: boolean
   ) => {
+    setSelectedType(type);
     if (type === "zone") {
       setShowZone(checked);
       setShowProjet(false);
@@ -35,6 +53,40 @@ function Container() {
       if (type === "serie") setShowSerie(checked);
     }
   };
+
+  const handleFilterChange = (type: string, value: string) => {
+    switch (type) {
+      case "year":
+        setYearlyFilter({ ...yearlyFilter, year: Number(value) });
+        break;
+      case "month":
+        setYearlyFilter({ ...yearlyFilter, month: Number(value) });
+        break;
+      case "query":
+        setYearlyFilter({ ...yearlyFilter, query: value });
+        break;
+      default:
+        break;
+    }
+  }
+  /************* Fetch Data from backend on Input Change */
+  useEffect(() => {
+    setGlobalData(undefined);
+    setTimeout(() => {
+      fetchGlobalScrap({ type: selectedType, year: Number(year), month }).then(
+        setGlobalData
+      );
+    }, 1000);
+  }, [showZone, showProjet, showSerie, month, year]);
+
+  useEffect(() => {
+    fetchWeeklyScrap(week).then(setWeeklyData);
+  }, [week]);
+
+  useEffect(() => {
+    fetchYearlyScrap(yearlyFilter).then((result) => setYearlyData(result.weekDataAnnee));
+  }, [yearlyFilter.year, yearlyFilter.month, yearlyFilter.query]);
+  /************* End */
 
   return (
     <div className="min-h-screen">
@@ -48,7 +100,6 @@ function Container() {
                   Synthèse Globale Scrap
                 </h2>
               </div>
-
               <button className="text-muted-foreground text-sm">•••</button>
             </div>
             <div className="flex items-center justify-between gap-2 text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-2 mb-2 sm:mb-4">
@@ -107,7 +158,7 @@ function Container() {
               </div>
 
               <div className="flex gap-2">
-                <Select defaultValue="2025">
+                <Select defaultValue={year} onValueChange={setYear}>
                   <SelectTrigger className="w-[120px] h-9 bg-background">
                     <SelectValue placeholder="Select year" />
                   </SelectTrigger>
@@ -119,7 +170,7 @@ function Container() {
                   </SelectContent>
                 </Select>
 
-                <Select defaultValue="3">
+                <Select defaultValue={month} onValueChange={setMonth}>
                   <SelectTrigger className="w-[120px] h-9 bg-background">
                     <SelectValue placeholder="Select month" />
                   </SelectTrigger>
@@ -141,12 +192,16 @@ function Container() {
               </div>
             </div>
 
-            <MixBarChart data={chartData} />
+            <MixBarChart data={globalData} />
           </div>
-          <ZoneActivity data={zoneData[0]} />
+          <ZoneActivity week={week} onChange={setWeek} data={weeklyData} />
         </div>
         <div className="bg-card rounded-lg shadow-sm relative border border-border">
-          <TableZone data={zoneData} />
+          <TableZone
+            data={yearlyData}
+            filters={yearlyFilter}
+            onFilterChange={(type: string, value: string) => handleFilterChange(type, value)}
+          />
         </div>
       </div>
     </div>

@@ -30,28 +30,27 @@ interface LoginResponse  {
   error?: string
 }
 
-  const login = async (user: string, pass: string): Promise<LoginResponse> => {
-
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-    const url = process.env.NEXT_PUBLIC_API_URL || "https://localhost:4500";
-    const response = await fetch(`${url}/api/login/authentication`, {
-      method: 'POST',
+const login = async (user: string, pass: string): Promise<LoginResponse> => {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/login/authentication`,
+    {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',  // Utiliser 'x-www-form-urlencoded' pour OAuth
+        "Content-Type": "application/x-www-form-urlencoded",
       },
       body: new URLSearchParams({
-        client_Id: 'PolydesignAPIWebClient',
-        grant_type: 'password',
+        client_Id: "PolydesignAPIWebClient",
+        grant_type: "password",
         username: user,
         password: pass,
-        client_secret: 'MIGsAAiEAn5JeMVQQWXRnznNZlR2vcLPRo1HwL9K',
+        client_secret: "MIGsAAiEAn5JeMVQQWXRnznNZlR2vcLPRo1HwL9K",
       }).toString(),
-    });
-  
+    }
+  );
 
   const data = await response.json();
   return data as LoginResponse;
-
 };
 
 export default function LoginPage() {
@@ -62,15 +61,10 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const router = useRouter();
 
-
- 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-
-   
-    
 
     try {
       const result = await login(username, password);

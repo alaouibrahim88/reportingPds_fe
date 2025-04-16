@@ -1,5 +1,6 @@
 "use client";
 
+import { zoneBarChartColors } from "@/constants/zoneBarChartColors";
 import React from "react";
 import {
   BarChart,
@@ -16,9 +17,9 @@ interface DataPoint {
   [key: string]: any;
 }
 
-interface MixBarChartProps {
-  data: DataPoint[];
-}
+type MixBarChartProps = {
+  data: RawData | undefined;
+};
 
 interface TooltipProps {
   active?: boolean;
@@ -30,6 +31,50 @@ interface TooltipProps {
   }>;
   label?: string;
 }
+
+type DetailQte = {
+  libelle: string;
+  qte: number;
+};
+
+type WeekData = {
+  week: string;
+  detailQte: DetailQte[];
+};
+
+export type RawData = {
+  weekDataZn: WeekData[];
+  returnMessage: string;
+  returnCode: string;
+};
+
+type TransformedEntry = {
+  name: string;
+  [key: string]: string | number;
+};
+
+const transformData = (data: RawData | undefined): TransformedEntry[] => {
+  return data ? data?.weekDataZn
+    ?.sort((a, b) => Number(a.week) - Number(b.week))
+    .map((week) => {
+      const entry: TransformedEntry = { name: `Week ${week.week}` };
+      week.detailQte.forEach((item) => {
+        entry[item.libelle] = item.qte;
+      });
+      return entry;
+    }) : [];
+};
+
+const zoneNames = (data: RawData | undefined): string[] => {
+  return data ? Array.from(
+    new Set(
+      data?.weekDataZn?.flatMap((item) =>
+        item.detailQte.map((detail) => detail.libelle)
+      )
+    )
+  ) : [];
+}
+  
 
 export const MixBarChart = ({ data }: MixBarChartProps) => {
   const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
@@ -66,8 +111,8 @@ export const MixBarChart = ({ data }: MixBarChartProps) => {
     }
     return null;
   };
-
-  const zoneKeys = Object.keys(data[0] || {}).filter((key) => key !== "name");
+  const chartData = transformData(data);
+  const zoneKeys = zoneNames(data);
 
   return (
     <div className="bg-card dark:bg-card/50 p-2 sm:p-4 rounded-lg shadow-sm w-full">
@@ -75,7 +120,7 @@ export const MixBarChart = ({ data }: MixBarChartProps) => {
       <div className="h-[250px] sm:h-[300px] md:h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
-            data={data}
+            data={chartData}
             margin={{
               top: 5,
               right: 0,
@@ -121,8 +166,8 @@ export const MixBarChart = ({ data }: MixBarChartProps) => {
             {zoneKeys.map((zoneKey) => (
               <Bar
                 key={zoneKey}
-                dataKey={`${zoneKey}.value`}
-                fill={data[0]?.[zoneKey]?.color}
+                dataKey={`${zoneKey}`}
+                fill={zoneBarChartColors[zoneKey] || "#8E98F5"}
                 stackId="stack"
                 radius={[0, 0, 0, 0]}
               />
@@ -130,6 +175,7 @@ export const MixBarChart = ({ data }: MixBarChartProps) => {
           </BarChart>
         </ResponsiveContainer>
       </div>
+      {/* ZONE LIST POINTS */}
       <div className="flex flex-wrap gap-2 justify-center sm:justify-start mt-2 sm:mt-6 px-1">
         {zoneKeys.map((zoneKey) => (
           <div
@@ -138,7 +184,9 @@ export const MixBarChart = ({ data }: MixBarChartProps) => {
           >
             <div
               className="w-2 h-2 sm:w-3 sm:h-3 mr-1 sm:mr-2 rounded-full"
-              style={{ backgroundColor: data[0]?.[zoneKey]?.color }}
+              style={{
+                backgroundColor: zoneBarChartColors[zoneKey] || "#8E98F5",
+              }}
             />
             <span className="text-muted-foreground whitespace-nowrap">
               {zoneKey}

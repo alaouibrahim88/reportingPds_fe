@@ -1,4 +1,5 @@
-import { ZoneDataType, MetricsType } from "./data/dashboardData";
+import { Dispatch, SetStateAction } from "react";
+import { ZoneDataType, weekData } from "./data/dashboardData";
 import {
   Select,
   SelectContent,
@@ -6,21 +7,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { zoneBarChartColors } from "@/constants/zoneBarChartColors";
 
 interface ZoneActivityProps {
-  data: ZoneDataType;
+  week: number;
+  data: ZoneDataType | undefined;
+  onChange: any;
 }
 
-export function ZoneActivity({ data }: ZoneActivityProps) {
-  const zones = [
-    { name: "Wrapping", count: data.Wrapping, color: "bg-violet-400" },
-    { name: "Nets", count: data.Nets, color: "bg-orange-300" },
-    { name: "Boot", count: data.Boot, color: "bg-blue-400" },
-    { name: "Knitting", count: data.Knitting, color: "bg-emerald-400" },
-    { name: "Injection", count: data.Injection, color: "bg-rose-300" },
-  ];
+export function ZoneActivity({ week, data, onChange }: ZoneActivityProps) {
+  const zones = data?.currWeekData
+    ?.slice(1)
+    .map((item: weekData) => ({
+      name: item.libelle,
+      count: item.qteParZone,
+      color: zoneBarChartColors[item.libelle]
+    }));
 
-  const metrics: MetricsType = data.metrics;
+  const metrics = data?.currWeekData.slice(0).map((item: weekData) => ({
+    totalProcess: 100, //item.process,
+    totalMatiere: 100, //item.matiere,
+    totalProjet: 10, //item.projetEuro,
+    totalSerie: 10, //item.serieEuro,
+    criticialIssues: 3, //item.projetEuro,
+  }))[0];
 
   return (
     <div className="bg-card rounded-lg shadow-sm p-2 sm:p-3">
@@ -41,7 +51,7 @@ export function ZoneActivity({ data }: ZoneActivityProps) {
           />
         </svg>
         <span>Current Week:</span>
-        <Select defaultValue="30">
+        <Select defaultValue={week.toString()} onValueChange={onChange}>
           <SelectTrigger className="w-[80px] h-7 text-xs">
             <SelectValue placeholder="Select week" />
           </SelectTrigger>
@@ -60,30 +70,34 @@ export function ZoneActivity({ data }: ZoneActivityProps) {
         <div className="bg-muted p-2 rounded-lg">
           <div className="text-xs text-muted-foreground">Total Process</div>
           <div className="text-sm font-medium text-foreground">
-            {metrics.totalIssues}
+            {metrics?.totalProcess}
           </div>
         </div>
         <div className="bg-muted p-2 rounded-lg">
           <div className="text-xs text-muted-foreground"> Total Matière</div>
           <div className="text-sm font-medium text-foreground">
-            {metrics.resolvedIssues}
+            {metrics?.totalMatiere}
           </div>
         </div>
       </div>
       <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 mb-3">
         <div className="bg-muted p-2 rounded-lg">
           <div className="text-xs text-muted-foreground">Total Projet </div>
-          <div className="text-sm font-medium text-foreground">76</div>
+          <div className="text-sm font-medium text-foreground">
+            {metrics?.totalProjet}
+          </div>
         </div>
         <div className="bg-muted p-2 rounded-lg">
           <div className="text-xs text-muted-foreground">Total Serie </div>
-          <div className="text-sm font-medium text-foreground">13</div>
+          <div className="text-sm font-medium text-foreground">
+            {metrics?.totalSerie}
+          </div>
         </div>
       </div>
 
       {/* Zone List */}
       <div className="space-y-2">
-        {zones.map((zone) => (
+        {zones?.map((zone) => (
           <div
             key={zone.name}
             className="flex items-center justify-between p-1.5 sm:p-2 bg-muted/50 rounded-lg"
@@ -121,12 +135,12 @@ export function ZoneActivity({ data }: ZoneActivityProps) {
       </div>
 
       {/* Critical Issues */}
-      {metrics.criticalIssues > 0 && (
+      {metrics?.criticialIssues && metrics?.criticialIssues > 0 && (
         <div className="mt-3 p-1.5 sm:p-2 bg-destructive/10 rounded-lg">
           <div className="flex items-center gap-1.5 sm:gap-2">
             <div className="w-2 h-2 rounded-full bg-destructive"></div>
             <span className="text-xs text-destructive">
-              {metrics.criticalIssues} Critical Issues
+              {metrics?.criticialIssues} Critical Issues
             </span>
           </div>
         </div>

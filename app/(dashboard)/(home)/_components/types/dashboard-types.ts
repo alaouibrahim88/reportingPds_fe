@@ -1,3 +1,6 @@
+import { Filters } from "@/actions/scrap/dashboard";
+import { Dispatch, SetStateAction } from "react";
+
 export interface ChartData {
   name: string;
   value: number;
@@ -19,5 +22,7 @@ export interface FilterOption {
 }
 
 export interface TableFilterProps {
-  onFilterChange?: (value: string) => void;
+  data: any;
+  filters: Filters;
+  onFilterChange: (type: string, value: string) => void;
 }
