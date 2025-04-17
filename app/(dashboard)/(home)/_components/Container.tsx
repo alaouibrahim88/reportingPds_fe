@@ -59,11 +59,9 @@ function Container() {
   /************* Fetch Data from backend on Input Change */
   useEffect(() => {
     setGlobalData(undefined);
-    setTimeout(() => {
-      fetchGlobalScrap({ type: selectedType, year: Number(year), month }).then(
-        setGlobalData
-      );
-    }, 1000);
+      fetchGlobalScrap({ type: selectedType, year: Number(year), month }).then((data) => {
+        setGlobalData(data);
+      });
   }, [selectedType, month, year]);
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 export const Endpoints = {
   scrap: {
-    global: "/api/BridgeHubMTO/GetCurrDataWeekZoneScrap",
+    global: "/api/BridgeHubMTO/GetDataWeekZone",
     statsPerWeek: "/api/BridgeHubMTO/GetCurrDataWeekScrap",
     statsPerYear: "/api/BridgeHubMTO/getDataAnneeScrap",
     details: {

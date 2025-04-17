@@ -62,16 +62,6 @@ const Controls: React.FC<ControlsProps> = ({
 }) => {
   return (
     <>
-      <div className="relative w-[80px] mr-5">
-        <Button
-          variant="success"
-          className="flex items-center"
-          onClick={handleExport}
-        >
-          <FaFileExcel className="text-white-800" />
-          Export
-        </Button>
-      </div>
       <div className="relative w-[180px]">
         <input
         type="text"

@@ -33,14 +33,6 @@ export function TableFilter({ data,filters ,onFilterChange }: TableFilterProps) 
     <div className="p-4">
       <div className="flex items-center justify-between">
         <div className="flex gap-3">
-          <Button
-            variant="success"
-            className="flex items-center"
-            onClick={handleExport}
-          >
-            <FaFileExcel className="text-white-800" />
-            Export
-          </Button>
           <Input
             placeholder="Search..."
             onChange={(val) => handleFilterChange("query", val.target.value)}

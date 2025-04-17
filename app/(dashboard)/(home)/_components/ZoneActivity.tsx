@@ -25,10 +25,10 @@ export function ZoneActivity({ week, data, onChange }: ZoneActivityProps) {
     }));
 
   const metrics = data?.currWeekData.slice(0).map((item: weekData) => ({
-    totalProcess: 100, //item.process,
-    totalMatiere: 100, //item.matiere,
-    totalProjet: 10, //item.projetEuro,
-    totalSerie: 10, //item.serieEuro,
+    totalProcess: item.process,
+    totalMatiere: item.matiere,
+    totalProjet: item.projetEuro,
+    totalSerie: item.serieEuro,
     criticialIssues: 3, //item.projetEuro,
   }))[0];
 

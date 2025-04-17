@@ -4,6 +4,7 @@ import { getZoneDetails, getDetailsPerZone } from "@/actions/scrap";
 import { z } from "zod";
 import { FaFileExcel } from "react-icons/fa";
 import { GetZoneDetails } from "@/actions/scrap/details";
+import { exportToExcel } from "@/utils/excel";
 
 // Improved type definitions
 type ZoneKey = "Wrapping" | "Nets" | "Knitting";
@@ -84,7 +85,7 @@ const CollapsibleZoneTable = ({
   const monthSchema = z.string().default("1");
   const cellSchema = z.string();
 
-  async function GetZoneDetailsCll(
+  async function fetchZoneDetail(
     year: number,
     displayType: string = "Qte",
     month: string = "3",
@@ -204,13 +205,13 @@ const CollapsibleZoneTable = ({
       ...prev,
       [zone]: !prev[zone],
     }));
-
+    
     //console.log(`Zone sélectionnée : ${zoneKey}`);
-    const detailsResponse = await GetZoneDetailsCll(
+    const detailsResponse = await fetchZoneDetail(
       year,
       viewMode,
       month,
-      "HEAD REST"
+      zone
     );
     const zonesDetailsArray = Object.values(detailsResponse);
 
@@ -419,7 +420,7 @@ const CollapsibleZoneTable = ({
     // Get detailed data for this zone
     const zoneDetails = data[zone.key];
     const weeksPerMonth = zone.weeksPerMonth || {};
-
+    
     if (!zoneDetails) {
       // Fallback to original implementation if no detailed data
       return <CollapsedZoneSummary zone={zone} />;
@@ -513,7 +514,7 @@ const CollapsibleZoneTable = ({
           <h3 className="font-medium text-sm">Zone Details</h3>
         </div>
         <div className="relative w-[80px] ml-auto">
-          <button className="mt-0 flex items-center justify-center space-x-2 w-[70px] h-6  text-sm bg-green-600 text-white rounded-md hover:bg-green-500 border border-gray-200">
+          <button onClick={() => exportToExcel(detailedData, 'zoneDetail_'+(new Date().getDate())+'_.xlsx')} className="mt-0 flex items-center justify-center space-x-2 w-[70px] h-6  text-sm bg-green-600 text-white rounded-md hover:bg-green-500 border border-gray-200">
             <FaFileExcel className="text-white-800" />
             <span className="text-white hover:text-white 300 text-xs">
               Export

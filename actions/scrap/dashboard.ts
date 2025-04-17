@@ -7,6 +7,12 @@ export interface Filters {
   query: string
 }
 
+interface GlobalScrapData {
+  currWeekData: any[];
+  returnCode: string;
+  returnMessage: string;
+}
+
 export const fetchGlobalScrap = async ({
   type,
   year,
@@ -18,19 +24,18 @@ export const fetchGlobalScrap = async ({
 }): Promise<any> => {
   try {
     const url = new URL(`${process.env.NEXT_PUBLIC_API_URL}${Endpoints.scrap.global}`);
-    url.searchParams.append("type", type);   
+    url.searchParams.append("type", type === 'zone' ? 'All' : type);   
     url.searchParams.append("month", month);   
-    url.searchParams.append("year", year.toString());
+    url.searchParams.append("annee", year.toString());
 
     const response = await fetch(`${url}`, {
       method: "GET",
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem("access_token")}`,
       }
     });
-
-    return response.json();
+    return response?.json();
   } catch (error) {
     console.error(error);
   }
