@@ -130,11 +130,11 @@ function TableColumns() {
         </TableHead>
         <TableHead className="text-xs text-muted-foreground">Periode</TableHead>
         <TableHead className="text-xs text-muted-foreground hidden lg:table-cell">
-          Projet
+          Projet (€)
         </TableHead>
-        <TableHead className="text-xs text-muted-foreground">Serie</TableHead>
-        <TableHead className="text-xs text-muted-foreground">Process</TableHead>
-        <TableHead className="text-xs text-muted-foreground">Matière</TableHead>
+        <TableHead className="text-xs text-muted-foreground">Serie (€)</TableHead>
+        <TableHead className="text-xs text-muted-foreground">Process (Psc)</TableHead>
+        <TableHead className="text-xs text-muted-foreground">Matière (Psc)</TableHead>
       </TableRow>
     </TableHeader>
   );
@@ -166,7 +166,9 @@ function TableContent({ data, openRows, toggleRow }: TableContentProps) {
               {item.periode}
             </TableCell>
             <TableCell className="text-xs py-2 text-foreground hidden lg:table-cell">
-              {item.projetEuro}
+            <span className="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/20 px-2 py-0.5 text-xs font-medium text-primary">
+            {item.projetEuro}
+           </span>
             </TableCell>
             <TableCell className="py-2">
               <span className="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/20 px-2 py-0.5 text-xs font-medium text-primary">

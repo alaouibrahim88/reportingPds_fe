@@ -27,7 +27,7 @@ export const workflowData = {
 
   zoneData: [
     {
-      name: "W-30",
+      name: "W-01",
       Wrapping: 0,
       Nets: 0,
       Boot: 0,

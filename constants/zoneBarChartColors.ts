@@ -1,8 +1,8 @@
 export const zoneBarChartColors: Record<string, string> = {
-  "HEAD REST": "#043F76",
-  WRAPPING: "#8E98F5",
-  NETS: "#7874F2",
-  BOOT: "#8B7BF9",
-  KNITTING: "#8B6CF8",
+  "HEAD REST": "#8b6cf8",
+  Volant: "#E1CE9A",
+  NET: "#FAF0C5",
+  BOOT: "#00CCCB",
+  GAINAGE: "#357AB7",
   INJECTION: "#8B5CF6",
 };
