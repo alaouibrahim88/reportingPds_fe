@@ -149,8 +149,8 @@ export default function TableZone({ data }: TableZoneProps) {
               <TableHead className="py-1 w-[50px] text-sm"></TableHead>
               <TableCell className="py-1 text-sm">Zone</TableCell>
               <TableHead className="py-1 text-sm">Periode</TableHead>
-              <TableHead className="py-1 text-sm"> EFF.Valorisé</TableHead>
-              <TableHead className="py-1 text-sm">EFF.Opérationnel </TableHead>
+              <TableHead className="py-1 text-sm">Heures Réel</TableHead>
+              <TableHead className="py-1 text-sm">Heures Standart </TableHead>
               <TableHead className="py-1 text-sm">C.Réel </TableHead>
               <TableHead className="py-1 text-sm">C.Standart</TableHead>
               <TableHead className="py-1 text-sm">Ecart</TableHead>
@@ -162,7 +162,7 @@ export default function TableZone({ data }: TableZoneProps) {
             {paginatedData.map((detail, detailIndex) => (
               <React.Fragment key={detailIndex}>
                 <TableRow className="h-9">
-                  <TableCell className="py-1 text-sm">
+                <TableCell className="py-1 text-sm">
                     <button
                       onClick={() => toggleRow(detailIndex)}
                       className="p-0.5 hover:bg-muted rounded-lg"
@@ -179,6 +179,7 @@ export default function TableZone({ data }: TableZoneProps) {
                   <TableCell className="py-1 text-sm">
                     {detail.hoursWorked}
                   </TableCell>
+             
                   <TableCell className="py-1 text-sm">
                     {detail.hoursWorked}{" "}
                   </TableCell>
@@ -207,40 +208,70 @@ export default function TableZone({ data }: TableZoneProps) {
                   </TableCell>
                 </TableRow>
                 {openRows.includes(detailIndex) && (
-                  <TableRow className="bg-muted/50">
-                    <TableCell colSpan={12} className="p-4 ">
-                      <div className="space-y-6 ">
-                        <div>
-                          <div className="grid grid-cols-1 gap-3">
-                            <Card className="p-3">
-                              <div className="space-y-1">
-                                <div className="grid grid-cols-3 gap-2">
-                                  <div>
-                                    <p className="text-xs text-muted-foreground">
-                                      HR
-                                    </p>
-                                    <p className="text-sm font-medium">
-                                      {detail.op.production.planned}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <p className="text-xs text-muted-foreground">
-                                      HT
-                                    </p>
-                                    <p className="text-sm font-medium">
-                                      {detail.op.production.actual}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            </Card>
-                          </div>
-                        </div>
-
-                        {/* Existing Damage Stats sections */}
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                 <tr>
+                 <td colSpan={10}>
+                   <div className="overflow-x-auto p-4">
+                     <table className="table-auto w-full border-collapse border border-gray-400 text-sm text-center">
+                       <thead>
+                         <tr style={{ height: '10px' }}>
+                           <th colSpan={1} className="bg-white-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}></th>
+                           <th colSpan={4} className="bg-blue-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}>Tarif Horaire</th>
+                           <th colSpan={4} className="bg-green-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}>Couts Social</th>
+                           <th colSpan={4} className="bg-red-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}>Avantage Social</th>
+                         </tr>
+                         <tr className="bg-white">
+                           <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}></th>
+                           <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Salaire.Horaire</th>
+                           <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>HS</th>
+                           <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Anciente</th>
+                           <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Jours.fériés</th>
+                           <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Congé.payé</th>
+                           <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Prime poste</th>
+                           <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Bonus.productivité</th>
+                           <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Bonus.nuit</th>
+                           <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Sécurité.sociale</th>
+                           <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Assurance.collective</th>
+                           <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Coût.acc.travail</th>
+                           <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Retirm.Plan</th>
+                         </tr>
+                       </thead>
+                       <tbody>
+                         <tr style={{ height: '10px' }}>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>S</td>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€%</td>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>150€</td>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>100€</td>
+                         </tr>
+                         <tr style={{ height: '10px' }}>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>R</td>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€%</td>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>150€</td>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                           <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>100€</td>
+                         </tr>
+                       </tbody>
+                     </table>
+                   </div>
+                 </td>
+               </tr>
+           
                 )}
               </React.Fragment>
             ))}

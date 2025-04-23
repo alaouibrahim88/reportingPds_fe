@@ -65,7 +65,8 @@ const Controls: React.FC<ControlsProps> = ({
       <div className="relative w-[180px]">
         <input
         type="text"
-        value={selectedCell}
+       // value={selectedCell}
+        value=''
         onChange={(e) => setSelectedCell(e.target.value)}
         placeholder="        Recherche Cellule..."
         className="w-[180px] h-8 text-xs bg-gray-60 border border-gray-200 rounded-md"

@@ -1,5 +1,5 @@
 "use client";
-
+import React, { HTMLAttributes } from "react";
 import { workflowData } from "../../_components/data/workflowData";
 import { notFound } from "next/navigation";
 import {
@@ -13,7 +13,10 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
+
 import {
+  ChevronDown,
+  ChevronRight,
   FolderIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -205,6 +208,7 @@ export default function WorkflowDetailsPage({
   params: { id: string };
 }) {
   const [currentCellsPage, setCurrentCellsPage] = useState(1);
+  const [openRows, setOpenRows] = useState<string[]>([]);
   const [currentOperatorsPage, setCurrentOperatorsPage] = useState(1);
   const itemsPerPage = 5;
   const [searchQuery, setSearchQuery] = useState("");
@@ -213,6 +217,17 @@ export default function WorkflowDetailsPage({
   const [cellSearchQuery, setCellSearchQuery] = useState("");
   const [selectedMonth, setSelectedMonth] = useState<string>("all");
   const [selectedYear, setSelectedYear] = useState<string>("2025");
+
+
+
+
+  const toggleRow = (rowKey: string) => {
+    setOpenRows((prev) =>
+      prev.includes(rowKey)
+        ? prev.filter((key) => key !== rowKey)
+        : [...prev, rowKey]
+    );
+  };
 
   const detail = workflowData.zoneData
     .flatMap((zone) => zone.details)
@@ -416,64 +431,156 @@ export default function WorkflowDetailsPage({
           </div>
         </div>
         <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-transparent">
-              <TableHead className="h-9 text-xs">Cell ID</TableHead>
-              <TableHead className="h-9 text-xs">Performance</TableHead>
-              <TableHead className="h-9 text-xs">Couts Réel</TableHead>
-              <TableHead className="h-9 text-xs">Couts STD</TableHead>
-              <TableHead className="h-9 text-xs">Eff.OPP</TableHead>
-              <TableHead className="h-9 text-xs">EFF.Valorisé</TableHead>
-              <TableHead className="h-9 text-xs">Ecart</TableHead>
-              <TableHead className="h-9 text-xs">Ecart Gllobal</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {paginatedCells.map((cell, index) => (
-              <TableRow key={cell.id} className="h-10 hover:bg-muted/50">
-                <TableCell className="text-xs font-medium py-2">
-                  {cell.id}
-                </TableCell>
-                <TableCell className="text-xs py-2">
-                  <span
-                    className={cn(
-                      "inline-flex items-center px-1 py-1 rounded-full",
-                      {
-                        "bg-green-100": cell.status === "Active",
-                        "bg-yellow-100": cell.status === "Maintenance",
-                        "bg-red-100": cell.status === "Inactive",
-                      }
-                    )}
-                  >
-                    <span
-                      className={cn("h-1.5 w-1.5 rounded-full", {
-                        "bg-green-500": cell.status === "Active",
-                        "bg-yellow-500": cell.status === "Maintenance",
-                        "bg-red-500": cell.status === "Inactive",
-                      })}
-                    />
+  <TableHeader>
+    <TableRow className="hover:bg-transparent">
+      <TableHead className="h-9 text-xs">Détail</TableHead>
+      <TableHead className="h-9 text-xs">Cell ID</TableHead>
+      <TableHead className="h-9 text-xs">Performance</TableHead>
+      <TableHead className="h-9 text-xs">Taux STD</TableHead>
+      <TableHead className="h-9 text-xs">Taux Réel</TableHead>
+      <TableHead className="h-9 text-xs">Heurs STD</TableHead>
+      <TableHead className="h-9 text-xs">Heure Réel</TableHead>
+      <TableHead className="h-9 text-xs">Couts STD</TableHead>
+      <TableHead className="h-9 text-xs">Couts Réel</TableHead>
+      <TableHead className="h-9 text-xs">Efficience</TableHead>
+      <TableHead className="h-9 text-xs">Ecart Global</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    {paginatedCells.map((cell, index) => {
+      const rowKey = `table-operators-${index}`;
+
+      return (
+        <React.Fragment key={rowKey}>
+          <TableRow key={rowKey} className="h-10 hover:bg-muted/50" style={{ height: '10px' }}>
+            <TableCell className="py-1 text-sm">
+              <button
+                onClick={() => toggleRow(rowKey)}
+                className="p-0.5 hover:bg-muted rounded-lg"
+              >
+                {openRows.includes(rowKey) ? (
+                  <ChevronDown className="h-3 w-3" />
+                ) : (
+                  <ChevronRight className="h-3 w-3" />
+                )}
+              </button>
+            </TableCell>
+            <TableCell className="text-xs font-medium py-2">{cell.id}</TableCell>
+            <TableCell className="text-xs py-2">
+              <span
+                className={cn("inline-flex items-center px-1 py-1 rounded-full", {
+                  "bg-green-100": cell.status === "Active",
+                  "bg-yellow-100": cell.status === "Maintenance",
+                  "bg-red-100": cell.status === "Inactive",
+                })}
+              >
+                <span
+                  className={cn("h-1.5 w-1.5 rounded-full", {
+                    "bg-green-500": cell.status === "Active",
+                    "bg-yellow-500": cell.status === "Maintenance",
+                    "bg-red-500": cell.status === "Inactive",
+                  })}
+                />
+              </span>
+            </TableCell>
+            <TableCell className="text-xs py-2">{cell.efficiency}</TableCell>
+            <TableCell className="text-xs py-2">{cell.directCost}</TableCell>
+            <TableCell className="text-xs py-2">{cell.efficiency}</TableCell>
+            <TableCell className="text-xs py-2">{cell.directCost}</TableCell>
+            <TableCell className="text-xs py-2">{cell.indirectCost}</TableCell>
+            <TableCell className="text-xs py-2">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-gray-100">
+                {cell.indirectCost}
+              </span>
+            </TableCell>
+            <TableCell className="text-xs py-2">{cell.totalCost}</TableCell>
+            <TableCell className="text-xs py-2">
+              {(() => {
+                const value = Number(cell.totalCost) * 2;
+                const badgeClass =
+                  value > 100
+                    ? "bg-green-100 text-green-700"
+                    : "bg-red-400 text-red-700";
+                return (
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${badgeClass}`}>
+                    {value}
                   </span>
-                </TableCell>
-                <TableCell className="text-xs py-2">
-                  {cell.efficiency}
-                </TableCell>
-                <TableCell className="text-xs py-2">
-                  {cell.directCost}
-                </TableCell>
+                );
+              })()}
+            </TableCell>
+          </TableRow>
 
-                <TableCell className="text-xs py-2">
-                  {cell.indirectCost}
-                </TableCell>
-                <TableCell className="text-xs py-2">{cell.downtime}</TableCell>
+          {openRows.includes(rowKey) && (
+            <tr>
+            <td colSpan={12}>
+              <div className="overflow-x-auto p-4">
+                <table className="table-auto w-full border-collapse border border-gray-400 text-sm text-center">
+                  <thead>
+                    <tr style={{ height: '10px' }}>
+                      <th colSpan={1} className="bg-white-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}></th>
+                      <th colSpan={4} className="bg-blue-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}>Tarif Horaire</th>
+                      <th colSpan={4} className="bg-green-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}>Couts Social</th>
+                      <th colSpan={4} className="bg-red-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}>Avantage Social</th>
+                    </tr>
+                    <tr className="bg-white">
+                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}></th>
+                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Salaire.Horaire</th>
+                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>HS</th>
+                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Anciente</th>
+                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Jours.fériés</th>
+                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Congé.payé</th>
+                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Prime poste</th>
+                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Bonus.productivité</th>
+                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Bonus.nuit</th>
+                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Sécurité.sociale</th>
+                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Assurance.collective</th>
+                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Coût.acc.travail</th>
+                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Retirement Plan</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style={{ height: '10px' }}>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>S</td>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€%</td>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>150€</td>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>100€</td>
+                    </tr>
+                    <tr style={{ height: '10px' }}>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>R</td>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€%</td>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>150€</td>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>100€</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </td>
+          </tr>
+          )}
+        </React.Fragment>
+      );
+    })}
+  </TableBody>
+</Table>
 
-                <TableCell className="text-xs py-2">{cell.totalCost}</TableCell>
-                <TableCell className="text-xs py-2">
-                  {Number(cell.totalCost) * 2}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
         <div className="border-t">
           {renderPagination(
             currentCellsPage,
@@ -557,30 +664,37 @@ export default function WorkflowDetailsPage({
               </div>
 
               <div className="grid grid-cols-4 gap-4">
-                <div className="p-3 rounded-lg bg-muted/50 border">
-                  <p className="text-xs text-muted-foreground mb-1">
-                    Total Operators
-                  </p>
-                  <p className="text-lg font-medium">12</p>
-                </div>
-                <div className="p-3 rounded-lg bg-muted/50 border">
-                  <p className="text-xs text-muted-foreground mb-1">
-                    Total days
-                  </p>
-                  <p className="text-lg font-medium">8</p>
-                </div>
-                <div className="p-3 rounded-lg bg-muted/50 border">
-                  <p className="text-xs text-muted-foreground mb-1">
-                    Avg. Efficiency
-                  </p>
-                  <p className="text-lg font-medium">92%</p>
-                </div>
-                <div className="p-3 rounded-lg bg-muted/50 border">
-                  <p className="text-xs text-muted-foreground mb-1">
-                    Total Hours sup
-                  </p>
-                  <p className="text-lg font-medium">245</p>
-                </div>
+  <div
+  className="rounded-lg bg-gray-100 bg-muted/50 border flex items-center justify-center"
+  style={{ height: '20px' }}
+>
+  <p className="text-[10px] text-muted-foreground leading-none m-0 p-0 text-gray-800">
+    Total Couts STD : 8
+  </p>
+</div>
+ <div
+  className="rounded-lg bg-gray-100 bg-muted/50 border flex items-center justify-center"
+  style={{ height: '20px' }}
+>
+  <p className="text-[10px] text-muted-foreground leading-none m-0 p-0 text-gray-800">
+    Total Couts STD : 8
+  </p>
+</div>
+<div
+  className="rounded-lg bg-gray-100 bg-muted/50 border flex items-center justify-center "
+  style={{ height: '20px' }}
+>
+  <p className="text-[10px] text-muted-foreground leading-none m-0 p-0 text-gray-800">
+    Total Couts STD : 8
+  </p>
+</div><div
+  className="rounded-lg bg-gray-100 bg-muted/50 border flex items-center justify-center"
+  style={{ height: '20px' }}
+>
+  <p className="text-[10px] text-muted-foreground leading-none m-0 p-0 text-gray-800">
+    Total Couts STD : 8
+  </p>
+</div>
               </div>
             </div>
 
@@ -613,29 +727,43 @@ export default function WorkflowDetailsPage({
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
+                <TableHead className="h-9 text-xs"></TableHead>
                   <TableHead className="h-9 text-xs">Operator</TableHead>
                   <TableHead className="h-9 text-xs">Matricule</TableHead>
-                  <TableHead className="h-9 text-xs">Hours Standard</TableHead>
-                  <TableHead className="h-9 text-xs">Pieces</TableHead>
-                  <TableHead className="h-9 text-xs">Efficiency</TableHead>
-                  <TableHead className="h-9 text-xs">Direct Cost</TableHead>
-                  <TableHead className="h-9 text-xs">Performance</TableHead>
-                  <TableHead className="h-9 text-xs">Hours Worked</TableHead>
+                  <TableHead className="h-9 text-xs">Hours Réel</TableHead>
+                  <TableHead className="h-9 text-xs">Heures Sup</TableHead>
+                  <TableHead className="h-9 text-xs">Tarif horaire</TableHead>
+                  <TableHead className="h-9 text-xs">Coût social</TableHead>
+                  <TableHead className="h-9 text-xs">Avantages Sociaux</TableHead>
+                  <TableHead className="h-9 text-xs">Net</TableHead>
+                  <TableHead className="h-9 text-xs">Couts Réel</TableHead>
+                  <TableHead className="h-9 text-xs">Couts Standart</TableHead>
+                  <TableHead className="h-9 text-xs">Ecarts</TableHead>
+                
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedOperators.length === 0 ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={8}
-                      className="h-24 text-center text-muted-foreground"
-                    >
-                      No operators found for this cell
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  paginatedOperators.map((operator, index) => (
-                    <TableRow key={index} className="h-10 hover:bg-muted/50">
+        
+          
+                {paginatedOperators.map((operator, index) => {
+            
+                const rowKey = `table-cell-${index}`;
+
+                 return (
+                 <React.Fragment key={rowKey}>
+                 <TableRow key={operator.name} className="h-10 hover:bg-muted/50" style={{ height: '10px' }}>
+                 <TableCell className="py-1 text-sm">
+                                    <button
+                                      onClick={() => toggleRow(rowKey)}
+                                      className="p-0.5 hover:bg-muted rounded-lg" >
+                                     {openRows.includes(rowKey) ? (
+                                        <ChevronDown className="h-3 w-3" />
+                                      ) : (
+                                        <ChevronRight className="h-3 w-3" />
+                                      )}
+                                    </button>
+                </TableCell>
+
                       <TableCell className="text-xs font-medium py-2">
                         {operator.name}
                       </TableCell>
@@ -655,24 +783,110 @@ export default function WorkflowDetailsPage({
                         {operator.hoursWorked}
                       </TableCell>
                       <TableCell className="text-xs py-2">
-                        <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${
-                            operator.status === "Active"
-                              ? "bg-green-100 text-green-700"
-                              : "bg-yellow-100 text-yellow-700"
-                          }`}
-                        >
-                          {operator.status}
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${ "bg-gray-100"}`} >
+                        {operator.hoursWorked}
                         </span>
                       </TableCell>
                       <TableCell className="text-xs py-2">
                         {operator.hoursWorked}
                       </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+                      <TableCell className="text-xs py-2">  
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${ "bg-gray-100"}`} >
+                        {operator.hoursWorked}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-xs py-2">
+                        {operator.hoursWorked}
+                      </TableCell>
+                      <TableCell className="text-xs py-2">
+                      {(() => {
+              const value = Number(operator.hoursWorked) * 2;
+              const badgeClass =
+              value > 100
+              ? "bg-green-100 text-green-700"
+              : "bg-red-300 text-red-800";
+               return (
+               <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${badgeClass}`}>
+               {value}
+               </span>
+               );
+               })()}
+                      </TableCell>
+                      </TableRow>
+                    
+                {
+            
+                openRows.includes(rowKey) && (
+                <tr>
+                <td colSpan={12}>
+                  <div className="overflow-x-auto p-4">
+                    <table className="table-auto w-full border-collapse border border-gray-400 text-sm text-center">
+                      <thead>
+                        <tr style={{ height: '10px' }}>
+                          <th colSpan={1} className="bg-white-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}></th>
+                          <th colSpan={4} className="bg-blue-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}>Tarif Horaire</th>
+                          <th colSpan={4} className="bg-green-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}>Couts Social</th>
+                          <th colSpan={4} className="bg-red-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}>Avantage Social</th>
+                        </tr>
+                        <tr className="bg-white">
+                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}></th>
+                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Salaire.Horaire</th>
+                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>HS</th>
+                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Anciente</th>
+                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Jours.fériés</th>
+                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Congé.payé</th>
+                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Prime poste</th>
+                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Bonus.productivité</th>
+                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Bonus.nuit</th>
+                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Sécurité.sociale</th>
+                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Assurance.collective</th>
+                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Coût.acc.travail</th>
+                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Retirement Plan</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr style={{ height: '10px' }}>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>S</td>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€%</td>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>150€</td>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>100€</td>
+                        </tr>
+                        <tr style={{ height: '10px' }}>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>R</td>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€%</td>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>150€</td>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
+                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>100€</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </td>
+              </tr>
+            )}
+       
+          </React.Fragment>
+          );
+        })}
+        </TableBody>
+      </Table>
 
             <div className="border-t">
               {renderPagination(

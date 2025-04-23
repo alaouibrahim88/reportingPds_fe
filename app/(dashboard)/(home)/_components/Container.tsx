@@ -82,7 +82,7 @@ function Container() {
               <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
                 <ChartBar className="w-[18px] h-[18px] sm:w-5 sm:h-5 text-primary transition-all duration-200" />
                 <h2 className="font-medium text-sm sm:text-base">
-                  Synthèse Globale Scrap
+                  Synthèse Globale Scrap (PCS)
                 </h2>
               </div>
               <button className="text-muted-foreground text-sm">•••</button>
@@ -112,7 +112,7 @@ function Container() {
                         color: selectedType === 'zone' ? "white" : "inherit",
                       }}
                     >
-                      <span className="text-xs sm:text-sm">Zone</span>
+                      <span className="text-xs sm:text-sm">Total</span>
                     </div>
                     <div
                       className="flex items-center px-3 py-1.5 cursor-pointer hover:bg-accent"

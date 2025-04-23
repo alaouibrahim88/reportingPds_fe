@@ -82,13 +82,15 @@ export function ZoneActivity({ week, data, onChange }: ZoneActivityProps) {
         <div className="bg-muted p-2 rounded-lg">
           <div className="text-xs text-muted-foreground">Total Process</div>
           <div className="text-sm font-medium text-foreground">
-            {metrics?.totalProcess}
+            {metrics?.totalProcess} 
+            <span className="text-xs text-muted-foreground ml-1"> (Pcs)</span>
           </div>
         </div>
         <div className="bg-muted p-2 rounded-lg">
           <div className="text-xs text-muted-foreground"> Total Matière</div>
           <div className="text-sm font-medium text-foreground">
-            {metrics?.totalMatiere}
+            {metrics?.totalMatiere} 
+            <span className="text-xs text-muted-foreground ml-1"> (Pcs)</span>
           </div>
         </div>
       </div>
@@ -96,13 +98,13 @@ export function ZoneActivity({ week, data, onChange }: ZoneActivityProps) {
         <div className="bg-muted p-2 rounded-lg">
           <div className="text-xs text-muted-foreground">Total Projet </div>
           <div className="text-sm font-medium text-foreground">
-            {metrics?.totalProjet}
+            {metrics?.totalProjet} €
           </div>
         </div>
         <div className="bg-muted p-2 rounded-lg">
           <div className="text-xs text-muted-foreground">Total Serie </div>
           <div className="text-sm font-medium text-foreground">
-            {metrics?.totalSerie}
+            {metrics?.totalSerie} €
           </div>
         </div>
       </div>
