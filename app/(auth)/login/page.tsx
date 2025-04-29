@@ -72,7 +72,6 @@ export default function LoginPage() {
       if (result.access_token) {
 
      localStorage.setItem('access_token', result.access_token);
-     document.cookie="auth=true;";
      router.push('/');
 
       } else {

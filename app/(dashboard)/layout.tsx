@@ -15,16 +15,14 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  document.cookie="auth=true;";
-
-
+  
+  useEffect(() => {
     const isAuthenticated = document.cookie.includes("auth=true");
     if (isAuthenticated===false) {
       router.push('/login');
     }
-   
-
-
+  }, [router]);
+  
   return (
     <div className="flex h-screen">
       <DesktopSidebar />
