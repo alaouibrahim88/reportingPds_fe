@@ -24,11 +24,13 @@ import { z } from "zod";
 import { exportToExcel } from "@/utils/excel";
 
 interface OperatorDetailsTableProps {
+  viewMode: "price" | "qty";
   selectedYear: number;
   selectedMonth: string;
 }
 
 export default function OperatorDetailsTable({
+  viewMode,
   selectedYear,
   selectedMonth,
 }: OperatorDetailsTableProps) {
@@ -104,28 +106,31 @@ export default function OperatorDetailsTable({
 
       setIsLoading(true);
       try {
-
         const monthAsNumber = parseInt(selectedMonth, 10);
         const validYear = yearSchema.parse(selectedYear);
         const validMonth = z.number().int().min(1).max(12).parse(monthAsNumber);
         const validCell = cellSchema.parse(selectedCell);
- 
-        const token = localStorage.getItem('access_token');
+
+        const token = localStorage.getItem("access_token");
         const url = process.env.NEXT_PUBLIC_API_URL || "http://localhost7000";
         //const response = await fetch(`https://localhost:7000/api/BridgeHubMTO/GetStockCodeCellScrap?annee=${validYear}&mois=${validMonth}&cell=${validCell}&typeaffich=Couts`,
-        const response=await fetch(`https://localhost:7000/api/BridgeHubMTO/GetStockCodeCellScrap?annee=${validYear}&mois=${validMonth}&cell=${validCell}&typeaffich=Couts`,
-        {
-          method: "GET",
-          headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
-            },   
+        const response = await fetch(
+          `https://localhost:7000/api/BridgeHubMTO/GetStockCodeCellScrap?annee=${validYear}&mois=${validMonth}&cell=${validCell}&typeaffich=${viewMode}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
             cache: "no-store",
-            next: { revalidate: 0 },   
-          });
+            next: { revalidate: 0 },
+          }
+        );
         if (!response.ok) {
-          throw new Error(`API error: ${response.status} - ${response.statusText}`);
-        }   
+          throw new Error(
+            `API error: ${response.status} - ${response.statusText}`
+          );
+        }
         const data = await response.json();
         if (
           data &&
@@ -163,7 +168,7 @@ export default function OperatorDetailsTable({
     };
 
     fetchOperatorData();
-  }, [selectedYear, selectedMonth, selectedCell]);
+  }, [selectedYear, selectedMonth, selectedCell, viewMode]);
 
   return (
     <div className="rounded-md border">

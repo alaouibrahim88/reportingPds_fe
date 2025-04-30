@@ -180,6 +180,7 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
 
         {/* Operator Details Table */}
         <OperatorDetailsTable
+          viewMode={viewMode}
           selectedYear={selectedYear}
           selectedMonth={selectedMonth}
         />
