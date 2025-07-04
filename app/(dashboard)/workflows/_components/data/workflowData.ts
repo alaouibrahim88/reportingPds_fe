@@ -4,7 +4,7 @@ export const workflowData = {
   stats: [
     {
       title: "Daily",
-      sales: "999.83",
+      sales: "109.83",
       quantity: "12,625",
       previousSales: 210.0,
       period: "Yesterday",

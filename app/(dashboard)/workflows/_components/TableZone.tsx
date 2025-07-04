@@ -32,63 +32,10 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-import { ZoneDataType } from "./data/workflowData";
-
-interface ProcessDamage {
-  process: string;
-  count: number;
-  percentage: number;
-  damageTypes: Record<string, number>;
-}
-
-interface MachineDamage {
-  machine: string;
-  count: number;
-  percentage: number;
-  operationalStatus: {
-    uptime: number;
-    maintenance: number;
-    repair: number;
-  };
-}
-
-interface DamageStats {
-  byProcess: ProcessDamage[];
-  byMachine: MachineDamage[];
-}
-
-interface DetailStats {
-  time: string;
-  machine: string;
-  job: string;
-  count: number;
-  status: string;
-  priority: string;
-  assignee: string;
-  department: string;
-  message: string;
-  op: {
-    damageType: {
-      process: number;
-      machine: number;
-      material: number;
-    };
-    production: {
-      planned: number;
-      actual: number;
-      variance: number;
-    };
-    quality: {
-      inspected: number;
-      passed: number;
-      failed: number;
-    };
-  };
-  damageStats: DamageStats;
-}
+import { ProductionIssueDetail, ProductionIssuesApiResponse } from "@/types";
 
 interface TableZoneProps {
-  data: ZoneDataType[];
+  data: ProductionIssuesApiResponse | undefined;
 }
 
 export default function TableZone({ data }: TableZoneProps) {
@@ -101,19 +48,15 @@ export default function TableZone({ data }: TableZoneProps) {
       prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
     );
   };
-
-  const totalItems = data.reduce((acc, item) => acc + item.details.length, 0);
+  
+  const details = data?.details || [];
+  const totalItems = details.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  const getPaginatedData = () => {
-    let allDetails: any[] = [];
-    data.forEach((item) => {
-      allDetails = [...allDetails, ...item.details];
-    });
-
+  const getPaginatedData = (): ProductionIssueDetail[] => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return allDetails.slice(startIndex, endIndex);
+    return details.slice(startIndex, endIndex);
   };
 
   const paginatedData = getPaginatedData();
@@ -160,9 +103,9 @@ export default function TableZone({ data }: TableZoneProps) {
           </TableHeader>
           <TableBody>
             {paginatedData.map((detail, detailIndex) => (
-              <React.Fragment key={detailIndex}>
+              <React.Fragment key={`${detail.zone_id}-${detail.period}-${detailIndex}`}>
                 <TableRow className="h-9">
-                <TableCell className="py-1 text-sm">
+                  <TableCell className="py-1 text-sm">
                     <button
                       onClick={() => toggleRow(detailIndex)}
                       className="p-0.5 hover:bg-muted rounded-lg"
@@ -174,29 +117,29 @@ export default function TableZone({ data }: TableZoneProps) {
                       )}
                     </button>
                   </TableCell>
-                  <TableCell className="py-1 text-sm">{detail.zone}</TableCell>
-                  <TableCell className="py-1 text-sm">{detail.time}</TableCell>
+                  <TableCell className="py-1 text-sm">{detail.zone_name}</TableCell>
+                  <TableCell className="py-1 text-sm">{detail.period}</TableCell>
                   <TableCell className="py-1 text-sm">
-                    {detail.hoursWorked}
+                    {detail.heures_reel}
                   </TableCell>
              
                   <TableCell className="py-1 text-sm">
-                    {detail.hoursWorked}{" "}
+                    {detail.heures_standart}{" "}
                   </TableCell>
                   <TableCell className="py-1 text-sm">
-                    {detail.hoursWorked} Euro
+                    {detail.cout_reel}
                   </TableCell>
                   <TableCell className="py-1 text-sm">
-                    {detail.hoursWorked + detail.hoursWorked} Euro
+                    {detail.cout_standart}
                   </TableCell>
                   <TableCell className="py-1 text-sm">
-                    {detail.hoursWorked + detail.hoursWorked * 2}
+                    {detail.ecart}
                   </TableCell>
                   <TableCell className="py-1 text-sm">
-                    {detail.hoursWorked + detail.hoursWorked * 4}
+                    {detail.ecart_global}
                   </TableCell>
                   <TableCell className="py-1 text-sm">
-                    <Link href={`/workflows/details/${detail.id}`}>
+                    <Link href={`/workflows/details/${detail.zone_id}`}>
                       <Button
                         variant="outline"
                         size="sm"
@@ -294,7 +237,7 @@ export default function TableZone({ data }: TableZoneProps) {
               <ChevronLeftIcon className="h-4 w-4 text-muted-foreground" />
             </button>
 
-            {[...Array(totalPages)].map((_, i) => (
+            {totalPages && [...Array(totalPages)].map((_, i) => (
               <button
                 key={i}
                 onClick={() => handlePageChange(i + 1)}

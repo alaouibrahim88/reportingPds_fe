@@ -9,4 +9,10 @@ export const Endpoints = {
       listZone: "/api/BridgeHubMTO/GetLisZone",
     },
   },
+  cost: {
+    global: "/api/BridgeHubMTO/GetDataWeekZone",
+    salesAnalytics: "/api/BridgeHubMTO/GetDataWeekZone",
+    effectiveness: "/api/BridgeHubMTO/GetDataWeekZone",
+    productions: '/api/BridgeHubMTO/GetCoutGlobal',
+  }
 };

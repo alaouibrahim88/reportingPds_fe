@@ -1,11 +1,21 @@
+'use client';
 import { AnalyticsHeader } from "./_components/AnalyticsHeader";
 import TableZone from "./_components/TableZone";
 import { workflowData } from "./_components/data/workflowData";
 import { ExpenseChart } from "./_components/ExpenseChart";
 import { SalesReport } from "./_components/SalesReport";
+import { useEffect, useState } from "react";
+import { fetchProductionIssues } from "@/actions/cost/dashboard";
+import { ProductionIssuesApiResponse } from "@/types";
 
 export default function WorkflowsPage() {
   const { stats, zoneData } = workflowData;
+  const [productionIssue, setProductionIssue] = useState<ProductionIssuesApiResponse | undefined>(undefined);
+  
+
+  useEffect(() => {
+    fetchProductionIssues().then(setProductionIssue);
+  }, []);
 
   return (
     <div className="min-h-screen">
@@ -19,7 +29,7 @@ export default function WorkflowsPage() {
         </div>
 
         <div className="bg-card rounded-lg shadow-sm relative border border-border">
-          <TableZone data={zoneData} />
+          <TableZone data={productionIssue} />
         </div>
       </div>
     </div>
