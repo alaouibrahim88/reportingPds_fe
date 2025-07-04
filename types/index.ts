@@ -21,3 +21,33 @@ export interface ProductionIssuesApiResponse {
   returnMessage: string;
   returnCode: string;
 }
+
+export interface CellCalculRefDetail {
+    semaine: string;
+    mois: string;
+    mois_num: number;
+    annee: number;
+    salaire_horaire: string;
+    heures_supplementaires: string;
+    prime_anciennete: string;
+    jours_feries: string;
+    conge_paye: string;
+    prime_poste: string;
+    bonus_productivite: string;
+    bonus_nuit: string;
+    securite_sociale: string;
+    assurance_collective: string;
+    cout_accident_travail: string;
+    plan_retraite: string;
+    total_revenus: string;
+    total_charges: string;
+    salaire_net: string;
+    total_revenus_mois: string;
+    total_charges_mois: string;
+}
+
+export interface CellCalculRefDetailApiResponse {
+  details: CellCalculRefDetail[];
+  returnMessage: string;
+  returnCode: string;
+}

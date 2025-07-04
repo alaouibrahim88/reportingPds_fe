@@ -14,5 +14,6 @@ export const Endpoints = {
     salesAnalytics: "/api/BridgeHubMTO/GetDataWeekZone",
     effectiveness: "/api/BridgeHubMTO/GetDataWeekZone",
     productions: '/api/BridgeHubMTO/GetCoutGlobal',
+    productionsDetails: '/api/BridgeHubMTO/GetCellCalculRef',
   }
 };

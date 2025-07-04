@@ -1,5 +1,5 @@
 import { Endpoints } from "@/constants/api";
-import { ProductionIssuesApiResponse } from "@/types";
+import { ProductionIssuesApiResponse, CellCalculRefDetailApiResponse } from "@/types";
 import { getCookieValue } from "@/lib/storage";
 
 export const fetchProductionIssues = async (): Promise<ProductionIssuesApiResponse | undefined> => {
@@ -22,6 +22,34 @@ export const fetchProductionIssues = async (): Promise<ProductionIssuesApiRespon
     return response.json();
   } catch (error) {
     console.error("Error fetching production issues:", error);
+    return undefined;
+  }
+};
+
+export const fetchZoneCalculationDetails = async (zoneId: number): Promise<CellCalculRefDetailApiResponse | undefined> => {
+  try {
+    const token = await getCookieValue("access_token");
+    const url = new URL(`${process.env.NEXT_PUBLIC_API_URL}${Endpoints.cost.productionsDetails}`);
+    
+    // Add zone_id as query parameter
+    url.searchParams.append('zone_id', zoneId.toString());
+    
+    const response = await fetch(url.toString(), {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error("Error fetching zone calculation details:", error);
     return undefined;
   }
 };
