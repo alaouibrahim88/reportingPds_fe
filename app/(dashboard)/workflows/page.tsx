@@ -12,7 +12,6 @@ export default function WorkflowsPage() {
   const { stats, zoneData } = workflowData;
   const [productionIssue, setProductionIssue] = useState<ProductionIssuesApiResponse | undefined>(undefined);
   
-
   useEffect(() => {
     fetchProductionIssues().then(setProductionIssue);
   }, []);

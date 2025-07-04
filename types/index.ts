@@ -51,3 +51,63 @@ export interface CellCalculRefDetailApiResponse {
   returnMessage: string;
   returnCode: string;
 }
+
+export interface CellDetail {
+    id: string;
+    semaine: string;
+    mois: string;
+    mois_num: number;
+    annee: number;
+    performance_status: string;
+    taux_std: string;
+    taux_reel: string;
+    heurs_std: string;
+    heure_reel: string;
+    couts_std: string;
+    couts_reel: string;
+    efficience: string;
+    ecart_global: string;
+    total_taux_reel_mois: string;
+    total_heure_reel_mois: string;
+}
+
+export interface CellDetailApiResponse {
+  details: CellDetail[];
+  returnMessage: string;
+  returnCode: string;
+}
+
+export interface OperatorDetail {
+    semaine: string;
+    mois: string;
+    mois_num: number;
+    annee: number;
+    heures_reel: string;
+    heures_supplementaires: string;
+    tarif_horaire_pct: string;
+    cout_social: string;
+    avantages_sociaux: string;
+    salaire_net: string;
+    couts_reel: string;
+    couts_standard: string;
+    ecarts: string;
+    total_heures: string;
+    ecart_pourcentage: string;
+    total_heures_reel_mois: string;
+    total_heures_sup_mois: string;
+    total_couts_reel_mois: string;
+    moyenne_tarif_horaire_mois: string;
+}
+
+export interface OperatorDetails {
+    matricule: string;
+    operator_name: string;
+    cell_name: string;
+    details: OperatorDetail[];
+}
+
+export interface OperatorDetailsApiResponse {
+  details: OperatorDetails[];
+  returnMessage: string;
+  returnCode: string;
+}

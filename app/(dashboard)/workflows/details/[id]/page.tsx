@@ -1,5 +1,5 @@
 "use client";
-import React, { HTMLAttributes } from "react";
+import React, { HTMLAttributes, useEffect } from "react";
 import { workflowData } from "../../_components/data/workflowData";
 import { notFound } from "next/navigation";
 import {
@@ -40,75 +40,9 @@ import {
   SelectLabel,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-
-// Sample data for cells
-const cellsData = [
-  {
-    id: "C1",
-    status: "Active",
-    efficiency: "92%",
-    directCost: "1000",
-    indirectCost: "500",
-    efficiencyFI: "98%",
-    totalCost: "1500",
-    productionRate: "150 units/hour",
-    downtime: "1%",
-    qualityRate: "98%",
-    maintenance: "Not Required",
-  },
-  {
-    id: "C2",
-    status: "Maintenance",
-    efficiency: "85%",
-    directCost: "1000",
-    indirectCost: "500",
-    efficiencyFI: "98%",
-    totalCost: "1500",
-    productionRate: "120 units/hour",
-    downtime: "4%",
-    qualityRate: "95%",
-    maintenance: "Scheduled",
-  },
-  {
-    id: "C3",
-    status: "Active",
-    efficiency: "88%",
-    directCost: "1000",
-    indirectCost: "500",
-    efficiencyFI: "98%",
-    totalCost: "1500",
-    productionRate: "135 units/hour",
-    downtime: "2%",
-    qualityRate: "97%",
-    maintenance: "Not Required",
-  },
-  {
-    id: "C4",
-    status: "Inactive",
-    efficiency: "78%",
-    directCost: "1000",
-    indirectCost: "500",
-    efficiencyFI: "98%",
-    totalCost: "1500",
-    productionRate: "110 units/hour",
-    downtime: "3%",
-    qualityRate: "94%",
-    maintenance: "Scheduled",
-  },
-  {
-    id: "C5",
-    status: "Active",
-    efficiency: "90%",
-    directCost: "1000",
-    indirectCost: "500",
-    efficiencyFI: "98%",
-    totalCost: "1500",
-    productionRate: "145 units/hour",
-    downtime: "1%",
-    qualityRate: "96%",
-    maintenance: "Not Required",
-  },
-];
+import { fetchCellDetails, fetchOperatorDetailsByCell } from "@/actions/cost/details";
+import { fetchZoneCalculationDetails } from "@/actions/cost/dashboard";
+import { CellDetailApiResponse, CellCalculRefDetail, OperatorDetailsApiResponse, OperatorDetail } from "@/types";
 
 const operatorsData = [
   {
@@ -215,18 +149,87 @@ export default function WorkflowDetailsPage({
   const [selectedCell, setSelectedCell] = useState("all");
   const [selectedZone, setSelectedZone] = useState("zone-1");
   const [cellSearchQuery, setCellSearchQuery] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState<string>("all");
+  const [selectedMonth, setSelectedMonth] = useState<string>("01"); // Default to January
   const [selectedYear, setSelectedYear] = useState<string>("2025");
+  const [cellDetails, setCellDetails] = useState<CellDetailApiResponse | undefined>(undefined);
+  const [operatorDetails, setOperatorDetails] = useState<OperatorDetailsApiResponse | undefined>(undefined);
+  const [zoneDetails, setZoneDetails] = useState<Record<number, CellCalculRefDetail[]>>({});
+  const [loadingZones, setLoadingZones] = useState<Set<number>>(new Set());
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      if (selectedMonth !== "all" && selectedYear) {
+        const details = await fetchCellDetails(
+          Number(params.id), 
+          parseInt(selectedMonth), 
+          parseInt(selectedYear)
+        );
+        setCellDetails(details);
+      } else {
+        setCellDetails(undefined);
+      }
+    };
+    
+    fetchData();
+  }, [params.id, selectedMonth, selectedYear]);
 
+  useEffect(() => {
+    const fetchOperators = async () => {
+      if (selectedCell !== "all" && selectedMonth && selectedYear) {
+        // Extract numeric cell ID from selectedCell (e.g., "cell-1" -> 1)
+        const cellIdMatch = selectedCell.match(/\d+/);
+        if (cellIdMatch) {
+          const cellId = parseInt(cellIdMatch[0]);
+          const operators = await fetchOperatorDetailsByCell(
+            Number(params.id), 
+            cellId, 
+            parseInt(selectedMonth), 
+            parseInt(selectedYear)
+          );
+          setOperatorDetails(operators);
+        }
+      } else {
+        setOperatorDetails(undefined);
+      }
+    };
 
+    fetchOperators();
+  }, [params.id, selectedCell, selectedMonth, selectedYear]);
 
-
-  const toggleRow = (rowKey: string) => {
+  const toggleRow = async (rowKey: string, cellId?: string) => {
+    const isOpening = !openRows.includes(rowKey);
+    
     setOpenRows((prev) =>
       prev.includes(rowKey)
         ? prev.filter((key) => key !== rowKey)
         : [...prev, rowKey]
     );
+
+    // If opening row and we have a cellId, fetch zone calculation details
+    if (isOpening && cellId) {
+      const cellIdNum = parseInt(cellId.replace('C', ''), 10);
+      if (!zoneDetails[cellIdNum]) {
+        setLoadingZones(prev => new Set(prev).add(cellIdNum));
+        
+        try {
+          const response = await fetchZoneCalculationDetails(cellIdNum);
+          if (response?.details) {
+            setZoneDetails(prev => ({
+              ...prev,
+              [cellIdNum]: response.details
+            }));
+          }
+        } catch (error) {
+          console.error("Error fetching zone calculation details:", error);
+        } finally {
+          setLoadingZones(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(cellIdNum);
+            return newSet;
+          });
+        }
+      }
+    }
   };
 
   const detail = workflowData.zoneData
@@ -246,26 +249,27 @@ export default function WorkflowDetailsPage({
   }
 
   // Pagination calculations
-  const totalCellsPages = Math.ceil(cellsData.length / itemsPerPage);
-  const totalOperatorsPages = Math.ceil(operatorsData.length / itemsPerPage);
+  const totalCellsPages = Math.ceil((cellDetails?.details?.length || 0) / itemsPerPage);
+  const totalOperatorsPages = Math.ceil((operatorDetails?.details?.length || 0) / itemsPerPage);
 
-  const paginatedCells = cellsData.slice(
+  const paginatedCells = cellDetails?.details.slice(
     (currentCellsPage - 1) * itemsPerPage,
     currentCellsPage * itemsPerPage
   );
 
   // Update the filter logic
-  const filteredOperators = operatorsData.filter((operator) => {
-    const matchesSearch = Object.values(operator)
-      .join(" ")
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchesCell =
-      selectedCell === "all" ||
-      operator.cell ===
-        cellOptions.find((c) => c.value === selectedCell)?.label;
-    return matchesSearch && matchesCell;
-  });
+  const filteredOperators = Array.isArray(operatorDetails?.details)
+    ? operatorDetails.details.filter((operator) => {
+        const matchesSearch = [
+          operator.operator_name,
+          operator.matricule,
+          operator.cell_name
+        ].join(" ")
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+        return matchesSearch;
+      })
+    : [];
 
   // Update paginated operators to use filtered data
   const paginatedOperators = filteredOperators.slice(
@@ -447,7 +451,7 @@ export default function WorkflowDetailsPage({
     </TableRow>
   </TableHeader>
   <TableBody>
-    {paginatedCells.map((cell, index) => {
+    {paginatedCells?.map((cell, index) => {
       const rowKey = `table-operators-${index}`;
 
       return (
@@ -455,7 +459,7 @@ export default function WorkflowDetailsPage({
           <TableRow key={rowKey} className="h-10 hover:bg-muted/50" style={{ height: '10px' }}>
             <TableCell className="py-1 text-sm">
               <button
-                onClick={() => toggleRow(rowKey)}
+                onClick={() => toggleRow(rowKey, cell.id)}
                 className="p-0.5 hover:bg-muted rounded-lg"
               >
                 {openRows.includes(rowKey) ? (
@@ -469,41 +473,41 @@ export default function WorkflowDetailsPage({
             <TableCell className="text-xs py-2">
               <span
                 className={cn("inline-flex items-center px-1 py-1 rounded-full", {
-                  "bg-green-100": cell.status === "Active",
-                  "bg-yellow-100": cell.status === "Maintenance",
-                  "bg-red-100": cell.status === "Inactive",
+                  "bg-green-100": cell.performance_status === "green",
+                  "bg-yellow-100": cell.performance_status === "yellow",
+                  "bg-red-100": cell.performance_status === "red",
                 })}
               >
                 <span
                   className={cn("h-1.5 w-1.5 rounded-full", {
-                    "bg-green-500": cell.status === "Active",
-                    "bg-yellow-500": cell.status === "Maintenance",
-                    "bg-red-500": cell.status === "Inactive",
+                    "bg-green-500": cell.performance_status === "green",
+                    "bg-yellow-500": cell.performance_status === "yellow",
+                    "bg-red-500": cell.performance_status === "red",
                   })}
                 />
               </span>
             </TableCell>
-            <TableCell className="text-xs py-2">{cell.efficiency}</TableCell>
-            <TableCell className="text-xs py-2">{cell.directCost}</TableCell>
-            <TableCell className="text-xs py-2">{cell.efficiency}</TableCell>
-            <TableCell className="text-xs py-2">{cell.directCost}</TableCell>
-            <TableCell className="text-xs py-2">{cell.indirectCost}</TableCell>
+            <TableCell className="text-xs py-2">{cell.taux_std}</TableCell>
+            <TableCell className="text-xs py-2">{cell.taux_reel}</TableCell>
+            <TableCell className="text-xs py-2">{cell.heurs_std}</TableCell>
+            <TableCell className="text-xs py-2">{cell.heure_reel}</TableCell>
+            <TableCell className="text-xs py-2">{cell.couts_std}</TableCell>
             <TableCell className="text-xs py-2">
               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-gray-100">
-                {cell.indirectCost}
+                {cell.couts_reel}
               </span>
             </TableCell>
-            <TableCell className="text-xs py-2">{cell.totalCost}</TableCell>
+            <TableCell className="text-xs py-2">{cell.efficience}</TableCell>
             <TableCell className="text-xs py-2">
               {(() => {
-                const value = Number(cell.totalCost) * 2;
+                const value = Number(cell.ecart_global);
                 const badgeClass =
                   value > 100
                     ? "bg-green-100 text-green-700"
                     : "bg-red-400 text-red-700";
                 return (
                   <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${badgeClass}`}>
-                    {value}
+                    {cell.ecart_global}
                   </span>
                 );
               })()}
@@ -514,63 +518,65 @@ export default function WorkflowDetailsPage({
             <tr>
             <td colSpan={12}>
               <div className="overflow-x-auto p-4">
-                <table className="table-auto w-full border-collapse border border-gray-400 text-sm text-center">
-                  <thead>
-                    <tr style={{ height: '10px' }}>
-                      <th colSpan={1} className="bg-white-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}></th>
-                      <th colSpan={4} className="bg-blue-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}>Tarif Horaire</th>
-                      <th colSpan={4} className="bg-green-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}>Couts Social</th>
-                      <th colSpan={4} className="bg-red-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}>Avantage Social</th>
-                    </tr>
-                    <tr className="bg-white">
-                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}></th>
-                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Salaire.Horaire</th>
-                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>HS</th>
-                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Anciente</th>
-                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Jours.fériés</th>
-                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Congé.payé</th>
-                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Prime poste</th>
-                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Bonus.productivité</th>
-                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Bonus.nuit</th>
-                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Sécurité.sociale</th>
-                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Assurance.collective</th>
-                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Coût.acc.travail</th>
-                      <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Retirement Plan</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr style={{ height: '10px' }}>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>S</td>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€%</td>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>150€</td>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>100€</td>
-                    </tr>
-                    <tr style={{ height: '10px' }}>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>R</td>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€%</td>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>150€</td>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                      <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>100€</td>
-                    </tr>
-                  </tbody>
-                </table>
+                {(() => {
+                  const cellIdNum = parseInt(cell.id.replace('C', ''), 10);
+                  return loadingZones.has(cellIdNum) ? (
+                    <div className="flex justify-center items-center p-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                      <span className="ml-2 text-sm text-muted-foreground">Loading zone calculation details...</span>
+                    </div>
+                  ) : (
+                    <table className="table-auto w-full border-collapse border border-gray-400 text-sm text-center">
+                      <thead>
+                        <tr style={{ height: '10px' }}>
+                          <th rowSpan={2} colSpan={1} className="bg-white-100 border text-white border-gray-400 py-0" style={{ fontSize: '12px' }}>Semaine</th>
+                          <th colSpan={4} className="bg-blue-100 border text-black border-gray-400 py-0" style={{ fontSize: '12px' }}>Tarif Horaire</th>
+                          <th colSpan={4} className="bg-green-100 text-black border border-gray-400 py-0" style={{ fontSize: '12px' }}>Couts Social</th>
+                          <th colSpan={4} className="bg-red-100 text-black border border-gray-400 py-0" style={{ fontSize: '12px' }}>Avantage Social</th>
+                        </tr>
+                        <tr className="bg-white">
+                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Salaire.Horaire</th>
+                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>HS</th>
+                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Ancienneté</th>
+                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Jours.fériés</th>
+                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Congé.payé</th>
+                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Prime poste</th>
+                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Bonus.productivité</th>
+                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Bonus.nuit</th>
+                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Sécurité.sociale</th>
+                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Assurance.collective</th>
+                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Coût.acc.travail</th>
+                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Plan.retraite</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {zoneDetails[cellIdNum]?.map((calcDetail, calcIndex) => (
+                          <tr key={calcIndex} style={{ height: '10px' }}>
+                            <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.semaine}</td>
+                            <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.salaire_horaire}</td>
+                            <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.heures_supplementaires}</td>
+                            <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.prime_anciennete}</td>
+                            <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.jours_feries}</td>
+                            <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.conge_paye}</td>
+                            <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.prime_poste}</td>
+                            <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.bonus_productivite}</td>
+                            <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.bonus_nuit}</td>
+                            <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.securite_sociale}</td>
+                            <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.assurance_collective}</td>
+                            <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.cout_accident_travail}</td>
+                            <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.plan_retraite}</td>
+                          </tr>
+                        )) || (
+                          <tr>
+                            <td colSpan={13} className="border border-gray-300 py-4 text-center text-gray-500">
+                              No calculation details available
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  );
+                })()}
               </div>
             </td>
           </tr>
@@ -731,150 +737,137 @@ export default function WorkflowDetailsPage({
                   <TableHead className="h-9 text-xs">Operator</TableHead>
                   <TableHead className="h-9 text-xs">Matricule</TableHead>
                   <TableHead className="h-9 text-xs">Hours Réel</TableHead>
-                  <TableHead className="h-9 text-xs">Heures Sup</TableHead>
-                  <TableHead className="h-9 text-xs">Tarif horaire</TableHead>
-                  <TableHead className="h-9 text-xs">Coût social</TableHead>
+                  <TableHead className="h-9 text-xs">Heures STD</TableHead>
+                  <TableHead className="h-9 text-xs">Coûts STD</TableHead>
+                  <TableHead className="h-9 text-xs">Coûts Réel</TableHead>
                   <TableHead className="h-9 text-xs">Avantages Sociaux</TableHead>
-                  <TableHead className="h-9 text-xs">Net</TableHead>
+                  <TableHead className="h-9 text-xs">Efficience Moy</TableHead>
                   <TableHead className="h-9 text-xs">Couts Réel</TableHead>
-                  <TableHead className="h-9 text-xs">Couts Standart</TableHead>
-                  <TableHead className="h-9 text-xs">Ecarts</TableHead>
+                  <TableHead className="h-9 text-xs">Couts Standard</TableHead>
+                  <TableHead className="h-9 text-xs">Écart</TableHead>
                 
                 </TableRow>
               </TableHeader>
               <TableBody>
-        
-          
-                {paginatedOperators.map((operator, index) => {
-            
+                {paginatedOperators.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={12} className="text-center py-8 text-muted-foreground">
+                      {operatorDetails === undefined ? 'Select a cell to view operators' : 
+                       operatorDetails?.details?.length === 0 ? 'No operators found for this cell' : 
+                       'Loading...'}
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  paginatedOperators.map((operator, index) => {            
                 const rowKey = `table-cell-${index}`;
-
-                 return (
+                  return (
                  <React.Fragment key={rowKey}>
-                 <TableRow key={operator.name} className="h-10 hover:bg-muted/50" style={{ height: '10px' }}>
+                 <TableRow key={operator.matricule} className="h-10 hover:bg-muted/50" style={{ height: '10px' }}>
                  <TableCell className="py-1 text-sm">
-                                    <button
-                                      onClick={() => toggleRow(rowKey)}
-                                      className="p-0.5 hover:bg-muted rounded-lg" >
-                                     {openRows.includes(rowKey) ? (
-                                        <ChevronDown className="h-3 w-3" />
-                                      ) : (
-                                        <ChevronRight className="h-3 w-3" />
-                                      )}
-                                    </button>
+                    <button
+                      onClick={() => toggleRow(rowKey)}
+                      className="p-0.5 hover:bg-muted rounded-lg" >
+                      {openRows.includes(rowKey) ? (
+                        <ChevronDown className="h-3 w-3" />
+                      ) : (
+                        <ChevronRight className="h-3 w-3" />
+                      )}
+                    </button>
                 </TableCell>
 
-                      <TableCell className="text-xs font-medium py-2">
-                        {operator.name}
-                      </TableCell>
-                      <TableCell className="text-xs py-2">
-                        {operator.cell}
-                      </TableCell>
-                      <TableCell className="text-xs py-2">
-                        {operator.shift}
-                      </TableCell>
-                      <TableCell className="text-xs py-2">
-                        {operator.tasksCompleted}
-                      </TableCell>
-                      <TableCell className="text-xs py-2">
-                        {operator.efficiency}
-                      </TableCell>
-                      <TableCell className="text-xs py-2">
-                        {operator.hoursWorked}
-                      </TableCell>
-                      <TableCell className="text-xs py-2">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${ "bg-gray-100"}`} >
-                        {operator.hoursWorked}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-xs py-2">
-                        {operator.hoursWorked}
-                      </TableCell>
-                      <TableCell className="text-xs py-2">  
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${ "bg-gray-100"}`} >
-                        {operator.hoursWorked}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-xs py-2">
-                        {operator.hoursWorked}
-                      </TableCell>
-                      <TableCell className="text-xs py-2">
+                <TableCell className="text-xs font-medium py-2">
+                  {operator.operator_name}
+                </TableCell>
+                <TableCell className="text-xs py-2">
+                  {operator.matricule}
+                </TableCell>
+                <TableCell className="text-xs py-2">
+                  {operator.details.reduce((sum, detail) => sum + parseFloat(detail.heures_reel || '0'), 0).toFixed(1)}h
+                </TableCell>
+                <TableCell className="text-xs py-2">
+                  {operator.details.reduce((sum, detail) => sum + parseFloat(detail.total_heures || '0'), 0).toFixed(1)}h
+                </TableCell>
+                <TableCell className="text-xs py-2">
+                  {operator.details.reduce((sum, detail) => sum + parseFloat(detail.couts_standard || '0'), 0).toFixed(2)}€
+                </TableCell>
+                <TableCell className="text-xs py-2">
+                  {operator.details.reduce((sum, detail) => sum + parseFloat(detail.couts_reel || '0'), 0).toFixed(2)}€
+                </TableCell>
+                <TableCell className="text-xs py-2">
+                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${ "bg-gray-100"}`} >
+                  {operator.details.reduce((sum, detail) => sum + parseFloat(detail.avantages_sociaux || '0'), 0).toFixed(2)}€
+                  </span>
+                </TableCell>
+                <TableCell className="text-xs py-2">
+                  {(operator.details.reduce((sum, detail) => sum + parseFloat(detail.tarif_horaire_pct || '0'), 0) / operator.details.length).toFixed(1)}%
+                </TableCell>
+                <TableCell className="text-xs py-2">  
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${ "bg-gray-100"}`} >
+                  {operator.details.reduce((sum, detail) => sum + parseFloat(detail.couts_reel || '0'), 0).toFixed(2)}€
+                  </span>
+                </TableCell>
+                <TableCell className="text-xs py-2">
+                  {operator.details.reduce((sum, detail) => sum + parseFloat(detail.couts_standard || '0'), 0).toFixed(2)}€
+                </TableCell>
+                <TableCell className="text-xs py-2">
                       {(() => {
-              const value = Number(operator.hoursWorked) * 2;
-              const badgeClass =
-              value > 100
-              ? "bg-green-100 text-green-700"
-              : "bg-red-300 text-red-800";
-               return (
-               <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${badgeClass}`}>
-               {value}
-               </span>
-               );
-               })()}
+                        const realCost = operator.details.reduce((sum, detail) => sum + parseFloat(detail.couts_reel || '0'), 0);
+                        const stdCost = operator.details.reduce((sum, detail) => sum + parseFloat(detail.couts_standard || '0'), 0);
+                        const variance = realCost - stdCost;
+                        const badgeClass =
+                        variance > 0
+                        ? "bg-red-100 text-red-700"
+                        : "bg-green-100 text-green-700";
+                        return (
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${badgeClass}`}>
+                        {variance.toFixed(2)}€
+                        </span>
+                        );
+                        })()}
                       </TableCell>
                       </TableRow>
-                    
                 {
-            
                 openRows.includes(rowKey) && (
                 <tr>
                 <td colSpan={12}>
                   <div className="overflow-x-auto p-4">
+                    <div className="mb-2">
+                      <h4 className="text-sm font-medium text-gray-700">Details for {operator.operator_name}</h4>
+                    </div>
                     <table className="table-auto w-full border-collapse border border-gray-400 text-sm text-center">
                       <thead>
                         <tr style={{ height: '10px' }}>
-                          <th colSpan={1} className="bg-white-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}></th>
-                          <th colSpan={4} className="bg-blue-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}>Tarif Horaire</th>
-                          <th colSpan={4} className="bg-green-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}>Couts Social</th>
-                          <th colSpan={4} className="bg-red-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}>Avantage Social</th>
-                        </tr>
-                        <tr className="bg-white">
-                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}></th>
-                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Salaire.Horaire</th>
-                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>HS</th>
-                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Anciente</th>
-                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Jours.fériés</th>
-                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Congé.payé</th>
-                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Prime poste</th>
-                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Bonus.productivité</th>
-                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Bonus.nuit</th>
-                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Sécurité.sociale</th>
-                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Assurance.collective</th>
-                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Coût.acc.travail</th>
-                          <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Retirement Plan</th>
+                          <th className="bg-blue-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}>Semaine</th>
+                          <th className="bg-blue-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}>Heures Réel</th>
+                          <th className="bg-green-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}>Heures Sup</th>
+                          <th className="bg-green-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}>Tarif Horaire %</th>
+                          <th className="bg-yellow-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}>Coût Social</th>
+                          <th className="bg-yellow-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}>Avantages Sociaux</th>
+                          <th className="bg-red-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}>Salaire Net</th>
+                          <th className="bg-red-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}>Coûts Réel</th>
+                          <th className="bg-purple-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}>Coûts Standard</th>
+                          <th className="bg-gray-100 border border-gray-400 py-0" style={{ fontSize: '12px' }}>Écarts</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr style={{ height: '10px' }}>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>S</td>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€%</td>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>150€</td>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>100€</td>
-                        </tr>
-                        <tr style={{ height: '10px' }}>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>R</td>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€%</td>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>150€</td>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>200€</td>
-                          <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>100€</td>
-                        </tr>
+                        {operator.details.map((detail, detailIndex) => (
+                          <tr key={detailIndex} style={{ height: '10px' }}>
+                            <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{detail.semaine}</td>
+                            <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{detail.heures_reel}h</td>
+                            <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{detail.heures_supplementaires}h</td>
+                            <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{detail.tarif_horaire_pct}%</td>
+                            <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{detail.cout_social}€</td>
+                            <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{detail.avantages_sociaux}€</td>
+                            <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{detail.salaire_net}€</td>
+                            <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{detail.couts_reel}€</td>
+                            <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{detail.couts_standard}€</td>
+                            <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>
+                              <span className={`px-1 py-0.5 rounded text-xs ${parseFloat(detail.ecarts) > 0 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                                {detail.ecarts}€
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
                       </tbody>
                     </table>
                   </div>
@@ -884,7 +877,8 @@ export default function WorkflowDetailsPage({
        
           </React.Fragment>
           );
-        })}
+        })
+        )}
         </TableBody>
       </Table>
 
