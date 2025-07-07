@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Users2 } from "lucide-react";
-import { FaSearch } from 'react-icons/fa';
-import { FaFileExcel } from 'react-icons/fa'; 
+import { FaSearch } from "react-icons/fa";
+import { FaFileExcel } from "react-icons/fa";
 import {
   Table,
   TableBody,
@@ -17,10 +17,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getAllZones, getAllCells, getOperators } from "@/actions/scrap";
+import { fetchAllZones, getAllCells, getOperators } from "@/actions/scrap";
 import { Zone, Cell } from "../types";
 import { formatCurrency } from "../_utils/formatters";
-import { z } from "zod"; 
+import { z } from "zod";
 import { exportToExcel } from "@/utils/excel";
 
 interface OperatorDetailsTableProps {
@@ -53,46 +53,28 @@ export default function OperatorDetailsTable({
     exportToExcel(operatorData, "CodeArticleDetails.xlsx");
   };
 
-
   useEffect(() => {
-    const fetchAllZones = async () => {
-      const url = process.env.NEXT_PUBLIC_API_URL || "https://localhost:7000";
-      const token = localStorage.getItem('access_token');
-      const response = await fetch(`https://localhost:7000/api/BridgeHubMTO/GetLisZone`, {
-      method: "GET",
-      headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },   
-        cache: "no-store",
-        next: { revalidate: 0 },   
-      });
-
-      const allZones = await response.json(); //await getAllZones();
-      setAllZones(allZones.getlistZone); 
-      //const allZones = await getAllZones();
-    };
-    fetchAllZones();
+    fetchAllZones().then(setAllZones);
   }, []);
 
   useEffect(() => {
     const fetchAllCells = async () => {
-      
-      const validZone = (selectedZone).toString();
-      const token = localStorage.getItem('access_token');
-      const response = await fetch(`https://localhost:7000/api/BridgeHubMTO/GetListCell?zone=${validZone}`, 
-      {
-      method: "GET",
-      headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },   
-        cache: "no-store",
-        next: { revalidate: 0 },   
-      });
+      const validZone = selectedZone.toString();
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(
+        `https://localhost:7000/api/BridgeHubMTO/GetListCell?zone=${validZone}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          cache: "no-store",
+          next: { revalidate: 0 },
+        }
+      );
       const allCells = await response.json(); // getAllCells(selectedZone);
       setAllCells(allCells.getlistcell);
-
     };
     fetchAllCells();
   }, [selectedZone]);

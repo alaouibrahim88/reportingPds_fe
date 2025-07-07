@@ -107,7 +107,19 @@ export interface OperatorDetails {
 }
 
 export interface OperatorDetailsApiResponse {
-  details: OperatorDetails[];
-  returnMessage: string;
-  returnCode: string;
+    total_couts_std: number;
+    total_couts_reel: number;
+    details: OperatorDetails[];
+    returnMessage: string;
+    returnCode: string;
+}
+
+export interface Zone {
+  value: string;
+  label: string;
+}
+
+export interface Cell {
+  value: string;
+  label: string;
 }

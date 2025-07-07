@@ -1,21 +1,24 @@
+const API_DIRECTORY = process.env.ENDPOINT_DIRECTORY || `/api/BridgeHubMTO`;
 export const Endpoints = {
+  allZones: `${API_DIRECTORY}/GetLisZone`,
+  allCells: `${API_DIRECTORY}/GetListCell`,
   scrap: {
-    global: "/api/BridgeHubMTO/GetDataWeekZone",
-    statsPerWeek: "/api/BridgeHubMTO/GetCurrDataWeekScrap",
-    statsPerYear: "/api/BridgeHubMTO/getDataAnneeScrap",
+    global: `${API_DIRECTORY}/GetDataWeekZone`,
+    statsPerWeek: `${API_DIRECTORY}/GetCurrDataWeekScrap`,
+    statsPerYear: `${API_DIRECTORY}/getDataAnneeScrap`,
     details: {
-      codeArticle: "/api/BridgeHubMTO/getdataStockcodeDetail",
-      zoneDetailType: "/api/BridgeHubMTO/GetZoneDetailType",
-      listZone: "/api/BridgeHubMTO/GetLisZone",
+      codeArticle: `${API_DIRECTORY}/getdataStockcodeDetail`,
+      zoneDetailType: `${API_DIRECTORY}/GetZoneDetailType`,
+      listZone: `${API_DIRECTORY}/GetLisZone`,
     },
   },
   cost: {
-    global: "/api/BridgeHubMTO/GetDataWeekZone",
-    salesAnalytics: "/api/BridgeHubMTO/GetDataWeekZone",
-    effectiveness: "/api/BridgeHubMTO/GetDataWeekZone",
-    productions: '/api/BridgeHubMTO/GetCoutGlobal',
-    productionsDetails: '/api/BridgeHubMTO/GetCellCalculRef',
-    detailCell: '/api/BridgeHubMTO/GetDetailCoutCell',
-    operatorsByCell: '/api/BridgeHubMTO/GetOperatorByCell',
+    global: `${API_DIRECTORY}/GetDataWeekZone`,
+    salesAnalytics: `${API_DIRECTORY}/GetDataWeekZone`,
+    effectiveness: `${API_DIRECTORY}/GetDataWeekZone`,
+    productions: `${API_DIRECTORY}/GetCoutGlobal`,
+    productionsDetails: `${API_DIRECTORY}/GetCellCalculRef`,
+    detailCell: `${API_DIRECTORY}/GetDetailCoutCell`,
+    operatorsByCell: `${API_DIRECTORY}/GetOperatorByCell`,
   }
 };

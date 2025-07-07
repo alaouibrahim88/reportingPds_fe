@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, HTMLAttributes } from "react";
+import React, { useState, HTMLAttributes, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -42,9 +42,15 @@ interface TableZoneProps {
 export default function TableZone({ data }: TableZoneProps) {
   const [openRows, setOpenRows] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
   const [zoneDetails, setZoneDetails] = useState<Record<number, CellCalculRefDetail[]>>({});
   const [loadingZones, setLoadingZones] = useState<Set<number>>(new Set());
   const itemsPerPage = 5;
+
+  // Reset page when search query changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   const toggleRow = async (index: number, detail: ProductionIssueDetail) => {
     const isOpening = !openRows.includes(index);
@@ -78,13 +84,28 @@ export default function TableZone({ data }: TableZoneProps) {
   };
   
   const details = data?.details || [];
-  const totalItems = details.length;
+  
+  // Filter data based on search query
+  const filteredDetails = details.filter((detail) => {
+    if (!searchQuery) return true;
+    const searchLower = searchQuery.toLowerCase();
+    return (
+      detail.zone_name.toLowerCase().includes(searchLower) ||
+      detail.period.toLowerCase().includes(searchLower) ||
+      detail.heures_reel.toString().includes(searchLower) ||
+      detail.heures_standart.toString().includes(searchLower) ||
+      detail.cout_reel.toString().includes(searchLower) ||
+      detail.cout_standart.toString().includes(searchLower)
+    );
+  });
+  
+  const totalItems = filteredDetails.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const getPaginatedData = (): ProductionIssueDetail[] => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return details.slice(startIndex, endIndex);
+    return filteredDetails.slice(startIndex, endIndex);
   };
 
   const paginatedData = getPaginatedData();
@@ -109,7 +130,7 @@ export default function TableZone({ data }: TableZoneProps) {
             Track and manage production issues and scrap reports
           </p>
         </div>
-        <TableFilter onFilterChange={() => {}} />
+        <TableFilter onFilterChange={setSearchQuery} />
       </div>
 
       {/* Table Section */}

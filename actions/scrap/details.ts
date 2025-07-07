@@ -45,25 +45,3 @@ export async function GetZoneDetails(
     throw error;
   }
 }
-
-export const fetchAllZones = async () => {
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}${Endpoints.scrap.details.listZone}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-        cache: "no-store",
-        next: { revalidate: 0 },
-      }
-    );
-
-    const allZones = await response.json();
-    return allZones.getlistZone;
-  } catch (error) {
-    console.error(error);
-  }
-};

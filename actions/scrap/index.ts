@@ -1,5 +1,7 @@
 "use server";
 
+import { Endpoints } from "@/constants/api";
+import { Cell, Zone } from "@/types";
 import { revalidatePath } from "next/cache";
 import { z } from "zod"; // Add zod for input validation
 
@@ -48,7 +50,8 @@ export async function getZoneDetails(
     const validMonth = monthSchema.parse(month);
 
     // Make sure the API URL is correctly configured
-    const token = localStorage?.getItem('access_token');
+    const { getCookieValue } = await import("@/lib/storage");
+    const token = await getCookieValue("access_token");
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/BridgeHubMTO/GetZoneDetailType?annee=${validYear}&typeaffichage=${validDisplayType}&mois=${validMonth}`,
       {
@@ -152,50 +155,51 @@ export async function processZoneData(data: ZoneResponse) {
  * Fetches all zones from the API
  * @returns List of all zones
  */
-export async function getAllZones() {
+export const fetchAllZones = async (): Promise<Zone[]> => {
   try {
+    const { getCookieValue } = await import("@/lib/storage");
+    const token = await getCookieValue("access_token");
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/BridgeHubMTO/GetLisZone`,
+      `${process.env.NEXT_PUBLIC_API_URL}${Endpoints.allZones}`,
       {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          Authorization: `Bearer ${token}`,
         },
-
         cache: "no-store",
         next: { revalidate: 0 },
       }
     );
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status} - ${response.statusText}`);
-    }
-    const data = await response.json();
-    return data;
+
+    return await response.json();
   } catch (error) {
-    console.error("Failed to fetch all zones:", error);
+    console.error(error);
     throw error;
   }
-}
+};
+
 
 /**
  * Fetches all cells for a specific zone
  * @param zone - The zone to fetch cells for
  * @returns List of cells for the specified zone
  */
-export async function getAllCells(zone: string) {
+export async function fetchCellByZone(zone: string): Promise<Cell[]> {
   try {
     // Validate input
     const validZone = cellSchema.parse(zone);
+    const { getCookieValue } = await import("@/lib/storage");
+    const token = await getCookieValue("access_token");
     const response = await fetch(
-      `https://localhost:7000/api/BridgeHubMTO/GetListCell?zone=${encodeURIComponent(
+      `${process.env.NEXT_PUBLIC_API_URL}${Endpoints.allCells}?zone=${encodeURIComponent(
         validZone
       )}`,
       {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          Authorization: `Bearer ${token}`,
         },
         cache: "no-store",
         next: { revalidate: 0 },
@@ -207,8 +211,7 @@ export async function getAllCells(zone: string) {
       throw new Error(`API error: ${response.status} - ${response.statusText}`);
     }
 
-    const data = await response.json();
-    return data;
+    return await response.json();
   } catch (error) {
     console.error("Failed to fetch all cells:", error);
     throw error;

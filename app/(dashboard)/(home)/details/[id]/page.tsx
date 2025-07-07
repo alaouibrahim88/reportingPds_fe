@@ -10,12 +10,11 @@ import { dashboardData } from "@/app/(dashboard)/(home)/_components/data/dashboa
 import { workflowData } from "@/app/(dashboard)/workflows/_components/data/workflowData";
 
 import CollapsibleZoneTable from "./CollapsibleZoneTable";
-import { getAllZones, getAllCells, getOperators } from "@/actions/scrap";
+import { fetchAllZones, fetchCellByZone, getOperators } from "@/actions/scrap";
 import { Zone, Cell } from "./types";
 import DetailsHeader from "./_components/DetailsHeader";
 import OperatorDetailsTable from "./_components/OperatorDetailsTable";
 import { getSession } from "@/actions/auth";
-import { fetchAllZones } from "@/actions/scrap/details";
 
 export default function DetailsPage({ params }: { params: { id: string } }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -38,12 +37,12 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
   const [monthData, setMonthData] = useState<{ [key: string]: string[] }>({});
   
   useEffect(() => {
-    fetchAllZones().then((result) => setAllZones(result));
+    fetchAllZones().then(setAllZones);
   }, []);
 
   useEffect(() => {
     const fetchAllCells = async () => {
-      const allCells = await getAllCells(selectedZone);
+      const allCells = await fetchCellByZone(selectedZone);
       setAllCells(allCells.getlistcell);
     };
     fetchAllCells();
