@@ -13,7 +13,7 @@ export const Endpoints = {
     },
   },
   cost: {
-    global: `${API_DIRECTORY}/GetDataWeekZone`,
+    global: `${API_DIRECTORY}/GetCoutGlobalStats`,
     salesAnalytics: `${API_DIRECTORY}/GetDataWeekZone`,
     effectiveness: `${API_DIRECTORY}/GetDataWeekZone`,
     productions: `${API_DIRECTORY}/GetCoutGlobal`,

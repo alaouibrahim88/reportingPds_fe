@@ -931,13 +931,13 @@ export default function WorkflowDetailsPage({
                 </div>
               </div>
 
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div
                   className="rounded-lg bg-gray-100 bg-muted/50 border flex items-center justify-center"
                   style={{ height: "20px" }}
                 >
                   <p className="text-[10px] text-muted-foreground leading-none m-0 p-0 text-gray-800">
-                    Total Couts STD : {operatorDetails?.total_couts_std}
+                    Total Couts STD : {operatorDetails?.total_couts_standard}
                   </p>
                 </div>
                 <div
@@ -953,15 +953,7 @@ export default function WorkflowDetailsPage({
                   style={{ height: "20px" }}
                 >
                   <p className="text-[10px] text-muted-foreground leading-none m-0 p-0 text-gray-800">
-                    Total Couts STD : 8
-                  </p>
-                </div>
-                <div
-                  className="rounded-lg bg-gray-100 bg-muted/50 border flex items-center justify-center"
-                  style={{ height: "20px" }}
-                >
-                  <p className="text-[10px] text-muted-foreground leading-none m-0 p-0 text-gray-800">
-                    Total Couts STD : 8
+                    Total Couts Social : {operatorDetails?.totalcouts_social}
                   </p>
                 </div>
               </div>

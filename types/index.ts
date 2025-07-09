@@ -1,5 +1,13 @@
 export type scrapType = "zone" | "projet" | "serie";
 
+export interface GlobalCost {
+  couts_reel_par_annee: string;
+  couts_std_par_annee: string;
+  couts_reel_dernier_mois: string;
+  couts_std_dernier_mois: string;
+  efficience_dernier_mois: string;
+}
+
 export interface ProductionIssueDetail {
   zone_id: number;
   zone_name: string;
@@ -107,8 +115,9 @@ export interface OperatorDetails {
 }
 
 export interface OperatorDetailsApiResponse {
-    total_couts_std: number;
+    total_couts_standard: number;
     total_couts_reel: number;
+    totalcouts_social: number;
     details: OperatorDetails[];
     returnMessage: string;
     returnCode: string;

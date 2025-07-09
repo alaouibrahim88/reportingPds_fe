@@ -7,8 +7,9 @@ export async function GET(req: NextRequest) {
   const year = searchParams.get('year');
   
   return NextResponse.json({
-    "total_couts_std": 105,
+    "total_couts_standart": 105,
     "total_couts_reel": 205,
+    "totalcouts_social": 179,
     "details": [
         {
             "matricule": "101",
