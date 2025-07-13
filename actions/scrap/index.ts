@@ -188,7 +188,7 @@ export async function getAllCells(zone: string) {
     // Validate input
     const validZone = cellSchema.parse(zone);
     const response = await fetch(
-      `https://localhost:7000/api/BridgeHubMTO/GetListCell?zone=${encodeURIComponent(
+      `http://192.168.50.18:7000/api/BridgeHubMTO/GetListCell?zone=${encodeURIComponent(
         validZone
       )}`,
       {
@@ -277,7 +277,7 @@ export async function getDetailsPerZone(
     const validMonth = monthSchema.parse(month);
 
     // Make sure the API URL is correctly configured
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4500";
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://192.168.50.18:4500";
 
     const response = await fetch(
       `${apiUrl}/api/BridgePolydesign/GetZoneDetailType?annee=${validYear}&typeaffichage=${validDisplayType}&mois=${validMonth}`,

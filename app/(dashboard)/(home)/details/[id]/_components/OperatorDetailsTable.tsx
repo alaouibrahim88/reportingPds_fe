@@ -54,9 +54,9 @@ export default function OperatorDetailsTable({
 
   useEffect(() => {
     const fetchAllZones = async () => {
-      const url = process.env.NEXT_PUBLIC_API_URL || "https://localhost:7000";
+      const url = process.env.NEXT_PUBLIC_API_URL || "https://192.168.50.18:7000";
       const token = localStorage.getItem('access_token');
-      const response = await fetch(`https://localhost:7000/api/BridgeHubMTO/GetLisZone`, {
+      const response = await fetch(`http://192.168.50.18:7000/api/BridgeHubMTO/GetLisZone`, {
       method: "GET",
       headers: {
           'Content-Type': 'application/json',
@@ -78,7 +78,7 @@ export default function OperatorDetailsTable({
       
       const validZone = (selectedZone).toString();
       const token = localStorage.getItem('access_token');
-      const response = await fetch(`https://localhost:7000/api/BridgeHubMTO/GetListCell?zone=${validZone}`, 
+      const response = await fetch(`http://192.168.50.18:7000/api/BridgeHubMTO/GetListCell?zone=${validZone}`, 
       {
       method: "GET",
       headers: {
@@ -107,13 +107,14 @@ export default function OperatorDetailsTable({
 
         const monthAsNumber = parseInt(selectedMonth, 10);
         const validYear = yearSchema.parse(selectedYear);
+        const displayTypeSchema = z.string().default("Qte");
         const validMonth = z.number().int().min(1).max(12).parse(monthAsNumber);
         const validCell = cellSchema.parse(selectedCell);
  
         const token = localStorage.getItem('access_token');
-        const url = process.env.NEXT_PUBLIC_API_URL || "http://localhost7000";
+        const url = process.env.NEXT_PUBLIC_API_URL || "http://192.168.50.18:7000";
         //const response = await fetch(`https://localhost:7000/api/BridgeHubMTO/GetStockCodeCellScrap?annee=${validYear}&mois=${validMonth}&cell=${validCell}&typeaffich=Couts`,
-        const response=await fetch(`https://localhost:7000/api/BridgeHubMTO/GetStockCodeCellScrap?annee=${validYear}&mois=${validMonth}&cell=${validCell}&typeaffich=Couts`,
+        const response=await fetch(`http://192.168.50.18:7000/api/BridgeHubMTO/GetStockCodeCellScrap?annee=${validYear}&mois=${validMonth}&cell=${validCell}&typeaffich=${displayTypeSchema}`,
         {
           method: "GET",
           headers: {
@@ -383,7 +384,7 @@ function OperatorDataTable({
 // Helper function to get week value
 function getWeekValue(details: any[], weekNumber: number) {
   const weekData = details.find((d) => d.semaine === weekNumber);
-  if (!weekData) return "0.00 €";
+  if (!weekData) return "0.00 ";
 
   const value = parseFloat(weekData.couts.replace(",", "."));
   return `${value.toFixed(1)}`;
@@ -392,8 +393,8 @@ function getWeekValue(details: any[], weekNumber: number) {
 // Helper function to get month total
 function getMonthTotal(details: any[], monthName: string) {
   const monthData = details.find((d) => d.mois === monthName);
-  if (!monthData) return "00 €";
+  if (!monthData) return "00 ";
 
   const total = parseFloat(monthData.total_mois.replace(",", "."));
-  return `${total.toFixed(0)} €`;
+  return  `${total.toFixed(0)} `;
 }
