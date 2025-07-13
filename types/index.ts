@@ -1,5 +1,19 @@
 export type scrapType = "zone" | "projet" | "serie";
 
+export interface CostTracking {
+  zone_id: number;
+  zone_nom: string;
+  couts_reel: string;
+  couts_std: string;
+  ecart: string;
+}
+
+export interface EfficiencyTracking {
+  zone_id: number;
+  zone_nom: string;
+  efficience: number;
+  heures_reel: number;
+}
 export interface GlobalCost {
   couts_reel_par_annee: string;
   couts_std_par_annee: string;

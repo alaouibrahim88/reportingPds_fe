@@ -1,6 +1,10 @@
 import { GlobalCost } from "@/types";
 
 export function AnalyticsHeader({stats}: {stats: GlobalCost | undefined}) {
+  const difference_yearly = Number(stats?.couts_std_par_annee.replace(/\s/g, '').replace(',', '.')) - Number(stats?.couts_reel_par_annee.replace(/\s/g, '').replace(',', '.'));
+  const difference_monthly = Number(stats?.couts_std_dernier_mois.replace(/\s/g, '').replace(',', '.')) - Number(stats?.couts_reel_dernier_mois.replace(/\s/g, '').replace(',', '.'));
+  const yearlyStyle = difference_yearly > 0 ? 'text-green-600 bg-green-100 border-green-200' : 'text-red-600 bg-red-100 border-red-200';
+  const monthlyStyle = difference_monthly > 0 ? 'text-green-600 bg-green-100 border-green-200' : 'text-red-600 bg-red-100 border-red-200';
   return (
     <div className="grid grid-cols-3 gap-4 ">
       <div className="p-3 transition-all hover:bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 group relative">
@@ -11,9 +15,9 @@ export function AnalyticsHeader({stats}: {stats: GlobalCost | undefined}) {
           </div>
           <div className="flex items-center space-x-2">
             <span className="text-lg font-bold text-white-900">{stats?.couts_reel_par_annee ?? '##'} Euro</span>
-            <span className="px-2 py-0.5 text-xs font-semibold text-green-600 bg-green-100 rounded-full border border-green-200">
-              +122
-            </span>
+            {difference_yearly !== 0 && <span className={`px-2 py-0.5 text-xs font-semibold rounded-full border ${yearlyStyle}`}>
+              {(difference_yearly > 0 ? '+' : '-') + difference_yearly}
+            </span>}
           </div>
           <div className="text-xs text-white-600 mt-1 flex items-center">
             <span className="font-medium">STD.C</span>
@@ -30,9 +34,9 @@ export function AnalyticsHeader({stats}: {stats: GlobalCost | undefined}) {
           </div>
           <div className="flex items-center space-x-2">
             <span className="text-lg font-bold text-white-900">{stats?.couts_reel_dernier_mois ?? '##'} Euro</span>
-            <span className="px-2 py-0.5 text-xs font-semibold text-green-600 bg-green-100 rounded-full border border-green-200">
-              +122
-            </span>
+            {difference_monthly !== 0 && <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${monthlyStyle}`}>
+              {(difference_monthly > 0 ? '+' : '-') + difference_monthly}
+            </span>}
           </div>
           <div className="text-xs text-white-600 mt-1 flex items-center">
             <span className="font-medium">STD.C</span>

@@ -21,10 +21,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+// Define the expected chart data structure
+interface ChartDataItem {
+  name: string;
+  revenue: number;
+  damageCost: number;
+  diffGlobal: number;
+}
+
 interface PerformanceChartProps {
-  data?: any[];
+  data?: ChartDataItem[];
   isExpanded: boolean;
   onToggleExpand: () => void;
+  selectedYear: number;
+  selectedMonth?: number;
+  onYearChange: (year: number) => void;
+  onMonthChange: (month?: number) => void;
 }
 
 const chartColors = {
@@ -61,10 +73,17 @@ const CustomLegend = ({ payload }: any) => {
 };
 
 export function PerformanceChart({
-  data = performanceData,
+  data,
   isExpanded,
   onToggleExpand,
+  selectedYear,
+  selectedMonth,
+  onYearChange,
+  onMonthChange,
 }: PerformanceChartProps) {
+  // Use fallback data when API data is empty or undefined
+  const chartData = data && data.length > 0 ? data : performanceData;
+
   return (
     <Card className="p-4">
       <div className="flex justify-between items-center mb-4">
@@ -80,7 +99,10 @@ export function PerformanceChart({
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Select defaultValue="2024">
+          <Select 
+            value={selectedYear.toString()} 
+            onValueChange={(value) => onYearChange(parseInt(value))}
+          >
             <SelectTrigger className="w-[100px]">
               <SelectValue placeholder="Year" />
             </SelectTrigger>
@@ -88,9 +110,13 @@ export function PerformanceChart({
               <SelectItem value="2022">2022</SelectItem>
               <SelectItem value="2023">2023</SelectItem>
               <SelectItem value="2024">2024</SelectItem>
+              <SelectItem value="2025">2025</SelectItem>
             </SelectContent>
           </Select>
-          <Select defaultValue="all">
+          <Select 
+            value={selectedMonth?.toString() || "all"} 
+            onValueChange={(value) => onMonthChange(value === "all" ? undefined : parseInt(value))}
+          >
             <SelectTrigger className="w-[120px]">
               <SelectValue placeholder="Month" />
             </SelectTrigger>
@@ -127,7 +153,7 @@ export function PerformanceChart({
       <div style={{ height: isExpanded ? 480 : 360 }}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
-            data={data}
+            data={chartData}
             margin={{ top: 10, right: 30, left: 40, bottom: 0 }}
           >
             <defs>
