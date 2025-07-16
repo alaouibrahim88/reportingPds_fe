@@ -11,7 +11,7 @@ import { workflowData } from "@/app/(dashboard)/workflows/_components/data/workf
 
 import CollapsibleZoneTable from "./CollapsibleZoneTable";
 import { fetchAllZones, fetchCellByZone, getOperators } from "@/actions/scrap";
-import { Zone, Cell } from "./types";
+import { Zone, Cell } from "@/types";
 import DetailsHeader from "./_components/DetailsHeader";
 import OperatorDetailsTable from "./_components/OperatorDetailsTable";
 import { getSession } from "@/actions/auth";
@@ -29,6 +29,7 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
   const [selectedMonth, setSelectedMonth] = useState("1");
 
   const [allZones, setAllZones] = useState<Zone[]>([]);
+
   const [selectedZone, setSelectedZone] = useState("all");
   const [allCells, setAllCells] = useState<Cell[]>([]);
   const [operatorData, setOperatorData] = useState<any[]>([]);
@@ -36,14 +37,15 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
   const [weekNumbers, setWeekNumbers] = useState<number[]>([]);
   const [monthData, setMonthData] = useState<{ [key: string]: string[] }>({});
   
-  useEffect(() => {
+   useEffect(() => {
+    console.log("Fetching all zones...");
     fetchAllZones().then(setAllZones);
   }, []);
 
   useEffect(() => {
     const fetchAllCells = async () => {
       const allCells = await fetchCellByZone(selectedZone);
-      setAllCells(allCells.getlistcell);
+      setAllCells(allCells);
     };
     fetchAllCells();
   }, [selectedZone]);
@@ -60,7 +62,8 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
         const data = await getOperators(
           selectedYear,
           parseInt(selectedMonth),
-          selectedCell
+          selectedCell,
+          viewMode
         );
 
         if (
@@ -178,11 +181,24 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
         />
 
         {/* Operator Details Table */}
-        <OperatorDetailsTable
+        {/* <OperatorDetailsTable
           viewMode={viewMode}
           selectedYear={selectedYear}
           selectedMonth={selectedMonth}
-        />
+          allZones={allZones}
+          allCells={allCells}
+          selectedZone={selectedZone}
+          setSelectedZone={setSelectedZone}
+          setSelectedCell={setSelectedCell}
+          selectedCell={selectedCell}
+          isLoading={isLoading}
+          operatorData={operatorData}
+          monthData={monthData}
+          weekNumbers={weekNumbers}
+          setSelectedMonth={setSelectedMonth}
+          setSelectedYear={setSelectedYear}
+          setViewMode={setViewMode}
+        /> */}
       </div>
     </div>
   );

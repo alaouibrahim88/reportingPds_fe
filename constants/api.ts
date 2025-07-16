@@ -1,4 +1,4 @@
-const API_DIRECTORY = process.env.ENDPOINT_DIRECTORY || `/api/BridgeHubMTO`;
+const API_DIRECTORY = process.env.ENDPOINT_DIRECTORY || `/api/Polydesign/Reporting`;
 export const Endpoints = {
   allZones: `${API_DIRECTORY}/GetLisZone`,
   allCells: `${API_DIRECTORY}/GetListCell`,
@@ -10,6 +10,7 @@ export const Endpoints = {
       codeArticle: `${API_DIRECTORY}/getdataStockcodeDetail`,
       zoneDetailType: `${API_DIRECTORY}/GetZoneDetailType`,
       listZone: `${API_DIRECTORY}/GetLisZone`,
+      codeCellScrap: `${API_DIRECTORY}/GetStockCodeCellScrap`, 
     },
   },
   cost: {

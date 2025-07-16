@@ -17,6 +17,7 @@ export default function WorkflowsPage() {
   
   // Fetch data that doesn't depend on year/month filters (only once on mount)
   const fetchStaticData = useCallback(async () => {
+    console.log('fetchStaticData');
     const [globalCostData, productionIssueData] = await Promise.all([
       fetchGlobalCosts(),
       fetchProductionIssues()

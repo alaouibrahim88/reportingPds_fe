@@ -9,7 +9,7 @@ export const fetchCellDetails = async (
 ): Promise<CellDetailApiResponse | undefined> => {
   try {
     const token = await getCookieValue("access_token");
-    const url = new URL(`${process.env.NEXT_PUBLIC_API_URL}${Endpoints.cost.detailCell}`);
+    const url = new URL(`${process.env.NEXT_PUBLIC_API_ENDPOINT}${Endpoints.cost.detailCell}`);
     
     // Add parameters as query parameters
     url.searchParams.append('cellId', zoneId.toString());
@@ -44,7 +44,7 @@ export const fetchOperatorDetailsByCell = async (
 ): Promise<OperatorDetailsApiResponse | undefined> => {
   try {
     const token = await getCookieValue("access_token");
-    const url = new URL(`${process.env.NEXT_PUBLIC_API_URL}${Endpoints.cost.operatorsByCell}`);
+    const url = new URL(`${process.env.NEXT_PUBLIC_API_ENDPOINT}${Endpoints.cost.operatorsByCell}`);
     
     // Add parameters as query parameters
     url.searchParams.append('zoneId', zoneId.toString());

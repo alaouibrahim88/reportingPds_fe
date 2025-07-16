@@ -465,7 +465,7 @@ export default function WorkflowDetailsPage({
               <SelectValue placeholder="Select zone" />
             </SelectTrigger>
             <SelectContent className="min-w-[120px]">
-              {allZones?.map((zone) => (
+              {allZones && allZones?.map((zone) => (
                 <SelectItem
                   key={zone.value}
                   value={zone.value}

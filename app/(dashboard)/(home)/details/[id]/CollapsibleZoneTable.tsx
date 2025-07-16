@@ -98,10 +98,10 @@ const CollapsibleZoneTable = ({
       const validMonth = monthSchema.parse(month);
 
       // Make sure the API URL is correctly configured
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4500";
+      const apiUrl = process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:4500";
       const token = localStorage.getItem("access_token");
       const response = await fetch(
-        `https://localhost:7000/api/BridgeHubMTO/GetZoneDetail?annee=${validYear}&typeaffichage=${validDisplayType}&mois=${validMonth}&zone=${zonename}`,
+        `https://localhost:4500/api/Polydesign/Reporting/GetZoneDetail?annee=${validYear}&typeaffichage=${validDisplayType}&mois=${validMonth}&zone=${zonename}`,
         {
           method: "GET",
           headers: {

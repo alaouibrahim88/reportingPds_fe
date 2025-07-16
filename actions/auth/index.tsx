@@ -27,7 +27,7 @@ interface LoginResponse  {
 // In a real application, you would connect to a database or authentication service
 // instead of using hardcoded credentials
 export const login = async (username: string, password: string): Promise<LoginResponse> => {
-  const url = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4500";
+  const url = process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:4500";
   const response: Response = await fetch(`${url}/api/login/authentication`, {
     method: 'POST',
     headers: {

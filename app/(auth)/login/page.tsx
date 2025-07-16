@@ -19,6 +19,7 @@ import {
   LayoutDashboard,
   TrendingUp,
 } from "lucide-react";
+import { setCookieValue } from "@/lib/storage";
 
 
 interface LoginResponse  {
@@ -33,7 +34,7 @@ interface LoginResponse  {
 const login = async (user: string, pass: string): Promise<LoginResponse> => {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL_LOGIN}/api/login/authentication`,
+    `${process.env.NEXT_PUBLIC_API_ENDPOINT_LOGIN}/api/login/authentication`,
     {
       method: "POST",
       headers: {
@@ -68,9 +69,9 @@ export default function LoginPage() {
 
     try {
       const result = await login(username, password);
-
+      debugger;
       if (result.access_token) {
-
+      setCookieValue('access_token', result.access_token);
      localStorage.setItem('access_token', result.access_token);
      router.push('/');
 
