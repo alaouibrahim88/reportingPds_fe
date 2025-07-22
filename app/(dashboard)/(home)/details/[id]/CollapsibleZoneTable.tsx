@@ -126,7 +126,7 @@ const CollapsibleZoneTable = ({
         ? item?.details
         : [item?.details];
       detailsArrayTab.forEach((detail: any) => {
-        const cellName = detail?.typeCell;
+        const cellName = detail?.cellule;
         const cellType = detail?.typeCell;
 
         if (!result[zoneName]?.cells[cellName]) {
@@ -210,7 +210,7 @@ const CollapsibleZoneTable = ({
           <th
             className="border p-1 text-xs font-medium text-muted-foreground"
             colSpan={2}
-          ></th>
+          >Zone</th>
           {months.flatMap((month) => [
             ...(weeksPerMonth[month] || []).map((weekNum) => (
               <th
