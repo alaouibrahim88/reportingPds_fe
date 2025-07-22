@@ -5,7 +5,8 @@ import { getCookieValue } from "@/lib/storage";
 export const fetchCostTrackings = async (year: number, month?: number): Promise<CostTracking[] | undefined> => {
   try {
     const token = await getCookieValue("access_token");
-    const url = new URL(`${process.env.NEXT_PUBLIC_API_ENDPOINT}${Endpoints.cost.costTracking}`);
+    //const url = new URL(`${process.env.NEXT_PUBLIC_API_ENDPOINT}${Endpoints.cost.costTracking}`);
+    const url = new URL(`http://localhost:3000/api/BridgeHubMTO/GetCostTracking`);
     url.searchParams.append('year', year.toString());
     url.searchParams.append('month', month?.toString() ?? 'All');
     const response = await fetch(url.toString(), {
@@ -57,7 +58,8 @@ export const fetchEfficiencyTrackings = async (year: number, month?: number): Pr
 export const fetchGlobalCosts = async (): Promise<GlobalCost | undefined> => {
   try {
     const token = await getCookieValue("access_token");
-    const url = new URL(`${process.env.NEXT_PUBLIC_API_ENDPOINT}${Endpoints.cost.global}`);
+    //const url = new URL(`${process.env.NEXT_PUBLIC_API_ENDPOINT}${Endpoints.cost.global}`);
+    const url = new URL(`http://localhost:3000/api/BridgeHubMTO/GetCoutGlobalStats`);
     url.searchParams.append('Annee', new Date().getFullYear().toString());
     url.searchParams.append('Mois', new Date().getMonth().toString());
     const response = await fetch(url.toString(), {
@@ -85,6 +87,8 @@ export const fetchProductionIssues = async (): Promise<ProductionIssuesApiRespon
     const token = await getCookieValue("access_token");
     console.log('token : ', token);
     const url = new URL(`${process.env.NEXT_PUBLIC_API_ENDPOINT}${Endpoints.cost.productions}`);
+    url.searchParams.append('Annee', "2024");//new Date().getFullYear().toString());
+    url.searchParams.append('Mois', "1");//(new Date().getMonth() + 1).toString());
     const response = await fetch(url.toString(), {
         method: "GET",
         headers: {

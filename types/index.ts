@@ -23,8 +23,8 @@ export interface GlobalCost {
 }
 
 export interface ProductionIssueDetail {
-  zone_id: number;
-  zone_name: string;
+  idzone: number;
+  zone: string;
   period: string;
   mois: string;
   annee: number;
@@ -138,11 +138,11 @@ export interface OperatorDetailsApiResponse {
 }
 
 export interface Zone {
-  value: string;
-  label: string;
+  libelle: string;
+  id: string | number;
 }
 
 export interface Cell {
-  value: string;
-  label: string;
+  libelle: string;
+  id: string | number;
 }

@@ -65,7 +65,7 @@ export default function WorkflowDetailsPage({
   const itemsPerPage = 5;
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCell, setSelectedCell] = useState("");
-  const [selectedZone, setSelectedZone] = useState("1");
+  const [selectedZone, setSelectedZone] = useState(params.id);
   const [cellSearchQuery, setCellSearchQuery] = useState("");
   // Separate state for cells performance filters
   const [cellsSelectedMonth, setCellsSelectedMonth] = useState<string>("01"); // Default to January
@@ -248,7 +248,6 @@ export default function WorkflowDetailsPage({
     const fetchOperators = async () => {
       if (
         selectedCell !== "" &&
-        selectedCell !== "all" &&
         operatorsSelectedMonth &&
         operatorsSelectedYear
       ) {
@@ -318,9 +317,8 @@ export default function WorkflowDetailsPage({
     }
   };
 
-  const detail = workflowData.zoneData
-    .flatMap((zone) => zone.details)
-    .find((detail) => detail.id === parseInt(params.id));
+  const detail = allZones
+    .find((detail) => detail.libelle === params.id);
 
   if (!detail) {
     return (
@@ -336,7 +334,7 @@ export default function WorkflowDetailsPage({
 
   // Filter cells based on search query
   const filteredCells = Array.isArray(cellDetails?.details)
-    ? cellDetails.details.filter((cell) => {
+    ? cellDetails.details?.filter((cell) => {
         const matchesSearch = cell.id
           .toLowerCase()
           .includes(cellSearchQuery.toLowerCase());
@@ -451,7 +449,7 @@ export default function WorkflowDetailsPage({
               <h2 className="font-medium text-sm">Zone Details</h2>
             </div>
             <p className="text-xs text-muted-foreground">
-              Details for {detail.zone} - {detail.machine}
+              Details for {detail.libelle}
             </p>
           </div>
         </div>
@@ -467,14 +465,14 @@ export default function WorkflowDetailsPage({
             <SelectContent className="min-w-[120px]">
               {allZones && allZones?.map((zone) => (
                 <SelectItem
-                  key={zone.value}
-                  value={zone.value}
+                  key={zone.libelle}
+                  value={zone.libelle}
                   className="text-xs"
-                  aria-selected={selectedZone === zone.value}
+                  aria-selected={selectedZone === zone.libelle}
                 >
                   <div className="flex items-center gap-2">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary/60" />
-                    {zone.label}
+                    {zone.libelle}
                   </div>
                 </SelectItem>
               ))}
@@ -773,7 +771,7 @@ export default function WorkflowDetailsPage({
 
       {/* Operators Performance Section */}
       <div className="rounded-md border">
-        {selectedCell === "" || selectedCell === "all" ? (
+        {selectedCell === "" ? (
           // Initial state - just the cell selector
           <div className="flex items-center justify-between h-12 px-3 border-b bg-muted/40">
             <div className="flex items-center gap-2">
@@ -789,15 +787,13 @@ export default function WorkflowDetailsPage({
                   <SelectValue placeholder="Select a cell" />
                 </SelectTrigger>
                 <SelectContent>
-                  {allCells
-                    .filter((cell) => cell.value !== "all")
-                    .map((cell) => (
+                  {allCells?.map((cell) => (
                       <SelectItem
-                        key={cell.value}
-                        value={cell.value}
+                        key={cell.libelle}
+                        value={cell.libelle}
                         className="text-xs"
                       >
-                        {cell.label}
+                        {cell.libelle}
                       </SelectItem>
                     ))}
                 </SelectContent>
@@ -858,8 +854,8 @@ export default function WorkflowDetailsPage({
                   <div>
                     <h3 className="font-medium text-sm">
                       {
-                        allCells.find((cell) => cell.value === selectedCell)
-                          ?.label
+                        allCells.find((cell) => cell.libelle === selectedCell)
+                          ?.libelle
                       }
                     </h3>
                     <p className="text-xs text-muted-foreground">
@@ -874,14 +870,13 @@ export default function WorkflowDetailsPage({
                     </SelectTrigger>
                     <SelectContent>
                       {allCells
-                        .filter((cell) => cell.value !== "all")
                         .map((cell) => (
                           <SelectItem
-                            key={cell.value}
-                            value={cell.value}
+                            key={cell.id}
+                            value={cell.libelle}
                             className="text-xs"
                           >
-                            {cell.label}
+                            {cell.libelle}
                           </SelectItem>
                         ))}
                     </SelectContent>

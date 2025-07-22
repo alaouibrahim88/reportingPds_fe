@@ -60,15 +60,15 @@ export default function TableZone({ data }: TableZoneProps) {
     );
 
     // If opening row and we don't have data yet, fetch it
-    if (isOpening && !zoneDetails[detail.zone_id]) {
-      setLoadingZones(prev => new Set(prev).add(detail.zone_id));
+    if (isOpening && !zoneDetails[detail.idzone]) {
+      setLoadingZones(prev => new Set(prev).add(detail.idzone));
       
       try {
-        const response = await fetchZoneCalculationDetails(detail.zone_id);
+        const response = await fetchZoneCalculationDetails(detail.idzone);
         if (response?.details) {
           setZoneDetails(prev => ({
             ...prev,
-            [detail.zone_id]: response.details
+            [detail.idzone]: response.details
           }));
         }
       } catch (error) {
@@ -76,7 +76,7 @@ export default function TableZone({ data }: TableZoneProps) {
       } finally {
         setLoadingZones(prev => {
           const newSet = new Set(prev);
-          newSet.delete(detail.zone_id);
+          newSet.delete(detail.idzone);
           return newSet;
         });
       }
@@ -90,8 +90,8 @@ export default function TableZone({ data }: TableZoneProps) {
     if (!searchQuery) return true;
     const searchLower = searchQuery.toLowerCase();
     return (
-      detail.zone_name.toLowerCase().includes(searchLower) ||
-      detail.period.toLowerCase().includes(searchLower) ||
+      detail.zone.toLowerCase().includes(searchLower) ||
+      detail.mois.toLowerCase().includes(searchLower) ||
       detail.heures_reel.toString().includes(searchLower) ||
       detail.heures_standart.toString().includes(searchLower) ||
       detail.cout_reel.toString().includes(searchLower) ||
@@ -152,7 +152,7 @@ export default function TableZone({ data }: TableZoneProps) {
           </TableHeader>
           <TableBody>
             {paginatedData.map((detail, detailIndex) => (
-              <React.Fragment key={`${detail.zone_id}-${detail.period}-${detailIndex}`}>
+              <React.Fragment key={`${detail.idzone}-${detail.period}-${detailIndex}`}>
                 <TableRow className="h-9">
                   <TableCell className="py-1 text-sm">
                     <button
@@ -166,8 +166,8 @@ export default function TableZone({ data }: TableZoneProps) {
                       )}
                     </button>
                   </TableCell>
-                  <TableCell className="py-1 text-sm">{detail.zone_name}</TableCell>
-                  <TableCell className="py-1 text-sm">{detail.period}</TableCell>
+                  <TableCell className="py-1 text-sm">{detail.zone}</TableCell>
+                  <TableCell className="py-1 text-sm">{detail.mois}/{detail.annee}</TableCell>
                   <TableCell className="py-1 text-sm">
                     {detail.heures_reel}
                   </TableCell>
@@ -188,7 +188,7 @@ export default function TableZone({ data }: TableZoneProps) {
                     {detail.ecart_global}
                   </TableCell>
                   <TableCell className="py-1 text-sm">
-                    <Link href={`/workflows/details/${detail.zone_id}`}>
+                    <Link href={`/workflows/details/${detail.idzone}`}>
                       <Button
                         variant="outline"
                         size="sm"
@@ -203,7 +203,7 @@ export default function TableZone({ data }: TableZoneProps) {
                  <tr>
                  <td colSpan={10}>
                    <div className="overflow-x-auto p-4">
-                     {loadingZones.has(detail.zone_id) ? (
+                     {loadingZones.has(detail.idzone) ? (
                        <div className="flex justify-center items-center p-8">
                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                          <span className="ml-2 text-sm text-muted-foreground">Loading zone details...</span>
@@ -233,7 +233,7 @@ export default function TableZone({ data }: TableZoneProps) {
                            </tr>
                          </thead>
                          <tbody>
-                           {zoneDetails[detail.zone_id]?.map((calcDetail, calcIndex) => (
+                           {zoneDetails[detail.idzone]?.map((calcDetail, calcIndex) => (
                              <tr key={calcIndex} style={{ height: '10px' }}>
                                <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.semaine}</td>
                                <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.salaire_horaire}</td>

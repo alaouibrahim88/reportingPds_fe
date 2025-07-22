@@ -69,7 +69,6 @@ export default function LoginPage() {
 
     try {
       const result = await login(username, password);
-      debugger;
       if (result.access_token) {
       setCookieValue('access_token', result.access_token);
      localStorage.setItem('access_token', result.access_token);

@@ -3,8 +3,10 @@ import { Users2 } from "lucide-react";
 import { getZoneDetails, getDetailsPerZone } from "@/actions/scrap";
 import { z } from "zod";
 import { FaFileExcel } from "react-icons/fa";
-import { GetZoneDetails } from "@/actions/scrap/details";
+import { GetZoneDetails, getZoneSubDetails } from "@/actions/scrap/details";
 import { exportToExcel } from "@/utils/excel";
+import { Endpoints } from "@/constants/api";
+import { getCookieValue } from "@/lib/storage";
 
 // Improved type definitions
 type ZoneKey = "Wrapping" | "Nets" | "Knitting";
@@ -58,7 +60,7 @@ export type ApiResponse = {
 };
 
 interface CollapsibleZoneTableProps {
-  viewMode: "price" | "qty";
+  viewMode: "price" | "Qty";
   year: number;
   month: string;
 }
@@ -78,54 +80,6 @@ const CollapsibleZoneTable = ({
   const [detailedData, setDetailedData] = useState<Record<string, any>>({});
   const [months, setMonths] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-
-  // Input validation schemas
-  const yearSchema = z.number().int().min(2000).max(2100);
-  const displayTypeSchema = z.string().default("Qte");
-  const monthSchema = z.string().default("1");
-  const cellSchema = z.string();
-
-  async function fetchZoneDetail(
-    year: number,
-    displayType: string = "Qte",
-    month: string = "3",
-    zonename: string
-  ) {
-    try {
-      // Validate inputs
-      const validYear = yearSchema.parse(year);
-      const validDisplayType = displayTypeSchema.parse(displayType);
-      const validMonth = monthSchema.parse(month);
-
-      // Make sure the API URL is correctly configured
-      const apiUrl = process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:4500";
-      const token = localStorage.getItem("access_token");
-      const response = await fetch(
-        `https://localhost:4500/api/Polydesign/Reporting/GetZoneDetail?annee=${validYear}&typeaffichage=${validDisplayType}&mois=${validMonth}&zone=${zonename}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          cache: "no-store",
-          next: { revalidate: 0 },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          `API error: ${response.status} - ${response.statusText}`
-        );
-      }
-
-      const data: ZoneData = await response.json();
-      return data;
-    } catch (error) {
-      console.error("Failed to fetch zone details:", error);
-      throw error;
-    }
-  }
 
   // Fetch data on component mount
   useEffect(() => {
@@ -161,18 +115,18 @@ const CollapsibleZoneTable = ({
   const processDetailedData = (zonesDetails: any[]) => {
     const result: Record<string, any> = {};
 
-    zonesDetails.forEach((zone) => {
-      const zoneName = zone[0].zone;
+    zonesDetails.forEach((item) => {
+      const zoneName = item.zone;
       result[zoneName] = {
         cells: {},
       };
 
       // Group details by cell and type
-      const detailsArrayTab = Array.isArray(zone[0]?.details)
-        ? zone[0]?.details
-        : [zone[0]?.details];
+      const detailsArrayTab = Array.isArray(item?.details)
+        ? item?.details
+        : [item?.details];
       detailsArrayTab.forEach((detail: any) => {
-        const cellName = detail?.cellule;
+        const cellName = detail?.typeCell;
         const cellType = detail?.typeCell;
 
         if (!result[zoneName]?.cells[cellName]) {
@@ -207,7 +161,7 @@ const CollapsibleZoneTable = ({
     }));
     
     //console.log(`Zone sélectionnée : ${zoneKey}`);
-    const detailsResponse = await fetchZoneDetail(
+    const detailsResponse = await getZoneSubDetails(
       year,
       viewMode,
       month,

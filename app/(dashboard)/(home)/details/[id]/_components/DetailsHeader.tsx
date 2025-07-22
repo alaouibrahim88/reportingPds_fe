@@ -15,7 +15,7 @@ import { Switch } from "@/components/ui/switch";
 import { exportToExcel } from "@/utils/excel";
 
 interface DetailsHeaderProps {
-  viewMode: "price" | "qty";
+  viewMode: "price" | "Qty";
 }
 
 const DetailsHeader: React.FC<DetailsHeaderProps> & {
@@ -36,8 +36,8 @@ const DetailsHeader: React.FC<DetailsHeaderProps> & {
 };
 
 interface ControlsProps {
-  viewMode: "price" | "qty";
-  setViewMode: (mode: "price" | "qty") => void;
+  viewMode: "price" | "Qty";
+  setViewMode: (mode: "price" | "Qty") => void;
   selectedYear: number;
   setSelectedYear: (year: number) => void;
   selectedMonth: string;  
@@ -122,8 +122,8 @@ const Controls: React.FC<ControlsProps> = ({
       <div className="flex items-center gap-3 px-4 py-2 rounded-lg border bg-muted/30">
         <span className="text-xs font-medium text-muted-foreground">Price</span>
         <Switch
-          checked={viewMode === "qty"}
-          onCheckedChange={(checked) => setViewMode(checked ? "qty" : "price")}
+          checked={viewMode === "Qty"}
+          onCheckedChange={(checked) => setViewMode(checked ? "Qty" : "price")}
           className="data-[state=checked]:bg-primary"
         />
         <span className="text-xs font-medium text-muted-foreground">QTY</span>

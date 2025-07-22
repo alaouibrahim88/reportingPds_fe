@@ -1,10 +1,10 @@
 "use server";
 
 import { Endpoints } from "@/constants/api";
-import { Cell, Zone } from "@/types";
 import { revalidatePath } from "next/cache";
 import { z } from "zod"; // Add zod for input validation
 import { getCookieValue } from "@/lib/storage";
+import { Cell, Zone } from "@/types";
 
 export type ZoneDetail = {
   typeCell: string;
@@ -28,7 +28,7 @@ export type ZoneResponse = {
 
 // Input validation schemas
 const yearSchema = z.number().int().min(2000).max(2100);
-const displayTypeSchema = z.string().default("Qte");
+const displayTypeSchema = z.string().default("Qty");
 const monthSchema = z.string().default("1");
 const cellSchema = z.string();
 
@@ -41,7 +41,7 @@ const cellSchema = z.string();
  */
 export async function getZoneDetails(
   year: number,
-  displayType: string = "Qte",
+  displayType: string = "Qty",
   month: string = "1"
 ) {
   try {
@@ -53,7 +53,7 @@ export async function getZoneDetails(
     // Make sure the API URL is correctly configured
     const token = await getCookieValue("access_token");
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/Polydesign/Reporting/GetZoneDetailType?annee=${validYear}&typeaffichage=${validDisplayType}&mois=${validMonth}`,
+      `${process.env.NEXT_PUBLIC_API_ENDPOINT}${Endpoints.scrap.details.zoneDetailType}?annee=${validYear}&typeaffichage=${validDisplayType}&mois=${validMonth}`,
       {
         method: "GET",
         headers: {
@@ -158,21 +158,20 @@ export async function processZoneData(data: ZoneResponse) {
 export const fetchAllZones = async (): Promise<Zone[]> => {
   try {
     const token = await getCookieValue("access_token");
-    const response = await fetch(
+    const response: any = await fetch(
       `${process.env.NEXT_PUBLIC_API_ENDPOINT}${Endpoints.allZones}`,
       {
         method: "GET",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
           Authorization: `Bearer ${token}`,
-        },
-        cache: "no-store",
-        next: { revalidate: 0 },
+        }
       }
     );
-
-    return await response.json();
+    const data = await response?.json();
+    return data.getlistZone;
   } catch (error) {
+    console.log("fetchAllZones error=", error);
     console.error(error);
     throw error;
   }
@@ -186,10 +185,9 @@ export const fetchAllZones = async (): Promise<Zone[]> => {
  */
 export async function fetchCellByZone(zone: string): Promise<Cell[]> {
   try {
-    // Validate input
-    const validZone = cellSchema.parse(zone);
+    const validZone = "HEAD REST"; //cellSchema.parse(zone);
     const token = await getCookieValue("access_token");
-    const response = await fetch(
+    const response: any = await fetch(
       `${process.env.NEXT_PUBLIC_API_ENDPOINT}${Endpoints.allCells}?zone=${encodeURIComponent(
         validZone
       )}`,
@@ -208,8 +206,8 @@ export async function fetchCellByZone(zone: string): Promise<Cell[]> {
     if (!response.ok) {
       throw new Error(`API error: ${response.status} - ${response.statusText}`);
     }
-
-    return await response.json();
+    const data = await response?.json();
+    return data.getlistcell;
   } catch (error) {
     console.error("Failed to fetch all cells:", error);
     throw error;
@@ -252,6 +250,7 @@ export async function getOperators(year: number, month: number, cell: string, vi
         `API error: ${response.status} - ${response.statusText}`
       );
     }
+    
     return await response.json();
   } catch (error) {
     console.error("Failed to fetch operators:", error);
@@ -268,7 +267,7 @@ export async function getOperators(year: number, month: number, cell: string, vi
  */
 export async function getDetailsPerZone(
   year: number,
-  displayType: string = "Qte",
+  displayType: string = "Qty",
   month: string = "1"
   
 ) {
@@ -279,10 +278,10 @@ export async function getDetailsPerZone(
     const validMonth = monthSchema.parse(month);
 
     // Make sure the API URL is correctly configured
-    const apiUrl = process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:4500";
+    const apiUrl = process.env.NEXT_PUBLIC_API_ENDPOINT;
 
     const response = await fetch(
-      `${apiUrl}/api/BridgePolydesign/GetZoneDetailType?annee=${validYear}&typeaffichage=${validDisplayType}&mois=${validMonth}`,
+      `${apiUrl}${Endpoints.scrap.details.zoneDetailType}?annee=${validYear}&typeaffichage=${validDisplayType}&mois=${validMonth}`,
       {
         method: "GET",
         headers: {

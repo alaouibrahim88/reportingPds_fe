@@ -9,6 +9,7 @@ export const Endpoints = {
     details: {
       codeArticle: `${API_DIRECTORY}/getdataStockcodeDetail`,
       zoneDetailType: `${API_DIRECTORY}/GetZoneDetailType`,
+      zoneDetailsContent: `${API_DIRECTORY}/GetZoneDetail`,
       listZone: `${API_DIRECTORY}/GetLisZone`,
       codeCellScrap: `${API_DIRECTORY}/GetStockCodeCellScrap`, 
     },

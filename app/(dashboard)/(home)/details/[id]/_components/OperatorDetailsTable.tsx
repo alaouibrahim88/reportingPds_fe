@@ -21,18 +21,12 @@ import { exportToExcel } from "@/utils/excel";
 import { Cell, Zone } from "@/types";
 
 interface OperatorDetailsTableProps {
-  viewMode: "price" | "qty";
-  selectedYear: number;
-  selectedMonth: string;
   selectedZone: string;  
   selectedCell: string; 
   allZones: Zone[],
   allCells: Cell[],
-  setViewMode: (mode: "price" | "qty") => void;
-  setSelectedYear: (year: number) => void; 
   setSelectedZone: (zone: string) => void;
   setSelectedCell: (cell: string) => void;
-  setSelectedMonth: (month: string) => void;
   isLoading: boolean;
   operatorData: any[];
   monthData: { [key: string]: string[] },
@@ -40,16 +34,10 @@ interface OperatorDetailsTableProps {
 }
 
 export default function OperatorDetailsTable({
-  viewMode,
-  selectedYear,
-  selectedMonth,
   selectedZone,
   selectedCell,
   allZones,
   allCells,
-  setViewMode,
-  setSelectedYear,
-  setSelectedMonth,
   setSelectedZone,
   setSelectedCell,
   isLoading,
@@ -99,14 +87,14 @@ export default function OperatorDetailsTable({
             <SelectContent>
               {allZones?.map((zone) => (
                 <SelectItem
-                  key={zone.value}
-                  value={zone.value}
+                  key={zone.id}
+                  value={zone.libelle}
                   className="text-xs"
-                  aria-selected={selectedZone === zone.value}
+                  aria-selected={selectedZone === zone.libelle}
                 >
                   <div className="flex items-center gap-2">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary/60" />
-                    {zone.label}
+                    {zone.libelle}
                   </div>
                 </SelectItem>
               ))}
@@ -120,11 +108,11 @@ export default function OperatorDetailsTable({
             <SelectContent>
               {allCells.map((cell) => (
                 <SelectItem
-                  key={cell.value}
-                  value={cell.value}
+                  key={cell.id}
+                  value={cell.libelle}
                   className="text-xs"
                 >
-                  {cell.label}
+                  {cell.libelle}
                 </SelectItem>
               ))}
             </SelectContent>
