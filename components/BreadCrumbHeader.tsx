@@ -16,18 +16,23 @@ function BreadCrumbHeader() {
   const paths = pathname === "/" ? [""] : pathname?.split("/");
 
   return (
-    <div className="flex items-center flex-start">
+    <div className="flex items-center gap-4">
       <MobileSidebar />
       <Breadcrumb>
-        <BreadcrumbList>
+        <BreadcrumbList className="flex items-center">
           {paths.map((path, index) => (
             <React.Fragment key={index}>
               <BreadcrumbItem>
-                <BreadcrumbLink className="capitalize" href={`/${path}`}>
-                  {path === "" ? "home" : path}
+                <BreadcrumbLink 
+                  className="capitalize text-sm font-medium text-muted-foreground hover:text-foreground transition-colors" 
+                  href={`/${path}`}
+                >
+                  {path === "" ? "Home" : path.replace("-", " ")}
                 </BreadcrumbLink>
               </BreadcrumbItem>
-              {index !== paths.length - 1 && <BreadcrumbSeparator />}
+              {index !== paths.length - 1 && (
+                <BreadcrumbSeparator className="text-muted-foreground/50" />
+              )}
             </React.Fragment>
           ))}
         </BreadcrumbList>

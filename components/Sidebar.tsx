@@ -10,6 +10,8 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   BadgeDollarSign,
+  TrendingUpIcon,
+  GlobeIcon,
 } from "lucide-react";
 import React, { useState } from "react";
 import Logo from "@/components/Logo";
@@ -35,6 +37,16 @@ const routes = [
     href: "scrap-setting",
     label: "Paramétrage",
     icon: ShieldCheckIcon,
+  },
+  {
+    href: "executive-horizon",
+    label: "Executive Horizon",
+    icon: TrendingUpIcon,
+  },
+  {
+    href: "global-ops",
+    label: "GlobalOps",
+    icon: GlobeIcon,
   },
   {
     href: "billing",

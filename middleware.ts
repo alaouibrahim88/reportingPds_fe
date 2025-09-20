@@ -10,7 +10,8 @@ export function middleware(request: NextRequest) {
     !request.nextUrl.pathname.startsWith("/login") &&
     !request.nextUrl.pathname.startsWith("/register") &&
     !request.nextUrl.pathname.startsWith("/") &&
-    !request.nextUrl.pathname.startsWith("/forgot-password")
+    !request.nextUrl.pathname.startsWith("/forgot-password") &&
+    !request.nextUrl.pathname.startsWith("/welcome") // Allow access to welcome page without authentication
   ) {
     // Redirect to the login page
     return NextResponse.redirect(new URL("/login", request.url));
