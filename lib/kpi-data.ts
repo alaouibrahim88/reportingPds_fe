@@ -429,63 +429,8 @@ export interface CategoryData {
 // Dashboard Categories Data for Executive Horizon - Strategic business metrics
 export const executiveHorizonCategories: CategoryData[] = [
   {
-    id: "strategic",
-    name: "Strategic",
-    icon: "Target",
-    kpis: [
-      {
-        title: "Market Share",
-        value: "15.7%",
-        target: "Target: 18%",
-        trend: "+1.8%",
-        trendColor: "text-green-600",
-        lastWeeks: ["14.1%", "14.5%", "14.9%", "15.2%", "15.7%"]
-      },
-      {
-        title: "Brand Value",
-        value: "$2.8B",
-        target: "Target: $2.5B",
-        trend: "+12%",
-        trendColor: "text-green-600",
-        lastWeeks: ["$2.3B", "$2.4B", "$2.5B", "$2.7B", "$2.8B"]
-      },
-      {
-        title: "Customer Acquisition",
-        value: "1,240",
-        target: "Target: 1,000",
-        trend: "+24%",
-        trendColor: "text-green-600",
-        lastWeeks: ["890", "950", "1,020", "1,150", "1,240"]
-      },
-      {
-        title: "Digital Transformation",
-        value: "78%",
-        target: "Target: 75%",
-        trend: "+8%",
-        trendColor: "text-green-600",
-        lastWeeks: ["65%", "68%", "72%", "75%", "78%"]
-      },
-      {
-        title: "Innovation Pipeline",
-        value: "156",
-        target: "Target: 120",
-        trend: "+30%",
-        trendColor: "text-green-600",
-        lastWeeks: ["98", "112", "128", "142", "156"]
-      },
-      {
-        title: "Strategic Partnerships",
-        value: "23",
-        target: "Target: 20",
-        trend: "+15%",
-        trendColor: "text-green-600",
-        lastWeeks: ["18", "19", "20", "22", "23"]
-      }
-    ]
-  },
-  {
-    id: "financial",
-    name: "Financial",
+    id: "finance",
+    name: "Finance",
     icon: "DollarSign",
     kpis: [
       {
@@ -539,9 +484,119 @@ export const executiveHorizonCategories: CategoryData[] = [
     ]
   },
   {
-    id: "customer",
-    name: "Customer",
-    icon: "Users",
+    id: "operations",
+    name: "Operations",
+    icon: "Cog",
+    kpis: [
+      {
+        title: "Market Share",
+        value: "15.7%",
+        target: "Target: 18%",
+        trend: "+1.8%",
+        trendColor: "text-green-600",
+        lastWeeks: ["14.1%", "14.5%", "14.9%", "15.2%", "15.7%"]
+      },
+      {
+        title: "Customer Acquisition",
+        value: "1,240",
+        target: "Target: 1,000",
+        trend: "+24%",
+        trendColor: "text-green-600",
+        lastWeeks: ["890", "950", "1,020", "1,150", "1,240"]
+      },
+      {
+        title: "Customer Retention",
+        value: "94%",
+        target: "Target: 90%",
+        trend: "+4.4%",
+        trendColor: "text-green-600",
+        lastWeeks: ["88%", "90%", "91%", "93%", "94%"]
+      },
+      {
+        title: "Market Penetration",
+        value: "34%",
+        target: "Target: 30%",
+        trend: "+13.3%",
+        trendColor: "text-green-600",
+        lastWeeks: ["28%", "29%", "31%", "32%", "34%"]
+      },
+      {
+        title: "Digital Transformation",
+        value: "78%",
+        target: "Target: 75%",
+        trend: "+8%",
+        trendColor: "text-green-600",
+        lastWeeks: ["65%", "68%", "72%", "75%", "78%"]
+      },
+      {
+        title: "Brand Value",
+        value: "$2.8B",
+        target: "Target: $2.5B",
+        trend: "+12%",
+        trendColor: "text-green-600",
+        lastWeeks: ["$2.3B", "$2.4B", "$2.5B", "$2.7B", "$2.8B"]
+      }
+    ]
+  },
+  {
+    id: "programs",
+    name: "Programs",
+    icon: "Target",
+    kpis: [
+      {
+        title: "Innovation Pipeline",
+        value: "156",
+        target: "Target: 120",
+        trend: "+30%",
+        trendColor: "text-green-600",
+        lastWeeks: ["98", "112", "128", "142", "156"]
+      },
+      {
+        title: "Strategic Partnerships",
+        value: "23",
+        target: "Target: 20",
+        trend: "+15%",
+        trendColor: "text-green-600",
+        lastWeeks: ["18", "19", "20", "22", "23"]
+      },
+      {
+        title: "Innovation Index",
+        value: "82/100",
+        target: "Target: 75/100",
+        trend: "+8.2%",
+        trendColor: "text-green-600",
+        lastWeeks: ["72", "75", "78", "79", "82"]
+      },
+      {
+        title: "R&D Investment",
+        value: "8.5%",
+        target: "Target: 7%",
+        trend: "+21.4%",
+        trendColor: "text-green-600",
+        lastWeeks: ["6.2%", "6.8%", "7.1%", "7.9%", "8.5%"]
+      },
+      {
+        title: "Time to Market",
+        value: "8.2 months",
+        target: "Target: < 10 months",
+        trend: "-18%",
+        trendColor: "text-green-600",
+        lastWeeks: ["11.2", "10.8", "9.5", "8.8", "8.2"]
+      },
+      {
+        title: "New Product Revenue",
+        value: "23%",
+        target: "Target: 20%",
+        trend: "+15%",
+        trendColor: "text-green-600",
+        lastWeeks: ["18%", "19%", "20%", "22%", "23%"]
+      }
+    ]
+  },
+  {
+    id: "quality",
+    name: "Quality",
+    icon: "ShieldCheck",
     kpis: [
       {
         title: "Customer Satisfaction",
@@ -560,14 +615,6 @@ export const executiveHorizonCategories: CategoryData[] = [
         lastWeeks: ["62", "65", "68", "70", "72"]
       },
       {
-        title: "Customer Retention",
-        value: "94%",
-        target: "Target: 90%",
-        trend: "+4.4%",
-        trendColor: "text-green-600",
-        lastWeeks: ["88%", "90%", "91%", "93%", "94%"]
-      },
-      {
         title: "Lifetime Value",
         value: "$2,840",
         target: "Target: $2,500",
@@ -584,73 +631,26 @@ export const executiveHorizonCategories: CategoryData[] = [
         lastWeeks: ["3.2%", "2.8%", "2.5%", "2.3%", "2.1%"]
       },
       {
-        title: "Market Penetration",
-        value: "34%",
-        target: "Target: 30%",
-        trend: "+13.3%",
-        trendColor: "text-green-600",
-        lastWeeks: ["28%", "29%", "31%", "32%", "34%"]
-      }
-    ]
-  },
-  {
-    id: "innovation",
-    name: "Innovation",
-    icon: "Lightbulb",
-    kpis: [
-      {
-        title: "Innovation Index",
-        value: "82/100",
-        target: "Target: 75/100",
-        trend: "+8.2%",
-        trendColor: "text-green-600",
-        lastWeeks: ["72", "75", "78", "79", "82"]
-      },
-      {
-        title: "R&D Investment",
-        value: "8.5%",
-        target: "Target: 7%",
-        trend: "+21.4%",
-        trendColor: "text-green-600",
-        lastWeeks: ["6.2%", "6.8%", "7.1%", "7.9%", "8.5%"]
-      },
-      {
-        title: "Patent Applications",
-        value: "47",
-        target: "Target: 40",
-        trend: "+17.5%",
-        trendColor: "text-green-600",
-        lastWeeks: ["35", "38", "40", "44", "47"]
-      },
-      {
-        title: "Time to Market",
-        value: "8.2 months",
-        target: "Target: < 10 months",
-        trend: "-18%",
-        trendColor: "text-green-600",
-        lastWeeks: ["11.2", "10.8", "9.5", "8.8", "8.2"]
-      },
-      {
-        title: "New Product Revenue",
-        value: "23%",
-        target: "Target: 20%",
-        trend: "+15%",
-        trendColor: "text-green-600",
-        lastWeeks: ["18%", "19%", "20%", "22%", "23%"]
-      },
-      {
         title: "Innovation Culture Score",
         value: "87%",
         target: "Target: 80%",
         trend: "+8.8%",
         trendColor: "text-green-600",
         lastWeeks: ["76%", "78%", "82%", "85%", "87%"]
+      },
+      {
+        title: "ESG Score",
+        value: "A-",
+        target: "Target: B+",
+        trend: "Improved",
+        trendColor: "text-green-600",
+        lastWeeks: ["B", "B", "B+", "A-", "A-"]
       }
     ]
   },
   {
-    id: "talent",
-    name: "Talent",
+    id: "rh",
+    name: "RH",
     icon: "Users",
     kpis: [
       {
@@ -704,18 +704,10 @@ export const executiveHorizonCategories: CategoryData[] = [
     ]
   },
   {
-    id: "sustainability",
-    name: "Sustainability",
-    icon: "Leaf",
+    id: "supplychain",
+    name: "SupplyChain",
+    icon: "Truck",
     kpis: [
-      {
-        title: "ESG Score",
-        value: "A-",
-        target: "Target: B+",
-        trend: "Improved",
-        trendColor: "text-green-600",
-        lastWeeks: ["B", "B", "B+", "A-", "A-"]
-      },
       {
         title: "Carbon Footprint",
         value: "-18%",
@@ -755,6 +747,14 @@ export const executiveHorizonCategories: CategoryData[] = [
         trend: "+4.3%",
         trendColor: "text-green-600",
         lastWeeks: ["68%", "69%", "70%", "72%", "73%"]
+      },
+      {
+        title: "Patent Applications",
+        value: "47",
+        target: "Target: 40",
+        trend: "+17.5%",
+        trendColor: "text-green-600",
+        lastWeeks: ["35", "38", "40", "44", "47"]
       }
     ]
   }
@@ -763,10 +763,42 @@ export const executiveHorizonCategories: CategoryData[] = [
 // Dashboard Categories Data for GlobalOps - Operational efficiency metrics
 export const globalOpsCategories: CategoryData[] = [
   {
-    id: "operations",
-    name: "Operations",
-    icon: "Cog",
+    id: "finance",
+    name: "Finance",
+    icon: "DollarSign",
     kpis: [
+      {
+        title: "Cost per Unit",
+        value: "$24.67",
+        target: "Target: $26.00",
+        trend: "-5.8%",
+        trendColor: "text-green-600",
+        lastWeeks: ["$27.20", "$26.80", "$26.10", "$25.40", "$24.67"]
+      },
+      {
+        title: "Maintenance Costs",
+        value: "$45K",
+        target: "Target: < $50K",
+        trend: "-10%",
+        trendColor: "text-green-600",
+        lastWeeks: ["$52K", "$50K", "$48K", "$46K", "$45K"]
+      },
+      {
+        title: "Energy Efficiency",
+        value: "91.4%",
+        target: "Target: 90%",
+        trend: "+4.7%",
+        trendColor: "text-green-600",
+        lastWeeks: ["85.2%", "87.1%", "88.5%", "89.8%", "91.4%"]
+      },
+      {
+        title: "Capacity Utilization",
+        value: "89.2%",
+        target: "Target: 85%",
+        trend: "+4.9%",
+        trendColor: "text-green-600",
+        lastWeeks: ["82.1%", "84.3%", "86.1%", "87.8%", "89.2%"]
+      },
       {
         title: "Operational Efficiency",
         value: "87.3%",
@@ -775,6 +807,21 @@ export const globalOpsCategories: CategoryData[] = [
         trendColor: "text-green-600",
         lastWeeks: ["82.1%", "83.5%", "84.8%", "85.9%", "87.3%"]
       },
+      {
+        title: "Equipment Reliability",
+        value: "94.2%",
+        target: "Target: 90%",
+        trend: "+4.7%",
+        trendColor: "text-green-600",
+        lastWeeks: ["88.1%", "89.8%", "91.5%", "92.9%", "94.2%"]
+      }
+    ]
+  },
+  {
+    id: "operations",
+    name: "Operations",
+    icon: "Cog",
+    kpis: [
       {
         title: "Production Output",
         value: "156.8K",
@@ -792,34 +839,207 @@ export const globalOpsCategories: CategoryData[] = [
         lastWeeks: ["93.8%", "94.5%", "95.1%", "95.8%", "96.7%"]
       },
       {
-        title: "Energy Efficiency",
-        value: "91.4%",
-        target: "Target: 90%",
+        title: "Planned Maintenance",
+        value: "89%",
+        target: "Target: 85%",
         trend: "+4.7%",
         trendColor: "text-green-600",
-        lastWeeks: ["85.2%", "87.1%", "88.5%", "89.8%", "91.4%"]
+        lastWeeks: ["82%", "84%", "86%", "87%", "89%"]
       },
       {
-        title: "Cost per Unit",
-        value: "$24.67",
-        target: "Target: $26.00",
-        trend: "-5.8%",
+        title: "Mean Time to Repair",
+        value: "2.3h",
+        target: "Target: < 3h",
+        trend: "-23%",
         trendColor: "text-green-600",
-        lastWeeks: ["$27.20", "$26.80", "$26.10", "$25.40", "$24.67"]
+        lastWeeks: ["3.2h", "3.0h", "2.8h", "2.5h", "2.3h"]
       },
       {
-        title: "Capacity Utilization",
-        value: "89.2%",
-        target: "Target: 85%",
-        trend: "+4.9%",
+        title: "Predictive Maintenance",
+        value: "76%",
+        target: "Target: 70%",
+        trend: "+8.6%",
         trendColor: "text-green-600",
-        lastWeeks: ["82.1%", "84.3%", "86.1%", "87.8%", "89.2%"]
+        lastWeeks: ["68%", "70%", "72%", "74%", "76%"]
+      },
+      {
+        title: "Spare Parts Inventory",
+        value: "92%",
+        target: "Target: 90%",
+        trend: "+2.2%",
+        trendColor: "text-green-600",
+        lastWeeks: ["88%", "89%", "90%", "91%", "92%"]
       }
     ]
   },
   {
-    id: "supply-chain",
-    name: "Supply Chain",
+    id: "programs",
+    name: "Programs",
+    icon: "Target",
+    kpis: [
+      {
+        title: "Safety Training Hours",
+        value: "12,450h",
+        target: "Target: 10,000h",
+        trend: "+24.5%",
+        trendColor: "text-green-600",
+        lastWeeks: ["9,200", "9,800", "10,500", "11,800", "12,450"]
+      },
+      {
+        title: "Training Completion",
+        value: "94%",
+        target: "Target: 90%",
+        trend: "+4.4%",
+        trendColor: "text-green-600",
+        lastWeeks: ["88%", "90%", "91%", "93%", "94%"]
+      },
+      {
+        title: "Skills Certification",
+        value: "87%",
+        target: "Target: 80%",
+        trend: "+8.8%",
+        trendColor: "text-green-600",
+        lastWeeks: ["76%", "78%", "82%", "85%", "87%"]
+      },
+      {
+        title: "Safety Compliance",
+        value: "98.5%",
+        target: "Target: 95%",
+        trend: "+3.7%",
+        trendColor: "text-green-600",
+        lastWeeks: ["93.2%", "94.8%", "96.1%", "97.3%", "98.5%"]
+      },
+      {
+        title: "Quality Audits Passed",
+        value: "94%",
+        target: "Target: 90%",
+        trend: "+4.4%",
+        trendColor: "text-green-600",
+        lastWeeks: ["88%", "90%", "91%", "93%", "94%"]
+      },
+      {
+        title: "Near Miss Reports",
+        value: "45",
+        target: "Target: > 40",
+        trend: "+12.5%",
+        trendColor: "text-green-600",
+        lastWeeks: ["38", "40", "42", "44", "45"]
+      }
+    ]
+  },
+  {
+    id: "quality",
+    name: "Quality",
+    icon: "ShieldCheck",
+    kpis: [
+      {
+        title: "Quality Score",
+        value: "96.8%",
+        target: "Target: 95%",
+        trend: "+1.2%",
+        trendColor: "text-green-600",
+        lastWeeks: ["94.8%", "95.2%", "95.7%", "96.1%", "96.8%"]
+      },
+      {
+        title: "Defect Rate",
+        value: "0.8%",
+        target: "Target: < 1%",
+        trend: "-20%",
+        trendColor: "text-green-600",
+        lastWeeks: ["1.2%", "1.1%", "1.0%", "0.9%", "0.8%"]
+      },
+      {
+        title: "First Pass Yield",
+        value: "97.8%",
+        target: "Target: 95%",
+        trend: "+1.8%",
+        trendColor: "text-green-600",
+        lastWeeks: ["96.1%", "96.5%", "97.0%", "97.3%", "97.8%"]
+      },
+      {
+        title: "Customer Returns",
+        value: "0.3%",
+        target: "Target: < 0.5%",
+        trend: "-40%",
+        trendColor: "text-green-600",
+        lastWeeks: ["0.5%", "0.4%", "0.4%", "0.3%", "0.3%"]
+      },
+      {
+        title: "Rework Rate",
+        value: "1.4%",
+        target: "Target: < 2%",
+        trend: "-12.5%",
+        trendColor: "text-green-600",
+        lastWeeks: ["1.8%", "1.7%", "1.6%", "1.5%", "1.4%"]
+      },
+      {
+        title: "Safety Incidents",
+        value: "0.12",
+        target: "Target: < 0.18",
+        trend: "-25%",
+        trendColor: "text-green-600",
+        lastWeeks: ["0.18", "0.16", "0.15", "0.14", "0.12"]
+      }
+    ]
+  },
+  {
+    id: "rh",
+    name: "RH",
+    icon: "Users",
+    kpis: [
+      {
+        title: "Productivity Index",
+        value: "112",
+        target: "Target: 100",
+        trend: "+12%",
+        trendColor: "text-green-600",
+        lastWeeks: ["98", "102", "106", "109", "112"]
+      },
+      {
+        title: "Absenteeism Rate",
+        value: "3.2%",
+        target: "Target: < 4%",
+        trend: "-11%",
+        trendColor: "text-green-600",
+        lastWeeks: ["4.1%", "3.8%", "3.6%", "3.4%", "3.2%"]
+      },
+      {
+        title: "Employee Turnover",
+        value: "5%",
+        target: "Target: < 8%",
+        trend: "-37.5%",
+        trendColor: "text-green-600",
+        lastWeeks: ["9%", "8%", "7%", "6%", "5%"]
+      },
+      {
+        title: "Overtime Hours",
+        value: "8.2%",
+        target: "Target: < 10%",
+        trend: "-18%",
+        trendColor: "text-green-600",
+        lastWeeks: ["11.2%", "10.8%", "9.5%", "8.8%", "8.2%"]
+      },
+      {
+        title: "Lost Time Incidents",
+        value: "2",
+        target: "Target: < 5",
+        trend: "-60%",
+        trendColor: "text-green-600",
+        lastWeeks: ["6", "5", "4", "3", "2"]
+      },
+      {
+        title: "Emergency Response Time",
+        value: "2.3 min",
+        target: "Target: < 3 min",
+        trend: "-23%",
+        trendColor: "text-green-600",
+        lastWeeks: ["3.2", "3.0", "2.8", "2.5", "2.3"]
+      }
+    ]
+  },
+  {
+    id: "supplychain",
+    name: "SupplyChain",
     icon: "Truck",
     kpis: [
       {
@@ -869,226 +1089,6 @@ export const globalOpsCategories: CategoryData[] = [
         trend: "+2.7%",
         trendColor: "text-green-600",
         lastWeeks: ["84.1%", "85.2%", "86.1%", "86.8%", "87.3%"]
-      }
-    ]
-  },
-  {
-    id: "quality",
-    name: "Quality",
-    icon: "ShieldCheck",
-    kpis: [
-      {
-        title: "Quality Score",
-        value: "96.8%",
-        target: "Target: 95%",
-        trend: "+1.2%",
-        trendColor: "text-green-600",
-        lastWeeks: ["94.8%", "95.2%", "95.7%", "96.1%", "96.8%"]
-      },
-      {
-        title: "Defect Rate",
-        value: "0.8%",
-        target: "Target: < 1%",
-        trend: "-20%",
-        trendColor: "text-green-600",
-        lastWeeks: ["1.2%", "1.1%", "1.0%", "0.9%", "0.8%"]
-      },
-      {
-        title: "First Pass Yield",
-        value: "97.8%",
-        target: "Target: 95%",
-        trend: "+1.8%",
-        trendColor: "text-green-600",
-        lastWeeks: ["96.1%", "96.5%", "97.0%", "97.3%", "97.8%"]
-      },
-      {
-        title: "Customer Returns",
-        value: "0.3%",
-        target: "Target: < 0.5%",
-        trend: "-40%",
-        trendColor: "text-green-600",
-        lastWeeks: ["0.5%", "0.4%", "0.4%", "0.3%", "0.3%"]
-      },
-      {
-        title: "Quality Audits Passed",
-        value: "94%",
-        target: "Target: 90%",
-        trend: "+4.4%",
-        trendColor: "text-green-600",
-        lastWeeks: ["88%", "90%", "91%", "93%", "94%"]
-      },
-      {
-        title: "Rework Rate",
-        value: "1.4%",
-        target: "Target: < 2%",
-        trend: "-12.5%",
-        trendColor: "text-green-600",
-        lastWeeks: ["1.8%", "1.7%", "1.6%", "1.5%", "1.4%"]
-      }
-    ]
-  },
-  {
-    id: "safety",
-    name: "Safety",
-    icon: "Shield",
-    kpis: [
-      {
-        title: "Safety Incidents",
-        value: "0.12",
-        target: "Target: < 0.18",
-        trend: "-25%",
-        trendColor: "text-green-600",
-        lastWeeks: ["0.18", "0.16", "0.15", "0.14", "0.12"]
-      },
-      {
-        title: "Near Miss Reports",
-        value: "45",
-        target: "Target: > 40",
-        trend: "+12.5%",
-        trendColor: "text-green-600",
-        lastWeeks: ["38", "40", "42", "44", "45"]
-      },
-      {
-        title: "Safety Training Hours",
-        value: "12,450h",
-        target: "Target: 10,000h",
-        trend: "+24.5%",
-        trendColor: "text-green-600",
-        lastWeeks: ["9,200", "9,800", "10,500", "11,800", "12,450"]
-      },
-      {
-        title: "Lost Time Incidents",
-        value: "2",
-        target: "Target: < 5",
-        trend: "-60%",
-        trendColor: "text-green-600",
-        lastWeeks: ["6", "5", "4", "3", "2"]
-      },
-      {
-        title: "Safety Compliance",
-        value: "98.5%",
-        target: "Target: 95%",
-        trend: "+3.7%",
-        trendColor: "text-green-600",
-        lastWeeks: ["93.2%", "94.8%", "96.1%", "97.3%", "98.5%"]
-      },
-      {
-        title: "Emergency Response Time",
-        value: "2.3 min",
-        target: "Target: < 3 min",
-        trend: "-23%",
-        trendColor: "text-green-600",
-        lastWeeks: ["3.2", "3.0", "2.8", "2.5", "2.3"]
-      }
-    ]
-  },
-  {
-    id: "maintenance",
-    name: "Maintenance",
-    icon: "Wrench",
-    kpis: [
-      {
-        title: "Planned Maintenance",
-        value: "89%",
-        target: "Target: 85%",
-        trend: "+4.7%",
-        trendColor: "text-green-600",
-        lastWeeks: ["82%", "84%", "86%", "87%", "89%"]
-      },
-      {
-        title: "Mean Time to Repair",
-        value: "2.3h",
-        target: "Target: < 3h",
-        trend: "-23%",
-        trendColor: "text-green-600",
-        lastWeeks: ["3.2h", "3.0h", "2.8h", "2.5h", "2.3h"]
-      },
-      {
-        title: "Maintenance Costs",
-        value: "$45K",
-        target: "Target: < $50K",
-        trend: "-10%",
-        trendColor: "text-green-600",
-        lastWeeks: ["$52K", "$50K", "$48K", "$46K", "$45K"]
-      },
-      {
-        title: "Predictive Maintenance",
-        value: "76%",
-        target: "Target: 70%",
-        trend: "+8.6%",
-        trendColor: "text-green-600",
-        lastWeeks: ["68%", "70%", "72%", "74%", "76%"]
-      },
-      {
-        title: "Equipment Reliability",
-        value: "94.2%",
-        target: "Target: 90%",
-        trend: "+4.7%",
-        trendColor: "text-green-600",
-        lastWeeks: ["88.1%", "89.8%", "91.5%", "92.9%", "94.2%"]
-      },
-      {
-        title: "Spare Parts Inventory",
-        value: "92%",
-        target: "Target: 90%",
-        trend: "+2.2%",
-        trendColor: "text-green-600",
-        lastWeeks: ["88%", "89%", "90%", "91%", "92%"]
-      }
-    ]
-  },
-  {
-    id: "workforce",
-    name: "Workforce",
-    icon: "Users",
-    kpis: [
-      {
-        title: "Productivity Index",
-        value: "112",
-        target: "Target: 100",
-        trend: "+12%",
-        trendColor: "text-green-600",
-        lastWeeks: ["98", "102", "106", "109", "112"]
-      },
-      {
-        title: "Absenteeism Rate",
-        value: "3.2%",
-        target: "Target: < 4%",
-        trend: "-11%",
-        trendColor: "text-green-600",
-        lastWeeks: ["4.1%", "3.8%", "3.6%", "3.4%", "3.2%"]
-      },
-      {
-        title: "Training Completion",
-        value: "94%",
-        target: "Target: 90%",
-        trend: "+4.4%",
-        trendColor: "text-green-600",
-        lastWeeks: ["88%", "90%", "91%", "93%", "94%"]
-      },
-      {
-        title: "Skills Certification",
-        value: "87%",
-        target: "Target: 80%",
-        trend: "+8.8%",
-        trendColor: "text-green-600",
-        lastWeeks: ["76%", "78%", "82%", "85%", "87%"]
-      },
-      {
-        title: "Employee Turnover",
-        value: "5%",
-        target: "Target: < 8%",
-        trend: "-37.5%",
-        trendColor: "text-green-600",
-        lastWeeks: ["9%", "8%", "7%", "6%", "5%"]
-      },
-      {
-        title: "Overtime Hours",
-        value: "8.2%",
-        target: "Target: < 10%",
-        trend: "-18%",
-        trendColor: "text-green-600",
-        lastWeeks: ["11.2%", "10.8%", "9.5%", "8.8%", "8.2%"]
       }
     ]
   }

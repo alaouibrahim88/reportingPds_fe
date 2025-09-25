@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, TrendingUp, TrendingDown } from "lucide-react";
 import { getIconComponent } from "@/components/IconComponent";
 import { CategoryData } from "@/lib/kpi-data";
+import { CategoryHeader } from "@/components/CategoryHeader";
 
 interface KPIDetailViewProps {
   category: CategoryData;
@@ -16,50 +17,30 @@ interface KPIDetailViewProps {
 export function KPIDetailView({ category, onBackClick, className }: KPIDetailViewProps) {
   return (
     <div className={`space-y-6 ${className} animate-in slide-in-from-right-5 duration-500`}>
-      {/* Enhanced Header with Dark Mode Styling */}
-      <div className="relative">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 rounded-2xl -z-10"></div>
-        <div className="absolute inset-0 bg-gradient-to-br from-background/50 to-background/20 rounded-2xl -z-10"></div>
-        
-        <div className="flex items-center justify-between gap-6 p-6 rounded-2xl border border-border/30 bg-card/50 backdrop-blur-sm shadow-lg dark:shadow-primary/5">
-          <div className="space-y-3">
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <div className="absolute inset-0 bg-primary/20 rounded-xl blur-lg"></div>
-                <div className="relative p-3 rounded-xl bg-gradient-to-br from-primary/30 to-primary/10 dark:from-primary/20 dark:to-primary/5 text-primary shadow-lg ring-1 ring-primary/20">
-                  {getIconComponent(category.icon)}
-                </div>
-              </div>
-              <div>
-                <h2 className="text-3xl font-black bg-gradient-to-r from-foreground via-foreground to-foreground/60 bg-clip-text text-transparent tracking-tight">
-                  {category.name}
-                </h2>
-                <div className="flex items-center gap-2 mt-1">
-                  <div className="h-1 w-8 bg-gradient-to-r from-primary to-primary/50 rounded-full"></div>
-                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    {category.kpis.length} Metrics
-                  </span>
-                </div>
-              </div>
-            </div>
-            <p className="text-muted-foreground max-w-2xl leading-relaxed">
-              Comprehensive analytics and detailed metrics for {category.name.toLowerCase()} performance with real-time insights.
-            </p>
-          </div>
-          
-          <Button
-            variant="outline"
-            onClick={onBackClick}
-            className="flex items-center gap-2 hover:gap-3 transition-all duration-300 bg-background/80 dark:bg-background/60 border-2 border-border/50 hover:border-primary/50 rounded-xl px-6 py-3 group shadow-lg hover:shadow-xl hover:shadow-primary/20 backdrop-blur-sm"
-          >
-            <ArrowLeft className="h-5 w-5 group-hover:-translate-x-2 transition-transform duration-300 text-muted-foreground group-hover:text-primary" />
-            <span className="font-bold text-foreground group-hover:text-primary">Back to Dashboard</span>
-          </Button>
-        </div>
+      {/* Back Button */}
+      <div className="flex justify-end">
+        <Button
+          variant="outline"
+          onClick={onBackClick}
+          className="flex items-center gap-2 hover:gap-3 transition-all duration-300 bg-background/80 border-2 border-border/50 hover:border-primary/50 rounded-xl px-6 py-3 group shadow-lg hover:shadow-xl hover:shadow-primary/20 backdrop-blur-sm"
+        >
+          <ArrowLeft className="h-5 w-5 group-hover:-translate-x-2 transition-transform duration-300 text-muted-foreground group-hover:text-primary" />
+          <span className="font-bold text-foreground group-hover:text-primary">Back to Dashboard</span>
+        </Button>
       </div>
 
-      {/* Enhanced KPI Grid */}
+      {/* Category Header with KPI Overview */}
+      <CategoryHeader category={category} />
+
+      {/* Detailed Analytics Section */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-3">
+          <h2 className="text-2xl font-bold text-foreground">Detailed Analytics</h2>
+          <div className="h-px bg-border flex-1"></div>
+          <span className="text-sm text-muted-foreground">All {category.kpis.length} KPIs</span>
+        </div>
+
+        {/* Enhanced KPI Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {category.kpis.map((kpi, index) => (
           <Card 
@@ -144,6 +125,7 @@ export function KPIDetailView({ category, onBackClick, className }: KPIDetailVie
             </CardContent>
           </Card>
         ))}
+        </div>
       </div>
     </div>
   );

@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getIconComponent } from "@/components/IconComponent";
-import { dashboardCategoriesMap, CategoryData } from "@/lib/kpi-data";
-import { KPIDetailView } from "@/components/KPIDetailView";
+import { dashboardCategoriesMap } from "@/lib/kpi-data";
+import { useRouter } from "next/navigation";
 
 interface KPIDashboardProps {
   className?: string;
@@ -12,31 +12,27 @@ interface KPIDashboardProps {
 }
 
 export function KPIDashboard({ className, dataset = "executive-horizon" }: KPIDashboardProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const router = useRouter();
 
   // Get the appropriate categories based on dataset
   const currentCategories = dashboardCategoriesMap[dataset];
 
   const handleCategoryClick = (categoryId: string) => {
-    setSelectedCategory(categoryId);
+    console.log('Navigating to category:', categoryId);
+    
+    // Navigate directly to the category dashboard
+    const targetUrl = `/category-dashboard/${categoryId}`;
+    console.log('Target URL:', targetUrl);
+    
+    try {
+      router.push(targetUrl);
+      console.log('Navigation successful');
+    } catch (error) {
+      console.error('Navigation error:', error);
+      // Fallback to window.location
+      window.location.href = targetUrl;
+    }
   };
-
-  const handleBackClick = () => {
-    setSelectedCategory(null);
-  };
-
-  if (selectedCategory) {
-    const category = currentCategories.find(cat => cat.id === selectedCategory);
-    if (!category) return null;
-
-    return (
-      <KPIDetailView 
-        category={category}
-        onBackClick={handleBackClick}
-        className={className}
-      />
-    );
-  }
 
   return (
     <div className={`space-y-4 ${className}`}>

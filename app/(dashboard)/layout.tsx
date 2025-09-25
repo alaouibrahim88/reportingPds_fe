@@ -20,9 +20,10 @@ export default function DashboardLayout({
   const hasToken = typeof window !== 'undefined' && localStorage.getItem('access_token') !== null;
   const isAuthenticated = document.cookie.includes("auth=true");
 
-  if (isAuthenticated===false) {
-      router.push('/login');
-    }
+  // DISABLED: Skip authentication check
+  // if (isAuthenticated===false) {
+  //     router.push('/login');
+  //   }
    
 
 

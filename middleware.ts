@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
+  // DISABLED: Skip all authentication checks
+  return NextResponse.next();
+  
+  /* ORIGINAL AUTHENTICATION LOGIC (COMMENTED OUT)
   const currentUser = request.cookies.get("access_token")?.value;
 
   // If the user is not logged in and trying to access a protected route
@@ -28,6 +32,7 @@ export function middleware(request: NextRequest) {
   }
 
   return NextResponse.next();
+  */
 }
 
 export const config = {
