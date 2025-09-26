@@ -66,7 +66,35 @@ interface CollapsibleZoneTableProps {
   data: ApiResponse | null;
 }
 
-function flattenData(input: any) {
+function flattenData(input: any[]) { // zone with no detail
+  const rows: any[] = [];
+
+  for (const section of input) { // each section (HEAD REST, BOOT...)
+    for (const cell of section.cells) { // each cell (Projet, Serie...)
+      for (const month of cell.months) { // each month (janvier, fevrier...)
+        
+        // Build dynamic weeks from array
+        const weekData: Record<string, number> = {};
+        for (const week of month.weeks) {
+          weekData[`Week${week.weekNum}`] = week.value ?? 0;
+        }
+
+        rows.push({
+          Section: section.key,
+          Cell: cell.name,
+          Type: cell.type,
+          Month: month.name,
+          ...weekData,
+          Total: month.total
+        });
+      }
+    }
+  }
+
+  return rows;
+}
+
+function flattenDetailedData(input: any) {
   const rows: any[] = [];
 
   for (const section in input) {
@@ -500,8 +528,9 @@ if (zonesData.length === 0) {
 }
 
 const handleExport = () => {
-  const flattened = flattenData(detailedData);
-  exportToExcel(flattened, 'zoneDetail_'+(new Date().getDate())+'_.xlsx');
+  const flattened = flattenDetailedData(detailedData);
+  const data = flattened.length > 0 ? flattened : flattenData(zonesData);
+  exportToExcel(data, 'zoneDetail_'+(new Date().getDate())+'_.xlsx');
 }
 
 return (
