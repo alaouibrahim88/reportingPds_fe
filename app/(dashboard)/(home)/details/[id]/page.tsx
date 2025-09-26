@@ -5,11 +5,12 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { workflowData } from "@/app/(dashboard)/workflows/_components/data/workflowData";
-import CollapsibleZoneTable from "./CollapsibleZoneTable";
+import CollapsibleZoneTable, { ApiResponse } from "./CollapsibleZoneTable";
 import { fetchAllZones, fetchCellByZone, getOperators } from "@/actions/scrap";
 import DetailsHeader from "./_components/DetailsHeader";
 import OperatorDetailsTable from "./_components/OperatorDetailsTable";
 import { Cell, Zone } from "@/types";
+import { GetZoneDetails } from "@/actions/scrap/details";
 
 export default function DetailsPage({ params }: { params: { id: string } }) {
   const [selectedCell, setSelectedCell] = useState("");
@@ -23,10 +24,24 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
   const [isLoading, setIsLoading] = useState(true);
   const [weekNumbers, setWeekNumbers] = useState<number[]>([]);
   const [monthData, setMonthData] = useState<{ [key: string]: string[] }>({});
-  
+  const [zoneTableData, setZoneTableData] = useState<ApiResponse | null>(null);
+
    useEffect(() => {
     fetchAllZones().then(setAllZones);
   }, []);
+
+  useEffect(() => {
+    const fetchZoneTableData = async () => {
+      try {
+        const data = await GetZoneDetails(selectedYear, viewMode, selectedMonth);
+        setZoneTableData(data);
+      } catch (error) {
+        console.error("Error fetching zone table data:", error);
+      }
+    };
+
+    fetchZoneTableData();
+  }, [selectedYear, viewMode, selectedMonth]);
 
   useEffect(() => {
     const fetchAllCells = async () => {
@@ -140,6 +155,7 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
           viewMode={viewMode}
           year={selectedYear}
           month={selectedMonth}
+          data={zoneTableData}
         />
 
         {/* Operator Details Table */}

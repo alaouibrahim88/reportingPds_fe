@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Users2 } from "lucide-react";
 import { FaSearch } from "react-icons/fa";
 import { FaFileExcel } from "react-icons/fa";
@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { exportToExcel } from "@/utils/excel";
 import { Cell, Zone } from "@/types";
+import { Input } from "@/components/ui/input";
 
 interface OperatorDetailsTableProps {
   selectedZone: string;  
@@ -45,9 +46,19 @@ export default function OperatorDetailsTable({
   monthData,
   weekNumbers
 }: OperatorDetailsTableProps) {
+  const [articleSearchQuery, setArticleSearchQuery] = useState("");
   const handleExport = () => {
     exportToExcel(operatorData, "CodeArticleDetails.xlsx");
   };
+
+  const filteredCells = Array.isArray(operatorData)
+  ? operatorData?.filter((article) => {
+      const matchesSearch = article.stockCode
+        .toLowerCase()
+        .includes(articleSearchQuery.toLowerCase());
+      return matchesSearch;
+    })
+  : [];
 
   return (
     <div className="rounded-md border">
@@ -70,11 +81,10 @@ export default function OperatorDetailsTable({
           </div>
 
           <div className="relative w-[180px]">
-            <input
-              type="text"
-              value={''}
-              onChange={() => {''}}
-              placeholder="        Recherche Article..."
+            <Input
+              placeholder="Search Article..."
+              value={articleSearchQuery}
+              onChange={(e) => setArticleSearchQuery(e.target.value)}
               className="w-[180px] h-8 text-xs bg-gray-60 border border-gray-200 rounded-md"
             />
             <FaSearch className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 scale-75" />
