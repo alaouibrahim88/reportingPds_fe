@@ -184,6 +184,58 @@ export const executiveHorizonData: KPIDataset = {
         lastUpdated: "2025-09-20"
       },
       color: "#06B6D4"
+    },
+    {
+      id: "market_volatility",
+      title: "Market Volatility Index",
+      value: 102,
+      unit: "%",
+      trend: "up",
+      trendPercentage: 12.5,
+      chartData: [44, 22, 102, 32, 88, 102],
+      details: {
+        description: "Market performance volatility and trend analysis",
+        breakdown: {
+          "Volatility Score": "High",
+          "Trend Direction": "Upward",
+          "Market Confidence": "Medium",
+          "Risk Level": "Moderate",
+          "Forecast Accuracy": "78%"
+        },
+        insights: [
+          "High volatility with upward trend",
+          "Market confidence improving",
+          "Risk management strategies effective"
+        ],
+        lastUpdated: "2025-09-20"
+      },
+      color: "#F59E0B"
+    },
+    {
+      id: "efficiency_variance",
+      title: "Efficiency Variance",
+      value: 3.2,
+      unit: "%",
+      trend: "up",
+      trendPercentage: 8.5,
+      chartData: [-1.5, 0.8, 2.1, 2.8, 3.0, 3.2],
+      details: {
+        description: "Operational efficiency variance across all facilities",
+        breakdown: {
+          "Above Target": "70%",
+          "Below Target": "20%",
+          "On Target": "10%",
+          "Average Variance": "+3.2%",
+          "Best Performer": "Facility A"
+        },
+        insights: [
+          "Strong efficiency improvements",
+          "70% of facilities above target",
+          "Continuous improvement initiatives working"
+        ],
+        lastUpdated: "2025-09-20"
+      },
+      color: "#10B981"
     }
   ]
 };
@@ -296,6 +348,58 @@ export const globalOpsData: KPIDataset = {
         lastUpdated: "2025-09-20"
       },
       color: "#F59E0B"
+    },
+    {
+      id: "performance_variance",
+      title: "Performance Variance",
+      value: 2.3,
+      unit: "%",
+      trend: "up",
+      trendPercentage: 15.0,
+      chartData: [-2.1, 1.8, 3.5, 2.3, 1.9, 2.3],
+      details: {
+        description: "Performance variance analysis vs target across all metrics",
+        breakdown: {
+          "Above Target": "65%",
+          "Below Target": "25%",
+          "On Target": "10%",
+          "Average Variance": "+2.3%",
+          "Volatility Index": "Medium"
+        },
+        insights: [
+          "Mixed performance with positive overall trend",
+          "65% of metrics above target",
+          "Volatility within acceptable range"
+        ],
+        lastUpdated: "2025-09-20"
+      },
+      color: "#3B82F6"
+    },
+    {
+      id: "budget_variance",
+      title: "Budget Variance",
+      value: -1.2,
+      unit: "%",
+      trend: "down",
+      trendPercentage: -8.5,
+      chartData: [2.1, 0.8, -0.5, -1.0, -1.1, -1.2],
+      details: {
+        description: "Budget variance analysis across all departments",
+        breakdown: {
+          "Over Budget": "30%",
+          "Under Budget": "45%",
+          "On Budget": "25%",
+          "Total Variance": "-1.2%",
+          "Cost Savings": "$45K"
+        },
+        insights: [
+          "Overall under budget by 1.2%",
+          "Cost optimization initiatives successful",
+          "Some departments need budget review"
+        ],
+        lastUpdated: "2025-09-20"
+      },
+      color: "#10B981"
     },
     {
       id: "cost_per_unit",

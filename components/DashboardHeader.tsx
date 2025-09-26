@@ -29,8 +29,6 @@ export function DashboardHeader({ currentCategory, onNavigate, onBack }: Dashboa
   // Finance and HR Dashboards have light theme, others have dark theme
   const isLightTheme = currentCategory === "rh" || currentCategory === "finance";
   const headerBg = isLightTheme ? "bg-white/95 border-b border-slate-200/50" : "bg-slate-900/95 dark:bg-slate-900/95 border-b border-slate-800/50";
-  const textColor = isLightTheme ? "text-slate-900" : "text-white";
-  const mutedTextColor = isLightTheme ? "text-slate-600" : "text-slate-300";
 
   return (
     <header className={`${headerBg} shadow-sm backdrop-blur-sm`}>
@@ -39,17 +37,10 @@ export function DashboardHeader({ currentCategory, onNavigate, onBack }: Dashboa
           {/* Left side - Logo and Navigation */}
           <div className="flex items-center space-x-8">
             {/* Logo with improved styling */}
-            <div className="flex items-center space-x-3 group">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl blur-md group-hover:blur-lg transition-all duration-300"></div>
-                <div className="relative">
-                  <Logo fontSize="text-xl" iconSize={24} />
-                </div>
-              </div>
-            </div>
+            <Logo logoType="default" width={120} height={30} />
 
             {/* Navigation */}
-            <nav className="hidden md:flex items-center space-x-1">
+            <nav className="hidden md:flex items-center space-x-2">
               {navigationItems.map((item) => (
                 <button
                   key={item.id}

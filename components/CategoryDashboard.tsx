@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CategoryData } from "@/lib/kpi-data";
 import { ArrowUp, ArrowDown, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { ChartComponent, ChartConfigs } from "@/components/ui/ChartComponent";
 
 interface CategoryDashboardProps {
   category: CategoryData;
@@ -24,6 +25,74 @@ interface DashboardKPICardProps {
   showProgressBar?: boolean;
   showChart?: boolean;
   actionLink?: string;
+}
+
+interface ChartKPICardProps {
+  title: string;
+  value: string;
+  trend?: string;
+  trendColor?: string;
+  chartData: number[];
+  chartColor?: string;
+  formatValue?: (value: number) => string;
+  height?: number;
+  actionLink?: string;
+}
+
+function ChartKPICard({
+  title,
+  value,
+  trend,
+  trendColor,
+  chartData,
+  chartColor = "#3B82F6",
+  formatValue = (value) => value.toString(),
+  height = 60,
+  actionLink = "Details"
+}: ChartKPICardProps) {
+  const getTrendIcon = () => {
+    if (!trend || !trendColor) return null;
+    
+    const isPositive = trendColor.includes("green");
+    const isNegative = trendColor.includes("red");
+    
+    if (isPositive) {
+      return <ArrowUp className="w-3 h-3" />;
+    } else if (isNegative) {
+      return <ArrowDown className="w-3 h-3" />;
+    } else {
+      return <Minus className="w-3 h-3" />;
+    }
+  };
+
+  return (
+    <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+      <CardContent className="p-6">
+        <div className="space-y-5">
+          <h3 className="text-white font-semibold text-base tracking-wide">{title}</h3>
+          
+          <div className="flex items-end justify-between">
+            <div className="text-5xl font-bold text-white tracking-tight">{value}</div>
+            {trend && (
+              <div className={`flex items-center gap-1 text-sm font-semibold ${trendColor} bg-opacity-10 px-2 py-1 rounded-full`}>
+                {getTrendIcon()}
+                {trend}
+              </div>
+            )}
+          </div>
+
+          {/* Enhanced Chart */}
+          <ChartComponent
+            data={chartData.map(value => ({ value }))}
+            height={height}
+            formatValue={formatValue}
+            {...ChartConfigs.efficiency}
+            color={chartColor}
+          />
+        </div>
+      </CardContent>
+    </Card>
+  );
 }
 
 function DashboardKPICard({ 
@@ -511,24 +580,39 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                         
                         <div className="text-sm text-slate-400 font-medium">% of deliveries made on time.</div>
                         
-                        <div className="text-7xl font-black text-white tracking-tight drop-shadow-lg">88%</div>
+                        <div className="text-7xl font-black text-white tracking-tight drop-shadow-lg">{category.kpis.find(kpi => kpi.title === 'Supply Chain Reliability')?.value || '94.2%'}</div>
                         
                         <div className="flex items-center gap-2 text-sm font-bold text-yellow-500 bg-yellow-500/10 px-3 py-2 rounded-full w-fit">
                           <ArrowDown className="w-4 h-4" />
-                          -2%
+                          {category.kpis.find(kpi => kpi.title === 'Supply Chain Reliability')?.trend || '-2.1%'}
                         </div>
                         
                         <div className="space-y-4">
                           <div className="relative h-4 bg-slate-700/50 rounded-full overflow-hidden shadow-inner border border-slate-600/30">
                             <div className="absolute inset-0 bg-gradient-to-r from-slate-600/20 to-slate-600/40"></div>
-                            <div className="bg-gradient-to-r from-yellow-500 to-yellow-400 h-full rounded-full shadow-lg" style={{ width: '88%' }}></div>
+                            <div className="bg-gradient-to-r from-yellow-500 to-yellow-400 h-full rounded-full shadow-lg" style={{ width: '94.2%' }}></div>
                             <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent rounded-full"></div>
                           </div>
                           <div className="flex justify-between text-sm text-slate-300 font-semibold bg-slate-700/20 px-4 py-2 rounded-lg">
                             <span>Target: 95%</span>
-                            <span>Last Week: 90%</span>
+                            <span>Last Week: {category.kpis.find(kpi => kpi.title === 'Supply Chain Reliability')?.lastWeeks?.[4] || '94.2%'}</span>
                           </div>
                         </div>
+
+                        {/* Enhanced Chart with Mixed Positive/Negative Values */}
+                        <ChartComponent
+                          data={[
+                            { value: -2.1 },
+                            { value: 1.8 },
+                            { value: -0.5 },
+                            { value: 3.2 }
+                          ]}
+                          height={80}
+                          formatValue={(value: number) => `${value > 0 ? '+' : ''}${value}%`}
+                          {...ChartConfigs.mixed}
+                          title="Performance Variance"
+                          showValues={true}
+                        />
                       </div>
                     </CardContent>
                   </Card>
@@ -612,126 +696,49 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                       </Button>
                     </div>
                     
-                    <div className="text-sm text-slate-400 font-medium">Milestones achieved vs. forecast.</div>
+                    <div className="text-sm text-slate-400 font-medium">APQP phase variance vs. planned timeline.</div>
                     
-                    {/* Enhanced Chart Legend */}
-                    <div className="flex items-center gap-8 text-sm bg-slate-700/30 p-3 rounded-lg border border-slate-600/30">
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center">
-                          <div className="w-6 h-0.5 bg-blue-500 rounded-full shadow-sm"></div>
-                          <div className="w-2 h-2 bg-blue-500 rounded-full ml-1 shadow-lg"></div>
-                        </div>
-                        <span className="text-slate-200 font-medium">Actual Progress</span>
+                    {/* APQP Phase Progress Summary */}
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div className="bg-slate-700/30 p-3 rounded-lg border border-slate-600/30">
+                        <div className="text-slate-300 font-medium">Current Phase</div>
+                        <div className="text-white text-lg font-bold">Phase 3</div>
+                        <div className="text-slate-400 text-xs">Design & Development</div>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center">
-                          <svg width="24" height="4" viewBox="0 0 24 4">
-                            <path d="M0 2 L24 2" stroke="#9CA3AF" strokeWidth="2" strokeDasharray="3,3" strokeLinecap="round"/>
-                          </svg>
-                          <div className="w-2 h-2 bg-slate-400 ml-1" style={{clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)'}}></div>
-                        </div>
-                        <span className="text-slate-200 font-medium">Forecast</span>
+                      <div className="bg-slate-700/30 p-3 rounded-lg border border-slate-600/30">
+                        <div className="text-slate-300 font-medium">Overall Progress</div>
+                        <div className="text-white text-lg font-bold">58%</div>
+                        <div className="text-slate-400 text-xs">On Track</div>
                       </div>
                     </div>
-                    
-                    {/* Enhanced Line Chart */}
-                    <div className="relative h-64 mt-6 bg-slate-900/30 rounded-lg p-4 border border-slate-700/40">
-                      <svg className="w-full h-full" viewBox="0 0 450 240">
-                        <defs>
-                          {/* Enhanced grid pattern */}
-                          <pattern id="chartGrid" width="90" height="24" patternUnits="userSpaceOnUse">
-                            <path d="M 90 0 L 0 0 0 24" fill="none" stroke="#475569" strokeWidth="0.5" opacity="0.4"/>
-                          </pattern>
-                          
-                          {/* Glow effects for lines */}
-                          <filter id="glow">
-                            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                            <feMerge> 
-                              <feMergeNode in="coloredBlur"/>
-                              <feMergeNode in="SourceGraphic"/>
-                            </feMerge>
-                          </filter>
-                        </defs>
-                        
-                        {/* Chart background with grid */}
-                        <rect width="100%" height="100%" fill="url(#chartGrid)" rx="4"/>
-                        
-                        {/* Chart border */}
-                        <rect x="40" y="20" width="360" height="180" fill="none" stroke="#64748B" strokeWidth="1" opacity="0.3" rx="2"/>
-                        
-                        {/* Y-axis labels with better positioning */}
-                        {[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((value, index) => (
-                          <text key={index} x="35" y={200 - (value * 1.6)} fill="#CBD5E1" fontSize="11" textAnchor="end" fontWeight="500">
-                            {value}%
-                          </text>
-                        ))}
-                        
-                        {/* X-axis labels with better spacing */}
-                        {['Phase 1', 'Phase 2', 'Phase 3', 'Phase 4', 'Phase 5'].map((phase, index) => (
-                          <text key={index} x={70 + (index * 72)} y="220" fill="#CBD5E1" fontSize="11" textAnchor="middle" fontWeight="500">
-                            {phase}
-                          </text>
-                        ))}
-                        
-                        {/* Forecast line (dashed) with better positioning */}
-                        <path
-                          d="M 70 180 L 142 160 L 214 130 L 286 100 L 358 70"
-                          stroke="#9CA3AF"
-                          strokeWidth="2.5"
-                          strokeDasharray="5,5"
-                          fill="none"
-                          strokeLinecap="round"
-                          opacity="0.9"
-                        />
-                        
-                        {/* Actual Progress line with glow effect */}
-                        <path
-                          d="M 70 170 L 142 145 L 214 115 L 286 110 L 358 80"
-                          stroke="#3B82F6"
-                          strokeWidth="3.5"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          filter="url(#glow)"
-                        />
-                        
-                        {/* Data points for Actual Progress (circles) */}
-                        {[
-                          { x: 70, y: 170, value: '15%' },
-                          { x: 142, y: 145, value: '35%' },
-                          { x: 214, y: 115, value: '55%' },
-                          { x: 286, y: 110, value: '58%' },
-                          { x: 358, y: 80, value: '78%' }
-                        ].map((point, index) => (
-                          <g key={index}>
-                            <circle cx={point.x} cy={point.y} r="5" fill="#3B82F6" stroke="#1E293B" strokeWidth="2" filter="url(#glow)"/>
-                            <circle cx={point.x} cy={point.y} r="2" fill="#FFFFFF" opacity="0.9"/>
-                          </g>
-                        ))}
-                        
-                        {/* Data points for Forecast (squares) */}
-                        {[
-                          { x: 70, y: 180, value: '10%' },
-                          { x: 142, y: 160, value: '25%' },
-                          { x: 214, y: 130, value: '45%' },
-                          { x: 286, y: 100, value: '65%' },
-                          { x: 358, y: 70, value: '82%' }
-                        ].map((point, index) => (
-                          <g key={index}>
-                            <rect x={point.x - 4} y={point.y - 4} width="8" height="8" fill="#9CA3AF" stroke="#1E293B" strokeWidth="1.5" rx="1"/>
-                            <rect x={point.x - 2} y={point.y - 2} width="4" height="4" fill="#FFFFFF" opacity="0.8" rx="0.5"/>
-                          </g>
-                        ))}
-                        
-                        {/* Subtle gradient overlay for depth */}
-                        <defs>
-                          <linearGradient id="chartOverlay" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stopColor="#1E293B" stopOpacity="0.1"/>
-                            <stop offset="100%" stopColor="#1E293B" stopOpacity="0.3"/>
-                          </linearGradient>
-                        </defs>
-                        <rect x="40" y="20" width="360" height="180" fill="url(#chartOverlay)" rx="2"/>
-                      </svg>
+
+                    {/* APQP Variance Chart with Mixed Values */}
+                    <ChartComponent
+                      data={[
+                        { value: -5.2 },  // Phase 1: Behind schedule
+                        { value: 2.1 },   // Phase 2: Ahead of schedule  
+                        { value: -1.8 },  // Phase 3: Slightly behind
+                        { value: 0.5 }    // Phase 4: On track
+                      ]}
+                      height={120}
+                      formatValue={(value: number) => `${value > 0 ? '+' : ''}${value}%`}
+                      {...ChartConfigs.mixed}
+                      title="Phase Variance vs. Plan"
+                      subtitle="Positive = Ahead, Negative = Behind"
+                      showValues={true}
+                      color="#3B82F6"
+                    />
+
+                    {/* APQP Phase Legend */}
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <span className="text-slate-300">Ahead of Schedule</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                        <span className="text-slate-300">Behind Schedule</span>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -881,132 +888,108 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-white">Weekly KPIs</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {/* Overtime Rate */}
+              <ChartKPICard
+                title="Overtime Rate"
+                value="5.2%"
+                trend="-0.8% vs target"
+                trendColor="text-red-400 bg-red-500/10"
+                chartData={[4.8, 5.1, 5.3, 5.2]}
+                chartColor="#F97316"
+              />
+              
+              <ChartKPICard
+                title="Technical Unemployment Rate"
+                value="2.1%"
+                trend="-0.3% vs target"
+                trendColor="text-red-400 bg-red-500/10"
+                chartData={[2.4, 2.2, 2.0, 2.1]}
+                chartColor="#EAB308"
+              />
+              
+              <ChartKPICard
+                title="Scrap Rate (Global)"
+                value="1.8%"
+                trend="-0.2% vs target"
+                trendColor="text-red-400 bg-red-500/10"
+                chartData={[2.0, 1.9, 1.8, 1.8]}
+                chartColor="#22C55E"
+              />
+              
+              <ChartKPICard
+                title="Weekly Efficiency (Global)"
+                value="92%"
+                trend="+2% vs target"
+                trendColor="text-green-400 bg-green-500/10"
+                chartData={[90, 91, 92, 92]}
+                chartColor="#10B981"
+              />
+            </div>
+          </div>
+
+          {/* Demo Chart with Positive/Negative Values */}
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-white">Performance Variance Analysis</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Positive/Negative Variance Chart */}
               <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
                 <CardContent className="p-6">
                   <div className="space-y-5">
-                    <h3 className="text-white font-semibold text-base tracking-wide">Overtime Rate</h3>
+                    <h3 className="text-white font-semibold text-base tracking-wide">Performance Variance (vs Target)</h3>
                     
                     <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">5.2%</div>
-                      <div className="flex items-center gap-1 text-sm font-semibold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
-                        <ArrowDown className="w-3 h-3" />
-                        -0.8% vs target
-                      </div>
-                    </div>
-
-                    {/* Enhanced Progress Bar */}
-                    <div className="space-y-3">
-                      <div className="relative h-3 bg-slate-700/50 rounded-full overflow-hidden shadow-inner">
-                        {/* Background gradient */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-slate-600/30 to-slate-600/60"></div>
-                        {/* Current value indicator with glow */}
-                        <div className="absolute left-[30%] top-0 w-0.5 h-full bg-white shadow-lg shadow-white/50"></div>
-                        {/* Progress fill */}
-                        <div className="absolute left-0 top-0 w-[30%] h-full bg-gradient-to-r from-orange-500/30 to-red-500/40 rounded-full"></div>
-                      </div>
-                      <div className="flex justify-between text-xs text-slate-400 font-medium">
-                        <span>4%</span>
-                        <span>6%</span>
-                        <span>8%</span>
-                        <span>10%</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Technical Unemployment Rate */}
-              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="space-y-5">
-                    <h3 className="text-white font-semibold text-base tracking-wide">Technical Unemployment Rate</h3>
-                    
-                    <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">2.1%</div>
-                      <div className="flex items-center gap-1 text-sm font-semibold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
-                        <ArrowDown className="w-3 h-3" />
-                        -0.3% vs target
-                      </div>
-                    </div>
-
-                    {/* Enhanced Progress Bar */}
-                    <div className="space-y-3">
-                      <div className="relative h-3 bg-slate-700/50 rounded-full overflow-hidden shadow-inner">
-                        <div className="absolute inset-0 bg-gradient-to-r from-slate-600/30 to-slate-600/60"></div>
-                        <div className="absolute left-[35%] top-0 w-0.5 h-full bg-white shadow-lg shadow-white/50"></div>
-                        <div className="absolute left-0 top-0 w-[35%] h-full bg-gradient-to-r from-yellow-500/30 to-orange-500/40 rounded-full"></div>
-                      </div>
-                      <div className="flex justify-between text-xs text-slate-400 font-medium">
-                        <span>1%</span>
-                        <span>2%</span>
-                        <span>3%</span>
-                        <span>4%</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Scrap Rate (Global) */}
-              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="space-y-5">
-                    <h3 className="text-white font-semibold text-base tracking-wide">Scrap Rate (Global)</h3>
-                    
-                    <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">1.8%</div>
-                      <div className="flex items-center gap-1 text-sm font-semibold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
-                        <ArrowDown className="w-3 h-3" />
-                        -0.2% vs target
-                      </div>
-                    </div>
-
-                    {/* Enhanced Progress Bar */}
-                    <div className="space-y-3">
-                      <div className="relative h-3 bg-slate-700/50 rounded-full overflow-hidden shadow-inner">
-                        <div className="absolute inset-0 bg-gradient-to-r from-slate-600/30 to-slate-600/60"></div>
-                        <div className="absolute left-[53%] top-0 w-0.5 h-full bg-white shadow-lg shadow-white/50"></div>
-                        <div className="absolute left-0 top-0 w-[53%] h-full bg-gradient-to-r from-green-500/30 to-yellow-500/40 rounded-full"></div>
-                      </div>
-                      <div className="flex justify-between text-xs text-slate-400 font-medium">
-                        <span>1%</span>
-                        <span>2%</span>
-                        <span>2.5%</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Weekly Efficiency (Global) */}
-              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="space-y-5">
-                    <h3 className="text-white font-semibold text-base tracking-wide">Weekly Efficiency (Global)</h3>
-                    
-                    <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">92%</div>
+                      <div className="text-5xl font-bold text-white tracking-tight">+2.3%</div>
                       <div className="flex items-center gap-1 text-sm font-semibold text-green-400 bg-green-500/10 px-2 py-1 rounded-full">
                         <ArrowUp className="w-3 h-3" />
-                        +2% vs target
+                        Above Target
                       </div>
                     </div>
 
-                    {/* Enhanced Progress Bar */}
-                    <div className="space-y-3">
-                      <div className="relative h-3 bg-slate-700/50 rounded-full overflow-hidden shadow-inner">
-                        <div className="absolute inset-0 bg-gradient-to-r from-slate-600/30 to-slate-600/60"></div>
-                        <div className="absolute left-[47%] top-0 w-0.5 h-full bg-white shadow-lg shadow-white/50"></div>
-                        <div className="absolute left-0 top-0 w-[47%] h-full bg-gradient-to-r from-green-500/40 to-emerald-500/50 rounded-full"></div>
-                      </div>
-                      <div className="flex justify-between text-xs text-slate-400 font-medium">
-                        <span>85%</span>
-                        <span>90%</span>
-                        <span>95%</span>
-                        <span>100%</span>
+                    {/* Enhanced Chart with Positive/Negative Values */}
+                    <ChartComponent
+                      data={[
+                        { value: -2.1 },
+                        { value: 1.8 },
+                        { value: 3.5 },
+                        { value: 2.3 }
+                      ]}
+                      height={80}
+                      formatValue={(value) => `${value > 0 ? '+' : ''}${value}`}
+                      yAxisLabel="% Variance"
+                      {...ChartConfigs.variance}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Volatile Performance Chart */}
+              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                <CardContent className="p-6">
+                  <div className="space-y-5">
+                    <h3 className="text-white font-semibold text-base tracking-wide">Market Performance Index</h3>
+                    
+                    <div className="flex items-end justify-between">
+                      <div className="text-5xl font-bold text-white tracking-tight">102%</div>
+                      <div className="flex items-center gap-1 text-sm font-semibold text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded-full">
+                        <TrendingUp className="w-3 h-3" />
+                        Volatile
                       </div>
                     </div>
+
+                    {/* Enhanced Chart with High Volatility */}
+                    <ChartComponent
+                      data={[
+                        { value: 44 },
+                        { value: 22 },
+                        { value: 102 },
+                        { value: 32 }
+                      ]}
+                      height={80}
+                      formatValue={(value) => value.toString()}
+                      yAxisLabel="% PIB"
+                      minValue={0}
+                      maxValue={120}
+                      {...ChartConfigs.volatile}
+                    />
                   </div>
                 </CardContent>
               </Card>
@@ -1031,29 +1014,19 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                       </div>
                     </div>
 
-                    {/* Enhanced Line Chart */}
-                    <div className="relative h-20 mt-4">
-                      <svg className="w-full h-full" viewBox="0 0 200 80">
-                        <defs>
-                          <linearGradient id="blueGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.3"/>
-                            <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.1"/>
-                          </linearGradient>
-                        </defs>
-                        <path
-                          d="M 10 60 L 35 55 L 60 58 L 85 50 L 110 45 L 135 40 L 160 35 L 185 30"
-                          stroke="#3B82F6"
-                          strokeWidth="3"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M 10 60 L 35 55 L 60 58 L 85 50 L 110 45 L 135 40 L 160 35 L 185 30 L 185 80 L 10 80 Z"
-                          fill="url(#blueGradient)"
-                        />
-                      </svg>
-                    </div>
+                    {/* Enhanced Chart */}
+                    <ChartComponent
+                      data={[
+                        { value: 1 },
+                        { value: 2 },
+                        { value: 2.5 },
+                        { value: 3 }
+                      ]}
+                      height={60}
+                      formatValue={(value) => `+${value}`}
+                      {...ChartConfigs.efficiency}
+                      color="#3B82F6"
+                    />
                   </div>
                 </CardContent>
               </Card>
@@ -1072,29 +1045,19 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                       </div>
                     </div>
 
-                    {/* Enhanced Line Chart */}
-                    <div className="relative h-20 mt-4">
-                      <svg className="w-full h-full" viewBox="0 0 200 80">
-                        <defs>
-                          <linearGradient id="redGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stopColor="#EF4444" stopOpacity="0.3"/>
-                            <stop offset="100%" stopColor="#EF4444" stopOpacity="0.1"/>
-                          </linearGradient>
-                        </defs>
-                        <path
-                          d="M 10 30 L 35 35 L 60 32 L 85 40 L 110 45 L 135 50 L 160 48 L 185 55"
-                          stroke="#EF4444"
-                          strokeWidth="3"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M 10 30 L 35 35 L 60 32 L 85 40 L 110 45 L 135 50 L 160 48 L 185 55 L 185 80 L 10 80 Z"
-                          fill="url(#redGradient)"
-                        />
-                      </svg>
-                    </div>
+                    {/* Enhanced Chart */}
+                    <ChartComponent
+                      data={[
+                        { value: 45 },
+                        { value: 48 },
+                        { value: 49 },
+                        { value: 50 }
+                      ]}
+                      height={60}
+                      formatValue={(value) => `${value}k`}
+                      {...ChartConfigs.cost}
+                      color="#EF4444"
+                    />
                   </div>
                 </CardContent>
               </Card>
@@ -1113,29 +1076,19 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                       </div>
                     </div>
 
-                    {/* Enhanced Line Chart */}
-                    <div className="relative h-20 mt-4">
-                      <svg className="w-full h-full" viewBox="0 0 200 80">
-                        <defs>
-                          <linearGradient id="greenGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stopColor="#10B981" stopOpacity="0.3"/>
-                            <stop offset="100%" stopColor="#10B981" stopOpacity="0.1"/>
-                          </linearGradient>
-                        </defs>
-                        <path
-                          d="M 10 65 L 35 60 L 60 55 L 85 50 L 110 45 L 135 35 L 160 30 L 185 25"
-                          stroke="#10B981"
-                          strokeWidth="3"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M 10 65 L 35 60 L 60 55 L 85 50 L 110 45 L 135 35 L 160 30 L 185 25 L 185 80 L 10 80 Z"
-                          fill="url(#greenGradient)"
-                        />
-                      </svg>
-                    </div>
+                    {/* Enhanced Chart */}
+                    <ChartComponent
+                      data={[
+                        { value: 92 },
+                        { value: 93 },
+                        { value: 94 },
+                        { value: 95 }
+                      ]}
+                      height={60}
+                      formatValue={(value) => value.toString()}
+                      {...ChartConfigs.efficiency}
+                      color="#10B981"
+                    />
                   </div>
                 </CardContent>
               </Card>
@@ -1154,29 +1107,19 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                       </div>
                     </div>
 
-                    {/* Enhanced Line Chart */}
-                    <div className="relative h-20 mt-4">
-                      <svg className="w-full h-full" viewBox="0 0 200 80">
-                        <defs>
-                          <linearGradient id="redGradient2" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stopColor="#EF4444" stopOpacity="0.3"/>
-                            <stop offset="100%" stopColor="#EF4444" stopOpacity="0.1"/>
-                          </linearGradient>
-                        </defs>
-                        <path
-                          d="M 10 25 L 35 30 L 60 35 L 85 40 L 110 45 L 135 50 L 160 55 L 185 60"
-                          stroke="#EF4444"
-                          strokeWidth="3"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M 10 25 L 35 30 L 60 35 L 85 40 L 110 45 L 135 50 L 160 55 L 185 60 L 185 80 L 10 80 Z"
-                          fill="url(#redGradient2)"
-                        />
-                      </svg>
-                    </div>
+                    {/* Enhanced Chart */}
+                    <ChartComponent
+                      data={[
+                        { value: 180 },
+                        { value: 190 },
+                        { value: 195 },
+                        { value: 200 }
+                      ]}
+                      height={60}
+                      formatValue={(value) => `${value}k`}
+                      {...ChartConfigs.cost}
+                      color="#EF4444"
+                    />
                   </div>
                 </CardContent>
               </Card>
@@ -1195,29 +1138,19 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                       </div>
                     </div>
 
-                    {/* Enhanced Line Chart */}
-                    <div className="relative h-20 mt-4">
-                      <svg className="w-full h-full" viewBox="0 0 200 80">
-                        <defs>
-                          <linearGradient id="redGradient3" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stopColor="#EF4444" stopOpacity="0.3"/>
-                            <stop offset="100%" stopColor="#EF4444" stopOpacity="0.1"/>
-                          </linearGradient>
-                        </defs>
-                        <path
-                          d="M 10 40 L 35 45 L 60 38 L 85 42 L 110 50 L 135 55 L 160 58 L 185 62"
-                          stroke="#EF4444"
-                          strokeWidth="3"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M 10 40 L 35 45 L 60 38 L 85 42 L 110 50 L 135 55 L 160 58 L 185 62 L 185 80 L 10 80 Z"
-                          fill="url(#redGradient3)"
-                        />
-                      </svg>
-                    </div>
+                    {/* Enhanced Chart */}
+                    <ChartComponent
+                      data={[
+                        { value: 140 },
+                        { value: 145 },
+                        { value: 148 },
+                        { value: 150 }
+                      ]}
+                      height={60}
+                      formatValue={(value) => value.toString()}
+                      {...ChartConfigs.cost}
+                      color="#EF4444"
+                    />
                   </div>
                 </CardContent>
               </Card>
@@ -1236,32 +1169,115 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                       </div>
                     </div>
 
-                    {/* Enhanced Line Chart */}
-                    <div className="relative h-20 mt-4">
-                      <svg className="w-full h-full" viewBox="0 0 200 80">
-                        <defs>
-                          <linearGradient id="greenGradient2" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stopColor="#10B981" stopOpacity="0.3"/>
-                            <stop offset="100%" stopColor="#10B981" stopOpacity="0.1"/>
-                          </linearGradient>
-                        </defs>
-                        <path
-                          d="M 10 70 L 35 65 L 60 60 L 85 55 L 110 50 L 135 45 L 160 40 L 185 35"
-                          stroke="#10B981"
-                          strokeWidth="3"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M 10 70 L 35 65 L 60 60 L 85 55 L 110 50 L 135 45 L 160 40 L 185 35 L 185 80 L 10 80 Z"
-                          fill="url(#greenGradient2)"
-                        />
-                      </svg>
-                    </div>
+                    {/* Enhanced Chart */}
+                    <ChartComponent
+                      data={[
+                        { value: 25 },
+                        { value: 27 },
+                        { value: 29 },
+                        { value: 30 }
+                      ]}
+                      height={60}
+                      formatValue={(value) => value.toString()}
+                      {...ChartConfigs.efficiency}
+                      color="#10B981"
+                    />
                   </div>
                 </CardContent>
               </Card>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Special layout for Quality Dashboard - Dark theme with Weekly KPIs
+  if (category.id === "quality") {
+    return (
+      <div className={`min-h-screen bg-slate-900 dark:bg-slate-900 ${className}`}>
+        <div className="p-6 space-y-8">
+          {/* Quality Dashboard Title */}
+          <div className="space-y-2">
+            <h1 className="text-4xl font-bold text-white tracking-tight">Quality & Safety Dashboard</h1>
+            <p className="text-slate-400 text-lg">Key Performance Indicators for Quality and Safety</p>
+          </div>
+
+          {/* Weekly KPIs Section */}
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-white">Weekly KPIs</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <ChartKPICard
+                title="Quality Score"
+                value="96.8%"
+                trend="+1.2%"
+                trendColor="text-green-400 bg-green-500/10"
+                chartData={[94.8, 95.2, 95.7, 96.8]}
+                chartColor="#10B981"
+              />
+              
+              <ChartKPICard
+                title="Defect Rate"
+                value="0.8%"
+                trend="-20%"
+                trendColor="text-green-400 bg-green-500/10"
+                chartData={[1.2, 1.1, 1.0, 0.8]}
+                chartColor="#22C55E"
+              />
+              
+              <ChartKPICard
+                title="First Pass Yield"
+                value="97.8%"
+                trend="+1.8%"
+                trendColor="text-green-400 bg-green-500/10"
+                chartData={[96.1, 96.5, 97.0, 97.8]}
+                chartColor="#3B82F6"
+              />
+              
+              <ChartKPICard
+                title="Safety Incidents"
+                value="0.12"
+                trend="-25%"
+                trendColor="text-green-400 bg-green-500/10"
+                chartData={[0.18, 0.16, 0.15, 0.12]}
+                chartColor="#84CC16"
+              />
+            </div>
+          </div>
+
+          {/* Monthly KPIs Section */}
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-white">Monthly KPIs</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {category.kpis.slice(4).map((kpi, index) => (
+                <Card key={index} className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                  <CardContent className="p-6">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-white font-semibold text-base">{kpi.title}</h3>
+                        <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
+                          Details
+                        </Button>
+                      </div>
+                      
+                      <div className="flex items-end justify-between">
+                        <div className="text-3xl font-bold text-white">{kpi.value}</div>
+                        {kpi.trend && (
+                          <div className={`text-sm font-medium ${kpi.trendColor}`}>
+                            {kpi.trend}
+                          </div>
+                        )}
+                      </div>
+
+                      {kpi.target && (
+                        <div className="text-xs text-slate-400 bg-slate-700/50 px-3 py-2 rounded-lg">
+                          {kpi.target}
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
         </div>
