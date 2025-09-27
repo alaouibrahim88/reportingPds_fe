@@ -94,7 +94,7 @@ function DesktopSidebar() {
             isCollapsed ? "w-0 opacity-0" : "w-full opacity-100"
           )}
         >
-          <Logo logoType="default" width={120} height={30} className="flex-shrink-0" />
+          <Logo logoType="default" className="flex-shrink-0" />
         </div>
       </div>
 
@@ -152,7 +152,7 @@ export function MobileSidebar() {
           </SheetTrigger>
           <SheetContent side="left" className="w-[300px] p-0">
             <div className="flex h-16 items-center border-b px-6">
-              <Logo logoType="default" width={120} height={30} />
+              <Logo logoType="default" />
             </div>
             {/* <UserAvailableCreditsBadge /> */}
             <div className="space-y-2 py-4">

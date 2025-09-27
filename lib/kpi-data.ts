@@ -517,10 +517,35 @@ export const kpiDatasets = {
 export interface CategoryKPI {
   title: string;
   value: string;
+  subtitle?: string;
   target?: string;
   trend?: string;
   trendColor?: string;
   lastWeeks?: string[];
+  statusRanges?: {
+    target: string;
+    good: string;
+    alert: string;
+    high: string;
+  };
+  currentStatus?: string;
+  statusColor?: string;
+  actionText?: string;
+  progressRanges?: {
+    ok: string;
+    good: string;
+    excellent: string;
+    target: string;
+  };
+  currentValue?: number;
+  breakdown?: {
+    [key: string]: string;
+  };
+  chartData?: {
+    freightIn?: number[];
+    freightOut?: number[];
+  };
+  actionLink?: string;
 }
 
 export interface CategoryData {
@@ -758,52 +783,100 @@ export const executiveHorizonCategories: CategoryData[] = [
     icon: "Users",
     kpis: [
       {
-        title: "Employee Engagement",
-        value: "78%",
-        target: "Target: 75%",
-        trend: "+6.8%",
+        title: "Headcount",
+        subtitle: "Total Employees",
+        value: "444",
+        trend: "+11 vs last month",
         trendColor: "text-green-600",
-        lastWeeks: ["71%", "73%", "75%", "76%", "78%"]
+        statusRanges: {
+          target: "420 Target",
+          good: "440 Good",
+          alert: "460 Alert",
+          high: "480 High"
+        },
+        currentStatus: "Current: 444",
+        statusColor: "text-green-600",
+        actionText: "View Details"
       },
       {
-        title: "Leadership Pipeline",
-        value: "92%",
-        target: "Target: 85%",
-        trend: "+8.2%",
-        trendColor: "text-green-600",
-        lastWeeks: ["82%", "85%", "87%", "90%", "92%"]
+        title: "Cost",
+        subtitle: "Monthly Payroll",
+        value: "$4.6M",
+        trend: "+$100k vs last month",
+        trendColor: "text-red-600",
+        statusRanges: {
+          target: "$4.4M On Target",
+          good: "$4.5M Acceptable",
+          alert: "$4.7M High",
+          high: "$4.8M Critical"
+        },
+        currentStatus: "Current: $4.6M",
+        statusColor: "text-orange-600",
+        actionText: "Action Plan"
       },
       {
-        title: "Talent Retention",
-        value: "95%",
-        target: "Target: 90%",
-        trend: "+5.6%",
-        trendColor: "text-green-600",
-        lastWeeks: ["88%", "90%", "92%", "94%", "95%"]
+        title: "Turnover Rate",
+        subtitle: "Departures / Average Headcount",
+        value: "3.5%",
+        trend: "+0.2% vs last month",
+        trendColor: "text-red-600",
+        statusRanges: {
+          target: "3.0% Good",
+          good: "3.5% Acceptable",
+          alert: "4.0% High",
+          high: "5.0% Alert"
+        },
+        currentStatus: "Current: 3.5%",
+        statusColor: "text-blue-600",
+        actionText: "Action Plan"
       },
       {
-        title: "Skills Development",
-        value: "84%",
-        target: "Target: 80%",
-        trend: "+5%",
+        title: "Time to Fill",
+        subtitle: "Offer Acceptance - Job Posting",
+        value: "38 days",
+        trend: "-4 days",
         trendColor: "text-green-600",
-        lastWeeks: ["78%", "80%", "81%", "83%", "84%"]
+        statusRanges: {
+          target: "30 Excellent",
+          good: "40 Good",
+          alert: "45 Acceptable",
+          high: "50 Slow"
+        },
+        currentStatus: "Current: 38",
+        statusColor: "text-blue-600",
+        actionText: "View Details"
       },
       {
-        title: "Diversity Index",
-        value: "76%",
-        target: "Target: 70%",
-        trend: "+8.6%",
-        trendColor: "text-green-600",
-        lastWeeks: ["68%", "70%", "72%", "74%", "76%"]
+        title: "Absenteeism Rate",
+        subtitle: "Weekly | Absent / Planned Hours",
+        value: "2.1%",
+        trend: "+0.3% vs last week",
+        trendColor: "text-orange-600",
+        statusRanges: {
+          target: "1.5% Low",
+          good: "2.0% Acceptable",
+          alert: "2.5% High",
+          high: "3.0% Critical"
+        },
+        currentStatus: "Current: 2.1%",
+        statusColor: "text-orange-600",
+        actionText: "Action Plan"
       },
       {
-        title: "Executive Readiness",
-        value: "89%",
-        target: "Target: 85%",
-        trend: "+4.7%",
+        title: "Social Incidents",
+        subtitle: "Weekly | Conflicts & Alerts",
+        value: "2",
+        trend: "-1 vs last week",
         trendColor: "text-green-600",
-        lastWeeks: ["82%", "84%", "86%", "87%", "89%"]
+        statusRanges: {
+          target: "1 Good",
+          good: "2 Acceptable",
+          alert: "3 Warning",
+          high: "4 Alert"
+        },
+        currentStatus: "Current: 2",
+        statusColor: "text-blue-600",
+        actionText: "View Report"
       }
     ]
   },
@@ -1147,52 +1220,82 @@ export const globalOpsCategories: CategoryData[] = [
     icon: "Truck",
     kpis: [
       {
-        title: "Supply Chain Reliability",
-        value: "94.2%",
-        target: "Target: 95%",
-        trend: "-2.1%",
-        trendColor: "text-red-600",
-        lastWeeks: ["96.8%", "96.1%", "95.4%", "94.9%", "94.2%"]
+        title: "Customer Service Rate / OTIF",
+        value: "96.5%",
+        subtitle: "% of orders delivered on time.",
+        target: "Target: 98%",
+        trend: "+1.5%",
+        trendColor: "text-green-400",
+        progressRanges: {
+          ok: "80%",
+          good: "90%", 
+          excellent: "95%",
+          target: "98%"
+        },
+        currentValue: 96.5,
+        actionLink: "Details"
       },
       {
-        title: "Supplier Performance",
-        value: "91.8%",
-        target: "Target: 95%",
-        trend: "-1.5%",
-        trendColor: "text-red-600",
-        lastWeeks: ["93.2%", "92.8%", "92.1%", "91.9%", "91.8%"]
+        title: "Supplier Service Rate OTIF",
+        value: "92.0%",
+        subtitle: "% of compliant supplier deliveries.",
+        target: "Target: 98%",
+        trend: "-3.0%",
+        trendColor: "text-red-400",
+        progressRanges: {
+          ok: "85%",
+          good: "90%",
+          excellent: "95%", 
+          target: "98%"
+        },
+        currentValue: 92.0,
+        actionLink: "Details"
+      },
+      {
+        title: "Stock Reliability Rate",
+        value: "99.2%",
+        subtitle: "% of compliant inventories.",
+        target: "Target: 99.5%",
+        trend: "+0.2%",
+        trendColor: "text-green-400",
+        progressRanges: {
+          ok: "95%",
+          good: "98%",
+          excellent: "99%",
+          target: "99.5%"
+        },
+        currentValue: 99.2,
+        actionLink: "Details"
       },
       {
         title: "Inventory Turnover",
-        value: "8.2x",
-        target: "Target: 8.0x",
-        trend: "+2.5%",
-        trendColor: "text-green-600",
-        lastWeeks: ["7.8x", "7.9x", "8.0x", "8.1x", "8.2x"]
+        value: "25 days",
+        subtitle: "Average days of stock.",
+        target: "Target: 23 days",
+        trend: "+2 days vs target",
+        trendColor: "text-orange-400",
+        breakdown: {
+          "Raw Materials": "25 days (+2 days vs target)",
+          "Finished Goods": "18 days (-1 day vs target)"
+        },
+        actionLink: "Action Plan"
       },
       {
-        title: "Lead Time Variance",
-        value: "±2.3 days",
-        target: "Target: ±2.0 days",
-        trend: "+15%",
-        trendColor: "text-red-600",
-        lastWeeks: ["±2.0", "±2.1", "±2.2", "±2.2", "±2.3"]
-      },
-      {
-        title: "Order Fulfillment Rate",
-        value: "98.5%",
-        target: "Target: 99%",
-        trend: "-0.5%",
-        trendColor: "text-red-600",
-        lastWeeks: ["99.1%", "98.9%", "98.7%", "98.6%", "98.5%"]
-      },
-      {
-        title: "Warehouse Efficiency",
-        value: "87.3%",
-        target: "Target: 85%",
-        trend: "+2.7%",
-        trendColor: "text-green-600",
-        lastWeeks: ["84.1%", "85.2%", "86.1%", "86.8%", "87.3%"]
+        title: "Total Logistics Cost",
+        value: "$335k",
+        subtitle: "Freight IN / Freight OUT evolution.",
+        target: "Target: $330k",
+        trend: "+$5k vs target",
+        trendColor: "text-orange-400",
+        breakdown: {
+          "Freight IN": "$125k (+$5k vs target)",
+          "Freight OUT": "$210k (-$10k vs target)"
+        },
+        chartData: {
+          freightIn: [120, 122, 124, 123, 125],
+          freightOut: [220, 215, 210, 212, 210]
+        },
+        actionLink: "Action Plan"
       }
     ]
   }

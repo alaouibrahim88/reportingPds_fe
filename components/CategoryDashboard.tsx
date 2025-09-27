@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { CategoryData } from "@/lib/kpi-data";
 import { ArrowUp, ArrowDown, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { ChartComponent, ChartConfigs } from "@/components/ui/ChartComponent";
+import { APQPLineChart } from "@/components/ui/APQPLineChart";
 
 interface CategoryDashboardProps {
   category: CategoryData;
@@ -558,18 +559,18 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
             <p className="text-slate-400 text-lg">Monitoring key program performance indicators for project ramp-up.</p>
           </div>
 
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Left Column */}
-            <div className="space-y-8">
+          {/* Main Content Grid - Fixed Layout with Better Responsive Design */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 w-full">
+            {/* Left Column - Fixed Width */}
+            <div className="space-y-8 w-full">
               {/* Weekly KPIs Section */}
               <div className="space-y-6">
                 <h2 className="text-2xl font-bold text-white">Weekly KPIs</h2>
                 
-                <div className="grid grid-cols-1 gap-6">
-                  {/* OTD (On-Time Delivery) */}
-                  <Card className="bg-slate-800/95 border-slate-700/60 shadow-2xl backdrop-blur-sm hover:shadow-3xl transition-all duration-300 hover:scale-[1.02]">
-                    <CardContent className="p-7">
+                <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-6">
+                  {/* OTD (On-Time Delivery) - Full width card */}
+                  <Card className="bg-slate-800/95 border-slate-700/60 shadow-2xl backdrop-blur-sm hover:shadow-3xl transition-all duration-300 hover:scale-[1.02] w-full">
+                    <CardContent className="p-6">
                       <div className="space-y-6">
                         <div className="flex items-center justify-between">
                           <h3 className="font-bold text-white text-xl tracking-tight">OTD (On-Time Delivery)</h3>
@@ -582,22 +583,8 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                         
                         <div className="text-7xl font-black text-white tracking-tight drop-shadow-lg">{category.kpis.find(kpi => kpi.title === 'Supply Chain Reliability')?.value || '94.2%'}</div>
                         
-                        <div className="flex items-center gap-2 text-sm font-bold text-yellow-500 bg-yellow-500/10 px-3 py-2 rounded-full w-fit">
-                          <ArrowDown className="w-4 h-4" />
-                          {category.kpis.find(kpi => kpi.title === 'Supply Chain Reliability')?.trend || '-2.1%'}
-                        </div>
+                       
                         
-                        <div className="space-y-4">
-                          <div className="relative h-4 bg-slate-700/50 rounded-full overflow-hidden shadow-inner border border-slate-600/30">
-                            <div className="absolute inset-0 bg-gradient-to-r from-slate-600/20 to-slate-600/40"></div>
-                            <div className="bg-gradient-to-r from-yellow-500 to-yellow-400 h-full rounded-full shadow-lg" style={{ width: '94.2%' }}></div>
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent rounded-full"></div>
-                          </div>
-                          <div className="flex justify-between text-sm text-slate-300 font-semibold bg-slate-700/20 px-4 py-2 rounded-lg">
-                            <span>Target: 95%</span>
-                            <span>Last Week: {category.kpis.find(kpi => kpi.title === 'Supply Chain Reliability')?.lastWeeks?.[4] || '94.2%'}</span>
-                          </div>
-                        </div>
 
                         {/* Enhanced Chart with Mixed Positive/Negative Values */}
                         <ChartComponent
@@ -617,12 +604,12 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                     </CardContent>
                   </Card>
 
-                  {/* Recruitment Progress */}
-                  <Card className="bg-slate-800/95 border-slate-700/60 shadow-2xl backdrop-blur-sm hover:shadow-3xl transition-all duration-300 hover:scale-[1.02]">
-                    <CardContent className="p-7">
-                      <div className="space-y-6">
+                  {/* Recruitment Progress - Full width card */}
+                  <Card className="bg-slate-800/95 border-slate-700/60 shadow-2xl backdrop-blur-sm hover:shadow-3xl transition-all duration-300 hover:scale-[1.02] w-full">
+                    <CardContent className="p-6">
+                      <div className="space-y-5">
                         <div className="flex items-center justify-between">
-                          <h3 className="font-bold text-white text-xl tracking-tight">Recruitment Progress</h3>
+                          <h3 className="font-bold text-white text-lg tracking-tight">Recruitment Progress</h3>
                           <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-semibold hover:text-blue-300 transition-colors">
                             Details
                           </Button>
@@ -630,16 +617,16 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                         
                         <div className="text-sm text-slate-400 font-medium">Milestones vs. planned.</div>
                         
-                        <div className="flex items-center justify-center py-6">
-                          <div className="relative w-40 h-40">
+                        <div className="flex items-center justify-center py-4">
+                          <div className="relative w-32 h-32">
                             <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                               <defs>
-                                <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                  <stop offset="0%" stopColor="#3B82F6" />
-                                  <stop offset="100%" stopColor="#1D4ED8" />
+                                <linearGradient id="recruitmentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                  <stop offset="0%" stopColor="#10B981" />
+                                  <stop offset="100%" stopColor="#059669" />
                                 </linearGradient>
-                                <filter id="progressGlow">
-                                  <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+                                <filter id="recruitmentGlow">
+                                  <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
                                   <feMerge> 
                                     <feMergeNode in="coloredBlur"/>
                                     <feMergeNode in="SourceGraphic"/>
@@ -652,32 +639,42 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                                   a 15.9155 15.9155 0 0 1 0 -31.831"
                                 fill="none"
                                 stroke="#374151"
-                                strokeWidth="4"
+                                strokeWidth="3"
                               />
                               <path
                                 d="M18 2.0845
                                   a 15.9155 15.9155 0 0 1 0 31.831
                                   a 15.9155 15.9155 0 0 1 0 -31.831"
                                 fill="none"
-                                stroke="url(#progressGradient)"
-                                strokeWidth="4"
+                                stroke="url(#recruitmentGradient)"
+                                strokeWidth="3"
                                 strokeDasharray="75, 100"
                                 strokeLinecap="round"
-                                filter="url(#progressGlow)"
+                                filter="url(#recruitmentGlow)"
                               />
                             </svg>
                             <div className="absolute inset-0 flex items-center justify-center">
                               <div className="text-center">
-                                <span className="text-4xl font-black text-white drop-shadow-lg">75%</span>
+                                <span className="text-3xl font-black text-white drop-shadow-lg">75%</span>
                                 <div className="text-xs text-slate-400 font-medium mt-1">Complete</div>
                               </div>
                             </div>
                           </div>
                         </div>
                         
-                        <div className="text-center bg-slate-700/20 p-3 rounded-lg border border-slate-600/30">
-                          <div className="text-sm text-slate-300 font-semibold">Target: 80%</div>
-                          <div className="text-xs text-slate-400 mt-1">5% remaining to target</div>
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-slate-400">Progress</span>
+                            <span className="text-white font-semibold">75%</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-slate-400">Target</span>
+                            <span className="text-green-400 font-semibold">80%</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-slate-400">Remaining</span>
+                            <span className="text-orange-400 font-semibold">5%</span>
+                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -685,59 +682,130 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                 </div>
               </div>
 
-              {/* Planning Progress (APQP) */}
-              <Card className="bg-slate-800/95 border-slate-700/60 shadow-2xl backdrop-blur-sm hover:shadow-3xl transition-all duration-300">
-                <CardContent className="p-7">
-                  <div className="space-y-6">
+              {/* Planning Progress (APQP) - Enhanced Chart */}
+              <Card className="bg-slate-800/95 border-slate-700/60 shadow-2xl backdrop-blur-sm hover:shadow-3xl transition-all duration-300 w-full">
+                <CardContent className="p-6">
+                  <div className="space-y-5">
                     <div className="flex items-center justify-between">
-                      <h3 className="font-bold text-white text-xl tracking-tight">Planning Progress (APQP)</h3>
+                      <h3 className="font-bold text-white text-lg tracking-tight">Planning Progress (APQP)</h3>
                       <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-semibold hover:text-blue-300 transition-colors">
                         Full Plan
                       </Button>
                     </div>
                     
-                    <div className="text-sm text-slate-400 font-medium">APQP phase variance vs. planned timeline.</div>
+                    <div className="text-sm text-slate-400 font-medium">Milestones achieved vs. forecast.</div>
                     
-                    {/* APQP Phase Progress Summary */}
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div className="bg-slate-700/30 p-3 rounded-lg border border-slate-600/30">
-                        <div className="text-slate-300 font-medium">Current Phase</div>
-                        <div className="text-white text-lg font-bold">Phase 3</div>
-                        <div className="text-slate-400 text-xs">Design & Development</div>
+                    {/* Enhanced APQP Line Chart */}
+                    <div className="w-full bg-slate-900/30 rounded-lg p-4 border border-slate-700/50">
+                      <div className="h-48 relative">
+                        {/* Chart Container */}
+                        <div className="absolute inset-0">
+                          {/* Y-axis labels */}
+                          <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-slate-400 font-medium">
+                            <span>100%</span>
+                            <span>80%</span>
+                            <span>60%</span>
+                            <span>40%</span>
+                            <span>20%</span>
+                            <span>0%</span>
+                          </div>
+                          
+                          {/* Chart Area */}
+                          <div className="ml-8 mr-4 h-full relative">
+                            {/* Grid lines */}
+                            <div className="absolute inset-0">
+                              {[0, 20, 40, 60, 80, 100].map((value, index) => (
+                                <div
+                                  key={index}
+                                  className="absolute w-full border-t border-slate-700/30"
+                                  style={{ top: `${100 - value}%` }}
+                                />
+                              ))}
+                            </div>
+                            
+                            {/* Chart Lines */}
+                            <svg className="w-full h-full" viewBox="0 0 400 200">
+                              {/* Actual Progress Line (Blue) */}
+                              <polyline
+                                points="40,160 120,120 200,70 280,60 360,50"
+                                fill="none"
+                                stroke="#3B82F6"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                              {/* Actual Progress Points */}
+                              {[
+                                { x: 40, y: 160, value: 20 },
+                                { x: 120, y: 120, value: 40 },
+                                { x: 200, y: 70, value: 65 },
+                                { x: 280, y: 60, value: 70 },
+                                { x: 360, y: 50, value: 75 }
+                              ].map((point, index) => (
+                                <circle
+                                  key={index}
+                                  cx={point.x}
+                                  cy={point.y}
+                                  r="4"
+                                  fill="#3B82F6"
+                                  stroke="#1E40AF"
+                                  strokeWidth="2"
+                                />
+                              ))}
+                              
+                              {/* Forecast Line (Gray Dotted) */}
+                              <polyline
+                                points="40,170 120,130 200,90 280,60 360,40"
+                                fill="none"
+                                stroke="#6B7280"
+                                strokeWidth="2"
+                                strokeDasharray="4,4"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                              {/* Forecast Points */}
+                              {[
+                                { x: 40, y: 170, value: 15 },
+                                { x: 120, y: 130, value: 35 },
+                                { x: 200, y: 90, value: 55 },
+                                { x: 280, y: 60, value: 70 },
+                                { x: 360, y: 40, value: 80 }
+                              ].map((point, index) => (
+                                <rect
+                                  key={index}
+                                  x={point.x - 3}
+                                  y={point.y - 3}
+                                  width="6"
+                                  height="6"
+                                  fill="#6B7280"
+                                  stroke="#4B5563"
+                                  strokeWidth="1"
+                                />
+                              ))}
+                            </svg>
+                            
+                            {/* X-axis labels */}
+                            <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-slate-400 font-medium">
+                              <span>Phase 1</span>
+                              <span>Phase 2</span>
+                              <span>Phase 3</span>
+                              <span>Phase 4</span>
+                              <span>Phase 5</span>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <div className="bg-slate-700/30 p-3 rounded-lg border border-slate-600/30">
-                        <div className="text-slate-300 font-medium">Overall Progress</div>
-                        <div className="text-white text-lg font-bold">58%</div>
-                        <div className="text-slate-400 text-xs">On Track</div>
-                      </div>
-                    </div>
-
-                    {/* APQP Variance Chart with Mixed Values */}
-                    <ChartComponent
-                      data={[
-                        { value: -5.2 },  // Phase 1: Behind schedule
-                        { value: 2.1 },   // Phase 2: Ahead of schedule  
-                        { value: -1.8 },  // Phase 3: Slightly behind
-                        { value: 0.5 }    // Phase 4: On track
-                      ]}
-                      height={120}
-                      formatValue={(value: number) => `${value > 0 ? '+' : ''}${value}%`}
-                      {...ChartConfigs.mixed}
-                      title="Phase Variance vs. Plan"
-                      subtitle="Positive = Ahead, Negative = Behind"
-                      showValues={true}
-                      color="#3B82F6"
-                    />
-
-                    {/* APQP Phase Legend */}
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                        <span className="text-slate-300">Ahead of Schedule</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                        <span className="text-slate-300">Behind Schedule</span>
+                      
+                      {/* Legend */}
+                      <div className="flex justify-center space-x-6 mt-4">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-4 h-0.5 bg-blue-500"></div>
+                          <span className="text-sm text-slate-300 font-medium">Actual Progress</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-4 h-0.5 bg-gray-500 border-dashed border-t-2"></div>
+                          <span className="text-sm text-slate-300 font-medium">Forecast</span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -745,15 +813,15 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
               </Card>
             </div>
 
-            {/* Right Column */}
-            <div className="space-y-8">
+            {/* Right Column - Fixed Width */}
+            <div className="space-y-8 w-full">
               {/* Monthly KPIs Section */}
               <div className="space-y-6">
                 <h2 className="text-2xl font-bold text-white">Monthly KPIs</h2>
                 
-                <div className="space-y-6">
+                <div className="space-y-4 lg:space-y-6">
                   {/* Budget Variance */}
-                  <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                  <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300 w-full">
                     <CardContent className="p-6">
                       <div className="space-y-5">
                         <div className="flex items-center justify-between">
@@ -786,7 +854,7 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                   </Card>
 
                   {/* Equipment & Tooling */}
-                  <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                  <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300 w-full">
                     <CardContent className="p-6">
                       <div className="space-y-5">
                         <div className="flex items-center justify-between">
@@ -828,7 +896,7 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
               <div className="space-y-6">
                 <h2 className="text-2xl font-bold text-white">Documentation</h2>
                 
-                <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm">
+                <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm w-full">
                   <CardContent className="p-6">
                     <div className="space-y-5">
                       <div className="flex items-center justify-between">
@@ -1206,42 +1274,138 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
           {/* Weekly KPIs Section */}
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-white">Weekly KPIs</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <ChartKPICard
-                title="Quality Score"
-                value="96.8%"
-                trend="+1.2%"
-                trendColor="text-green-400 bg-green-500/10"
-                chartData={[94.8, 95.2, 95.7, 96.8]}
-                chartColor="#10B981"
-              />
-              
-              <ChartKPICard
-                title="Defect Rate"
-                value="0.8%"
-                trend="-20%"
-                trendColor="text-green-400 bg-green-500/10"
-                chartData={[1.2, 1.1, 1.0, 0.8]}
-                chartColor="#22C55E"
-              />
-              
-              <ChartKPICard
-                title="First Pass Yield"
-                value="97.8%"
-                trend="+1.8%"
-                trendColor="text-green-400 bg-green-500/10"
-                chartData={[96.1, 96.5, 97.0, 97.8]}
-                chartColor="#3B82F6"
-              />
-              
-              <ChartKPICard
-                title="Safety Incidents"
-                value="0.12"
-                trend="-25%"
-                trendColor="text-green-400 bg-green-500/10"
-                chartData={[0.18, 0.16, 0.15, 0.12]}
-                chartColor="#84CC16"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Customer Complaints */}
+              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                <CardContent className="p-6">
+                  <div className="space-y-5">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-bold text-white text-lg">Customer Complaints</h3>
+                      <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
+                        Action Plan
+                      </Button>
+                    </div>
+                    
+                    <div className="text-sm text-slate-400 font-medium">Global</div>
+                    
+                    <div className="flex items-end justify-between">
+                      <div className="text-5xl font-bold text-white tracking-tight">12</div>
+                      <div className="flex items-center gap-1 text-sm font-bold text-red-400 bg-red-500/10 px-3 py-1 rounded-full">
+                        <ArrowUp className="w-4 h-4" />
+                        +2 vs target
+                      </div>
+                    </div>
+
+                    {/* By Zone Breakdown */}
+                    <div className="space-y-3">
+                      <div className="text-sm font-bold text-slate-300">By Zone:</div>
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="text-center">
+                          <div className="text-lg font-bold text-white">Zone A</div>
+                          <div className="text-2xl font-bold text-white">5</div>
+                          <div className="text-xs text-red-400">(+1)</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-lg font-bold text-slate-300">Zone B</div>
+                          <div className="text-2xl font-bold text-white">4</div>
+                          <div className="text-xs text-slate-400">(0)</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-lg font-bold text-slate-300">Zone C</div>
+                          <div className="text-2xl font-bold text-white">3</div>
+                          <div className="text-xs text-red-400">(+1)</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Target Range Progress Bar */}
+                    <div className="space-y-3">
+                      <div className="relative h-4 bg-slate-700 rounded-full overflow-hidden shadow-inner">
+                        <div className="absolute inset-0 flex">
+                          <div className="w-[33.33%] bg-green-500"></div>
+                          <div className="w-[33.33%] bg-yellow-500"></div>
+                          <div className="w-[20%] bg-orange-500"></div>
+                          <div className="w-[13.34%] bg-red-500"></div>
+                        </div>
+                        {/* Current value indicator at 12 */}
+                        <div className="absolute left-[80%] top-0 w-1 h-full bg-white shadow-lg transform -translate-x-0.5"></div>
+                      </div>
+                      <div className="flex justify-between text-xs text-slate-400 font-medium">
+                        <span>0 (OK)</span>
+                        <span>5 (Warn)</span>
+                        <span>10 (Limit)</span>
+                        <span>15 (Max)</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Weekly Efficiency Tracking */}
+              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                <CardContent className="p-6">
+                  <div className="space-y-5">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-bold text-white text-lg">Weekly Efficiency Tracking</h3>
+                      <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
+                        Action Plan
+                      </Button>
+                    </div>
+                    
+                    <div className="text-sm text-slate-400 font-medium">Global</div>
+                    
+                    <div className="flex items-end justify-between">
+                      <div className="text-5xl font-bold text-white tracking-tight">92%</div>
+                      <div className="flex items-center gap-1 text-sm font-bold text-green-400 bg-green-500/10 px-3 py-1 rounded-full">
+                        <ArrowUp className="w-4 h-4" />
+                        +2% vs target
+                      </div>
+                    </div>
+
+                    {/* By Zone Breakdown */}
+                    <div className="space-y-3">
+                      <div className="text-sm font-bold text-slate-300">By Zone:</div>
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="text-center">
+                          <div className="text-lg font-bold text-white">Zone A</div>
+                          <div className="text-2xl font-bold text-white">95%</div>
+                          <div className="text-xs text-green-400">(+3%)</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-lg font-bold text-slate-300">Zone B</div>
+                          <div className="text-2xl font-bold text-white">90%</div>
+                          <div className="text-xs text-red-400">(-1%)</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-lg font-bold text-slate-300">Zone C</div>
+                          <div className="text-2xl font-bold text-white">91%</div>
+                          <div className="text-xs text-green-400">(+1%)</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Target Range Progress Bar */}
+                    <div className="space-y-3">
+                      <div className="relative h-4 bg-slate-700 rounded-full overflow-hidden shadow-inner">
+                        <div className="absolute inset-0 flex">
+                          <div className="w-[25%] bg-red-500"></div>
+                          <div className="w-[25%] bg-orange-500"></div>
+                          <div className="w-[25%] bg-yellow-500"></div>
+                          <div className="w-[25%] bg-green-500"></div>
+                        </div>
+                        {/* Current value indicator at 92% */}
+                        <div className="absolute left-[92%] top-0 w-1 h-full bg-white shadow-lg transform -translate-x-0.5"></div>
+                      </div>
+                      <div className="flex justify-between text-xs text-slate-400 font-medium">
+                        <span>85% (Min)</span>
+                        <span>88% (Limit)</span>
+                        <span>90% (Warn)</span>
+                        <span>95% (OK)</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
 
@@ -1249,35 +1413,610 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-white">Monthly KPIs</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {category.kpis.slice(4).map((kpi, index) => (
-                <Card key={index} className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+              {/* PPM (Parts Per Million) */}
+              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
                   <CardContent className="p-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-white font-semibold text-base">{kpi.title}</h3>
+                  <div className="space-y-5">
+                    <h3 className="font-bold text-white text-lg">PPM (Parts Per Million)</h3>
+                    
+                    <div className="flex items-end justify-between">
+                      <div className="text-4xl font-bold text-white tracking-tight">150</div>
+                      <div className="flex items-center gap-1 text-sm font-bold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
+                        <ArrowUp className="w-3 h-3" />
+                        +20 vs target
+                      </div>
+                    </div>
+
+                    {/* Target Range Progress Bar */}
+                    <div className="space-y-3">
+                      <div className="relative h-4 bg-slate-700 rounded-full overflow-hidden shadow-inner">
+                        <div className="absolute inset-0 flex">
+                          <div className="w-[33.33%] bg-green-500"></div>
+                          <div className="w-[33.33%] bg-yellow-500"></div>
+                          <div className="w-[20%] bg-orange-500"></div>
+                          <div className="w-[13.34%] bg-red-500"></div>
+                        </div>
+                        {/* Current value indicator at 150 */}
+                        <div className="absolute left-[100%] top-0 w-1 h-full bg-white shadow-lg transform -translate-x-0.5"></div>
+                      </div>
+                      <div className="flex justify-between text-xs text-slate-400 font-medium">
+                        <span>0 (OK)</span>
+                        <span>50 (Warn)</span>
+                        <span>100 (Limit)</span>
+                        <span>150 (Max)</span>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end">
                         <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
-                          Details
+                        Action Plan
                         </Button>
                       </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Customer Scrap Cost */}
+              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                <CardContent className="p-6">
+                  <div className="space-y-5">
+                    <h3 className="font-bold text-white text-lg">Customer Scrap Cost</h3>
                       
                       <div className="flex items-end justify-between">
-                        <div className="text-3xl font-bold text-white">{kpi.value}</div>
-                        {kpi.trend && (
-                          <div className={`text-sm font-medium ${kpi.trendColor}`}>
-                            {kpi.trend}
+                      <div className="text-4xl font-bold text-white tracking-tight">$15k</div>
+                      <div className="flex items-center gap-1 text-sm font-bold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
+                        <ArrowUp className="w-3 h-3" />
+                        +$2k vs target
                           </div>
-                        )}
                       </div>
 
-                      {kpi.target && (
-                        <div className="text-xs text-slate-400 bg-slate-700/50 px-3 py-2 rounded-lg">
-                          {kpi.target}
+                    <div className="flex justify-end">
+                      <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
+                        Action Plan
+                      </Button>
                         </div>
-                      )}
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+
+              {/* Monthly Efficiency */}
+              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                <CardContent className="p-6">
+                  <div className="space-y-5">
+                    <h3 className="font-bold text-white text-lg">Monthly Efficiency</h3>
+                    
+                    <div className="flex items-end justify-between">
+                      <div className="text-4xl font-bold text-white tracking-tight">94%</div>
+                      <div className="flex items-center gap-1 text-sm font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-full">
+                        <ArrowUp className="w-3 h-3" />
+                        +1% vs target
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end">
+                      <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
+                        Action Plan
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Work Incidents/Accidents */}
+              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                <CardContent className="p-6">
+                  <div className="space-y-5">
+                    <h3 className="font-bold text-white text-lg">Work Incidents/Accidents</h3>
+                    
+                    <div className="flex items-end justify-between">
+                      <div className="text-4xl font-bold text-white tracking-tight">2</div>
+                      <div className="text-sm text-slate-400 font-medium">5 Lost Days</div>
+                    </div>
+
+                    {/* Target Range Progress Bar */}
+                    <div className="space-y-3">
+                      <div className="relative h-4 bg-slate-700 rounded-full overflow-hidden shadow-inner">
+                        <div className="absolute inset-0 flex">
+                          <div className="w-[20%] bg-green-500"></div>
+                          <div className="w-[20%] bg-yellow-500"></div>
+                          <div className="w-[40%] bg-orange-500"></div>
+                          <div className="w-[20%] bg-red-500"></div>
+                        </div>
+                        {/* Current value indicator at 2 */}
+                        <div className="absolute left-[40%] top-0 w-1 h-full bg-white shadow-lg transform -translate-x-0.5"></div>
+                      </div>
+                      <div className="flex justify-between text-xs text-slate-400 font-medium">
+                        <span>0 (OK)</span>
+                        <span>1 (Warn)</span>
+                        <span>3 (Limit)</span>
+                        <span>5 (Max)</span>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end">
+                      <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
+                        Action Plan
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Process/Product Audit Compliance */}
+              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                <CardContent className="p-6">
+                  <div className="space-y-5">
+                    <h3 className="font-bold text-white text-lg">Process/Product Audit Compliance</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-bold text-slate-300">Internal Audit Completion</span>
+                        <div className="flex items-center gap-1 text-sm font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-full">
+                          <ArrowUp className="w-3 h-3" />
+                          98% (+3% vs plan)
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-bold text-slate-300">Compliance %</span>
+                        <div className="flex items-center gap-1 text-sm font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-full">
+                          <ArrowUp className="w-3 h-3" />
+                          95% (+5% vs target)
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end">
+                      <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
+                        Action Plan
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Client Score Cards */}
+              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                <CardContent className="p-6">
+                  <div className="space-y-5">
+                    <h3 className="font-bold text-white text-lg">Client Score Cards</h3>
+                    
+                    {/* Line Chart */}
+                    <div className="w-full bg-slate-900/30 rounded-lg p-4 border border-slate-700/50">
+                      <div className="h-32 relative">
+                        <svg className="w-full h-full" viewBox="0 0 400 120">
+                          {/* Grid lines */}
+                          <defs>
+                            <pattern id="grid" width="80" height="20" patternUnits="userSpaceOnUse">
+                              <path d="M 80 0 L 0 0 0 20" fill="none" stroke="#374151" strokeWidth="0.5" opacity="0.3"/>
+                            </pattern>
+                          </defs>
+                          <rect width="100%" height="100%" fill="url(#grid)" />
+                          
+                          {/* Target line (dashed) */}
+                          <line x1="40" y1="40" x2="360" y2="40" stroke="#6B7280" strokeWidth="2" strokeDasharray="4,4" />
+                          
+                          {/* Data line */}
+                          <polyline
+                            points="40,80 120,60 200,90 280,70 320,50 360,45"
+                            fill="none"
+                            stroke="#3B82F6"
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          
+                          {/* Data points */}
+                          {[
+                            { x: 40, y: 80 },
+                            { x: 120, y: 60 },
+                            { x: 200, y: 90 },
+                            { x: 280, y: 70 },
+                            { x: 320, y: 50 },
+                            { x: 360, y: 45 }
+                          ].map((point, index) => (
+                            <circle
+                              key={index}
+                              cx={point.x}
+                              cy={point.y}
+                              r="4"
+                              fill="#3B82F6"
+                              stroke="#1E40AF"
+                              strokeWidth="2"
+                            />
+                          ))}
+                        </svg>
+                        
+                        {/* X-axis labels */}
+                        <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-slate-400 font-medium px-4">
+                          <span>Jan</span>
+                          <span>Feb</span>
+                          <span>Mar</span>
+                          <span>Apr</span>
+                          <span>May</span>
+                          <span>Jun</span>
+                        </div>
+                        
+                        {/* Target label */}
+                        <div className="absolute top-2 right-2 text-xs text-slate-400 font-medium">
+                          Target
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end">
+                      <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
+                        Action Plan
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Special layout for Supply Chain Dashboard - Dark theme with Global Indicators and Detailed KPIs
+  if (category.id === "supplychain") {
+    return (
+      <div className={`min-h-screen bg-slate-900 dark:bg-slate-900 ${className}`}>
+        <div className="p-6 space-y-8">
+          {/* Supply Chain Dashboard Title */}
+          <div className="space-y-2">
+            <h1 className="text-4xl font-bold text-white tracking-tight">Supply Chain Dashboard</h1>
+            <p className="text-slate-400 text-lg">Monitoring key supply chain performance indicators</p>
+          </div>
+
+          {/* Global Indicators Section */}
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-white">Global Indicators</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Customer Service Rate / OTIF */}
+              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                <CardContent className="p-6">
+                  <div className="space-y-5">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-bold text-white text-lg">Customer Service Rate / OTIF</h3>
+                      <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
+                        Details
+                      </Button>
+                    </div>
+                    
+                    <div className="text-sm text-slate-400 font-medium">% of orders delivered on time.</div>
+                    
+                    <div className="flex items-end justify-between">
+                      <div className="text-5xl font-bold text-white tracking-tight">96.5%</div>
+                      <div className="flex items-center gap-1 text-sm font-bold text-green-400 bg-green-500/10 px-3 py-1 rounded-full">
+                        <ArrowUp className="w-4 h-4" />
+                        +1.5%
+                      </div>
+                    </div>
+
+                    {/* Enhanced Progress Bar */}
+                    <div className="space-y-3">
+                      <div className="relative h-4 bg-slate-700 rounded-full overflow-hidden shadow-inner">
+                        {/* Background segments with proper colors */}
+                        <div className="absolute inset-0 flex">
+                          <div className="w-[20%] bg-orange-400"></div>
+                          <div className="w-[10%] bg-yellow-400"></div>
+                          <div className="w-[5%] bg-green-400"></div>
+                          <div className="w-[3%] bg-emerald-500"></div>
+                          <div className="w-[62%] bg-slate-700"></div>
+                        </div>
+                        {/* Current value indicator at 96.5% */}
+                        <div className="absolute left-[96.5%] top-0 w-1 h-full bg-white shadow-lg transform -translate-x-0.5"></div>
+                      </div>
+                      <div className="flex justify-between text-xs text-slate-400 font-medium">
+                        <span>OK: 80%</span>
+                        <span>Good: 90%</span>
+                        <span>Excellent: 95%</span>
+                        <span>Target: 98%</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Supplier Service Rate OTIF */}
+              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                <CardContent className="p-6">
+                  <div className="space-y-5">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-bold text-white text-lg">Supplier Service Rate OTIF</h3>
+                      <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
+                        Details
+                      </Button>
+                    </div>
+                    
+                    <div className="text-sm text-slate-400 font-medium">% of compliant supplier deliveries.</div>
+                    
+                    <div className="flex items-end justify-between">
+                      <div className="text-5xl font-bold text-white tracking-tight">92.0%</div>
+                      <div className="flex items-center gap-1 text-sm font-bold text-red-400 bg-red-500/10 px-3 py-1 rounded-full">
+                        <TrendingDown className="w-4 h-4" />
+                        -3.0%
+                      </div>
+                    </div>
+
+                    {/* Enhanced Progress Bar */}
+                    <div className="space-y-3">
+                      <div className="relative h-4 bg-slate-700 rounded-full overflow-hidden shadow-inner">
+                        {/* Background segments with proper colors */}
+                        <div className="absolute inset-0 flex">
+                          <div className="w-[15%] bg-orange-400"></div>
+                          <div className="w-[5%] bg-yellow-400"></div>
+                          <div className="w-[5%] bg-green-400"></div>
+                          <div className="w-[6%] bg-emerald-500"></div>
+                          <div className="w-[69%] bg-slate-700"></div>
+                        </div>
+                        {/* Current value indicator at 92% */}
+                        <div className="absolute left-[92%] top-0 w-1 h-full bg-white shadow-lg transform -translate-x-0.5"></div>
+                      </div>
+                      <div className="flex justify-between text-xs text-slate-400 font-medium">
+                        <span>OK: 85%</span>
+                        <span>Good: 90%</span>
+                        <span>Excellent: 95%</span>
+                        <span>Target: 98%</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Stock Reliability Rate */}
+              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                <CardContent className="p-6">
+                  <div className="space-y-5">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-bold text-white text-lg">Stock Reliability Rate</h3>
+                      <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
+                        Details
+                      </Button>
+                    </div>
+                    
+                    <div className="text-sm text-slate-400 font-medium">% of compliant inventories.</div>
+                    
+                    <div className="flex items-end justify-between">
+                      <div className="text-5xl font-bold text-white tracking-tight">99.2%</div>
+                      <div className="flex items-center gap-1 text-sm font-bold text-green-400 bg-green-500/10 px-3 py-1 rounded-full">
+                        <ArrowUp className="w-4 h-4" />
+                        +0.2%
+                      </div>
+                    </div>
+
+                    {/* Enhanced Progress Bar */}
+                    <div className="space-y-3">
+                      <div className="relative h-4 bg-slate-700 rounded-full overflow-hidden shadow-inner">
+                        {/* Background segments with proper colors */}
+                        <div className="absolute inset-0 flex">
+                          <div className="w-[4%] bg-orange-400"></div>
+                          <div className="w-[3%] bg-yellow-400"></div>
+                          <div className="w-[1%] bg-green-400"></div>
+                          <div className="w-[0.5%] bg-emerald-500"></div>
+                          <div className="w-[91.5%] bg-slate-700"></div>
+                        </div>
+                        {/* Current value indicator at 99.2% */}
+                        <div className="absolute left-[99.2%] top-0 w-1 h-full bg-white shadow-lg transform -translate-x-0.5"></div>
+                      </div>
+                      <div className="flex justify-between text-xs text-slate-400 font-medium">
+                        <span>OK: 95%</span>
+                        <span>Good: 98%</span>
+                        <span>Excellent: 99%</span>
+                        <span>Target: 99.5%</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Detailed KPIs Section */}
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-white">Detailed KPIs</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Inventory Turnover */}
+              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                <CardContent className="p-6">
+                  <div className="space-y-5">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-bold text-white text-lg">Inventory Turnover</h3>
+                      <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
+                        Action Plan
+                      </Button>
+                    </div>
+                    
+                    <div className="text-sm text-slate-400 font-medium">Average days of stock.</div>
+                    
+                    <div className="space-y-4">
+                      {/* Raw Materials */}
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-bold text-slate-300">Raw Materials</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg font-bold text-white">25 days</span>
+                          <div className="flex items-center gap-1 text-sm font-bold text-orange-400 bg-orange-500/10 px-2 py-1 rounded-full">
+                            <ArrowUp className="w-3 h-3" />
+                            +2 days vs target
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Finished Goods */}
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-bold text-slate-300">Finished Goods</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg font-bold text-white">18 days</span>
+                          <div className="flex items-center gap-1 text-sm font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-full">
+                            <TrendingDown className="w-3 h-3" />
+                            -1 day vs target
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Total Logistics Cost */}
+              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                <CardContent className="p-6">
+                  <div className="space-y-5">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-bold text-white text-lg">Total Logistics Cost</h3>
+                      <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
+                        Action Plan
+                      </Button>
+                    </div>
+                    
+                    <div className="text-sm text-slate-400 font-medium">Freight IN / Freight OUT evolution.</div>
+                    
+                    <div className="space-y-4">
+                      {/* Freight IN */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-bold text-slate-300">Freight IN</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg font-bold text-white">$125k</span>
+                            <div className="flex items-center gap-1 text-sm font-bold text-orange-400 bg-orange-500/10 px-2 py-1 rounded-full">
+                              <ArrowUp className="w-3 h-3" />
+                              +$5k vs target
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Freight IN Chart */}
+                        <div className="w-full bg-slate-900/30 rounded-lg p-3 border border-slate-700/50">
+                          <div className="h-20 relative">
+                            <svg className="w-full h-full" viewBox="0 0 200 60">
+                              {/* Grid lines */}
+                              <defs>
+                                <pattern id="freightInGrid" width="40" height="15" patternUnits="userSpaceOnUse">
+                                  <path d="M 40 0 L 0 0 0 15" fill="none" stroke="#374151" strokeWidth="0.5" opacity="0.3"/>
+                                </pattern>
+                              </defs>
+                              <rect width="100%" height="100%" fill="url(#freightInGrid)" />
+                              
+                              {/* Target line (red dotted) */}
+                              <line x1="10" y1="50" x2="190" y2="50" stroke="#EF4444" strokeWidth="1.5" strokeDasharray="2,2" />
+                              
+                              {/* Data line (blue) */}
+                              <polyline
+                                points="10,55 50,53 90,51 130,52 170,50"
+                                fill="none"
+                                stroke="#3B82F6"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                              
+                              {/* Data points */}
+                              {[
+                                { x: 10, y: 55, value: 120 },
+                                { x: 50, y: 53, value: 122 },
+                                { x: 90, y: 51, value: 124 },
+                                { x: 130, y: 52, value: 123 },
+                                { x: 170, y: 50, value: 125 }
+                              ].map((point, index) => (
+                                <circle
+                                  key={index}
+                                  cx={point.x}
+                                  cy={point.y}
+                                  r="2"
+                                  fill="#3B82F6"
+                                  stroke="#1E40AF"
+                                  strokeWidth="1"
+                                />
+                              ))}
+                            </svg>
+                            
+                            {/* X-axis labels */}
+                            <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-slate-400 font-medium px-2">
+                              <span>Jan</span>
+                              <span>Feb</span>
+                              <span>Mar</span>
+                              <span>Apr</span>
+                              <span>May</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Freight OUT */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-bold text-slate-300">Freight OUT</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg font-bold text-white">$210k</span>
+                            <div className="flex items-center gap-1 text-sm font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-full">
+                              <TrendingDown className="w-3 h-3" />
+                              -$10k vs target
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Freight OUT Chart */}
+                        <div className="w-full bg-slate-900/30 rounded-lg p-3 border border-slate-700/50">
+                          <div className="h-20 relative">
+                            <svg className="w-full h-full" viewBox="0 0 200 60">
+                              {/* Grid lines */}
+                              <defs>
+                                <pattern id="freightOutGrid" width="40" height="15" patternUnits="userSpaceOnUse">
+                                  <path d="M 40 0 L 0 0 0 15" fill="none" stroke="#374151" strokeWidth="0.5" opacity="0.3"/>
+                                </pattern>
+                              </defs>
+                              <rect width="100%" height="100%" fill="url(#freightOutGrid)" />
+                              
+                              {/* Target line (green dotted) */}
+                              <line x1="10" y1="45" x2="190" y2="45" stroke="#10B981" strokeWidth="1.5" strokeDasharray="2,2" />
+                              
+                              {/* Data line (blue) */}
+                              <polyline
+                                points="10,35 50,40 90,45 130,44 170,45"
+                                fill="none"
+                                stroke="#3B82F6"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                              
+                              {/* Data points */}
+                              {[
+                                { x: 10, y: 35, value: 220 },
+                                { x: 50, y: 40, value: 215 },
+                                { x: 90, y: 45, value: 210 },
+                                { x: 130, y: 44, value: 212 },
+                                { x: 170, y: 45, value: 210 }
+                              ].map((point, index) => (
+                                <circle
+                                  key={index}
+                                  cx={point.x}
+                                  cy={point.y}
+                                  r="2"
+                                  fill="#3B82F6"
+                                  stroke="#1E40AF"
+                                  strokeWidth="1"
+                                />
+                              ))}
+                            </svg>
+                            
+                            {/* X-axis labels */}
+                            <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-slate-400 font-medium px-2">
+                              <span>Jan</span>
+                              <span>Feb</span>
+                              <span>Mar</span>
+                              <span>Apr</span>
+                              <span>May</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
@@ -1315,39 +2054,55 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                   <div className="space-y-4">
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900">{kpi.title}</h3>
-                      <p className="text-sm text-slate-500">Total Employees</p>
+                      <p className="text-sm text-slate-500">{kpi.subtitle}</p>
                     </div>
                     
                     <div className="flex items-end justify-between">
                       <div className="text-3xl font-bold text-slate-900">{kpi.value}</div>
                       {kpi.trend && (
                         <div className={`text-sm font-medium ${kpi.trendColor}`}>
-                          {kpi.trend}
+                          {kpi.trend.includes('+') ? '↗' : kpi.trend.includes('-') ? '↘' : '→'} {kpi.trend}
                         </div>
                       )}
                     </div>
 
-                    {/* HR Style Progress Bar */}
+                    {/* HR Style Progress Bar with Status Ranges */}
                     <div className="space-y-2">
-                      <div className="flex h-2 bg-slate-200 rounded-full overflow-hidden">
+                      <div className="flex h-2 bg-slate-200 rounded-full overflow-hidden relative">
                         <div className="bg-green-500 w-1/4"></div>
                         <div className="bg-blue-500 w-1/4"></div>
-                        <div className="bg-yellow-500 w-1/4"></div>
+                        <div className="bg-orange-500 w-1/4"></div>
                         <div className="bg-red-500 w-1/4"></div>
+                        {kpi.currentStatus && (
+                          <div className="absolute top-0 left-0 right-0 flex justify-center">
+                            <span className="bg-purple-600 text-white text-xs px-2 py-1 rounded-full -mt-6">
+                              {kpi.currentStatus}
+                            </span>
+                          </div>
+                        )}
                       </div>
-                      <div className="flex justify-between text-xs text-slate-500">
-                        <span>Target</span>
-                        <span>Good</span>
-                        <span>Warning</span>
-                        <span>Critical</span>
-                      </div>
+                      {kpi.statusRanges && (
+                        <div className="flex justify-between text-xs text-slate-500">
+                          <span>{kpi.statusRanges.target}</span>
+                          <span>{kpi.statusRanges.good}</span>
+                          <span>{kpi.statusRanges.alert}</span>
+                          <span>{kpi.statusRanges.high}</span>
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex justify-between items-center">
                       <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                        View Details
+                        {kpi.actionText || 'View Details'}
                       </button>
-                      <span className="text-sm text-green-600 font-medium">On Target</span>
+                      <span className={`text-sm font-medium ${kpi.statusColor || 'text-green-600'}`}>
+                        {kpi.title === 'Headcount' && 'On Target'}
+                        {kpi.title === 'Cost' && 'Over Budget'}
+                        {kpi.title === 'Turnover Rate' && 'High'}
+                        {kpi.title === 'Time to Fill' && 'On Track'}
+                        {kpi.title === 'Absenteeism Rate' && 'Needs Attention'}
+                        {kpi.title === 'Social Incidents' && 'Good'}
+                      </span>
                     </div>
                   </div>
                 </CardContent>

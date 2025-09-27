@@ -31,13 +31,13 @@ export function DashboardHeader({ currentCategory, onNavigate, onBack }: Dashboa
   const headerBg = isLightTheme ? "bg-white/95 border-b border-slate-200/50" : "bg-slate-900/95 dark:bg-slate-900/95 border-b border-slate-800/50";
 
   return (
-    <header className={`${headerBg} shadow-sm backdrop-blur-sm`}>
-      <div className="px-6 py-3">
+    <header className={`${headerBg} shadow-sm backdrop-blur-sm px-4`}>
+      <div>
         <div className="flex items-center justify-between">
           {/* Left side - Logo and Navigation */}
           <div className="flex items-center space-x-8">
             {/* Logo with improved styling */}
-            <Logo logoType="default" width={120} height={30} />
+            <Logo logoType="default" />
 
             {/* Navigation */}
             <nav className="hidden md:flex items-center space-x-2">

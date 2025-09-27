@@ -61,8 +61,8 @@ export default function WelcomePage() {
 
       {/* Navigation Header */}
       <nav className={`relative z-50 backdrop-blur-xl bg-white/10 border-b border-white/20 shadow-xl transition-all duration-1000 ${isLoaded ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}`}>
-        <div className="w-full flex items-center justify-between px-6 md:px-8 lg:px-12 py-4">
-          <Logo logoType="welcome" width={150} height={80} />
+        <div className="w-full flex items-center justify-between px-6 md:px-8 lg:px-12">
+          <Logo logoType="welcome" />
         
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-2">
