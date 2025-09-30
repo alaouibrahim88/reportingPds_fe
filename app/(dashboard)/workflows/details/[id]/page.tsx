@@ -365,7 +365,6 @@ export default function WorkflowDetailsPage({
         const matchesSearch = [
           operator.operator_name,
           operator.matricule,
-          operator.cell_name,
         ]
           .join(" ")
           .toLowerCase()
@@ -936,7 +935,7 @@ export default function WorkflowDetailsPage({
                   style={{ height: "20px" }}
                 >
                   <p className="text-[10px] text-muted-foreground leading-none m-0 p-0 text-gray-800">
-                    Total Couts STD : {operatorDetails?.total_couts_standard}
+                    Total Couts STD : {operatorDetails?.header.total_couts_standart}
                   </p>
                 </div>
                 <div
@@ -944,7 +943,7 @@ export default function WorkflowDetailsPage({
                   style={{ height: "20px" }}
                 >
                   <p className="text-[10px] text-muted-foreground leading-none m-0 p-0 text-gray-800">
-                    Total Couts Reel : {operatorDetails?.total_couts_reel}
+                    Total Couts Reel : {operatorDetails?.header.total_couts_reel}
                   </p>
                 </div>
                 <div
@@ -952,7 +951,7 @@ export default function WorkflowDetailsPage({
                   style={{ height: "20px" }}
                 >
                   <p className="text-[10px] text-muted-foreground leading-none m-0 p-0 text-gray-800">
-                    Total Couts Social : {operatorDetails?.totalcouts_social}
+                    Total Couts Social : {operatorDetails?.header.totalcouts_social}
                   </p>
                 </div>
               </div>
@@ -1000,7 +999,7 @@ export default function WorkflowDetailsPage({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedOperators.length === 0 ? (
+                {paginatedOperators?.length === 0 ? (
                   <TableRow>
                     <TableCell
                       colSpan={12}
@@ -1014,7 +1013,7 @@ export default function WorkflowDetailsPage({
                     </TableCell>
                   </TableRow>
                 ) : (
-                  paginatedOperators.map((operator, index) => {
+                  paginatedOperators?.map((operator, index) => {
                     const rowKey = `table-cell-${index}`;
                     return (
                       <React.Fragment key={rowKey}>
@@ -1030,110 +1029,49 @@ export default function WorkflowDetailsPage({
                             {operator.matricule}
                           </TableCell>
                           <TableCell className="text-xs py-2">
-                            {operator.details
-                              .reduce(
-                                (sum, detail) =>
-                                  sum + parseFloat(detail.heures_reel || "0"),
-                                0
-                              )
-                              .toFixed(1)}
+                            {parseFloat(operator.heures_reel || "0")}
                             h
                           </TableCell>
                           <TableCell className="text-xs py-2">
-                            {operator.details
-                              .reduce(
-                                (sum, detail) =>
-                                  sum + parseFloat(detail.total_heures || "0"),
-                                0
-                              )
-                              .toFixed(1)}
-                            h
+                            {parseFloat(operator.heures_supplementaires || "0")}
+                            hss
                           </TableCell>
                           <TableCell className="text-xs py-2">
-                            {operator.details
-                              .reduce(
-                                (sum, detail) =>
-                                  sum +
-                                  parseFloat(detail.couts_standard || "0"),
-                                0
-                              )
-                              .toFixed(2)}
+                            {parseFloat(operator.couts_standard || "0")}
                             €
                           </TableCell>
                           <TableCell className="text-xs py-2">
-                            {operator.details
-                              .reduce(
-                                (sum, detail) =>
-                                  sum + parseFloat(detail.couts_reel || "0"),
-                                0
-                              )
-                              .toFixed(2)}
+                            {parseFloat(operator.couts_reel || "0")}
                             €
                           </TableCell>
                           <TableCell className="text-xs py-2">
                             <span
                               className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${"bg-gray-100"}`}
                             >
-                              {operator.details
-                                .reduce(
-                                  (sum, detail) =>
-                                    sum +
-                                    parseFloat(detail.avantages_sociaux || "0"),
-                                  0
-                                )
-                                .toFixed(2)}
+                              {parseFloat(operator.avantages_sociaux || "0")}
                               €
                             </span>
                           </TableCell>
                           <TableCell className="text-xs py-2">
-                            {(
-                              operator.details.reduce(
-                                (sum, detail) =>
-                                  sum +
-                                  parseFloat(detail.tarif_horaire_pct || "0"),
-                                0
-                              ) / operator.details.length
-                            ).toFixed(1)}
+                            {parseFloat(operator.tarif_horaire_pct || "0")}
                             %
                           </TableCell>
                           <TableCell className="text-xs py-2">
                             <span
                               className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${"bg-gray-100"}`}
                             >
-                              {operator.details
-                                .reduce(
-                                  (sum, detail) =>
-                                    sum + parseFloat(detail.couts_reel || "0"),
-                                  0
-                                )
-                                .toFixed(2)}
+                              {parseFloat(operator.couts_reel || "0")}
                               €
                             </span>
                           </TableCell>
                           <TableCell className="text-xs py-2">
-                            {operator.details
-                              .reduce(
-                                (sum, detail) =>
-                                  sum +
-                                  parseFloat(detail.couts_standard || "0"),
-                                0
-                              )
-                              .toFixed(2)}
+                            { parseFloat(operator.couts_standard || "0")}
                             €
                           </TableCell>
                           <TableCell className="text-xs py-2">
                             {(() => {
-                              const realCost = operator.details.reduce(
-                                (sum, detail) =>
-                                  sum + parseFloat(detail.couts_reel || "0"),
-                                0
-                              );
-                              const stdCost = operator.details.reduce(
-                                (sum, detail) =>
-                                  sum +
-                                  parseFloat(detail.couts_standard || "0"),
-                                0
-                              );
+                              const realCost = parseFloat(operator.couts_reel || "0");
+                              const stdCost = parseFloat(operator.couts_standard || "0");
                               const variance = realCost - stdCost;
                               const badgeClass =
                                 variance > 0

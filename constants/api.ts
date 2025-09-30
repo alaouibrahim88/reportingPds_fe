@@ -21,6 +21,6 @@ export const Endpoints = {
     productions: `${API_DIRECTORY}/GetCoutGlobal`,
     productionsDetails: `${API_DIRECTORY}/GetCellCalculRef`,
     detailCell: `${API_DIRECTORY}/GetDetailCoutCell`,
-    operatorsByCell: `${API_DIRECTORY}/GetOperatorByCell`,
+    operatorsByCell: `${API_DIRECTORY}/GetCellDetaitByOper`,
   }
 };

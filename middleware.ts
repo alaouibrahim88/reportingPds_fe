@@ -3,7 +3,6 @@ import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   const isAuthenticated = request.cookies.get("access_token")?.value;
-  console.log('[Middlware] request ',request.url, isAuthenticated);
   // If the user is not logged in and trying to access a protected route
   if (
     !isAuthenticated &&

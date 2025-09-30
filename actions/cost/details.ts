@@ -13,7 +13,7 @@ export const fetchCellDetails = async (
     
     // Add parameters as query parameters
     url.searchParams.append('CellId', zoneId.toString());
-    url.searchParams.append('Mois', month.toString());
+    url.searchParams.append('moisEntree', month.toString());
     url.searchParams.append('Annee', year.toString());
     
     const response = await fetch(url.toString(), {

@@ -122,10 +122,28 @@ export interface OperatorDetail {
 }
 
 export interface OperatorDetails {
-    matricule: string;
-    operator_name: string;
-    cell_name: string;
-    details: OperatorDetail[];
+  mois: string,
+  mois_num: number,
+  annee: number,
+  matricule: string,
+  operator_name: string,
+  heures_reel: string,
+  heures_supplementaires: string,
+  tarif_horaire_pct: string,
+  cout_social: string,
+  avantages_sociaux: string,
+  salaire_net: string,
+  couts_reel: string,
+  couts_standard: string,
+  ecarts: string,
+}
+
+export interface OperatorHeader {
+  cell_name: string,
+  total_heures: number,
+  total_couts_standart: number,
+  total_couts_reel: number,
+  totalcouts_social: number
 }
 
 export interface OperatorDetailsApiResponse {
@@ -133,6 +151,7 @@ export interface OperatorDetailsApiResponse {
     total_couts_reel: number;
     totalcouts_social: number;
     details: OperatorDetails[];
+    header: OperatorHeader;
     returnMessage: string;
     returnCode: string;
 }
