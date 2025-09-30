@@ -21,7 +21,7 @@ export async function GetZoneDetails(
 
     // Make sure the API URL is correctly configured
     const apiUrl = process.env.NEXT_PUBLIC_API_ENDPOINT;
-    const token = localStorage.getItem("access_token");
+    const token = await getCookieValue("access_token");
     const response = await fetch(
       `${apiUrl}${Endpoints.scrap.details.zoneDetailType}?annee=${validYear}&typeaffichage=${validDisplayType}&mois=${validMonth}`,
       {

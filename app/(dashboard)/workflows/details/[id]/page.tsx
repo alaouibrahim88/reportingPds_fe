@@ -230,12 +230,16 @@ export default function WorkflowDetailsPage({
   useEffect(() => {
     const fetchData = async () => {
       if (cellsSelectedMonth !== "all" && cellsSelectedYear) {
-        const details = await fetchCellDetails(
-          Number(params.id),
-          parseInt(cellsSelectedMonth),
-          parseInt(cellsSelectedYear)
-        );
-        setCellDetails(details);
+        try {
+          const details = await fetchCellDetails(
+            Number(params.id),
+            parseInt(cellsSelectedMonth),
+            parseInt(cellsSelectedYear)
+          );
+          setCellDetails(details);
+        } catch (error) {
+          console.log('fetchdata ', error);
+        }
       } else {
         setCellDetails(undefined);
       }
@@ -318,9 +322,9 @@ export default function WorkflowDetailsPage({
   };
 
   const detail = allZones
-    .find((detail) => detail.libelle === params.id);
+    .find((detail) => detail.id === Number(params.id));
 
-  if (!detail) {
+  if (allZones.length > 0 && !detail) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
         <h1 className="text-2xl font-bold mb-4">Detail not found</h1>
@@ -449,7 +453,7 @@ export default function WorkflowDetailsPage({
               <h2 className="font-medium text-sm">Zone Details</h2>
             </div>
             <p className="text-xs text-muted-foreground">
-              Details for {detail.libelle}
+              Details for {detail?.libelle}
             </p>
           </div>
         </div>
@@ -459,16 +463,16 @@ export default function WorkflowDetailsPage({
             Switch zone:
           </span>
           <Select value={selectedZone} onValueChange={switchZone}>
-            <SelectTrigger className="h-6 w-[100px] text-xs border-none bg-transparent hover:bg-muted/80 focus:ring-0 focus:ring-offset-0">
+            <SelectTrigger className="h-6 w-max text-xs border-none bg-transparent hover:bg-muted/80 focus:ring-0 focus:ring-offset-0">
               <SelectValue placeholder="Select zone" />
             </SelectTrigger>
             <SelectContent className="min-w-[120px]">
               {allZones && allZones?.map((zone) => (
                 <SelectItem
-                  key={zone.libelle}
-                  value={zone.libelle}
+                  key={zone.id}
+                  value={zone.id.toString()}
                   className="text-xs"
-                  aria-selected={selectedZone === zone.libelle}
+                  aria-selected={selectedZone === zone.id}
                 >
                   <div className="flex items-center gap-2">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary/60" />

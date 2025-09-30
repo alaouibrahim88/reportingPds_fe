@@ -2,15 +2,11 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-  // DISABLED: Skip all authentication checks
-  return NextResponse.next();
-  
-  /* ORIGINAL AUTHENTICATION LOGIC (COMMENTED OUT)
-  const currentUser = request.cookies.get("access_token")?.value;
-  console.log('[Middlware] request ',request.url, currentUser);
+  const isAuthenticated = request.cookies.get("access_token")?.value;
+  console.log('[Middlware] request ',request.url, isAuthenticated);
   // If the user is not logged in and trying to access a protected route
   if (
-    !currentUser &&
+    !isAuthenticated &&
     !request.nextUrl.pathname.startsWith("/login") &&
     !request.nextUrl.pathname.startsWith("/register") &&
     !request.nextUrl.pathname.startsWith("/") &&
@@ -23,16 +19,15 @@ export function middleware(request: NextRequest) {
 
   // If the user is logged in and trying to access auth pages
   if (
-    currentUser &&
+    isAuthenticated &&
     (request.nextUrl.pathname.startsWith("/login") ||
       request.nextUrl.pathname.startsWith("/register"))
   ) {
     // Redirect to the home page
-    return NextResponse.redirect(new URL("/", request.url));
+    return NextResponse.redirect(new URL("/welcome", request.url));
   }
 
   return NextResponse.next();
-  */
 }
 
 export const config = {

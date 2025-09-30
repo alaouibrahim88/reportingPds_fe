@@ -109,7 +109,7 @@ function TableHeaderSection({
         </div>
         <div className="flex items-center gap-2">
           <TableFilter data={data} filters={filters} onFilterChange={onFilterChange} />
-          <Link href={`/details/1`}>
+          <Link href={`/scrap/details/1`}>
             <Button variant="outline" className="flex items-center gap-2">
               <ListCollapse />
               <span className="hidden sm:inline">Details</span>

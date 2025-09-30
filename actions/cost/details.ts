@@ -12,9 +12,9 @@ export const fetchCellDetails = async (
     const url = new URL(`${process.env.NEXT_PUBLIC_API_ENDPOINT}${Endpoints.cost.detailCell}`);
     
     // Add parameters as query parameters
-    url.searchParams.append('cellId', zoneId.toString());
-    url.searchParams.append('month', month.toString());
-    url.searchParams.append('year', year.toString());
+    url.searchParams.append('CellId', zoneId.toString());
+    url.searchParams.append('Mois', month.toString());
+    url.searchParams.append('Annee', year.toString());
     
     const response = await fetch(url.toString(), {
         method: "GET",
@@ -49,8 +49,8 @@ export const fetchOperatorDetailsByCell = async (
     // Add parameters as query parameters
     url.searchParams.append('zoneId', zoneId.toString());
     url.searchParams.append('cellId', cellId.toString());
-    url.searchParams.append('month', month.toString());
-    url.searchParams.append('year', year.toString());
+    url.searchParams.append('Mois', month.toString());
+    url.searchParams.append('Annee', year.toString());
     
     const response = await fetch(url.toString(), {
         method: "GET",
