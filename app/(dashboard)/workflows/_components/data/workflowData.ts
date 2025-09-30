@@ -1,4 +1,4 @@
-import { colors } from "@/app/(dashboard)/(home)/_components/data/dashboardData";
+import { colors } from "@/app/(dashboard)/scrap/_components/data/dashboardData";
 
 export const workflowData = {
   stats: [

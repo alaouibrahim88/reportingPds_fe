@@ -1,4 +1,4 @@
-import { dashboardData } from "@/app/(dashboard)/(home)/_components/data/dashboardData";
+import { dashboardData } from "@/app/(dashboard)/scrap/_components/data/dashboardData";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {

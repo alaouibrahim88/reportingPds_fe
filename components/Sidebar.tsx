@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 
 const routes = [
   {
-    href: "",
+    href: "scrap",
     label: "Scrap",
     icon: HomeIcon,
   },

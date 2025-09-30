@@ -70,10 +70,8 @@ export default function LoginPage() {
     try {
       const result = await login(username, password);
       if (result.access_token) {
-      setCookieValue('access_token', result.access_token);
-     localStorage.setItem('access_token', result.access_token);
-     router.push('/');
-
+        setCookieValue('access_token', result.access_token);
+        router.push('/scrap');
       } else {
         setError(
           result?.error || "Login failed. Please check your credentials."

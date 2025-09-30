@@ -1,4 +1,4 @@
-import { ApiResponse } from "@/app/(dashboard)/(home)/details/[id]/CollapsibleZoneTable";
+import { ApiResponse } from "@/app/(dashboard)/scrap/details/[id]/CollapsibleZoneTable";
 import { Endpoints } from "@/constants/api";
 import { getCookieValue } from "@/lib/storage";
 import { z } from "zod";
