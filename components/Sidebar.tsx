@@ -10,6 +10,8 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   BadgeDollarSign,
+  TrendingUpIcon,
+  GlobeIcon,
 } from "lucide-react";
 import React, { useState } from "react";
 import Logo from "@/components/Logo";
@@ -35,6 +37,16 @@ const routes = [
     href: "scrap-setting",
     label: "Paramétrage",
     icon: ShieldCheckIcon,
+  },
+  {
+    href: "executive-horizon",
+    label: "Executive Horizon",
+    icon: TrendingUpIcon,
+  },
+  {
+    href: "global-ops",
+    label: "GlobalOps",
+    icon: GlobeIcon,
   },
   {
     href: "billing",
@@ -82,7 +94,7 @@ function DesktopSidebar() {
             isCollapsed ? "w-0 opacity-0" : "w-full opacity-100"
           )}
         >
-          <Logo />
+          <Logo logoType="default" className="flex-shrink-0" />
         </div>
       </div>
 
@@ -140,7 +152,7 @@ export function MobileSidebar() {
           </SheetTrigger>
           <SheetContent side="left" className="w-[300px] p-0">
             <div className="flex h-16 items-center border-b px-6">
-              <Logo />
+              <Logo logoType="default" />
             </div>
             {/* <UserAvailableCreditsBadge /> */}
             <div className="space-y-2 py-4">
