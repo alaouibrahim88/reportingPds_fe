@@ -34,11 +34,6 @@ const routes = [
     icon: CoinsIcon,
   },
   {
-    href: "scrap-setting",
-    label: "Paramétrage",
-    icon: ShieldCheckIcon,
-  },
-  {
     href: "executive-horizon",
     label: "Executive Horizon",
     icon: TrendingUpIcon,
@@ -47,6 +42,11 @@ const routes = [
     href: "global-ops",
     label: "GlobalOps",
     icon: GlobeIcon,
+  },
+  {
+    href: "scrap-setting",
+    label: "Paramétrage",
+    icon: ShieldCheckIcon,
   },
   {
     href: "billing",
