@@ -155,33 +155,19 @@ export default function WelcomePage() {
                   : "translate-y-4 opacity-0"
               }`}
             >
-              All About{" "}
-              <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent drop-shadow-lg">
-                Key Performance
-              </span>{" "}
-              <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-rose-400 bg-clip-text text-transparent drop-shadow-lg">
-                Indicators
-              </span>{" "}
-              <span className="bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent drop-shadow-lg">
-                (KPIs) for MSPs
-              </span>
+              One View, <br />
+              Total Control
             </h1>
 
             {/* Description */}
             <p
-              className={`text-lg md:text-xl lg:text-2xl text-white/90 font-normal max-w-4xl leading-relaxed transition-all duration-1000 delay-500 ${
+              className={`text-lg md:text-xl lg:text-4xl text-white/90 font-normal max-w-4xl leading-relaxed transition-all duration-1000 delay-500 ${
                 isLoaded
                   ? "translate-y-0 opacity-100"
                   : "translate-y-4 opacity-0"
               }`}
             >
-              Transform your business intelligence with our advanced analytics
-              and reporting platform designed for
-              <span className="font-semibold text-white bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                {" "}
-                Polydesign Systems&apos;
-              </span>{" "}
-              comprehensive operational insights.
+              Reporting platform for <br />Polydesigns System's <br /> Business operations
             </p>
           </div>
         </div>
