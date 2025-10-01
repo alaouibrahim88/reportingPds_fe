@@ -14,7 +14,7 @@ function Logo({
   height?: number;
   className?: string;
 }) {
-  const logoSrc = "/polydesignlogo.webp";
+  const logoSrc = "/logo.png";
 
   const defaultStyke =
     logoType === "welcome"
