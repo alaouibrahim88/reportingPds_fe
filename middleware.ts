@@ -21,8 +21,7 @@ export function middleware(request: NextRequest) {
       request.nextUrl.pathname.startsWith("/register"))
   ) {
     // Redirect to the home page
-    console.log('Redirecting to /welcome');
-    return NextResponse.redirect(new URL("/welcome", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return NextResponse.next();

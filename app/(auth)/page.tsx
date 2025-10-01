@@ -146,18 +146,6 @@ export default function WelcomePage() {
                 : "-translate-x-8 opacity-0"
             }`}
           >
-            {/* Badge */}
-            <div
-              className={`inline-flex items-center w-fit px-6 py-3 rounded-full bg-white/15 backdrop-blur-xl border border-white/30 shadow-xl transition-all duration-1000 delay-200 ${
-                isLoaded
-                  ? "translate-y-0 opacity-100"
-                  : "translate-y-4 opacity-0"
-              }`}
-            >
-              <span className="text-sm font-medium text-white/95">
-                🚀 Advanced Analytics Platform
-              </span>
-            </div>
 
             {/* Main Heading */}
             <h1
@@ -195,38 +183,6 @@ export default function WelcomePage() {
               </span>{" "}
               comprehensive operational insights.
             </p>
-
-            {/* CTA Buttons */}
-            <div
-              className={`flex flex-col sm:flex-row gap-4 pt-6 transition-all duration-1000 delay-700 ${
-                isLoaded
-                  ? "translate-y-0 opacity-100"
-                  : "translate-y-4 opacity-0"
-              }`}
-            >
-              <Button
-                onClick={() => router.push("/scrap")}
-                className="group relative bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-lg font-semibold px-8 py-4 h-14 rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105 border-0 overflow-hidden"
-              >
-                <span className="relative z-10 flex items-center gap-2">
-                  Get Started
-                  <svg
-                    className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 7l5 5m0 0l-5 5m5-5H6"
-                    />
-                  </svg>
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-              </Button>
-            </div>
           </div>
         </div>
       </div>

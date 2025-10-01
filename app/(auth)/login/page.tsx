@@ -71,7 +71,7 @@ export default function LoginPage() {
       const result = await login(username, password);
       if (result.access_token) {
         setCookieValue('access_token', result.access_token);
-        router.push('/welcome');
+        router.push('/');
       } else {
         setError(
           result?.error || "Login failed. Please check your credentials."
