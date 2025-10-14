@@ -12,9 +12,9 @@ export default function WorkflowsPage() {
   const [productionIssue, setProductionIssue] = useState<ProductionIssuesApiResponse | undefined>(undefined);
   const [costTracking, setCostTracking] = useState<CostTracking[] | undefined>(undefined);
   const [efficiencyTracking, setEfficiencyTracking] = useState<EfficiencyTracking[] | undefined>(undefined);
-  const [selectedYear, setSelectedYear] = useState<number>(2024);
-  const [selectedMonth, setSelectedMonth] = useState<number | undefined>(undefined);
-  
+  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState<number | undefined>(new Date().getMonth() + 1);
+ 
   // Fetch data that doesn't depend on year/month filters (only once on mount)
   const fetchStaticData = useCallback(async () => {
     console.log('fetchStaticData');
@@ -33,9 +33,9 @@ export default function WorkflowsPage() {
       fetchCostTrackings(selectedYear, selectedMonth),
       fetchEfficiencyTrackings(selectedYear, selectedMonth)
     ]);
-    
-    setCostTracking(costTrackingData);
-    setEfficiencyTracking(efficiencyTrackingData);
+
+    setCostTracking(costTrackingData?.details);
+    setEfficiencyTracking(efficiencyTrackingData?.details);
   }, [selectedYear, selectedMonth]);
 
   // Fetch static data once on mount

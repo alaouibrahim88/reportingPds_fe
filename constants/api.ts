@@ -15,9 +15,9 @@ export const Endpoints = {
     },
   },
   cost: {
-    global: `${API_DIRECTORY}/GetCoutGlobalStats`,
-    costTracking: `${API_DIRECTORY}/GetCostTracking`,
-    efficiencyTracking: `${API_DIRECTORY}/GetDataWeekZone`,
+    global: `${API_DIRECTORY}/GetCoutsHeaderGlobal`,
+    costTracking: `${API_DIRECTORY}/GetCoutsZoneGlobal`,
+    efficiencyTracking: `${API_DIRECTORY}/GetCoutsEfficienceGlobal`,
     productions: `${API_DIRECTORY}/GetCoutGlobal`,
     productionsDetails: `${API_DIRECTORY}/GetCellCalculRef`,
     detailCell: `${API_DIRECTORY}/GetDetailCoutCell`,

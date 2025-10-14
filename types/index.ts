@@ -8,18 +8,46 @@ export interface CostTracking {
   ecart: string;
 }
 
+export interface CostTrackingResponse {
+  details: {
+    zone_id: number;
+    zone_nom: string;
+    couts_reel: string;
+    couts_std: string;
+    ecart: string;
+  }[],
+  returnMessage: string;
+  returnCode: string;
+}
+
 export interface EfficiencyTracking {
   zone_id: number;
   zone_nom: string;
   efficience: number;
   heures_reel: number;
 }
+
+export interface EfficiencyTrackingResponse {
+  details: {
+    zone_id: number;
+    zone_nom: string;
+    efficience: number;
+    heures_reel: number;
+  }[],
+  returnMessage: string;
+  returnCode: string;
+}
+
 export interface GlobalCost {
-  couts_reel_par_annee: string;
-  couts_std_par_annee: string;
-  couts_reel_dernier_mois: string;
-  couts_std_dernier_mois: string;
-  efficience_dernier_mois: string;
+  details: {
+    couts_reel_par_annee: string;
+    couts_std_par_annee: string;
+    couts_reel_dernier_mois: string;
+    couts_std_dernier_mois: string;
+    efficience_dernier_mois: string;
+  }[],
+  returnMessage: string;
+  returnCode: string;
 }
 
 export interface ProductionIssueDetail {

@@ -1,14 +1,13 @@
 import { Endpoints } from "@/constants/api";
-import { ProductionIssuesApiResponse, CellCalculRefDetailApiResponse, GlobalCost, CostTracking as CostTracking, EfficiencyTracking } from "@/types";
+import { ProductionIssuesApiResponse, CellCalculRefDetailApiResponse, GlobalCost, CostTracking as CostTracking, EfficiencyTracking, CostTrackingResponse, EfficiencyTrackingResponse } from "@/types";
 import { getCookieValue } from "@/lib/storage";
 
-export const fetchCostTrackings = async (year: number, month?: number): Promise<CostTracking[] | undefined> => {
+export const fetchCostTrackings = async (year: number, month?: number): Promise<CostTrackingResponse | undefined> => {
   try {
     const token = await getCookieValue("access_token");
-    //const url = new URL(`${process.env.NEXT_PUBLIC_API_ENDPOINT}${Endpoints.cost.costTracking}`);
-    const url = new URL(`http://localhost:3000/api/BridgeHubMTO/GetCostTracking`);
-    url.searchParams.append('year', year.toString());
-    url.searchParams.append('month', month?.toString() ?? 'All');
+    const url = new URL(`${process.env.NEXT_PUBLIC_API_ENDPOINT}${Endpoints.cost.costTracking}`);
+    url.searchParams.append('Annee', year.toString());
+    url.searchParams.append('mois', month?.toString() ?? '0');
     const response = await fetch(url.toString(), {
         method: "GET",
         headers: {
@@ -29,12 +28,12 @@ export const fetchCostTrackings = async (year: number, month?: number): Promise<
   }
 };
 
-export const fetchEfficiencyTrackings = async (year: number, month?: number): Promise<EfficiencyTracking[] | undefined> => {
+export const fetchEfficiencyTrackings = async (year: number, month?: number): Promise<EfficiencyTrackingResponse | undefined> => {
   try {
     const token = await getCookieValue("access_token");
     const url = new URL(`${process.env.NEXT_PUBLIC_API_ENDPOINT}${Endpoints.cost.efficiencyTracking}`);
-    url.searchParams.append('year', year.toString());
-    url.searchParams.append('month', month?.toString() ?? 'All');
+    url.searchParams.append('Annee', year.toString());
+    url.searchParams.append('mois', month?.toString() ?? '0');
     const response = await fetch(url.toString(), {
         method: "GET",
         headers: {
@@ -58,8 +57,7 @@ export const fetchEfficiencyTrackings = async (year: number, month?: number): Pr
 export const fetchGlobalCosts = async (): Promise<GlobalCost | undefined> => {
   try {
     const token = await getCookieValue("access_token");
-    //const url = new URL(`${process.env.NEXT_PUBLIC_API_ENDPOINT}${Endpoints.cost.global}`);
-    const url = new URL(`http://localhost:3000/api/BridgeHubMTO/GetCoutGlobalStats`);
+    const url = new URL(`${process.env.NEXT_PUBLIC_API_ENDPOINT}${Endpoints.cost.global}`);
     url.searchParams.append('Annee', new Date().getFullYear().toString());
     url.searchParams.append('Mois', new Date().getMonth().toString());
     const response = await fetch(url.toString(), {
