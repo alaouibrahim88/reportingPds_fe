@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, HTMLAttributes } from "react";
+import React, { useState, HTMLAttributes, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -32,88 +32,80 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-import { ZoneDataType } from "./data/workflowData";
-
-interface ProcessDamage {
-  process: string;
-  count: number;
-  percentage: number;
-  damageTypes: Record<string, number>;
-}
-
-interface MachineDamage {
-  machine: string;
-  count: number;
-  percentage: number;
-  operationalStatus: {
-    uptime: number;
-    maintenance: number;
-    repair: number;
-  };
-}
-
-interface DamageStats {
-  byProcess: ProcessDamage[];
-  byMachine: MachineDamage[];
-}
-
-interface DetailStats {
-  time: string;
-  machine: string;
-  job: string;
-  count: number;
-  status: string;
-  priority: string;
-  assignee: string;
-  department: string;
-  message: string;
-  op: {
-    damageType: {
-      process: number;
-      machine: number;
-      material: number;
-    };
-    production: {
-      planned: number;
-      actual: number;
-      variance: number;
-    };
-    quality: {
-      inspected: number;
-      passed: number;
-      failed: number;
-    };
-  };
-  damageStats: DamageStats;
-}
+import { ProductionIssueDetail, ProductionIssuesApiResponse, CellCalculRefDetail } from "@/types";
+import { fetchZoneCalculationDetails } from "@/actions/cost/dashboard";
 
 interface TableZoneProps {
-  data: ZoneDataType[];
+  data: ProductionIssuesApiResponse | undefined;
 }
 
 export default function TableZone({ data }: TableZoneProps) {
   const [openRows, setOpenRows] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [zoneDetails, setZoneDetails] = useState<Record<number, CellCalculRefDetail[]>>({});
+  const [loadingZones, setLoadingZones] = useState<Set<number>>(new Set());
   const itemsPerPage = 5;
 
-  const toggleRow = (index: number) => {
+  // Reset page when search query changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
+  const toggleRow = async (index: number, detail: ProductionIssueDetail) => {
+    const isOpening = !openRows.includes(index);
+    
     setOpenRows((prev) =>
       prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
     );
-  };
 
-  const totalItems = data.reduce((acc, item) => acc + item.details.length, 0);
+    // If opening row and we don't have data yet, fetch it
+    if (isOpening && !zoneDetails[detail.idzone]) {
+      setLoadingZones(prev => new Set(prev).add(detail.idzone));
+      
+      try {
+        const response = await fetchZoneCalculationDetails(detail.idzone);
+        if (response?.details) {
+          setZoneDetails(prev => ({
+            ...prev,
+            [detail.idzone]: response.details
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching zone details:", error);
+      } finally {
+        setLoadingZones(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(detail.idzone);
+          return newSet;
+        });
+      }
+    }
+  };
+  
+  const details = data?.details || [];
+  
+  // Filter data based on search query
+  const filteredDetails = details.filter((detail) => {
+    if (!searchQuery) return true;
+    const searchLower = searchQuery.toLowerCase();
+    return (
+      detail.zone.toLowerCase().includes(searchLower) ||
+      detail.mois.toLowerCase().includes(searchLower) ||
+      detail.heures_reel.toString().includes(searchLower) ||
+      detail.heures_standart.toString().includes(searchLower) ||
+      detail.cout_reel.toString().includes(searchLower) ||
+      detail.cout_standart.toString().includes(searchLower)
+    );
+  });
+  
+  const totalItems = filteredDetails.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  const getPaginatedData = () => {
-    let allDetails: any[] = [];
-    data.forEach((item) => {
-      allDetails = [...allDetails, ...item.details];
-    });
-
+  const getPaginatedData = (): ProductionIssueDetail[] => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return allDetails.slice(startIndex, endIndex);
+    return filteredDetails.slice(startIndex, endIndex);
   };
 
   const paginatedData = getPaginatedData();
@@ -138,7 +130,7 @@ export default function TableZone({ data }: TableZoneProps) {
             Track and manage production issues and scrap reports
           </p>
         </div>
-        <TableFilter onFilterChange={() => {}} />
+        <TableFilter onFilterChange={setSearchQuery} />
       </div>
 
       {/* Table Section */}
@@ -149,8 +141,8 @@ export default function TableZone({ data }: TableZoneProps) {
               <TableHead className="py-1 w-[50px] text-sm"></TableHead>
               <TableCell className="py-1 text-sm">Zone</TableCell>
               <TableHead className="py-1 text-sm">Periode</TableHead>
-              <TableHead className="py-1 text-sm"> EFF.Valorisé</TableHead>
-              <TableHead className="py-1 text-sm">EFF.Opérationnel </TableHead>
+              <TableHead className="py-1 text-sm">Heures Réel</TableHead>
+              <TableHead className="py-1 text-sm">Heures Standart </TableHead>
               <TableHead className="py-1 text-sm">C.Réel </TableHead>
               <TableHead className="py-1 text-sm">C.Standart</TableHead>
               <TableHead className="py-1 text-sm">Ecart</TableHead>
@@ -160,11 +152,11 @@ export default function TableZone({ data }: TableZoneProps) {
           </TableHeader>
           <TableBody>
             {paginatedData.map((detail, detailIndex) => (
-              <React.Fragment key={detailIndex}>
+              <React.Fragment key={`${detail.idzone}-${detail.period}-${detailIndex}`}>
                 <TableRow className="h-9">
                   <TableCell className="py-1 text-sm">
                     <button
-                      onClick={() => toggleRow(detailIndex)}
+                      onClick={() => toggleRow(detailIndex, detail)}
                       className="p-0.5 hover:bg-muted rounded-lg"
                     >
                       {openRows.includes(detailIndex) ? (
@@ -175,27 +167,28 @@ export default function TableZone({ data }: TableZoneProps) {
                     </button>
                   </TableCell>
                   <TableCell className="py-1 text-sm">{detail.zone}</TableCell>
-                  <TableCell className="py-1 text-sm">{detail.time}</TableCell>
+                  <TableCell className="py-1 text-sm">{detail.mois}/{detail.annee}</TableCell>
                   <TableCell className="py-1 text-sm">
-                    {detail.hoursWorked}
+                    {detail.heures_reel}
+                  </TableCell>
+             
+                  <TableCell className="py-1 text-sm">
+                    {detail.heures_standart}{" "}
                   </TableCell>
                   <TableCell className="py-1 text-sm">
-                    {detail.hoursWorked}{" "}
+                    {detail.cout_reel}
                   </TableCell>
                   <TableCell className="py-1 text-sm">
-                    {detail.hoursWorked} Euro
+                    {detail.cout_standart}
                   </TableCell>
                   <TableCell className="py-1 text-sm">
-                    {detail.hoursWorked + detail.hoursWorked} Euro
+                    {detail.ecart}
                   </TableCell>
                   <TableCell className="py-1 text-sm">
-                    {detail.hoursWorked + detail.hoursWorked * 2}
+                    {detail.ecart_global}
                   </TableCell>
                   <TableCell className="py-1 text-sm">
-                    {detail.hoursWorked + detail.hoursWorked * 4}
-                  </TableCell>
-                  <TableCell className="py-1 text-sm">
-                    <Link href={`/workflows/details/${detail.id}`}>
+                    <Link href={`/workflows/details/${detail.idzone}`}>
                       <Button
                         variant="outline"
                         size="sm"
@@ -207,40 +200,69 @@ export default function TableZone({ data }: TableZoneProps) {
                   </TableCell>
                 </TableRow>
                 {openRows.includes(detailIndex) && (
-                  <TableRow className="bg-muted/50">
-                    <TableCell colSpan={12} className="p-4 ">
-                      <div className="space-y-6 ">
-                        <div>
-                          <div className="grid grid-cols-1 gap-3">
-                            <Card className="p-3">
-                              <div className="space-y-1">
-                                <div className="grid grid-cols-3 gap-2">
-                                  <div>
-                                    <p className="text-xs text-muted-foreground">
-                                      HR
-                                    </p>
-                                    <p className="text-sm font-medium">
-                                      {detail.op.production.planned}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <p className="text-xs text-muted-foreground">
-                                      HT
-                                    </p>
-                                    <p className="text-sm font-medium">
-                                      {detail.op.production.actual}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            </Card>
-                          </div>
-                        </div>
-
-                        {/* Existing Damage Stats sections */}
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                 <tr>
+                 <td colSpan={10}>
+                   <div className="overflow-x-auto p-4">
+                     {loadingZones.has(detail.idzone) ? (
+                       <div className="flex justify-center items-center p-8">
+                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                         <span className="ml-2 text-sm text-muted-foreground">Loading zone details...</span>
+                       </div>
+                     ) : (
+                       <table className="table-auto w-full border-collapse border border-gray-400 text-sm text-center">
+                         <thead>
+                           <tr style={{ height: '10px' }}>
+                             <th rowSpan={2} colSpan={1} className="bg-white-100 border text-white border-gray-400 py-0" style={{ fontSize: '12px' }}>Semaine</th>
+                             <th colSpan={4} className="bg-blue-100 border text-black border-gray-400 py-0" style={{ fontSize: '12px' }}>Tarif Horaire</th>
+                             <th colSpan={4} className="bg-green-100 text-black border border-gray-400 py-0" style={{ fontSize: '12px' }}>Couts Social</th>
+                             <th colSpan={4} className="bg-red-100 text-black border border-gray-400 py-0" style={{ fontSize: '12px' }}>Avantage Social</th>
+                           </tr>
+                           <tr className="bg-white">
+                             <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Salaire.Horaire</th>
+                             <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>HS</th>
+                             <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Ancienneté</th>
+                             <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Jours.fériés</th>
+                             <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Congé.payé</th>
+                             <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Prime poste</th>
+                             <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Bonus.productivité</th>
+                             <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Bonus.nuit</th>
+                             <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Sécurité.sociale</th>
+                             <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Assurance.collective</th>
+                             <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Coût.acc.travail</th>
+                             <th className="border border-gray-400 px-2 py-1 text-gray-600" style={{ fontSize: '12px' }}>Plan.retraite</th>
+                           </tr>
+                         </thead>
+                         <tbody>
+                           {zoneDetails[detail.idzone]?.map((calcDetail, calcIndex) => (
+                             <tr key={calcIndex} style={{ height: '10px' }}>
+                               <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.semaine}</td>
+                               <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.salaire_horaire}</td>
+                               <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.heures_supplementaires}</td>
+                               <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.prime_anciennete}</td>
+                               <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.jours_feries}</td>
+                               <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.conge_paye}</td>
+                               <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.prime_poste}</td>
+                               <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.bonus_productivite}</td>
+                               <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.bonus_nuit}</td>
+                               <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.securite_sociale}</td>
+                               <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.assurance_collective}</td>
+                               <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.cout_accident_travail}</td>
+                               <td className="border border-gray-300 py-1" style={{ fontSize: '12px' }}>{calcDetail.plan_retraite}</td>
+                             </tr>
+                           )) || (
+                             <tr>
+                               <td colSpan={13} className="border border-gray-300 py-4 text-center text-gray-500">
+                                 No calculation details available
+                               </td>
+                             </tr>
+                           )}
+                         </tbody>
+                       </table>
+                     )}
+                   </div>
+                 </td>
+               </tr>
+           
                 )}
               </React.Fragment>
             ))}
@@ -263,7 +285,7 @@ export default function TableZone({ data }: TableZoneProps) {
               <ChevronLeftIcon className="h-4 w-4 text-muted-foreground" />
             </button>
 
-            {[...Array(totalPages)].map((_, i) => (
+            {totalPages && [...Array(totalPages)].map((_, i) => (
               <button
                 key={i}
                 onClick={() => handlePageChange(i + 1)}

@@ -2,14 +2,12 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-  const currentUser = request.cookies.get("access_token")?.value;
-
+  const isAuthenticated = request.cookies.get("access_token")?.value;
   // If the user is not logged in and trying to access a protected route
   if (
-    !currentUser &&
+    !isAuthenticated &&
     !request.nextUrl.pathname.startsWith("/login") &&
     !request.nextUrl.pathname.startsWith("/register") &&
-    !request.nextUrl.pathname.startsWith("/") &&
     !request.nextUrl.pathname.startsWith("/forgot-password")
   ) {
     // Redirect to the login page
@@ -18,7 +16,7 @@ export function middleware(request: NextRequest) {
 
   // If the user is logged in and trying to access auth pages
   if (
-    currentUser &&
+    isAuthenticated &&
     (request.nextUrl.pathname.startsWith("/login") ||
       request.nextUrl.pathname.startsWith("/register"))
   ) {

@@ -1,10 +1,10 @@
-import { colors } from "@/app/(dashboard)/(home)/_components/data/dashboardData";
+import { colors } from "@/app/(dashboard)/scrap/_components/data/dashboardData";
 
 export const workflowData = {
   stats: [
     {
       title: "Daily",
-      sales: "999.83",
+      sales: "109.83",
       quantity: "12,625",
       previousSales: 210.0,
       period: "Yesterday",
@@ -27,7 +27,7 @@ export const workflowData = {
 
   zoneData: [
     {
-      name: "W-30",
+      name: "W-01",
       Wrapping: 0,
       Nets: 0,
       Boot: 0,

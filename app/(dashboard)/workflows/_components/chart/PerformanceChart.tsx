@@ -21,8 +21,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+// Define the expected chart data structure
+interface ChartDataItem {
+  name: string;
+  revenue: number;
+  damageCost: number;
+  diffGlobal: number;
+}
+
 interface PerformanceChartProps {
-  data?: any[];
+  data?: ChartDataItem[];
   isExpanded: boolean;
   onToggleExpand: () => void;
 }
@@ -61,10 +69,13 @@ const CustomLegend = ({ payload }: any) => {
 };
 
 export function PerformanceChart({
-  data = performanceData,
+  data,
   isExpanded,
   onToggleExpand,
 }: PerformanceChartProps) {
+  // Use fallback data when API data is empty or undefined
+  const chartData = data;
+
   return (
     <Card className="p-4">
       <div className="flex justify-between items-center mb-4">
@@ -80,36 +91,6 @@ export function PerformanceChart({
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Select defaultValue="2024">
-            <SelectTrigger className="w-[100px]">
-              <SelectValue placeholder="Year" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="2022">2022</SelectItem>
-              <SelectItem value="2023">2023</SelectItem>
-              <SelectItem value="2024">2024</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select defaultValue="all">
-            <SelectTrigger className="w-[120px]">
-              <SelectValue placeholder="Month" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Months</SelectItem>
-              <SelectItem value="1">January</SelectItem>
-              <SelectItem value="2">February</SelectItem>
-              <SelectItem value="3">March</SelectItem>
-              <SelectItem value="4">April</SelectItem>
-              <SelectItem value="5">May</SelectItem>
-              <SelectItem value="6">June</SelectItem>
-              <SelectItem value="7">July</SelectItem>
-              <SelectItem value="8">August</SelectItem>
-              <SelectItem value="9">September</SelectItem>
-              <SelectItem value="10">October</SelectItem>
-              <SelectItem value="11">November</SelectItem>
-              <SelectItem value="12">December</SelectItem>
-            </SelectContent>
-          </Select>
           <Button
             variant="ghost"
             size="icon"
@@ -127,7 +108,7 @@ export function PerformanceChart({
       <div style={{ height: isExpanded ? 480 : 360 }}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
-            data={data}
+            data={chartData}
             margin={{ top: 10, right: 30, left: 40, bottom: 0 }}
           >
             <defs>

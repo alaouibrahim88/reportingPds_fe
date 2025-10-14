@@ -1,7 +1,10 @@
 "use server";
 
+import { Endpoints } from "@/constants/api";
 import { revalidatePath } from "next/cache";
 import { z } from "zod"; // Add zod for input validation
+import { getCookieValue } from "@/lib/storage";
+import { Cell, Zone } from "@/types";
 
 export type ZoneDetail = {
   typeCell: string;
@@ -25,7 +28,7 @@ export type ZoneResponse = {
 
 // Input validation schemas
 const yearSchema = z.number().int().min(2000).max(2100);
-const displayTypeSchema = z.string().default("Qte");
+const displayTypeSchema = z.string().default("Qty");
 const monthSchema = z.string().default("1");
 const cellSchema = z.string();
 
@@ -38,7 +41,7 @@ const cellSchema = z.string();
  */
 export async function getZoneDetails(
   year: number,
-  displayType: string = "Qte",
+  displayType: string = "Qty",
   month: string = "1"
 ) {
   try {
@@ -48,18 +51,19 @@ export async function getZoneDetails(
     const validMonth = monthSchema.parse(month);
 
     // Make sure the API URL is correctly configured
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4500";
-    const token = localStorage.getItem('access_token');
-    const response = await fetch(`https://localhost:7000/api/BridgeHubMTO/GetZoneDetailType?annee=${validYear}&typeaffichage=${validDisplayType}&mois=${validMonth}`,
+    const token = await getCookieValue("access_token");
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_ENDPOINT}${Endpoints.scrap.details.zoneDetailType}?annee=${validYear}&typeaffichage=${validDisplayType}&mois=${validMonth}`,
       {
         method: "GET",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },   
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         cache: "no-store",
-        next: { revalidate: 0 },  
-      });
+        next: { revalidate: 0 },
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`API error: ${response.status} - ${response.statusText}`);
@@ -151,72 +155,59 @@ export async function processZoneData(data: ZoneResponse) {
  * Fetches all zones from the API
  * @returns List of all zones
  */
-export async function getAllZones() {
+export const fetchAllZones = async (): Promise<Zone[]> => {
   try {
-     // debugger;
-     // const url = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4500";
-     // const response = await fetch(`${url}/api/BridgePolydesign/GetAllZones`, {
-     //   method: "GET",
-     //   headers: {
-     //   "Content-Type": "application/json",
-     //   },
-     //   cache: "no-store",
-     //   next: { revalidate: 0 },
-     //   });
-
-    const url = process.env.NEXT_PUBLIC_API_URL || "https://localhost:7000";
-    const token = localStorage.getItem('access_token');
-    const response = await fetch(`https://localhost:7000/api/BridgeHubMTO/GetLisZone`, {
-    method: "GET",
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-
-      cache: "no-store",
-      next: { revalidate: 0 },
-
-    });
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status} - ${response.statusText}`);
-    }
-    const data = await response.json();
-    return data;
+    const token = await getCookieValue("access_token");
+    const response: any = await fetch(
+      `${process.env.NEXT_PUBLIC_API_ENDPOINT}${Endpoints.allZones}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Bearer ${token}`,
+        }
+      }
+    );
+    const data = await response?.json();
+    return data.getlistZone;
   } catch (error) {
-    console.error("Failed to fetch all zones:", error);
+    console.log("fetchAllZones error=", error);
+    console.error(error);
     throw error;
   }
-}
+};
+
 
 /**
  * Fetches all cells for a specific zone
  * @param zone - The zone to fetch cells for
  * @returns List of cells for the specified zone
  */
-export async function getAllCells(zone: string) {
+export async function fetchCellByZone(zone: string): Promise<Cell[]> {
   try {
-    // Validate input
-    const validZone = cellSchema.parse(zone);
-    const token = localStorage.getItem('access_token');
-    const response = await fetch(`https://localhost:7000/api/BridgeHubMTO/GetListCell?zone=${encodeURIComponent(
+    const validZone = "HEAD REST"; //cellSchema.parse(zone);
+    const token = await getCookieValue("access_token");
+    const response: any = await fetch(
+      `${process.env.NEXT_PUBLIC_API_ENDPOINT}${Endpoints.allCells}?zone=${encodeURIComponent(
         validZone
-      )}`, {
-    method: "GET",
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },   
-      cache: "no-store",
-      next: { revalidate: 0 },   
-    });
+      )}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+        next: { revalidate: 0 },
+      }
+    );
 
 
     if (!response.ok) {
       throw new Error(`API error: ${response.status} - ${response.statusText}`);
     }
-
-    const data = await response.json();
-    return data;
+    const data = await response?.json();
+    return data.getlistcell;
   } catch (error) {
     console.error("Failed to fetch all cells:", error);
     throw error;
@@ -230,34 +221,37 @@ export async function getAllCells(zone: string) {
  * @param cell - The cell to fetch operators for
  * @returns Operator data for the specified parameters
  */
-export async function getOperators(year: number, month: number, cell: string) {
+export async function getOperators(year: number, month: number, cell: string, viewMode: string) {
   try {
-    // Validate inputs
+    const token = await getCookieValue("access_token");
     const validYear = yearSchema.parse(year);
     const validMonth = z.number().int().min(1).max(12).parse(month);
     const validCell = cellSchema.parse(cell);
-
-    const url = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4500";
-    const response = await fetch(
-      `${url}/api/BridgePolydesign/GetStockCodeCellScrap?annee=${validYear}&mois=${validMonth}&cell=${encodeURIComponent(
-        validCell
-      )}&typeaffich=Couts`,
-      {
+    const url = new URL(`${process.env.NEXT_PUBLIC_API_ENDPOINT}${Endpoints.scrap.details.codeCellScrap}`);
+    
+    // Add parameters as query parameters
+    url.searchParams.append('annee', validYear.toString());
+    url.searchParams.append('mois', validMonth.toString());
+    url.searchParams.append('cell', validCell.toString());
+    url.searchParams.append('typeaffich', viewMode.toString());
+    
+    const response = await  fetch(url.toString(), {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         cache: "no-store",
         next: { revalidate: 0 },
       }
     );
-
     if (!response.ok) {
-      throw new Error(`API error: ${response.status} - ${response.statusText}`);
+      throw new Error(
+        `API error: ${response.status} - ${response.statusText}`
+      );
     }
-
-    const data = await response.json();
-    return data;
+    
+    return await response.json();
   } catch (error) {
     console.error("Failed to fetch operators:", error);
     throw error;
@@ -273,7 +267,7 @@ export async function getOperators(year: number, month: number, cell: string) {
  */
 export async function getDetailsPerZone(
   year: number,
-  displayType: string = "Qte",
+  displayType: string = "Qty",
   month: string = "1"
   
 ) {
@@ -284,10 +278,10 @@ export async function getDetailsPerZone(
     const validMonth = monthSchema.parse(month);
 
     // Make sure the API URL is correctly configured
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4500";
+    const apiUrl = process.env.NEXT_PUBLIC_API_ENDPOINT;
 
     const response = await fetch(
-      `${apiUrl}/api/BridgePolydesign/GetZoneDetailType?annee=${validYear}&typeaffichage=${validDisplayType}&mois=${validMonth}`,
+      `${apiUrl}${Endpoints.scrap.details.zoneDetailType}?annee=${validYear}&typeaffichage=${validDisplayType}&mois=${validMonth}`,
       {
         method: "GET",
         headers: {

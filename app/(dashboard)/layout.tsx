@@ -6,34 +6,41 @@ import { ModeToggle } from "@/components/ThemeModeToggle";
 import { Separator } from "@/components/ui/separator";
 // import { SignedIn, UserButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { LogoutButton } from "@/components/LogoutButton";
+import { getCookieValue } from "@/lib/storage";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const router = useRouter();
-  document.cookie="auth=true;";
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  useEffect(() => {
+    const checkAuthentication = async () => {
+      try {
+        const token = await getCookieValue("access_token");
+        setIsAuthenticated(!!token);
+      } catch (error) {
+        console.error("Error checking authentication:", error);
+        setIsAuthenticated(false);
+      }
+    };
 
-    const isAuthenticated = document.cookie.includes("auth=true");
-    if (isAuthenticated===false) {
-      router.push('/login');
-    }
-   
-
-
+    checkAuthentication();
+  }, []);
   return (
     <div className="flex h-screen">
       <DesktopSidebar />
       <div className="flex flex-col flex-1 min-h-screen">
-        <header className="flex items-center justify-between px-2 sm:px-6 py-2 sm:py-4 h-[50px] container bg-background">
-          <BreadCrumbHeader />
-          <div className="gap-2 sm:gap-4 flex items-center">
-            <ModeToggle />
-            <LogoutButton />
+        <header className="flex items-center justify-between px-4 sm:px-6 py-3 bg-background border-b">
+          <div className="flex flex-row justify-between w-full">
+            <BreadCrumbHeader />
+            <div className="gap-2 sm:gap-4 flex items-center">
+              <ModeToggle />
+              {isAuthenticated && <LogoutButton />}
+            </div>
           </div>
         </header>
         <Separator />
