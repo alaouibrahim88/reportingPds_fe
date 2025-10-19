@@ -3,10 +3,9 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CategoryData } from "@/lib/kpi-data";
 import { ArrowUp, ArrowDown, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { ChartComponent, ChartConfigs } from "@/components/ui/ChartComponent";
-import { APQPLineChart } from "@/components/ui/APQPLineChart";
+import { CategoryData } from "@/types";
 
 interface CategoryDashboardProps {
   category: CategoryData;
@@ -299,13 +298,33 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                           </Button>
                         </div>
                         
-                        <div className="text-sm text-slate-600 font-medium">Produced & invoiced weekly.</div>
+                        <div className="text-sm text-slate-600 font-medium">Produced & invoiced weekly. Target: 98%</div>
                         
                         <div className="flex items-end justify-between">
-                          <div className="text-5xl font-bold text-slate-900 tracking-tight">96%</div>
+                          <div className="text-5xl font-bold text-slate-900 tracking-tight">95%</div>
                           <div className="flex items-center gap-1 text-sm font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full">
                             <ArrowUp className="w-4 h-4" />
-                            +1.5%
+                            +3%
+                          </div>
+                        </div>
+
+                        {/* Weekly Values */}
+                        <div className="grid grid-cols-4 gap-2 text-center text-xs">
+                          <div className="bg-slate-50 p-2 rounded">
+                            <div className="text-slate-500 font-medium">W1</div>
+                            <div className="text-slate-900 font-bold">95%</div>
+                          </div>
+                          <div className="bg-slate-50 p-2 rounded">
+                            <div className="text-slate-500 font-medium">W2</div>
+                            <div className="text-slate-900 font-bold">98%</div>
+                          </div>
+                          <div className="bg-slate-50 p-2 rounded">
+                            <div className="text-slate-500 font-medium">W3</div>
+                            <div className="text-slate-900 font-bold">92%</div>
+                          </div>
+                          <div className="bg-slate-50 p-2 rounded">
+                            <div className="text-slate-500 font-medium">W4</div>
+                            <div className="text-slate-900 font-bold">98%</div>
                           </div>
                         </div>
 
@@ -319,8 +338,8 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                               <div className="w-[7.5%] bg-green-400"></div>
                               <div className="w-[62%] bg-emerald-500"></div>
                             </div>
-                            {/* Current value indicator at 96% */}
-                            <div className="absolute left-[96%] top-0 w-1 h-full bg-slate-900 shadow-lg transform -translate-x-0.5"></div>
+                            {/* Current value indicator at 95% */}
+                            <div className="absolute left-[95%] top-0 w-1 h-full bg-slate-900 shadow-lg transform -translate-x-0.5"></div>
                           </div>
                           <div className="flex justify-between text-xs text-slate-500 font-medium">
                             <span>Warning (&lt;92%)</span>
@@ -351,13 +370,33 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                           </Button>
                         </div>
                         
-                        <div className="text-sm text-slate-600 font-medium">Unpaid receivables.</div>
+                        <div className="text-sm text-slate-600 font-medium">Unpaid receivables. Target: €25,000.00</div>
                         
                         <div className="flex items-end justify-between">
-                          <div className="text-5xl font-bold text-slate-900 tracking-tight">$1.2M</div>
+                          <div className="text-5xl font-bold text-slate-900 tracking-tight">€85k</div>
                           <div className="flex items-center gap-1 text-sm font-bold text-red-600 bg-red-50 px-3 py-1 rounded-full">
                             <ArrowUp className="w-4 h-4" />
-                            +$50k
+                            +€5k
+                          </div>
+                        </div>
+
+                        {/* Weekly Values */}
+                        <div className="grid grid-cols-4 gap-2 text-center text-xs">
+                          <div className="bg-slate-50 p-2 rounded">
+                            <div className="text-slate-500 font-medium">W1</div>
+                            <div className="text-slate-900 font-bold">€83k</div>
+                          </div>
+                          <div className="bg-slate-50 p-2 rounded">
+                            <div className="text-slate-500 font-medium">W2</div>
+                            <div className="text-slate-900 font-bold">€85k</div>
+                          </div>
+                          <div className="bg-slate-50 p-2 rounded">
+                            <div className="text-slate-500 font-medium">W3</div>
+                            <div className="text-slate-900 font-bold">€80k</div>
+                          </div>
+                          <div className="bg-slate-50 p-2 rounded">
+                            <div className="text-slate-500 font-medium">W4</div>
+                            <div className="text-slate-900 font-bold">€90k</div>
                           </div>
                         </div>
 
@@ -366,19 +405,19 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                           <div className="relative h-4 bg-slate-100 rounded-full overflow-hidden shadow-inner">
                             {/* Risk level segments */}
                             <div className="absolute inset-0 flex">
-                              <div className="w-[33.33%] bg-green-400"></div>
-                              <div className="w-[33.33%] bg-yellow-400"></div>
-                              <div className="w-[16.67%] bg-orange-400"></div>
-                              <div className="w-[16.67%] bg-red-500"></div>
+                              <div className="w-[27.78%] bg-green-400"></div>
+                              <div className="w-[27.78%] bg-yellow-400"></div>
+                              <div className="w-[22.22%] bg-orange-400"></div>
+                              <div className="w-[22.22%] bg-red-500"></div>
                             </div>
-                            {/* Current value indicator at $1.2M (warning zone) */}
-                            <div className="absolute left-[80%] top-0 w-1 h-full bg-slate-900 shadow-lg transform -translate-x-0.5"></div>
+                            {/* Current value indicator - €85k out of €90k max shown = ~94% */}
+                            <div className="absolute left-[94%] top-0 w-1 h-full bg-slate-900 shadow-lg transform -translate-x-0.5"></div>
                           </div>
                           <div className="flex justify-between text-xs text-slate-500 font-medium">
-                            <span>Excellent (&lt;$0.5M)</span>
-                            <span>Target (&lt;$1M)</span>
-                            <span>Warning (&lt;$1.5M)</span>
-                            <span>Critical (&gt;$1.5M)</span>
+                            <span>Excellent (&lt;€25k)</span>
+                            <span>Target (&lt;€50k)</span>
+                            <span>Warning (&lt;€75k)</span>
+                            <span>Critical (&gt;€90k)</span>
                           </div>
                         </div>
                       </div>
@@ -401,7 +440,7 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                       </Button>
                     </div>
                     
-                    {/* Empty chart area */}
+                    {/* Chart visualization area */}
                     <div className="h-80 bg-slate-50 rounded-lg flex items-center justify-center border border-slate-100">
                       <div className="text-center">
                         <div className="w-16 h-16 mx-auto mb-4 text-slate-300">
@@ -410,7 +449,7 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                           </svg>
                         </div>
                         <p className="text-slate-400 font-medium">Chart visualization area</p>
-                        <p className="text-slate-300 text-sm mt-1">Data will be displayed here</p>
+                        <p className="text-slate-300 text-sm mt-1">Data: Week 1-4 (Réalisé: €120k, €130k, €150k, €120k | Prévisionnel: €155k, €165k, €155k, €155k | Scrap: €180k, €130k, €180k, €120k)</p>
                       </div>
                     </div>
                   </div>
@@ -454,18 +493,22 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                               fill="none"
                               stroke="#3B82F6"
                               strokeWidth="3"
-                              strokeDasharray="85, 100"
+                              strokeDasharray="83.3, 100"
                               strokeLinecap="round"
                             />
                           </svg>
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="text-3xl font-bold text-slate-900">85%</span>
+                          <div className="absolute inset-0 flex items-center justify-center flex-col">
+                            <span className="text-2xl font-bold text-slate-900">€50k</span>
+                            <span className="text-xs text-slate-500">/ €60k</span>
                           </div>
                         </div>
                       </div>
                       
                       <div className="text-center space-y-4">
-                        <div className="text-sm text-slate-600 font-medium">Target: 90%</div>
+                        <div className="text-sm text-slate-600 font-medium">
+                          <div className="font-bold text-slate-900">83.3%</div>
+                          <div>Target: €60,000.00</div>
+                        </div>
                         <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors shadow-md">
                           Optimization Suggestions
                         </Button>
@@ -494,10 +537,10 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-bold text-slate-700 w-20">Global</span>
                         <div className="flex items-center gap-4 flex-1">
-                          <div className="flex-1 h-3 bg-green-500 rounded-full shadow-sm"></div>
-                          <div className="flex items-center gap-1 text-sm font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full min-w-[60px] justify-center">
-                            <ArrowUp className="w-3 h-3" />
-                            <span>105%</span>
+                          <div className="flex-1 h-3 bg-yellow-500 rounded-full shadow-sm"></div>
+                          <div className="flex items-center gap-1 text-sm font-bold text-yellow-600 bg-yellow-50 px-2 py-1 rounded-full min-w-[60px] justify-center">
+                            <div className="w-3 h-0.5 bg-yellow-600 rounded"></div>
+                            <span>88%</span>
                           </div>
                         </div>
                       </div>
@@ -509,7 +552,7 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                           <div className="flex-1 h-3 bg-green-500 rounded-full shadow-sm"></div>
                           <div className="flex items-center gap-1 text-sm font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full min-w-[60px] justify-center">
                             <ArrowUp className="w-3 h-3" />
-                            <span>112%</span>
+                            <span>100%</span>
                           </div>
                         </div>
                       </div>
@@ -521,7 +564,7 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                           <div className="flex-1 h-3 bg-yellow-500 rounded-full shadow-sm"></div>
                           <div className="flex items-center gap-1 text-sm font-bold text-yellow-600 bg-yellow-50 px-2 py-1 rounded-full min-w-[60px] justify-center">
                             <div className="w-3 h-0.5 bg-yellow-600 rounded"></div>
-                            <span>98%</span>
+                            <span>97%</span>
                           </div>
                         </div>
                       </div>
@@ -533,7 +576,7 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                           <div className="flex-1 h-3 bg-red-500 rounded-full shadow-sm"></div>
                           <div className="flex items-center gap-1 text-sm font-bold text-red-600 bg-red-50 px-2 py-1 rounded-full min-w-[60px] justify-center">
                             <ArrowDown className="w-3 h-3" />
-                            <span>89%</span>
+                            <span>87%</span>
                           </div>
                         </div>
                       </div>
@@ -581,21 +624,25 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                         
                         <div className="text-sm text-slate-400 font-medium">% of deliveries made on time.</div>
                         
-                        <div className="text-7xl font-black text-white tracking-tight drop-shadow-lg">{category.kpis.find(kpi => kpi.title === 'Supply Chain Reliability')?.value || '94.2%'}</div>
+                        <div className="text-7xl font-black text-white tracking-tight drop-shadow-lg">95%</div>
                         
-                       
+                        <div className="flex items-center gap-2 text-sm">
+                          <span className="text-slate-400">Target:</span>
+                          <span className="text-white font-semibold">98%</span>
+                          <span className="text-red-400 font-semibold">(-3% vs target)</span>
+                        </div>
                         
 
                         {/* Enhanced Chart with Mixed Positive/Negative Values */}
                         <ChartComponent
                           data={[
-                            { value: -2.1 },
-                            { value: 1.8 },
-                            { value: -0.5 },
-                            { value: 3.2 }
+                            { value: 96 },
+                            { value: 99 },
+                            { value: 98 },
+                            { value: 99 }
                           ]}
                           height={80}
-                          formatValue={(value: number) => `${value > 0 ? '+' : ''}${value}%`}
+                          formatValue={(value: number) => `${value}%`}
                           {...ChartConfigs.mixed}
                           title="Performance Variance"
                           showValues={true}
@@ -622,8 +669,8 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                             <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                               <defs>
                                 <linearGradient id="recruitmentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                  <stop offset="0%" stopColor="#10B981" />
-                                  <stop offset="100%" stopColor="#059669" />
+                                  <stop offset="0%" stopColor="#EF4444" />
+                                  <stop offset="100%" stopColor="#DC2626" />
                                 </linearGradient>
                                 <filter id="recruitmentGlow">
                                   <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
@@ -648,14 +695,14 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                                 fill="none"
                                 stroke="url(#recruitmentGradient)"
                                 strokeWidth="3"
-                                strokeDasharray="75, 100"
+                                strokeDasharray="85, 100"
                                 strokeLinecap="round"
                                 filter="url(#recruitmentGlow)"
                               />
                             </svg>
                             <div className="absolute inset-0 flex items-center justify-center">
                               <div className="text-center">
-                                <span className="text-3xl font-black text-white drop-shadow-lg">75%</span>
+                                <span className="text-3xl font-black text-white drop-shadow-lg">85%</span>
                                 <div className="text-xs text-slate-400 font-medium mt-1">Complete</div>
                               </div>
                             </div>
@@ -665,15 +712,15 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                         <div className="space-y-2">
                           <div className="flex justify-between text-sm">
                             <span className="text-slate-400">Progress</span>
-                            <span className="text-white font-semibold">75%</span>
+                            <span className="text-white font-semibold">85%</span>
                           </div>
                           <div className="flex justify-between text-sm">
                             <span className="text-slate-400">Target</span>
-                            <span className="text-green-400 font-semibold">80%</span>
+                            <span className="text-green-400 font-semibold">98%</span>
                           </div>
                           <div className="flex justify-between text-sm">
                             <span className="text-slate-400">Remaining</span>
-                            <span className="text-orange-400 font-semibold">5%</span>
+                            <span className="text-orange-400 font-semibold">13%</span>
                           </div>
                         </div>
                       </div>
@@ -837,15 +884,19 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                           <div className="flex items-center justify-between">
                             <span className="text-sm font-bold text-slate-300 w-16">CAPEX</span>
                             <div className="flex items-center gap-3 flex-1">
-                              <div className="flex-1 h-3 bg-red-500 rounded-full shadow-sm"></div>
-                              <span className="text-sm font-bold text-red-400 w-12 text-right">+5%</span>
+                              <div className="flex-1 h-3 bg-slate-700 rounded-full overflow-hidden shadow-inner">
+                                <div className="h-full bg-red-500 rounded-full shadow-sm" style={{ width: '100%' }}></div>
+                              </div>
+                              <span className="text-sm font-bold text-white w-20 text-right">5000</span>
                             </div>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-sm font-bold text-slate-300 w-16">OPEX</span>
                             <div className="flex items-center gap-3 flex-1">
-                              <div className="flex-1 h-3 bg-green-500 rounded-full shadow-sm"></div>
-                              <span className="text-sm font-bold text-green-400 w-12 text-right">-2%</span>
+                              <div className="flex-1 h-3 bg-slate-700 rounded-full overflow-hidden shadow-inner">
+                                <div className="h-full bg-green-500 rounded-full shadow-sm" style={{ width: '100%' }}></div>
+                              </div>
+                              <span className="text-sm font-bold text-white w-20 text-right">3000</span>
                             </div>
                           </div>
                         </div>
@@ -853,12 +904,12 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                     </CardContent>
                   </Card>
 
-                  {/* Equipment & Tooling */}
+                  {/* Equipment Availability */}
                   <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300 w-full">
                     <CardContent className="p-6">
                       <div className="space-y-5">
                         <div className="flex items-center justify-between">
-                          <h3 className="font-bold text-white text-lg">Equipment & Tooling</h3>
+                          <h3 className="font-bold text-white text-lg">Equipment Availability</h3>
                           <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
                             Details
                           </Button>
@@ -866,24 +917,63 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                         
                         <div className="text-sm text-slate-400 font-medium">Availability status.</div>
                         
-                        <div className="space-y-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                              12
+                        <div className="flex items-center justify-center py-4">
+                          <div className="relative w-32 h-32">
+                            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                              <defs>
+                                <linearGradient id="equipmentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                  <stop offset="0%" stopColor="#EF4444" />
+                                  <stop offset="100%" stopColor="#DC2626" />
+                                </linearGradient>
+                                <filter id="equipmentGlow">
+                                  <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                                  <feMerge> 
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                  </feMerge>
+                                </filter>
+                              </defs>
+                              <path
+                                d="M18 2.0845
+                                  a 15.9155 15.9155 0 0 1 0 31.831
+                                  a 15.9155 15.9155 0 0 1 0 -31.831"
+                                fill="none"
+                                stroke="#374151"
+                                strokeWidth="3"
+                              />
+                              <path
+                                d="M18 2.0845
+                                  a 15.9155 15.9155 0 0 1 0 31.831
+                                  a 15.9155 15.9155 0 0 1 0 -31.831"
+                                fill="none"
+                                stroke="url(#equipmentGradient)"
+                                strokeWidth="3"
+                                strokeDasharray="90, 100"
+                                strokeLinecap="round"
+                                filter="url(#equipmentGlow)"
+                              />
+                            </svg>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <div className="text-center">
+                                <span className="text-3xl font-black text-white drop-shadow-lg">90%</span>
+                                <div className="text-xs text-slate-400 font-medium mt-1">Available</div>
+                              </div>
                             </div>
-                            <span className="text-white font-medium">On-track</span>
                           </div>
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                              3
-                            </div>
-                            <span className="text-white font-medium">At risk</span>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-slate-400">Current</span>
+                            <span className="text-white font-semibold">90%</span>
                           </div>
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                              1
-                            </div>
-                            <span className="text-white font-medium">Delayed</span>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-slate-400">Target</span>
+                            <span className="text-green-400 font-semibold">98%</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-slate-400">Gap</span>
+                            <span className="text-red-400 font-semibold">-8%</span>
                           </div>
                         </div>
                       </div>
@@ -958,37 +1048,37 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <ChartKPICard
                 title="Overtime Rate"
-                value="5.2%"
-                trend="-0.8% vs target"
+                value="6%"
+                trend="+1% vs target (5%)"
                 trendColor="text-red-400 bg-red-500/10"
-                chartData={[4.8, 5.1, 5.3, 5.2]}
+                chartData={[5, 6, 5, 3]}
                 chartColor="#F97316"
               />
               
               <ChartKPICard
                 title="Technical Unemployment Rate"
-                value="2.1%"
-                trend="-0.3% vs target"
+                value="2%"
+                trend="+1% vs target (1%)"
                 trendColor="text-red-400 bg-red-500/10"
-                chartData={[2.4, 2.2, 2.0, 2.1]}
+                chartData={[2, 1, 3, 4]}
                 chartColor="#EAB308"
               />
               
               <ChartKPICard
                 title="Scrap Rate (Global)"
-                value="1.8%"
-                trend="-0.2% vs target"
+                value="1.5%"
+                trend="+0.5% vs target (1%)"
                 trendColor="text-red-400 bg-red-500/10"
-                chartData={[2.0, 1.9, 1.8, 1.8]}
+                chartData={[2, 1, 1.5, 1.9]}
                 chartColor="#22C55E"
               />
               
               <ChartKPICard
                 title="Weekly Efficiency (Global)"
                 value="92%"
-                trend="+2% vs target"
-                trendColor="text-green-400 bg-green-500/10"
-                chartData={[90, 91, 92, 92]}
+                trend="-3% vs target (95%)"
+                trendColor="text-red-400 bg-red-500/10"
+                chartData={[93, 95, 91, 96]}
                 chartColor="#10B981"
               />
             </div>
@@ -1005,20 +1095,20 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                     <h3 className="text-white font-semibold text-base tracking-wide">Performance Variance (vs Target)</h3>
                     
                     <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">+2.3%</div>
-                      <div className="flex items-center gap-1 text-sm font-semibold text-green-400 bg-green-500/10 px-2 py-1 rounded-full">
-                        <ArrowUp className="w-3 h-3" />
-                        Above Target
+                      <div className="text-5xl font-bold text-white tracking-tight">-4%</div>
+                      <div className="flex items-center gap-1 text-sm font-semibold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
+                        <ArrowDown className="w-3 h-3" />
+                        Below Target
                       </div>
                     </div>
 
                     {/* Enhanced Chart with Positive/Negative Values */}
                     <ChartComponent
                       data={[
-                        { value: -2.1 },
-                        { value: 1.8 },
-                        { value: 3.5 },
-                        { value: 2.3 }
+                        { value: -4 },
+                        { value: -2 },
+                        { value: -6 },
+                        { value: 0 }
                       ]}
                       height={80}
                       formatValue={(value) => `${value > 0 ? '+' : ''}${value}`}
@@ -1036,7 +1126,7 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                     <h3 className="text-white font-semibold text-base tracking-wide">Market Performance Index</h3>
                     
                     <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">102%</div>
+                      <div className="text-5xl font-bold text-white tracking-tight">90%</div>
                       <div className="flex items-center gap-1 text-sm font-semibold text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded-full">
                         <TrendingUp className="w-3 h-3" />
                         Volatile
@@ -1046,10 +1136,10 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                     {/* Enhanced Chart with High Volatility */}
                     <ChartComponent
                       data={[
-                        { value: 44 },
-                        { value: 22 },
-                        { value: 102 },
-                        { value: 32 }
+                        { value: 80 },
+                        { value: 90 },
+                        { value: 70 },
+                        { value: 98 }
                       ]}
                       height={80}
                       formatValue={(value) => value.toString()}
@@ -1075,23 +1165,23 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                     <h3 className="text-white font-semibold text-base tracking-wide">Production Variance</h3>
                     
                     <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">+3%</div>
-                      <div className="flex items-center gap-1 text-sm font-semibold text-green-400 bg-green-500/10 px-2 py-1 rounded-full">
-                        <ArrowUp className="w-3 h-3" />
-                        +1% vs plan
+                      <div className="text-5xl font-bold text-white tracking-tight">-4%</div>
+                      <div className="flex items-center gap-1 text-sm font-semibold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
+                        <ArrowDown className="w-3 h-3" />
+                        -4% vs plan (0%)
                       </div>
                     </div>
 
                     {/* Enhanced Chart */}
                     <ChartComponent
                       data={[
-                        { value: 1 },
-                        { value: 2 },
-                        { value: 2.5 },
-                        { value: 3 }
+                        { value: -4 },
+                        { value: 0 },
+                        { value: -3 },
+                        { value: 0 }
                       ]}
                       height={60}
-                      formatValue={(value) => `+${value}`}
+                      formatValue={(value) => `${value > 0 ? '+' : ''}${value}`}
                       {...ChartConfigs.efficiency}
                       color="#3B82F6"
                     />
@@ -1106,20 +1196,20 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                     <h3 className="text-white font-semibold text-base tracking-wide">Scrap Valuation (Global)</h3>
                     
                     <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">$50k</div>
+                      <div className="text-5xl font-bold text-white tracking-tight">$12k</div>
                       <div className="flex items-center gap-1 text-sm font-semibold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
                         <ArrowDown className="w-3 h-3" />
-                        -$5k vs target
+                        +$1k vs target ($11k)
                       </div>
                     </div>
 
                     {/* Enhanced Chart */}
                     <ChartComponent
                       data={[
-                        { value: 45 },
-                        { value: 48 },
-                        { value: 49 },
-                        { value: 50 }
+                        { value: 12 },
+                        { value: 10 },
+                        { value: 13 },
+                        { value: 11 }
                       ]}
                       height={60}
                       formatValue={(value) => `${value}k`}
@@ -1137,20 +1227,20 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                     <h3 className="text-white font-semibold text-base tracking-wide">Monthly Efficiency (Global)</h3>
                     
                     <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">95%</div>
-                      <div className="flex items-center gap-1 text-sm font-semibold text-green-400 bg-green-500/10 px-2 py-1 rounded-full">
-                        <ArrowUp className="w-3 h-3" />
-                        +3% vs target
+                      <div className="text-5xl font-bold text-white tracking-tight">91%</div>
+                      <div className="flex items-center gap-1 text-sm font-semibold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
+                        <ArrowDown className="w-3 h-3" />
+                        -2% vs target (93%)
                       </div>
                     </div>
 
                     {/* Enhanced Chart */}
                     <ChartComponent
                       data={[
-                        { value: 92 },
                         { value: 93 },
-                        { value: 94 },
-                        { value: 95 }
+                        { value: 95 },
+                        { value: 91 },
+                        { value: 96 }
                       ]}
                       height={60}
                       formatValue={(value) => value.toString()}
@@ -1168,20 +1258,20 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                     <h3 className="text-white font-semibold text-base tracking-wide">Consumables & Parts Cost</h3>
                     
                     <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">$200k</div>
+                      <div className="text-5xl font-bold text-white tracking-tight">$18.5k</div>
                       <div className="flex items-center gap-1 text-sm font-semibold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
                         <ArrowDown className="w-3 h-3" />
-                        -$10k vs target
+                        +$1.5k vs target ($17k)
                       </div>
                     </div>
 
                     {/* Enhanced Chart */}
                     <ChartComponent
                       data={[
-                        { value: 180 },
-                        { value: 190 },
-                        { value: 195 },
-                        { value: 200 }
+                        { value: 18.4 },
+                        { value: 19.4 },
+                        { value: 17.4 },
+                        { value: 18.9 }
                       ]}
                       height={60}
                       formatValue={(value) => `${value}k`}
@@ -1199,20 +1289,20 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                     <h3 className="text-white font-semibold text-base tracking-wide">Energy Consumption</h3>
                     
                     <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">150 MWh</div>
+                      <div className="text-5xl font-bold text-white tracking-tight">4200 MWh / 35%</div>
                       <div className="flex items-center gap-1 text-sm font-semibold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
                         <ArrowDown className="w-3 h-3" />
-                        -5 MWh vs target
+                        +200 MWh / -5% vs target
                       </div>
                     </div>
 
                     {/* Enhanced Chart */}
                     <ChartComponent
                       data={[
-                        { value: 140 },
-                        { value: 145 },
-                        { value: 148 },
-                        { value: 150 }
+                        { value: 4200 },
+                        { value: 4300 },
+                        { value: 4000 },
+                        { value: 4900 }
                       ]}
                       height={60}
                       formatValue={(value) => value.toString()}
@@ -1230,20 +1320,20 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                     <h3 className="text-white font-semibold text-base tracking-wide">Green Energy Rate</h3>
                     
                     <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">30%</div>
-                      <div className="flex items-center gap-1 text-sm font-semibold text-green-400 bg-green-500/10 px-2 py-1 rounded-full">
-                        <ArrowUp className="w-3 h-3" />
-                        +5% vs target
+                      <div className="text-5xl font-bold text-white tracking-tight">80%</div>
+                      <div className="flex items-center gap-1 text-sm font-semibold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
+                        <ArrowDown className="w-3 h-3" />
+                        -10% vs target (90%)
                       </div>
                     </div>
 
                     {/* Enhanced Chart */}
                     <ChartComponent
                       data={[
-                        { value: 25 },
-                        { value: 27 },
-                        { value: 29 },
-                        { value: 30 }
+                        { value: 93 },
+                        { value: 95 },
+                        { value: 91 },
+                        { value: 96 }
                       ]}
                       height={60}
                       formatValue={(value) => value.toString()}
@@ -1289,33 +1379,27 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                     <div className="text-sm text-slate-400 font-medium">Global</div>
                     
                     <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">12</div>
+                      <div className="text-5xl font-bold text-white tracking-tight">5</div>
                       <div className="flex items-center gap-1 text-sm font-bold text-red-400 bg-red-500/10 px-3 py-1 rounded-full">
                         <ArrowUp className="w-4 h-4" />
-                        +2 vs target
+                        +2 vs target (3)
                       </div>
                     </div>
 
-                    {/* By Zone Breakdown */}
+                    {/* Chart Values */}
                     <div className="space-y-3">
-                      <div className="text-sm font-bold text-slate-300">By Zone:</div>
-                      <div className="grid grid-cols-3 gap-4">
-                        <div className="text-center">
-                          <div className="text-lg font-bold text-white">Zone A</div>
-                          <div className="text-2xl font-bold text-white">5</div>
-                          <div className="text-xs text-red-400">(+1)</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-lg font-bold text-slate-300">Zone B</div>
-                          <div className="text-2xl font-bold text-white">4</div>
-                          <div className="text-xs text-slate-400">(0)</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-lg font-bold text-slate-300">Zone C</div>
-                          <div className="text-2xl font-bold text-white">3</div>
-                          <div className="text-xs text-red-400">(+1)</div>
-                        </div>
-                      </div>
+                      <ChartComponent
+                        data={[
+                          { value: 2 },
+                          { value: 3 },
+                          { value: 5 },
+                          { value: 6 }
+                        ]}
+                        height={80}
+                        formatValue={(value: number) => value.toString()}
+                        {...ChartConfigs.mixed}
+                        showValues={true}
+                      />
                     </div>
 
                     {/* Target Range Progress Bar */}
@@ -1327,8 +1411,8 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                           <div className="w-[20%] bg-orange-500"></div>
                           <div className="w-[13.34%] bg-red-500"></div>
                         </div>
-                        {/* Current value indicator at 12 */}
-                        <div className="absolute left-[80%] top-0 w-1 h-full bg-white shadow-lg transform -translate-x-0.5"></div>
+                        {/* Current value indicator at 5 */}
+                        <div className="absolute left-[33.33%] top-0 w-1 h-full bg-white shadow-lg transform -translate-x-0.5"></div>
                       </div>
                       <div className="flex justify-between text-xs text-slate-400 font-medium">
                         <span>0 (OK)</span>
@@ -1356,32 +1440,26 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                     
                     <div className="flex items-end justify-between">
                       <div className="text-5xl font-bold text-white tracking-tight">92%</div>
-                      <div className="flex items-center gap-1 text-sm font-bold text-green-400 bg-green-500/10 px-3 py-1 rounded-full">
-                        <ArrowUp className="w-4 h-4" />
-                        +2% vs target
+                      <div className="flex items-center gap-1 text-sm font-bold text-red-400 bg-red-500/10 px-3 py-1 rounded-full">
+                        <ArrowDown className="w-4 h-4" />
+                        -3% vs target (95%)
                       </div>
                     </div>
 
-                    {/* By Zone Breakdown */}
+                    {/* Chart Values */}
                     <div className="space-y-3">
-                      <div className="text-sm font-bold text-slate-300">By Zone:</div>
-                      <div className="grid grid-cols-3 gap-4">
-                        <div className="text-center">
-                          <div className="text-lg font-bold text-white">Zone A</div>
-                          <div className="text-2xl font-bold text-white">95%</div>
-                          <div className="text-xs text-green-400">(+3%)</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-lg font-bold text-slate-300">Zone B</div>
-                          <div className="text-2xl font-bold text-white">90%</div>
-                          <div className="text-xs text-red-400">(-1%)</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-lg font-bold text-slate-300">Zone C</div>
-                          <div className="text-2xl font-bold text-white">91%</div>
-                          <div className="text-xs text-green-400">(+1%)</div>
-                        </div>
-                      </div>
+                      <ChartComponent
+                        data={[
+                          { value: 94 },
+                          { value: 99 },
+                          { value: 88 },
+                          { value: 90 }
+                        ]}
+                        height={80}
+                        formatValue={(value: number) => `${value}%`}
+                        {...ChartConfigs.efficiency}
+                        showValues={true}
+                      />
                     </div>
 
                     {/* Target Range Progress Bar */}
@@ -1420,12 +1498,22 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                     <h3 className="font-bold text-white text-lg">PPM (Parts Per Million)</h3>
                     
                     <div className="flex items-end justify-between">
-                      <div className="text-4xl font-bold text-white tracking-tight">150</div>
-                      <div className="flex items-center gap-1 text-sm font-bold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
-                        <ArrowUp className="w-3 h-3" />
-                        +20 vs target
-                      </div>
+                      <div className="text-4xl font-bold text-white tracking-tight">120</div>
                     </div>
+
+                    {/* Chart Values */}
+                    <ChartComponent
+                      data={[
+                        { value: 140 },
+                        { value: 200 },
+                        { value: 100 },
+                        { value: 160 }
+                      ]}
+                      height={60}
+                      formatValue={(value: number) => value.toString()}
+                      {...ChartConfigs.cost}
+                      color="#EF4444"
+                    />
 
                     {/* Target Range Progress Bar */}
                     <div className="space-y-3">
@@ -1436,8 +1524,8 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                           <div className="w-[20%] bg-orange-500"></div>
                           <div className="w-[13.34%] bg-red-500"></div>
                         </div>
-                        {/* Current value indicator at 150 */}
-                        <div className="absolute left-[100%] top-0 w-1 h-full bg-white shadow-lg transform -translate-x-0.5"></div>
+                        {/* Current value indicator at 120 */}
+                        <div className="absolute left-[80%] top-0 w-1 h-full bg-white shadow-lg transform -translate-x-0.5"></div>
                       </div>
                       <div className="flex justify-between text-xs text-slate-400 font-medium">
                         <span>0 (OK)</span>
@@ -1463,12 +1551,26 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                     <h3 className="font-bold text-white text-lg">Customer Scrap Cost</h3>
                       
                       <div className="flex items-end justify-between">
-                      <div className="text-4xl font-bold text-white tracking-tight">$15k</div>
-                      <div className="flex items-center gap-1 text-sm font-bold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
-                        <ArrowUp className="w-3 h-3" />
-                        +$2k vs target
+                      <div className="text-4xl font-bold text-white tracking-tight">8k€</div>
+                      <div className="flex items-center gap-1 text-sm font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-full">
+                        <ArrowDown className="w-3 h-3" />
+                        -1k€ vs target (9k€)
                           </div>
                       </div>
+
+                    {/* Chart Values */}
+                    <ChartComponent
+                      data={[
+                        { value: 8 },
+                        { value: 8 },
+                        { value: 9.9 },
+                        { value: 8.999 }
+                      ]}
+                      height={60}
+                      formatValue={(value: number) => `${value}k€`}
+                      {...ChartConfigs.cost}
+                      color="#10B981"
+                    />
 
                     <div className="flex justify-end">
                       <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
@@ -1486,12 +1588,26 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                     <h3 className="font-bold text-white text-lg">Monthly Efficiency</h3>
                     
                     <div className="flex items-end justify-between">
-                      <div className="text-4xl font-bold text-white tracking-tight">94%</div>
-                      <div className="flex items-center gap-1 text-sm font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-full">
-                        <ArrowUp className="w-3 h-3" />
-                        +1% vs target
+                      <div className="text-4xl font-bold text-white tracking-tight">91%</div>
+                      <div className="flex items-center gap-1 text-sm font-bold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
+                        <ArrowDown className="w-3 h-3" />
+                        -8% vs target (99%)
                       </div>
                     </div>
+
+                    {/* Chart Values */}
+                    <ChartComponent
+                      data={[
+                        { value: 99 },
+                        { value: 88 },
+                        { value: 90 },
+                        { value: 97 }
+                      ]}
+                      height={60}
+                      formatValue={(value: number) => `${value}%`}
+                      {...ChartConfigs.efficiency}
+                      color="#10B981"
+                    />
 
                     <div className="flex justify-end">
                       <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
@@ -1510,7 +1626,7 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                     
                     <div className="flex items-end justify-between">
                       <div className="text-4xl font-bold text-white tracking-tight">2</div>
-                      <div className="text-sm text-slate-400 font-medium">5 Lost Days</div>
+                      <div className="text-sm text-slate-400 font-medium">3 Lost Days</div>
                     </div>
 
                     {/* Target Range Progress Bar */}
@@ -1581,68 +1697,27 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                   <div className="space-y-5">
                     <h3 className="font-bold text-white text-lg">Client Score Cards</h3>
                     
-                    {/* Line Chart */}
-                    <div className="w-full bg-slate-900/30 rounded-lg p-4 border border-slate-700/50">
-                      <div className="h-32 relative">
-                        <svg className="w-full h-full" viewBox="0 0 400 120">
-                          {/* Grid lines */}
-                          <defs>
-                            <pattern id="grid" width="80" height="20" patternUnits="userSpaceOnUse">
-                              <path d="M 80 0 L 0 0 0 20" fill="none" stroke="#374151" strokeWidth="0.5" opacity="0.3"/>
-                            </pattern>
-                          </defs>
-                          <rect width="100%" height="100%" fill="url(#grid)" />
-                          
-                          {/* Target line (dashed) */}
-                          <line x1="40" y1="40" x2="360" y2="40" stroke="#6B7280" strokeWidth="2" strokeDasharray="4,4" />
-                          
-                          {/* Data line */}
-                          <polyline
-                            points="40,80 120,60 200,90 280,70 320,50 360,45"
-                            fill="none"
-                            stroke="#3B82F6"
-                            strokeWidth="3"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                          
-                          {/* Data points */}
-                          {[
-                            { x: 40, y: 80 },
-                            { x: 120, y: 60 },
-                            { x: 200, y: 90 },
-                            { x: 280, y: 70 },
-                            { x: 320, y: 50 },
-                            { x: 360, y: 45 }
-                          ].map((point, index) => (
-                            <circle
-                              key={index}
-                              cx={point.x}
-                              cy={point.y}
-                              r="4"
-                              fill="#3B82F6"
-                              stroke="#1E40AF"
-                              strokeWidth="2"
-                            />
-                          ))}
-                        </svg>
-                        
-                        {/* X-axis labels */}
-                        <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-slate-400 font-medium px-4">
-                          <span>Jan</span>
-                          <span>Feb</span>
-                          <span>Mar</span>
-                          <span>Apr</span>
-                          <span>May</span>
-                          <span>Jun</span>
-                        </div>
-                        
-                        {/* Target label */}
-                        <div className="absolute top-2 right-2 text-xs text-slate-400 font-medium">
-                          Target
-                        </div>
+                    <div className="flex items-end justify-between">
+                      <div className="text-4xl font-bold text-white tracking-tight">78/100</div>
+                      <div className="flex items-center gap-1 text-sm font-bold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
+                        <ArrowDown className="w-3 h-3" />
+                        -12 vs target (90/100)
                       </div>
                     </div>
+
+                    {/* Chart Values */}
+                    <ChartComponent
+                      data={[
+                        { value: 78 },
+                        { value: 90 },
+                        { value: 79 },
+                        { value: 99 }
+                      ]}
+                      height={80}
+                      formatValue={(value: number) => value.toString()}
+                      {...ChartConfigs.mixed}
+                      color="#3B82F6"
+                    />
 
                     <div className="flex justify-end">
                       <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
@@ -1688,12 +1763,26 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                     <div className="text-sm text-slate-400 font-medium">% of orders delivered on time.</div>
                     
                     <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">96.5%</div>
-                      <div className="flex items-center gap-1 text-sm font-bold text-green-400 bg-green-500/10 px-3 py-1 rounded-full">
-                        <ArrowUp className="w-4 h-4" />
-                        +1.5%
+                      <div className="text-5xl font-bold text-white tracking-tight">93%</div>
+                      <div className="flex items-center gap-1 text-sm font-bold text-red-400 bg-red-500/10 px-3 py-1 rounded-full">
+                        <ArrowDown className="w-4 h-4" />
+                        -2% vs target (95%)
                       </div>
                     </div>
+
+                    {/* Chart Values */}
+                    <ChartComponent
+                      data={[
+                        { value: 99 },
+                        { value: 88 },
+                        { value: 92 },
+                        { value: 90 }
+                      ]}
+                      height={80}
+                      formatValue={(value: number) => `${value}%`}
+                      {...ChartConfigs.efficiency}
+                      showValues={true}
+                    />
 
                     {/* Enhanced Progress Bar */}
                     <div className="space-y-3">
@@ -1706,8 +1795,8 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                           <div className="w-[3%] bg-emerald-500"></div>
                           <div className="w-[62%] bg-slate-700"></div>
                         </div>
-                        {/* Current value indicator at 96.5% */}
-                        <div className="absolute left-[96.5%] top-0 w-1 h-full bg-white shadow-lg transform -translate-x-0.5"></div>
+                        {/* Current value indicator at 93% */}
+                        <div className="absolute left-[93%] top-0 w-1 h-full bg-white shadow-lg transform -translate-x-0.5"></div>
                       </div>
                       <div className="flex justify-between text-xs text-slate-400 font-medium">
                         <span>OK: 80%</span>
@@ -1734,12 +1823,26 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                     <div className="text-sm text-slate-400 font-medium">% of compliant supplier deliveries.</div>
                     
                     <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">92.0%</div>
+                      <div className="text-5xl font-bold text-white tracking-tight">88%</div>
                       <div className="flex items-center gap-1 text-sm font-bold text-red-400 bg-red-500/10 px-3 py-1 rounded-full">
-                        <TrendingDown className="w-4 h-4" />
-                        -3.0%
+                        <ArrowDown className="w-4 h-4" />
+                        -7% vs target (95%)
                       </div>
                     </div>
+
+                    {/* Chart Values */}
+                    <ChartComponent
+                      data={[
+                        { value: 80 },
+                        { value: 99 },
+                        { value: 90 },
+                        { value: 77 }
+                      ]}
+                      height={80}
+                      formatValue={(value: number) => `${value}%`}
+                      {...ChartConfigs.efficiency}
+                      showValues={true}
+                    />
 
                     {/* Enhanced Progress Bar */}
                     <div className="space-y-3">
@@ -1752,8 +1855,8 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                           <div className="w-[6%] bg-emerald-500"></div>
                           <div className="w-[69%] bg-slate-700"></div>
                         </div>
-                        {/* Current value indicator at 92% */}
-                        <div className="absolute left-[92%] top-0 w-1 h-full bg-white shadow-lg transform -translate-x-0.5"></div>
+                        {/* Current value indicator at 88% */}
+                        <div className="absolute left-[88%] top-0 w-1 h-full bg-white shadow-lg transform -translate-x-0.5"></div>
                       </div>
                       <div className="flex justify-between text-xs text-slate-400 font-medium">
                         <span>OK: 85%</span>
@@ -1780,12 +1883,26 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                     <div className="text-sm text-slate-400 font-medium">% of compliant inventories.</div>
                     
                     <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">99.2%</div>
-                      <div className="flex items-center gap-1 text-sm font-bold text-green-400 bg-green-500/10 px-3 py-1 rounded-full">
-                        <ArrowUp className="w-4 h-4" />
-                        +0.2%
+                      <div className="text-5xl font-bold text-white tracking-tight">95%</div>
+                      <div className="flex items-center gap-1 text-sm font-bold text-red-400 bg-red-500/10 px-3 py-1 rounded-full">
+                        <ArrowDown className="w-4 h-4" />
+                        -3% vs target (98%)
                       </div>
                     </div>
+
+                    {/* Chart Values */}
+                    <ChartComponent
+                      data={[
+                        { value: 94 },
+                        { value: 88 },
+                        { value: 79 },
+                        { value: 90 }
+                      ]}
+                      height={80}
+                      formatValue={(value: number) => `${value}%`}
+                      {...ChartConfigs.efficiency}
+                      showValues={true}
+                    />
 
                     {/* Enhanced Progress Bar */}
                     <div className="space-y-3">
@@ -1798,8 +1915,8 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                           <div className="w-[0.5%] bg-emerald-500"></div>
                           <div className="w-[91.5%] bg-slate-700"></div>
                         </div>
-                        {/* Current value indicator at 99.2% */}
-                        <div className="absolute left-[99.2%] top-0 w-1 h-full bg-white shadow-lg transform -translate-x-0.5"></div>
+                        {/* Current value indicator at 95% */}
+                        <div className="absolute left-[95%] top-0 w-1 h-full bg-white shadow-lg transform -translate-x-0.5"></div>
                       </div>
                       <div className="flex justify-between text-xs text-slate-400 font-medium">
                         <span>OK: 95%</span>
@@ -1831,29 +1948,11 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                     
                     <div className="text-sm text-slate-400 font-medium">Average days of stock.</div>
                     
-                    <div className="space-y-4">
-                      {/* Raw Materials */}
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-slate-300">Raw Materials</span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg font-bold text-white">25 days</span>
-                          <div className="flex items-center gap-1 text-sm font-bold text-orange-400 bg-orange-500/10 px-2 py-1 rounded-full">
-                            <ArrowUp className="w-3 h-3" />
-                            +2 days vs target
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Finished Goods */}
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-slate-300">Finished Goods</span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg font-bold text-white">18 days</span>
-                          <div className="flex items-center gap-1 text-sm font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-full">
-                            <TrendingDown className="w-3 h-3" />
-                            -1 day vs target
-                          </div>
-                        </div>
+                    <div className="flex items-end justify-between">
+                      <div className="text-5xl font-bold text-white tracking-tight">42 days</div>
+                      <div className="flex items-center gap-1 text-sm font-bold text-red-400 bg-red-500/10 px-3 py-1 rounded-full">
+                        <ArrowUp className="w-4 h-4" />
+                        +7 days vs target (35 days)
                       </div>
                     </div>
                   </div>
@@ -1871,147 +1970,13 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
                       </Button>
                     </div>
                     
-                    <div className="text-sm text-slate-400 font-medium">Freight IN / Freight OUT evolution.</div>
+                    <div className="text-sm text-slate-400 font-medium">Total logistics expenses.</div>
                     
-                    <div className="space-y-4">
-                      {/* Freight IN */}
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-bold text-slate-300">Freight IN</span>
-                          <div className="flex items-center gap-2">
-                            <span className="text-lg font-bold text-white">$125k</span>
-                            <div className="flex items-center gap-1 text-sm font-bold text-orange-400 bg-orange-500/10 px-2 py-1 rounded-full">
-                              <ArrowUp className="w-3 h-3" />
-                              +$5k vs target
-                            </div>
-                          </div>
-                        </div>
-                        
-                        {/* Freight IN Chart */}
-                        <div className="w-full bg-slate-900/30 rounded-lg p-3 border border-slate-700/50">
-                          <div className="h-20 relative">
-                            <svg className="w-full h-full" viewBox="0 0 200 60">
-                              {/* Grid lines */}
-                              <defs>
-                                <pattern id="freightInGrid" width="40" height="15" patternUnits="userSpaceOnUse">
-                                  <path d="M 40 0 L 0 0 0 15" fill="none" stroke="#374151" strokeWidth="0.5" opacity="0.3"/>
-                                </pattern>
-                              </defs>
-                              <rect width="100%" height="100%" fill="url(#freightInGrid)" />
-                              
-                              {/* Target line (red dotted) */}
-                              <line x1="10" y1="50" x2="190" y2="50" stroke="#EF4444" strokeWidth="1.5" strokeDasharray="2,2" />
-                              
-                              {/* Data line (blue) */}
-                              <polyline
-                                points="10,55 50,53 90,51 130,52 170,50"
-                                fill="none"
-                                stroke="#3B82F6"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                              
-                              {/* Data points */}
-                              {[
-                                { x: 10, y: 55, value: 120 },
-                                { x: 50, y: 53, value: 122 },
-                                { x: 90, y: 51, value: 124 },
-                                { x: 130, y: 52, value: 123 },
-                                { x: 170, y: 50, value: 125 }
-                              ].map((point, index) => (
-                                <circle
-                                  key={index}
-                                  cx={point.x}
-                                  cy={point.y}
-                                  r="2"
-                                  fill="#3B82F6"
-                                  stroke="#1E40AF"
-                                  strokeWidth="1"
-                                />
-                              ))}
-                            </svg>
-                            
-                            {/* X-axis labels */}
-                            <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-slate-400 font-medium px-2">
-                              <span>Jan</span>
-                              <span>Feb</span>
-                              <span>Mar</span>
-                              <span>Apr</span>
-                              <span>May</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Freight OUT */}
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-bold text-slate-300">Freight OUT</span>
-                          <div className="flex items-center gap-2">
-                            <span className="text-lg font-bold text-white">$210k</span>
-                            <div className="flex items-center gap-1 text-sm font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-full">
-                              <TrendingDown className="w-3 h-3" />
-                              -$10k vs target
-                            </div>
-                          </div>
-                        </div>
-                        
-                        {/* Freight OUT Chart */}
-                        <div className="w-full bg-slate-900/30 rounded-lg p-3 border border-slate-700/50">
-                          <div className="h-20 relative">
-                            <svg className="w-full h-full" viewBox="0 0 200 60">
-                              {/* Grid lines */}
-                              <defs>
-                                <pattern id="freightOutGrid" width="40" height="15" patternUnits="userSpaceOnUse">
-                                  <path d="M 40 0 L 0 0 0 15" fill="none" stroke="#374151" strokeWidth="0.5" opacity="0.3"/>
-                                </pattern>
-                              </defs>
-                              <rect width="100%" height="100%" fill="url(#freightOutGrid)" />
-                              
-                              {/* Target line (green dotted) */}
-                              <line x1="10" y1="45" x2="190" y2="45" stroke="#10B981" strokeWidth="1.5" strokeDasharray="2,2" />
-                              
-                              {/* Data line (blue) */}
-                              <polyline
-                                points="10,35 50,40 90,45 130,44 170,45"
-                                fill="none"
-                                stroke="#3B82F6"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                              
-                              {/* Data points */}
-                              {[
-                                { x: 10, y: 35, value: 220 },
-                                { x: 50, y: 40, value: 215 },
-                                { x: 90, y: 45, value: 210 },
-                                { x: 130, y: 44, value: 212 },
-                                { x: 170, y: 45, value: 210 }
-                              ].map((point, index) => (
-                                <circle
-                                  key={index}
-                                  cx={point.x}
-                                  cy={point.y}
-                                  r="2"
-                                  fill="#3B82F6"
-                                  stroke="#1E40AF"
-                                  strokeWidth="1"
-                                />
-                              ))}
-                            </svg>
-                            
-                            {/* X-axis labels */}
-                            <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-slate-400 font-medium px-2">
-                              <span>Jan</span>
-                              <span>Feb</span>
-                              <span>Mar</span>
-                              <span>Apr</span>
-                              <span>May</span>
-                            </div>
-                          </div>
-                        </div>
+                    <div className="flex items-end justify-between">
+                      <div className="text-5xl font-bold text-white tracking-tight">120k€</div>
+                      <div className="flex items-center gap-1 text-sm font-bold text-red-400 bg-red-500/10 px-3 py-1 rounded-full">
+                        <ArrowUp className="w-4 h-4" />
+                        +10k€ vs target (110k€)
                       </div>
                     </div>
                   </div>
@@ -2027,87 +1992,223 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
   // Special layout for HR Dashboard (light theme)
   if (category.id === "rh") {
     return (
-      <div className={`min-h-screen bg-slate-100 dark:bg-slate-100 ${className}`}>
-        <div className="p-6 space-y-6">
-          {/* HR Dashboard Header */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
-                <div className="w-6 h-6 text-white">👥</div>
-              </div>
-              <h1 className="text-2xl font-bold text-slate-900">HR Dashboard</h1>
-            </div>
-            <div className="flex items-center space-x-4 text-sm text-slate-600">
-              <span>Filter by:</span>
-              <div className="flex items-center space-x-2">
-                <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-lg">📅 Monthly</span>
-                <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-lg">🏢 All Categories</span>
-              </div>
-            </div>
+      <div className={`min-h-screen bg-slate-50 ${className}`}>
+        <div className="p-6 space-y-8">
+          {/* HR Dashboard Title */}
+          <div className="space-y-2">
+            <h1 className="text-4xl font-bold text-slate-900 tracking-tight">HR Dashboard</h1>
+            <p className="text-slate-600 text-lg">Key Human Resources Performance Indicators</p>
           </div>
 
           {/* HR KPIs Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {category.kpis.map((kpi, index) => (
-              <Card key={index} className="bg-white border-slate-200 shadow-sm">
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="text-lg font-semibold text-slate-900">{kpi.title}</h3>
-                      <p className="text-sm text-slate-500">{kpi.subtitle}</p>
-                    </div>
-                    
-                    <div className="flex items-end justify-between">
-                      <div className="text-3xl font-bold text-slate-900">{kpi.value}</div>
-                      {kpi.trend && (
-                        <div className={`text-sm font-medium ${kpi.trendColor}`}>
-                          {kpi.trend.includes('+') ? '↗' : kpi.trend.includes('-') ? '↘' : '→'} {kpi.trend}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* HR Style Progress Bar with Status Ranges */}
-                    <div className="space-y-2">
-                      <div className="flex h-2 bg-slate-200 rounded-full overflow-hidden relative">
-                        <div className="bg-green-500 w-1/4"></div>
-                        <div className="bg-blue-500 w-1/4"></div>
-                        <div className="bg-orange-500 w-1/4"></div>
-                        <div className="bg-red-500 w-1/4"></div>
-                        {kpi.currentStatus && (
-                          <div className="absolute top-0 left-0 right-0 flex justify-center">
-                            <span className="bg-purple-600 text-white text-xs px-2 py-1 rounded-full -mt-6">
-                              {kpi.currentStatus}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                      {kpi.statusRanges && (
-                        <div className="flex justify-between text-xs text-slate-500">
-                          <span>{kpi.statusRanges.target}</span>
-                          <span>{kpi.statusRanges.good}</span>
-                          <span>{kpi.statusRanges.alert}</span>
-                          <span>{kpi.statusRanges.high}</span>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                      <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                        {kpi.actionText || 'View Details'}
-                      </button>
-                      <span className={`text-sm font-medium ${kpi.statusColor || 'text-green-600'}`}>
-                        {kpi.title === 'Headcount' && 'On Target'}
-                        {kpi.title === 'Cost' && 'Over Budget'}
-                        {kpi.title === 'Turnover Rate' && 'High'}
-                        {kpi.title === 'Time to Fill' && 'On Track'}
-                        {kpi.title === 'Absenteeism Rate' && 'Needs Attention'}
-                        {kpi.title === 'Social Incidents' && 'Good'}
-                      </span>
+            {/* HeadCount */}
+            <Card className="bg-white border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300">
+              <CardContent className="p-6">
+                <div className="space-y-5">
+                  <h3 className="font-bold text-slate-900 text-lg">HeadCount</h3>
+                  
+                  <div className="flex items-end justify-between">
+                    <div className="text-4xl font-bold text-slate-900 tracking-tight">Target</div>
+                    <div className="flex items-center gap-1 text-sm font-bold text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                      <ArrowUp className="w-3 h-3" />
+                      On Target
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
+
+                  <div className="flex justify-end">
+                    <Button variant="link" className="text-blue-600 p-0 h-auto text-sm font-medium hover:text-blue-700">
+                      View Details
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Personal Transport Bus Occupancy Rate */}
+            <Card className="bg-white border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300">
+              <CardContent className="p-6">
+                <div className="space-y-5">
+                  <h3 className="font-bold text-slate-900 text-lg">Personal Transport Bus Occupancy Rate</h3>
+                  
+                  <div className="flex items-end justify-between">
+                    <div className="text-4xl font-bold text-slate-900 tracking-tight">78%</div>
+                    <div className="flex items-center gap-1 text-sm font-bold text-red-600 bg-red-100 px-2 py-1 rounded-full">
+                      <ArrowDown className="w-3 h-3" />
+                      -7% vs target (85%)
+                    </div>
+                  </div>
+
+                  {/* Chart Values */}
+                  <ChartComponent
+                    data={[
+                      { value: 85 },
+                      { value: 90 },
+                      { value: 80 },
+                      { value: 99 }
+                    ]}
+                    height={60}
+                    formatValue={(value: number) => `${value}%`}
+                    {...ChartConfigs.efficiency}
+                    color="#10B981"
+                  />
+
+                  <div className="flex justify-end">
+                    <Button variant="link" className="text-blue-600 p-0 h-auto text-sm font-medium hover:text-blue-700">
+                      View Details
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Turnover Rate */}
+            <Card className="bg-white border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300">
+              <CardContent className="p-6">
+                <div className="space-y-5">
+                  <h3 className="font-bold text-slate-900 text-lg">Turnover Rate</h3>
+                  
+                  <div className="flex items-end justify-between">
+                    <div className="text-4xl font-bold text-slate-900 tracking-tight">4.2%</div>
+                    <div className="flex items-center gap-1 text-sm font-bold text-red-600 bg-red-100 px-2 py-1 rounded-full">
+                      <ArrowUp className="w-3 h-3" />
+                      +1.2% vs target (3%)
+                    </div>
+                  </div>
+
+                  {/* Chart Values */}
+                  <ChartComponent
+                    data={[
+                      { value: 3.2 },
+                      { value: 3 },
+                      { value: 5.2 },
+                      { value: 4 }
+                    ]}
+                    height={60}
+                    formatValue={(value: number) => `${value}%`}
+                    {...ChartConfigs.cost}
+                    color="#EF4444"
+                  />
+
+                  <div className="flex justify-end">
+                    <Button variant="link" className="text-blue-600 p-0 h-auto text-sm font-medium hover:text-blue-700">
+                      View Details
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Time To Fill */}
+            <Card className="bg-white border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300">
+              <CardContent className="p-6">
+                <div className="space-y-5">
+                  <h3 className="font-bold text-slate-900 text-lg">Time To Fill</h3>
+                  
+                  <div className="flex items-end justify-between">
+                    <div className="text-4xl font-bold text-slate-900 tracking-tight">32 days</div>
+                    <div className="flex items-center gap-1 text-sm font-bold text-red-600 bg-red-100 px-2 py-1 rounded-full">
+                      <ArrowUp className="w-3 h-3" />
+                      +7 days vs target (25 days)
+                    </div>
+                  </div>
+
+                  {/* Chart Values */}
+                  <ChartComponent
+                    data={[
+                      { value: 33 },
+                      { value: 36 },
+                      { value: 24 },
+                      { value: 20 }
+                    ]}
+                    height={60}
+                    formatValue={(value: number) => `${value}d`}
+                    {...ChartConfigs.cost}
+                    color="#EF4444"
+                  />
+
+                  <div className="flex justify-end">
+                    <Button variant="link" className="text-blue-600 p-0 h-auto text-sm font-medium hover:text-blue-700">
+                      View Details
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Absenteeism Rate */}
+            <Card className="bg-white border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300">
+              <CardContent className="p-6">
+                <div className="space-y-5">
+                  <h3 className="font-bold text-slate-900 text-lg">Absenteeism Rate</h3>
+                  
+                  <div className="flex items-end justify-between">
+                    <div className="text-4xl font-bold text-slate-900 tracking-tight">2.8%</div>
+                    <div className="flex items-center gap-1 text-sm font-bold text-red-600 bg-red-100 px-2 py-1 rounded-full">
+                      <ArrowUp className="w-3 h-3" />
+                      +0.8% vs target (2.0%)
+                    </div>
+                  </div>
+
+                  {/* Chart Values */}
+                  <ChartComponent
+                    data={[
+                      { value: 2.0 },
+                      { value: 2.9 },
+                      { value: 3.0 },
+                      { value: 2.0 }
+                    ]}
+                    height={60}
+                    formatValue={(value: number) => `${value}%`}
+                    {...ChartConfigs.cost}
+                    color="#EF4444"
+                  />
+
+                  <div className="flex justify-end">
+                    <Button variant="link" className="text-blue-600 p-0 h-auto text-sm font-medium hover:text-blue-700">
+                      View Details
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Social Incidents */}
+            <Card className="bg-white border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300">
+              <CardContent className="p-6">
+                <div className="space-y-5">
+                  <h3 className="font-bold text-slate-900 text-lg">Social Incidents</h3>
+                  
+                  <div className="flex items-end justify-between">
+                    <div className="text-4xl font-bold text-slate-900 tracking-tight">3</div>
+                    <div className="flex items-center gap-1 text-sm font-bold text-red-600 bg-red-100 px-2 py-1 rounded-full">
+                      <ArrowUp className="w-3 h-3" />
+                      +2 vs target (1)
+                    </div>
+                  </div>
+
+                  {/* Chart Values */}
+                  <ChartComponent
+                    data={[
+                      { value: 2 },
+                      { value: 4 },
+                      { value: 2 },
+                      { value: 5 }
+                    ]}
+                    height={60}
+                    formatValue={(value: number) => value.toString()}
+                    {...ChartConfigs.cost}
+                    color="#EF4444"
+                  />
+
+                  <div className="flex justify-end">
+                    <Button variant="link" className="text-blue-600 p-0 h-auto text-sm font-medium hover:text-blue-700">
+                      View Details
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

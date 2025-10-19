@@ -3,8 +3,8 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { getIconComponent } from "@/components/IconComponent";
-import { CategoryData } from "@/lib/kpi-data";
 import { ArrowUp, ArrowDown, Minus, TrendingUp, TrendingDown } from "lucide-react";
+import { CategoryData } from "@/types";
 
 interface CategoryHeaderProps {
   category: CategoryData;
@@ -172,7 +172,7 @@ export function CategoryHeader({ category, className }: CategoryHeaderProps) {
             </div>
             <div className="flex-1">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black bg-gradient-to-r from-foreground via-foreground to-foreground/60 bg-clip-text text-transparent tracking-tight">
-                {category.name} Dashboard
+                {category.name} Dashboard asdadad
               </h1>
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mt-2">
                 <div className="h-1 w-8 sm:w-12 bg-gradient-to-r from-primary to-primary/50 rounded-full"></div>

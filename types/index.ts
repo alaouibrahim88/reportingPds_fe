@@ -193,3 +193,108 @@ export interface Cell {
   libelle: string;
   id: string | number;
 }
+
+// File Upload Types
+export interface UploadedFile {
+	id: string
+	name: string
+	uploadDate: string
+	status: 'uploaded' | 'uploading' | 'error'
+	size?: number
+}
+
+export type FilesByDepartment = Record<string, UploadedFile[]>
+
+export interface FileUploadContextType {
+	files: FilesByDepartment
+	uploadFile: (departmentId: string, file: File) => Promise<void>
+	deleteFile: (departmentId: string, fileId: string) => void
+	getFilesForDepartment: (departmentId: string) => UploadedFile[]
+}
+
+// KPI Dashboard Types
+export interface NavigationItem {
+	id: string
+	label: string
+}
+
+export interface KPIItem {
+	id: string
+	title: string
+	value: number
+	unit: string
+	trend: 'up' | 'down' | 'neutral'
+	trendPercentage: number
+	chartData: number[]
+	details: {
+		description: string
+		breakdown: {
+			[key: string]: number | string
+		}
+		insights: string[]
+		lastUpdated: string
+	}
+	color: string
+	icon?: string
+}
+
+export interface KPIDataset {
+	name: string
+	description: string
+	kpis: KPIItem[]
+}
+
+export interface CategoryKPI {
+	title: string
+	value: string
+	subtitle?: string
+	target?: string
+	trend?: string
+	trendColor?: string
+	lastWeeks?: string[]
+	statusRanges?: {
+		target: string
+		good: string
+		alert: string
+		high: string
+	}
+	currentStatus?: string
+	statusColor?: string
+	actionText?: string
+	progressRanges?: {
+		ok: string
+		good: string
+		excellent: string
+		target: string
+	}
+	currentValue?: number
+	breakdown?: {
+		[key: string]: string
+	}
+	chartData?: {
+		freightIn?: number[]
+		freightOut?: number[]
+	}
+	actionLink?: string
+}
+
+export interface CategoryData {
+	id: string
+	name: string
+	icon: string
+	kpis: CategoryKPI[]
+}
+
+export interface WeeklyIndicator {
+	Indicateur: string
+	Valeur_Semaine: number
+	Target: number
+	Semaine_M1: number
+	Semaine_M2: number
+	Semaine_M3: number
+	Semaine_M4: number
+}
+
+export interface IndicateursData {
+	Indicateurs: WeeklyIndicator[]
+}
