@@ -1,80 +1,181 @@
 'use client'
 
 import React from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { weeklyIndicatorsData } from '@/lib/kpi-data'
-import { Activity } from 'lucide-react'
+import { Check, X } from 'lucide-react'
+import type { WeeklyIndicator } from '@/types'
+
+// Helper to determine status (green/yellow/red)
+const getStatus = (value: number, target: number, lowerIsBetter?: boolean) => {
+	if (lowerIsBetter) {
+		if (value <= target) return 'green'
+		if (value <= target * 1.05) return 'yellow'
+		return 'red'
+	} else {
+		if (value >= target) return 'green'
+		if (value >= target * 0.95) return 'yellow'
+		return 'red'
+	}
+}
+
+// Helper for status icon
+const getStatusIcon = (value: number, target: number, lowerIsBetter?: boolean) => {
+	const status = getStatus(value, target, lowerIsBetter)
+	if (status === 'green') {
+		return (
+			<span className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500/30 text-green-400 shadow-lg">
+				<Check className="h-5 w-5" />
+			</span>
+		)
+	}
+	return (
+		<span className="flex h-8 w-8 items-center justify-center rounded-full bg-red-500/30 text-red-400 shadow-lg">
+			<X className="h-5 w-5" />
+		</span>
+	)
+}
+
+// Helper for circular status styling
+const getCircularStatusStyle = (value: number, target: number, lowerIsBetter?: boolean) => {
+	const status = getStatus(value, target, lowerIsBetter)
+	switch (status) {
+		case 'green':
+			return 'bg-green-500/20 text-green-400 ring-2 ring-green-500/40 shadow-md'
+		case 'yellow':
+			return 'bg-yellow-500/20 text-yellow-400 ring-2 ring-yellow-500/40 shadow-md'
+		default:
+			return 'bg-red-500/20 text-red-400 ring-2 ring-red-500/40 shadow-md'
+	}
+}
 
 export function WeeklyIndicators() {
 	const { Indicateurs } = weeklyIndicatorsData
 
-	const formatValue = (value: number, indicateur: string) => {
-		if (indicateur.includes('Taux') || indicateur.includes('Efficience') || indicateur.includes('Réclamations')) {
-			return `${value.toFixed(1)}%`
-		} else if (indicateur.includes('Chiffre') || indicateur.includes('Forecast')) {
-			return `$${(value / 1000000).toFixed(2)}M`
+	// Value formatting depending on indicator type
+	const formatValue = (value: number, indicateur: string): string => {
+		if (
+			indicateur.includes('Taux') ||
+			indicateur.includes('Efficience')
+		) {
+			return `${value}%`
+		} else if (
+			indicateur.includes('Chiffre') ||
+			indicateur.includes('Forecast')
+		) {
+			return `€${value}M`
+		} else if (indicateur.includes('Réclamations')) {
+			return value.toString()
 		}
 		return value.toString()
 	}
 
-	const getTrendColor = (valeur: number, target: number) => {
-		return valeur >= target ? 'text-green-600' : 'text-red-600'
-	}
-
 	return (
-		<div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-			{Indicateurs.map((indicator, index) => (
-				<Card
+		<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-8">
+			{Indicateurs.map((indicator: WeeklyIndicator, index: number) => (
+				<div
 					key={index}
-					className="group relative overflow-hidden bg-card border-2 border-border/50 hover:border-primary/30 shadow-lg hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] animate-fade-in"
-					style={{ animationDelay: `${index * 100}ms` }}
+					className="group col-span-1 2xl:col-span-2 flex flex-col justify-between rounded-2xl bg-slate-800/90 dark:bg-slate-800/90 p-6 shadow-xl border border-slate-700/50 dark:border-slate-700/50 backdrop-blur-sm cursor-pointer transition-all duration-300 ease-out hover:scale-[1.02] hover:shadow-2xl hover:shadow-slate-900/30 hover:bg-slate-800/95 hover:border-slate-600/60 hover:-translate-y-0.5"
 				>
-					{/* Enhanced hover gradient overlay */}
-					<div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-					
-					{/* Subtle shimmer effect */}
-					<div className="absolute inset-0 shimmer opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-					
-					<CardHeader className="pb-2 pt-4 px-4 relative z-10">
-						<div className="flex items-center mb-2">
-							<CardTitle className="text-lg font-bold text-foreground flex items-center gap-3 group-hover:gap-4 transition-all duration-300">
-								<div className="p-2 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 text-primary group-hover:from-primary group-hover:to-primary/80 group-hover:text-primary-foreground group-hover:scale-105 group-hover:rotate-2 transition-all duration-500 shadow-sm group-hover:shadow-primary/25">
-									<Activity className="h-6 w-6" />
-								</div>
-								<span className="group-hover:text-primary transition-colors duration-300 tracking-tight text-sm">
-									{indicator.Indicateur}
-								</span>
-							</CardTitle>
-						</div>
-					</CardHeader>
-					<CardContent className="relative z-10 px-4 pb-4">
-						<div className="space-y-3">
-							{/* Enhanced KPI Preview */}
-							<div className="p-3 rounded-lg bg-muted/50 group-hover:bg-muted/70 transition-all duration-500 border border-border/40 group-hover:border-primary/20">
-								<div className="text-xs font-bold text-muted-foreground/90 uppercase tracking-wider mb-2 group-hover:text-muted-foreground transition-colors duration-300">
-									Current Week
-								</div>
-								<div className="flex items-center justify-between mb-3">
-									<div className="text-2xl font-black text-foreground group-hover:scale-105 group-hover:text-primary transition-all duration-500 tracking-tight">
-										{formatValue(indicator.Valeur_Semaine, indicator.Indicateur)}
-									</div>
-									<div className="text-right space-y-1">
-										<div className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-widest">4W</div>
-										<div className="text-xs font-mono text-muted-foreground bg-background/80 px-2 py-1 rounded border border-border/30 shadow-sm">
-											{formatValue(indicator.Semaine_M4, indicator.Indicateur)} • {formatValue(indicator.Semaine_M3, indicator.Indicateur)} • {formatValue(indicator.Semaine_M2, indicator.Indicateur)} • {formatValue(indicator.Semaine_M1, indicator.Indicateur)}
-										</div>
-									</div>
-								</div>
-								<div className={`text-xs font-semibold mt-2 px-2 py-1 rounded bg-background/80 border border-border/40 ${getTrendColor(indicator.Valeur_Semaine, indicator.Target)} transition-all duration-300`}>
-									<span className="mr-1">🎯</span>
-									Target: {formatValue(indicator.Target, indicator.Indicateur)}
-								</div>
+					<div className="flex justify-between items-start mb-6">
+						<h3 className="text-lg font-semibold text-white dark:text-white leading-tight transition-all duration-300 group-hover:text-blue-300">
+							{indicator.Indicateur}
+						</h3>
+					</div>
+
+					<div className="mb-8">
+						<div className="flex items-end gap-3">
+							<p className="text-6xl font-black text-white dark:text-white leading-none transition-all duration-300 group-hover:text-blue-100 group-hover:scale-[1.02]">
+								{formatValue(indicator.Valeur_Semaine, indicator.Indicateur)}
+							</p>
+							<div className="transition-transform duration-300 group-hover:scale-105 group-hover:rotate-6">
+								{getStatusIcon(
+									indicator.Valeur_Semaine,
+									indicator.Target,
+									indicator.LowerIsBetter
+								)}
 							</div>
 						</div>
-					</CardContent>
-				</Card>
+						<p className="text-sm text-slate-300 dark:text-slate-300 mt-2 font-medium transition-colors duration-300 group-hover:text-slate-200">
+							Target: {indicator.LowerIsBetter ? '<' : ''}{formatValue(indicator.Target, indicator.Indicateur)}
+						</p>
+					</div>
+
+					<div className="mt-auto">
+						<p className="text-xs text-slate-400 dark:text-slate-400 mb-4 font-medium uppercase tracking-wider transition-colors duration-300 group-hover:text-slate-300">
+							Previous 4 Weeks (Actual / Target)
+						</p>
+						<div className="flex items-start justify-between gap-4 text-center">
+							<div className="flex flex-col items-center gap-2 transition-all duration-300 group-hover:transform group-hover:translate-y-[-1px]" style={{transitionDelay: '50ms'}}>
+								<div
+									className={`group/circle relative flex h-14 w-14 flex-col items-center justify-center rounded-full ${getCircularStatusStyle(
+										indicator.Semaine_M4,
+										indicator.Target,
+										indicator.LowerIsBetter
+									)} transition-all duration-300 hover:scale-105 group-hover:scale-[1.02] group-hover:shadow-md`}
+								>
+									<span className="text-sm font-bold leading-none transition-all duration-200 group-hover/circle:scale-105">
+										{formatValue(indicator.Semaine_M4, indicator.Indicateur)}
+									</span>
+								</div>
+								<p className="text-[10px] text-slate-400 dark:text-slate-400 font-medium transition-colors duration-300 group-hover:text-slate-300">
+									T: {formatValue(indicator.Target, indicator.Indicateur)}
+								</p>
+							</div>
+
+							<div className="flex flex-col items-center gap-2 transition-all duration-300 group-hover:transform group-hover:translate-y-[-1px]" style={{transitionDelay: '100ms'}}>
+								<div
+									className={`group/circle relative flex h-14 w-14 flex-col items-center justify-center rounded-full ${getCircularStatusStyle(
+										indicator.Semaine_M3,
+										indicator.Target,
+										indicator.LowerIsBetter
+									)} transition-all duration-300 hover:scale-105 group-hover:scale-[1.02] group-hover:shadow-md`}
+								>
+									<span className="text-sm font-bold leading-none transition-all duration-200 group-hover/circle:scale-105">
+										{formatValue(indicator.Semaine_M3, indicator.Indicateur)}
+									</span>
+								</div>
+								<p className="text-[10px] text-slate-400 dark:text-slate-400 font-medium transition-colors duration-300 group-hover:text-slate-300">
+									T: {formatValue(indicator.Target, indicator.Indicateur)}
+								</p>
+							</div>
+
+							<div className="flex flex-col items-center gap-2 transition-all duration-300 group-hover:transform group-hover:translate-y-[-1px]" style={{transitionDelay: '150ms'}}>
+								<div
+									className={`group/circle relative flex h-14 w-14 flex-col items-center justify-center rounded-full ${getCircularStatusStyle(
+										indicator.Semaine_M2,
+										indicator.Target,
+										indicator.LowerIsBetter
+									)} transition-all duration-300 hover:scale-105 group-hover:scale-[1.02] group-hover:shadow-md`}
+								>
+									<span className="text-sm font-bold leading-none transition-all duration-200 group-hover/circle:scale-105">
+										{formatValue(indicator.Semaine_M2, indicator.Indicateur)}
+									</span>
+								</div>
+								<p className="text-[10px] text-slate-400 dark:text-slate-400 font-medium transition-colors duration-300 group-hover:text-slate-300">
+									T: {formatValue(indicator.Target, indicator.Indicateur)}
+								</p>
+							</div>
+
+							<div className="flex flex-col items-center gap-2 transition-all duration-300 group-hover:transform group-hover:translate-y-[-1px]" style={{transitionDelay: '200ms'}}>
+								<div
+									className={`group/circle relative flex h-14 w-14 flex-col items-center justify-center rounded-full ${getCircularStatusStyle(
+										indicator.Semaine_M1,
+										indicator.Target,
+										indicator.LowerIsBetter
+									)} transition-all duration-300 hover:scale-105 group-hover:scale-[1.02] group-hover:shadow-md`}
+								>
+									<span className="text-sm font-bold leading-none transition-all duration-200 group-hover/circle:scale-105">
+										{formatValue(indicator.Semaine_M1, indicator.Indicateur)}
+									</span>
+								</div>
+								<p className="text-[10px] text-slate-400 dark:text-slate-400 font-medium transition-colors duration-300 group-hover:text-slate-300">
+									T: {formatValue(indicator.Target, indicator.Indicateur)}
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
 			))}
 		</div>
 	)
 }
-

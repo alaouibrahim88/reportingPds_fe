@@ -66,13 +66,13 @@ function ChartKPICard({
   };
 
   return (
-    <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+    <Card className="bg-white border-border-color shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
       <CardContent className="p-6">
         <div className="space-y-5">
-          <h3 className="text-white font-semibold text-base tracking-wide">{title}</h3>
+          <h3 className="text-slate-100 font-semibold text-base tracking-wide">{title}</h3>
           
           <div className="flex items-end justify-between">
-            <div className="text-5xl font-bold text-white tracking-tight">{value}</div>
+            <div className="text-5xl font-bold text-slate-100 tracking-tight">{value}</div>
             {trend && (
               <div className={`flex items-center gap-1 text-sm font-semibold ${trendColor} bg-opacity-10 px-2 py-1 rounded-full`}>
                 {getTrendIcon()}
@@ -149,15 +149,15 @@ function DashboardKPICard({
   };
 
   return (
-    <Card className="bg-slate-800 dark:bg-slate-800 border-slate-700 hover:border-slate-600 transition-all duration-300">
+    <Card className="bg-white dark:bg-white border-slate-700 hover:border-slate-600 transition-all duration-300">
       <CardContent className={cardSizes[size]}>
         <div className="space-y-4">
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-white font-semibold text-sm">{title}</h3>
+              <h3 className="text-slate-100 font-semibold text-sm">{title}</h3>
               {subtitle && (
-                <p className="text-slate-400 text-xs mt-1">{subtitle}</p>
+                <p className="text-secondary text-xs mt-1">{subtitle}</p>
               )}
             </div>
             {actionLink && (
@@ -169,7 +169,7 @@ function DashboardKPICard({
 
           {/* Main Value and Trend */}
           <div className="flex items-end justify-between">
-            <div className={`font-bold text-white ${valueSizes[size]}`}>
+            <div className={`font-bold text-slate-100 ${valueSizes[size]}`}>
               {value}
             </div>
             {trend && (
@@ -192,13 +192,13 @@ function DashboardKPICard({
                   />
                 ))}
               </div>
-              <div className="flex justify-between text-xs text-slate-400">
+              <div className="flex justify-between text-xs text-secondary">
                 <span>0%</span>
                 <span>50%</span>
                 <span>100%</span>
               </div>
               {target && (
-                <div className="text-xs text-slate-400">
+                <div className="text-xs text-secondary">
                   {target}
                 </div>
               )}
@@ -223,7 +223,7 @@ function DashboardKPICard({
 
           {/* Target Info */}
           {target && !showProgressBar && (
-            <div className="text-xs text-slate-400 bg-slate-900/50 px-3 py-2 rounded-lg">
+            <div className="text-xs text-secondary bg-gray-50/50 px-3 py-2 rounded-lg">
               {target}
             </div>
           )}
@@ -260,1955 +260,3770 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
     return subtitles[category.id as keyof typeof subtitles] || `${category.name} performance indicators`;
   };
 
-  // Special layout for Finance Dashboard - Light Theme
+  // Special layout for Finance Dashboard - Enhanced UI/UX
   if (category.id === "finance") {
     return (
-      <div className={`min-h-screen bg-white ${className}`}>
-        <div className="p-6 space-y-8">
-          {/* Finance Dashboard Title */}
-          <div className="space-y-2">
-            <h1 className="text-4xl font-bold text-slate-900 tracking-tight">Finance Dashboard</h1>
-            <p className="text-slate-600 text-lg">Monitoring key financial performance indicators.</p>
+      <main className="flex-1 overflow-hidden">
+        <div className="p-8 lg:p-12">
+          <div className="mb-12">
+            <p className="text-secondary text-xl font-light leading-relaxed tracking-wide max-w-4xl">
+              Vue en direct des indicateurs de performance clés hebdomadaires et
+              mensuels.
+            </p>
           </div>
-
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column - Weekly KPIs and Chart */}
-            <div className="lg:col-span-2 space-y-8">
-              {/* Weekly KPIs Section */}
-              <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-slate-900">Weekly KPIs</h2>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Invoicing/Delivery Rate */}
-                  <Card className="bg-white border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300">
-                    <CardContent className="p-6">
-                      <div className="space-y-5">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-6 h-6 text-blue-600">
-                              <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-                              </svg>
-                            </div>
-                            <h3 className="font-bold text-slate-900 text-lg">Invoicing/Delivery Rate</h3>
-                          </div>
-                          <Button variant="link" className="text-blue-600 p-0 h-auto text-sm font-medium hover:text-blue-800">
-                            Details
-                          </Button>
-                        </div>
-                        
-                        <div className="text-sm text-slate-600 font-medium">Produced & invoiced weekly. Target: 98%</div>
-                        
-                        <div className="flex items-end justify-between">
-                          <div className="text-5xl font-bold text-slate-900 tracking-tight">95%</div>
-                          <div className="flex items-center gap-1 text-sm font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full">
-                            <ArrowUp className="w-4 h-4" />
-                            +3%
-                          </div>
-                        </div>
-
-                        {/* Weekly Values */}
-                        <div className="grid grid-cols-4 gap-2 text-center text-xs">
-                          <div className="bg-slate-50 p-2 rounded">
-                            <div className="text-slate-500 font-medium">W1</div>
-                            <div className="text-slate-900 font-bold">95%</div>
-                          </div>
-                          <div className="bg-slate-50 p-2 rounded">
-                            <div className="text-slate-500 font-medium">W2</div>
-                            <div className="text-slate-900 font-bold">98%</div>
-                          </div>
-                          <div className="bg-slate-50 p-2 rounded">
-                            <div className="text-slate-500 font-medium">W3</div>
-                            <div className="text-slate-900 font-bold">92%</div>
-                          </div>
-                          <div className="bg-slate-50 p-2 rounded">
-                            <div className="text-slate-500 font-medium">W4</div>
-                            <div className="text-slate-900 font-bold">98%</div>
-                          </div>
-                        </div>
-
-                        {/* Enhanced Progress Bar */}
-                        <div className="space-y-3">
-                          <div className="relative h-4 bg-slate-100 rounded-full overflow-hidden shadow-inner">
-                            {/* Background segments with proper colors */}
-                            <div className="absolute inset-0 flex">
-                              <div className="w-[23%] bg-orange-400"></div>
-                              <div className="w-[7.5%] bg-yellow-400"></div>
-                              <div className="w-[7.5%] bg-green-400"></div>
-                              <div className="w-[62%] bg-emerald-500"></div>
-                            </div>
-                            {/* Current value indicator at 95% */}
-                            <div className="absolute left-[95%] top-0 w-1 h-full bg-slate-900 shadow-lg transform -translate-x-0.5"></div>
-                          </div>
-                          <div className="flex justify-between text-xs text-slate-500 font-medium">
-                            <span>Warning (&lt;92%)</span>
-                            <span>Acceptable (92-95%)</span>
-                            <span>Target (95-98%)</span>
-                            <span>Excellent (&gt;98%)</span>
-                          </div>
-                        </div>
+          <div className="flex flex-col gap-10 min-h-[calc(100vh-200px)]">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 min-h-[500px]">
+              <div className="flex flex-col gap-8 rounded-xl border border-slate-700/50 bg-slate-800/90 p-10 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                <h3 className="text-slate-100 text-2xl font-semibold leading-tight mb-2">
+                  Revenus Hebdomadaires vs. Objectifs
+                </h3>
+                <div className="flex items-end gap-4 mb-2">
+                  <p className="text-blue-600 tracking-tight text-6xl font-black leading-none">
+                    3,2 M€
+                  </p>
+                  <div className="flex items-center text-green-600 mb-2">
+                    <span className="material-symbols-outlined text-2xl">
+                      arrow_upward
+                    </span>
+                    <p className="text-xl font-bold ml-1">+5% vs S-1</p>
+                  </div>
+                </div>
+                <p className="text-secondary text-lg font-medium mb-4">Objectif : 3,5 M€</p>
+                <div className="h-48 relative pt-4">
+                  <div className="absolute inset-0 px-2">
+                    <svg
+                      className="w-full h-full"
+                      fill="none"
+                      preserveAspectRatio="none"
+                      viewBox="0 0 286 112"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M35.75 89.6L107.25 58.8L178.75 39.2L250.25 0"
+                        stroke="#EAB308"
+                        strokeWidth="2"
+                      ></path>
+                      <circle
+                        cx="35.75"
+                        cy="89.6"
+                        fill="#EAB308"
+                        r="4"
+                        stroke="#101922"
+                        strokeWidth="2"
+                      ></circle>
+                      <circle
+                        cx="107.25"
+                        cy="58.8"
+                        fill="#EAB308"
+                        r="4"
+                        stroke="#101922"
+                        strokeWidth="2"
+                      ></circle>
+                      <circle
+                        cx="178.75"
+                        cy="39.2"
+                        fill="#EAB308"
+                        r="4"
+                        stroke="#101922"
+                        strokeWidth="2"
+                      ></circle>
+                      <circle
+                        cx="250.25"
+                        cy="0"
+                        fill="#EAB308"
+                        r="4"
+                        stroke="#101922"
+                        strokeWidth="2"
+                      ></circle>
+                    </svg>
+                    <div
+                      className="absolute text-amber-600 text-xs font-bold mt-2"
+                      style={{
+                        left: "260.25px",
+                        top: "-10px",
+                        transform: "translateX(-50%)",
+                      }}
+                    >
+                      3,2 M€
+                    </div>
+                  </div>
+                  <div className="absolute inset-0 grid grid-cols-4 items-end px-2">
+                    <div
+                      className="bg-blue-500 rounded-t-md relative mx-auto w-1/3 flex items-center justify-center"
+                      style={{ height: "60%" }}
+                    >
+                      <div className="absolute top-1 text-slate-100 text-xs font-bold">
+                        0,7 M€
                       </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Total Overdue Amount */}
-                  <Card className="bg-white border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300">
-                    <CardContent className="p-6">
-                      <div className="space-y-5">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-6 h-6 text-red-600">
-                              <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                              </svg>
-                            </div>
-                            <h3 className="font-bold text-slate-900 text-lg">Total Overdue Amount</h3>
-                          </div>
-                          <Button variant="link" className="text-blue-600 p-0 h-auto text-sm font-medium hover:text-blue-800">
-                            Details
-                          </Button>
-                        </div>
-                        
-                        <div className="text-sm text-slate-600 font-medium">Unpaid receivables. Target: €25,000.00</div>
-                        
-                        <div className="flex items-end justify-between">
-                          <div className="text-5xl font-bold text-slate-900 tracking-tight">€85k</div>
-                          <div className="flex items-center gap-1 text-sm font-bold text-red-600 bg-red-50 px-3 py-1 rounded-full">
-                            <ArrowUp className="w-4 h-4" />
-                            +€5k
-                          </div>
-                        </div>
-
-                        {/* Weekly Values */}
-                        <div className="grid grid-cols-4 gap-2 text-center text-xs">
-                          <div className="bg-slate-50 p-2 rounded">
-                            <div className="text-slate-500 font-medium">W1</div>
-                            <div className="text-slate-900 font-bold">€83k</div>
-                          </div>
-                          <div className="bg-slate-50 p-2 rounded">
-                            <div className="text-slate-500 font-medium">W2</div>
-                            <div className="text-slate-900 font-bold">€85k</div>
-                          </div>
-                          <div className="bg-slate-50 p-2 rounded">
-                            <div className="text-slate-500 font-medium">W3</div>
-                            <div className="text-slate-900 font-bold">€80k</div>
-                          </div>
-                          <div className="bg-slate-50 p-2 rounded">
-                            <div className="text-slate-500 font-medium">W4</div>
-                            <div className="text-slate-900 font-bold">€90k</div>
-                          </div>
-                        </div>
-
-                        {/* Risk Level Progress Bar */}
-                        <div className="space-y-3">
-                          <div className="relative h-4 bg-slate-100 rounded-full overflow-hidden shadow-inner">
-                            {/* Risk level segments */}
-                            <div className="absolute inset-0 flex">
-                              <div className="w-[27.78%] bg-green-400"></div>
-                              <div className="w-[27.78%] bg-yellow-400"></div>
-                              <div className="w-[22.22%] bg-orange-400"></div>
-                              <div className="w-[22.22%] bg-red-500"></div>
-                            </div>
-                            {/* Current value indicator - €85k out of €90k max shown = ~94% */}
-                            <div className="absolute left-[94%] top-0 w-1 h-full bg-slate-900 shadow-lg transform -translate-x-0.5"></div>
-                          </div>
-                          <div className="flex justify-between text-xs text-slate-500 font-medium">
-                            <span>Excellent (&lt;€25k)</span>
-                            <span>Target (&lt;€50k)</span>
-                            <span>Warning (&lt;€75k)</span>
-                            <span>Critical (&gt;€90k)</span>
-                          </div>
-                        </div>
+                    </div>
+                    <div
+                      className="bg-blue-500  rounded-t-md relative mx-auto w-1/3 flex items-center justify-center"
+                      style={{ height: "75%" }}
+                    >
+                      <div className="absolute top-1 text-slate-100 text-xs font-bold">
+                        0,9 M€
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                    <div
+                      className="bg-blue-500  rounded-t-md relative mx-auto w-1/3 flex items-center justify-center"
+                      style={{ height: "55%" }}
+                    >
+                      <div className="absolute top-1 text-slate-100 text-xs font-bold">
+                        0,6 M€
+                      </div>
+                    </div>
+                    <div
+                      className="bg-blue-500  rounded-t-md relative mx-auto w-1/3 flex items-center justify-center"
+                      style={{ height: "85%" }}
+                    >
+                      <div className="absolute top-1 text-slate-100 text-xs font-bold">
+                        1,0 M€
+                      </div>
+                    </div>
+                  </div>
+                  <div className="absolute inset-0 px-2"></div>
+                  <div
+                    className="absolute"
+                    style={{
+                      left: "275.25px",
+                      top: "-30px",
+                      transform: "translateX(-50%)",
+                    }}
+                  >
+                    <div className="relative">
+                      <div className="absolute -top-1.5 -right-1.5 flex items-center justify-center w-8 h-8 rounded-full bg-yellow-400/20">
+                        <div className="w-5 h-5 rounded-full bg-yellow-400/50"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-4 text-center text-xs text-secondary">
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="font-bold">S1</span>
+                    <span className="text-secondary text-[10px] font-medium">
+                      0,7 M€
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="font-bold">S2</span>
+                    <span className="text-secondary text-[10px] font-medium">
+                      1,6 M€
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="font-bold">S3</span>
+                    <span className="text-secondary text-[10px] font-medium">
+                      2,2 M€
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="font-bold">S4</span>
+                    <span className="text-secondary text-[10px] font-medium">
+                      3,2 M€
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              {/* Chiffre d'Affaires Section */}
-              <Card className="bg-white border border-slate-200 shadow-lg">
-                <CardContent className="p-6">
-                  <div className="space-y-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="font-bold text-slate-900 text-xl mb-2">Chiffre d&apos;Affaires Réalisé (vs. Prévisionnel) et Forecast</h3>
-                        <p className="text-sm text-slate-600 font-medium">Suivi de la performance commerciale et de la production vendue.</p>
+              <div className="flex flex-col gap-6 rounded-xl border border-slate-700/50 bg-slate-800/90 p-10 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                <h3 className="text-slate-100 text-2xl font-semibold leading-tight mb-2">
+                  Taux de Facturation &amp; Livraison
+                </h3>
+                <div className="flex items-end gap-4 mb-2">
+                  <p className="text-blue-600 tracking-tight text-6xl font-black leading-none">
+                    92%
+                  </p>
+                  <div className="flex items-center text-green-600 mb-2">
+                    <span className="material-symbols-outlined text-2xl">
+                      arrow_upward
+                    </span>
+                    <p className="text-xl font-bold ml-1">+2% vs S-1</p>
+                  </div>
+                </div>
+                <div className="flex-grow flex flex-col justify-center py-2">
+                  <div className="h-40 w-full relative pt-4">
+                    <div className="absolute inset-0 px-2 flex flex-col justify-between">
+                      <div className="flex justify-between items-center text-secondary text-xs">
+                        <span>100%</span>
+                        <hr className="w-full border-dashed border-gray-300 mx-2" />
                       </div>
-                      <Button variant="link" className="text-blue-600 p-0 h-auto text-sm font-medium hover:text-blue-800">
-                        Voir le rapport
-                      </Button>
+                      <div className="relative flex justify-between items-center text-secondary text-xs">
+                        <span>95%</span>
+                        <hr className="w-full border-dashed border-gray-300 mx-2" />
+                        <span className="absolute -right-1.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-primary text-base">
+                          tour
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center text-secondary text-xs">
+                        <span>90%</span>
+                        <hr className="w-full border-dashed border-gray-300 mx-2" />
+                      </div>
+                      <div className="flex justify-between items-center text-secondary text-xs">
+                        <span>85%</span>
+                        <hr className="w-full border-dashed border-gray-300 mx-2" />
+                      </div>
                     </div>
-                    
-                    {/* Chart visualization area */}
-                    <div className="h-80 bg-slate-50 rounded-lg flex items-center justify-center border border-slate-100">
-                      <div className="text-center">
-                        <div className="w-16 h-16 mx-auto mb-4 text-slate-300">
-                          <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/>
-                          </svg>
-                        </div>
-                        <p className="text-slate-400 font-medium">Chart visualization area</p>
-                        <p className="text-slate-300 text-sm mt-1">Data: Week 1-4 (Réalisé: €120k, €130k, €150k, €120k | Prévisionnel: €155k, €165k, €155k, €155k | Scrap: €180k, €130k, €180k, €120k)</p>
-                      </div>
+                    <svg
+                      className="w-full h-full"
+                      fill="none"
+                      preserveAspectRatio="none"
+                      viewBox="0 0 286 160"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M35.75 96L107.25 48L178.75 64L250.25 32"
+                        stroke="#EAB308"
+                        strokeWidth="2"
+                      ></path>
+                      <circle
+                        cx="35.75"
+                        cy="96"
+                        fill="#EAB308"
+                        r="4"
+                        stroke="#101922"
+                        strokeWidth="2"
+                      ></circle>
+                      <circle
+                        cx="107.25"
+                        cy="48"
+                        fill="#EAB308"
+                        r="4"
+                        stroke="#101922"
+                        strokeWidth="2"
+                      ></circle>
+                      <circle
+                        cx="178.75"
+                        cy="64"
+                        fill="#EAB308"
+                        r="4"
+                        stroke="#101922"
+                        strokeWidth="2"
+                      ></circle>
+                      <circle
+                        cx="250.25"
+                        cy="32"
+                        fill="#EAB308"
+                        r="4"
+                        stroke="#101922"
+                        strokeWidth="2"
+                      ></circle>
+                      <line
+                        className="stroke-current text-primary"
+                        strokeDasharray="4 4"
+                        strokeWidth="2"
+                        x1="0"
+                        x2="286"
+                        y1="40"
+                        y2="40"
+                      ></line>
+                    </svg>
+                    <div className="absolute inset-0 px-2"></div>
+                  </div>
+                  <div className="grid grid-cols-4 text-center mt-2">
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="font-bold text-yellow-400 text-xl">88%</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="font-bold text-yellow-400 text-xl">94%</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="font-bold text-yellow-400 text-xl">92%</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="font-bold text-yellow-400 text-xl">96%</span>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+                <div className="text-lg text-secondary text-right pr-2 mt-4">
+                  Objectif : 95%
+                </div>
+              </div>
             </div>
 
-            {/* Right Column */}
-            <div className="space-y-8">
-              {/* Budget Execution Tracking */}
-              <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-slate-900">Monthly KPIs</h2>
-                
-                <Card className="bg-white border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <CardContent className="p-6">
-                    <div className="space-y-6">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-slate-900 text-lg">Budget Execution Tracking</h3>
-                        <Button variant="link" className="text-blue-600 p-0 h-auto text-sm font-medium hover:text-blue-800">
-                          Details
-                        </Button>
-                      </div>
-                      
-                      <div className="text-sm text-slate-600 font-medium">Global budget consumption.</div>
-                      
-                      <div className="flex items-center justify-center">
-                        <div className="relative w-32 h-32">
-                          <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                            <path
-                              d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831"
-                              fill="none"
-                              stroke="#e5e7eb"
-                              strokeWidth="3"
-                            />
-                            <path
-                              d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831"
-                              fill="none"
-                              stroke="#3B82F6"
-                              strokeWidth="3"
-                              strokeDasharray="83.3, 100"
-                              strokeLinecap="round"
-                            />
-                          </svg>
-                          <div className="absolute inset-0 flex items-center justify-center flex-col">
-                            <span className="text-2xl font-bold text-slate-900">€50k</span>
-                            <span className="text-xs text-slate-500">/ €60k</span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="text-center space-y-4">
-                        <div className="text-sm text-slate-600 font-medium">
-                          <div className="font-bold text-slate-900">83.3%</div>
-                          <div>Target: €60,000.00</div>
-                        </div>
-                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors shadow-md">
-                          Optimization Suggestions
-                        </Button>
-                      </div>
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-8 min-h-[400px]">
+              <div className="flex flex-col gap-6 rounded-xl border border-slate-700/50 bg-slate-800/90 p-8 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                <h3 className="text-slate-100 text-xl font-semibold leading-tight mb-2">
+                  Efficacité Financière Mensuelle
+                </h3>
+                <div className="flex items-end gap-3 mb-2">
+                  <p className="text-slate-100 tracking-tight text-4xl font-black leading-none">
+                    88%
+                  </p>
+                  <p className="text-red-400 text-sm font-bold mb-1">
+                    (-2 pts vs M-1)
+                  </p>
+                </div>
+                <p className="text-secondary text-base font-medium mb-4">
+                  Efficacité Globale (Objectif : 90%)
+                </p>
+                <div className="flex-grow flex items-center justify-around gap-4 pt-4 min-h-[144px]">
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center border-2 border-red-500">
+                      <span className="text-xl font-bold text-red-400">82%</span>
                     </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Financial Efficiency Tracking */}
-              <Card className="bg-white border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="space-y-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="font-bold text-slate-900 text-lg">Financial Efficiency Tracking</h3>
-                        <p className="text-sm text-slate-600 font-medium mt-1">Global and by zone.</p>
-                      </div>
-                      <Button variant="link" className="text-blue-600 p-0 h-auto text-sm font-medium hover:text-blue-800">
-                        Action Plan
-                      </Button>
-                    </div>
-                    
-                    <div className="space-y-5">
-                      {/* Global */}
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-slate-700 w-20">Global</span>
-                        <div className="flex items-center gap-4 flex-1">
-                          <div className="flex-1 h-3 bg-yellow-500 rounded-full shadow-sm"></div>
-                          <div className="flex items-center gap-1 text-sm font-bold text-yellow-600 bg-yellow-50 px-2 py-1 rounded-full min-w-[60px] justify-center">
-                            <div className="w-3 h-0.5 bg-yellow-600 rounded"></div>
-                            <span>88%</span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Zone A */}
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-slate-700 w-20">Zone A</span>
-                        <div className="flex items-center gap-4 flex-1">
-                          <div className="flex-1 h-3 bg-green-500 rounded-full shadow-sm"></div>
-                          <div className="flex items-center gap-1 text-sm font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full min-w-[60px] justify-center">
-                            <ArrowUp className="w-3 h-3" />
-                            <span>100%</span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Zone B */}
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-slate-700 w-20">Zone B</span>
-                        <div className="flex items-center gap-4 flex-1">
-                          <div className="flex-1 h-3 bg-yellow-500 rounded-full shadow-sm"></div>
-                          <div className="flex items-center gap-1 text-sm font-bold text-yellow-600 bg-yellow-50 px-2 py-1 rounded-full min-w-[60px] justify-center">
-                            <div className="w-3 h-0.5 bg-yellow-600 rounded"></div>
-                            <span>97%</span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Zone C */}
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-slate-700 w-20">Zone C</span>
-                        <div className="flex items-center gap-4 flex-1">
-                          <div className="flex-1 h-3 bg-red-500 rounded-full shadow-sm"></div>
-                          <div className="flex items-center gap-1 text-sm font-bold text-red-600 bg-red-50 px-2 py-1 rounded-full min-w-[60px] justify-center">
-                            <ArrowDown className="w-3 h-3" />
-                            <span>87%</span>
-                          </div>
-                        </div>
-                      </div>
+                    <div className="text-center">
+                      <p className="text-xs text-secondary">Obj: 90%</p>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-16 h-16 rounded-full bg-yellow-500/20 flex items-center justify-center border-2 border-yellow-500">
+                      <span className="text-xl font-bold text-yellow-400">89%</span>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xs text-secondary">Obj: 90%</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center border-2 border-green-500">
+                      <span className="text-xl font-bold text-green-400">92%</span>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xs text-secondary">Obj: 90%</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center border-2 border-red-500">
+                      <span className="text-xl font-bold text-red-400">88%</span>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xs text-secondary">Obj: 90%</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-6 rounded-xl border border-slate-700/50 bg-slate-800/90 p-8 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                <h3 className="text-slate-100 text-xl font-semibold leading-tight mb-2">
+                  Exécution Budgétaire
+                </h3>
+                <div className="flex items-end gap-3 mb-2">
+                  <p className="text-slate-100 tracking-tight text-4xl font-black leading-none">
+                    78%
+                  </p>
+                  <div className="flex items-center text-green-400 mb-1">
+                    <span className="material-symbols-outlined text-xl">
+                      arrow_upward
+                    </span>
+                    <p className="text-sm font-bold ml-1">+3 pts</p>
+                  </div>
+                </div>
+                <p className="text-secondary text-base font-medium mb-4">Consommé vs. mois dernier</p>
+                <div className="flex-grow flex items-center justify-center py-2">
+                  <div className="relative w-32 h-32">
+                    <svg className="w-full h-full" viewBox="0 0 36 36">
+                      <path
+                        className="stroke-current text-gray-700"
+                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        fill="none"
+                        strokeWidth="3"
+                      ></path>
+                      <path
+                        className="stroke-current text-blue-500"
+                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        fill="none"
+                        strokeDasharray="78, 100"
+                        strokeLinecap="round"
+                        strokeWidth="3"
+                        transform="rotate(90 18 18)"
+                      ></path>
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <span className="text-3xl font-bold text-blue-500">78%</span>
+                      <span className="text-sm text-secondary">Consommé</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-6 rounded-xl border border-slate-700/50 bg-slate-800/90 p-8 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                <h3 className="text-slate-100 text-xl font-semibold leading-tight mb-2">
+                  Total des Paiements en Retard
+                </h3>
+                <div className="flex items-end gap-3 mb-2">
+                  <p className="text-red-400 tracking-tight text-4xl font-black leading-none">
+                    1,2 M€
+                  </p>
+                  <div className="flex items-center text-green-400 mb-1">
+                    <span className="material-symbols-outlined text-xl">
+                      check_circle
+                    </span>
+                    <p className="text-sm font-bold ml-1">-0,3 M€</p>
+                  </div>
+                </div>
+                <p className="text-secondary text-base font-medium mb-4">Amélioration vs mois dernier</p>
+                <div className="flex-grow flex items-center justify-around gap-4 pt-4 min-h-[144px]">
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center border-2 border-red-500">
+                      <span className="text-base font-bold text-red-400">1,8 M€</span>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xs text-secondary">Obj: 1,0 M€</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center border-2 border-red-500">
+                      <span className="text-base font-bold text-red-400">1,5 M€</span>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xs text-secondary">Obj: 1,0 M€</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-16 h-16 rounded-full bg-yellow-500/20 flex items-center justify-center border-2 border-yellow-500">
+                      <span className="text-base font-bold text-yellow-400">1,2 M€</span>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xs text-secondary">Obj: 1,0 M€</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center border-2 border-green-500">
+                      <span className="text-base font-bold text-green-400">0,9 M€</span>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xs text-secondary">Obj: 1,0 M€</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    );
+      </main>  
+  );
   }
 
   // Special layout for Programs Dashboard - Enhanced to match image exactly
   if (category.id === "programs") {
     return (
-      <div className={`min-h-screen bg-slate-900 dark:bg-slate-900 ${className}`}>
+      <main className="flex-1 overflow-hidden bg-slate-900">
         <div className="p-6 space-y-8">
           {/* Programs Dashboard Title */}
-          <div className="space-y-2">
-            <h1 className="text-4xl font-bold text-white tracking-tight">Programs Dashboard</h1>
-            <p className="text-slate-400 text-lg">Monitoring key program performance indicators for project ramp-up.</p>
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold text-white tracking-tight">Programs Department Dashboard</h1>
           </div>
 
-          {/* Main Content Grid - Fixed Layout with Better Responsive Design */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 w-full">
-            {/* Left Column - Fixed Width */}
-            <div className="space-y-8 w-full">
-              {/* Weekly KPIs Section */}
-              <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-white">Weekly KPIs</h2>
-                
-                <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-6">
-                  {/* OTD (On-Time Delivery) - Full width card */}
-                  <Card className="bg-slate-800/95 border-slate-700/60 shadow-2xl backdrop-blur-sm hover:shadow-3xl transition-all duration-300 hover:scale-[1.02] w-full">
-                    <CardContent className="p-6">
-                      <div className="space-y-6">
-                        <div className="flex items-center justify-between">
-                          <h3 className="font-bold text-white text-xl tracking-tight">OTD (On-Time Delivery)</h3>
-                          <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-semibold hover:text-blue-300 transition-colors">
-                            Details
-                          </Button>
-                        </div>
-                        
-                        <div className="text-sm text-slate-400 font-medium">% of deliveries made on time.</div>
-                        
-                        <div className="text-7xl font-black text-white tracking-tight drop-shadow-lg">95%</div>
-                        
-                        <div className="flex items-center gap-2 text-sm">
-                          <span className="text-slate-400">Target:</span>
-                          <span className="text-white font-semibold">98%</span>
-                          <span className="text-red-400 font-semibold">(-3% vs target)</span>
-                        </div>
-                        
+          {/* Main Content Grid - 3 Column Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1">
 
-                        {/* Enhanced Chart with Mixed Positive/Negative Values */}
-                        <ChartComponent
-                          data={[
-                            { value: 96 },
-                            { value: 99 },
-                            { value: 98 },
-                            { value: 99 }
-                          ]}
-                          height={80}
-                          formatValue={(value: number) => `${value}%`}
-                          {...ChartConfigs.mixed}
-                          title="Performance Variance"
-                          showValues={true}
-                        />
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Recruitment Progress - Full width card */}
-                  <Card className="bg-slate-800/95 border-slate-700/60 shadow-2xl backdrop-blur-sm hover:shadow-3xl transition-all duration-300 hover:scale-[1.02] w-full">
-                    <CardContent className="p-6">
-                      <div className="space-y-5">
-                        <div className="flex items-center justify-between">
-                          <h3 className="font-bold text-white text-lg tracking-tight">Recruitment Progress</h3>
-                          <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-semibold hover:text-blue-300 transition-colors">
-                            Details
-                          </Button>
-                        </div>
-                        
-                        <div className="text-sm text-slate-400 font-medium">Milestones vs. planned.</div>
-                        
-                        <div className="flex items-center justify-center py-4">
-                          <div className="relative w-32 h-32">
-                            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                              <defs>
-                                <linearGradient id="recruitmentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                  <stop offset="0%" stopColor="#EF4444" />
-                                  <stop offset="100%" stopColor="#DC2626" />
-                                </linearGradient>
-                                <filter id="recruitmentGlow">
-                                  <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                                  <feMerge> 
-                                    <feMergeNode in="coloredBlur"/>
-                                    <feMergeNode in="SourceGraphic"/>
-                                  </feMerge>
-                                </filter>
-                              </defs>
-                              <path
-                                d="M18 2.0845
-                                  a 15.9155 15.9155 0 0 1 0 31.831
-                                  a 15.9155 15.9155 0 0 1 0 -31.831"
-                                fill="none"
-                                stroke="#374151"
-                                strokeWidth="3"
-                              />
-                              <path
-                                d="M18 2.0845
-                                  a 15.9155 15.9155 0 0 1 0 31.831
-                                  a 15.9155 15.9155 0 0 1 0 -31.831"
-                                fill="none"
-                                stroke="url(#recruitmentGradient)"
-                                strokeWidth="3"
-                                strokeDasharray="85, 100"
-                                strokeLinecap="round"
-                                filter="url(#recruitmentGlow)"
-                              />
-                            </svg>
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <div className="text-center">
-                                <span className="text-3xl font-black text-white drop-shadow-lg">85%</span>
-                                <div className="text-xs text-slate-400 font-medium mt-1">Complete</div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span className="text-slate-400">Progress</span>
-                            <span className="text-white font-semibold">85%</span>
-                          </div>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-slate-400">Target</span>
-                            <span className="text-green-400 font-semibold">98%</span>
-                          </div>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-slate-400">Remaining</span>
-                            <span className="text-orange-400 font-semibold">13%</span>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+            <div className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300 flex flex-col">
+              <div className="flex flex-col gap-1">
+                <p className="text-slate-100 text-sm font-semibold leading-normal flex items-center">
+                  On-Time Delivery (OTD)
+                  <span className="text-amber-400 ml-2">⚠️</span>
+                </p>
+                <div className="flex items-baseline gap-4 mt-2 mb-2">
+                  <p className="text-cyan-400 tracking-tight text-4xl font-extrabold leading-tight truncate">
+                    92%
+                  </p>
+                  <div className="flex gap-1 items-baseline">
+                    <p className="text-orange-400 text-lg font-bold leading-normal">
+                      -1.5%
+                    </p>
+                    <p className="text-secondary text-sm font-medium leading-normal">
+                      vs last week
+                    </p>
+                  </div>
                 </div>
               </div>
+              <div className="flex flex-1 flex-col justify-end pt-2">
+                <svg className="w-full h-auto" fill="none" viewBox="0 0 400 130" xmlns="http://www.w3.org/2000/svg">
+                  <g className="group" transform="translate(40, 30)">
+                    <polyline className="stroke-[#40E0D0]" points="0 50, 120 10, 220 70, 320 -10" stroke-width="2"></polyline>
+                    <polyline className="stroke-[#6B7280]" points="0 20, 320 20" stroke-width="2"></polyline>
+                    <circle className="fill-[#FDB913]" cx="0" cy="50" r="4"></circle>
+                    <text className="fill-[#FDB913] text-[10px] font-bold" x="6" y="54">
+                      -1.5%
+                    </text>
+                    <circle className="fill-[#6B7280]" cx="0" cy="20" r="4"></circle>
+                    <circle className="fill-[#40E0D0]" cx="120" cy="10" r="4"></circle>
+                    <circle className="fill-[#6B7280]" cx="120" cy="20" r="4"></circle>
+                    <circle className="fill-[#FDB913]" cx="220" cy="70" r="4"></circle>
+                    <text className="fill-[#FDB913] text-[10px] font-bold" x="226" y="74">
+                      -2.5%
+                    </text>
+                    <circle className="fill-[#6B7280]" cx="220" cy="20" r="4"></circle>
+                    <circle className="fill-[#40E0D0]" cx="320" cy="-10" r="4"></circle>
+                    <circle className="fill-[#6B7280]" cx="320" cy="20" r="4"></circle>
+                  </g>
+                </svg>
+                <div className="flex justify-around mt-2">
+                  <p className="text-secondary text-xs font-semibold leading-normal tracking-[0.015em]">
+                    W-1
+                  </p>
+                  <p className="text-secondary text-xs font-semibold leading-normal tracking-[0.015em]">
+                    W-2
+                  </p>
+                  <p className="text-secondary text-xs font-semibold leading-normal tracking-[0.015em]">
+                    W-3
+                  </p>
+                  <p className="text-secondary text-xs font-semibold leading-normal tracking-[0.015em]">
+                    W-4
+                  </p>
+                </div>
+              </div>
+            </div>
 
-              {/* Planning Progress (APQP) - Enhanced Chart */}
-              <Card className="bg-slate-800/95 border-slate-700/60 shadow-2xl backdrop-blur-sm hover:shadow-3xl transition-all duration-300 w-full">
-                <CardContent className="p-6">
-                  <div className="space-y-5">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-bold text-white text-lg tracking-tight">Planning Progress (APQP)</h3>
-                      <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-semibold hover:text-blue-300 transition-colors">
-                        Full Plan
-                      </Button>
+            <div className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300 flex flex-col">
+              <div className="flex flex-col gap-1">
+                <p className="text-slate-100 text-sm font-semibold leading-normal">
+                  Equipment Availability
+                </p>
+                <div className="flex items-baseline gap-4 mt-2 mb-2">
+                    <p className="text-cyan-400 tracking-tight text-4xl font-extrabold leading-tight truncate">
+                    99.8%
+                  </p>
+                  <div className="flex gap-1 items-baseline">
+                    <p className="text-emerald-400 text-lg font-bold leading-normal">
+                      +0.2%
+                    </p>
+                    <p className="text-secondary text-sm font-medium leading-normal">
+                      vs last week
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-1 flex-col justify-end pt-2">
+                <svg className="w-full h-auto" fill="none" viewBox="0 0 400 130" xmlns="http://www.w3.org/2000/svg">
+                  <g className="group" transform="translate(40, 30)">
+                    <polyline className="stroke-[#40E0D0]" points="0 80, 120 70, 220 40, 320 60" stroke-width="2"></polyline>
+                    <polyline className="stroke-[#6B7280]" points="0 50, 320 50" stroke-width="2"></polyline>
+                    <circle className="fill-[#FDB913]" cx="0" cy="80" r="4"></circle>
+                    <text className="fill-[#FDB913] text-[10px] font-bold" x="6" y="84">
+                      -0.8%
+                    </text>
+                    <circle className="fill-[#6B7280]" cx="0" cy="50" r="4"></circle>
+                    <circle className="fill-[#FDB913]" cx="120" cy="70" r="4"></circle>
+                    <text className="fill-[#FDB913] text-[10px] font-bold" x="126" y="74">
+                      -0.5%
+                    </text>
+                    <circle className="fill-[#6B7280]" cx="120" cy="50" r="4"></circle>
+                    <circle className="fill-[#40E0D0]" cx="220" cy="40" r="4"></circle>
+                    <circle className="fill-[#6B7280]" cx="220" cy="50" r="4"></circle>
+                    <circle className="fill-[#FDB913]" cx="320" cy="60" r="4"></circle>
+                    <text className="fill-[#FDB913] text-[10px] font-bold" x="288" y="64">
+                      -1.0%
+                    </text>
+                    <circle className="fill-[#6B7280]" cx="320" cy="50" r="4"></circle>
+                  </g>
+                </svg>
+                <div className="flex justify-around mt-2">
+                  <p className="text-secondary text-xs font-semibold leading-normal tracking-[0.015em]">
+                    W-1
+                  </p>
+                  <p className="text-secondary text-xs font-semibold leading-normal tracking-[0.015em]">
+                    W-2
+                  </p>
+                  <p className="text-secondary text-xs font-semibold leading-normal tracking-[0.015em]">
+                    W-3
+                  </p>
+                  <p className="text-secondary text-xs font-semibold leading-normal tracking-[0.015em]">
+                    W-4
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300 flex flex-col">
+              <div className="flex flex-col gap-1">
+                <p className="text-slate-100 text-sm font-semibold leading-normal">
+                  Recruitment Progress
+                </p>
+                <div className="flex items-baseline gap-4 mt-2 mb-2">
+                    <p className="text-cyan-400 tracking-tight text-4xl font-extrabold leading-tight truncate">
+                    85%
+                  </p>
+                  <div className="flex gap-1 items-baseline">
+                    <p className="text-emerald-400 text-lg font-bold leading-normal">
+                      +5%
+                    </p>
+                    <p className="text-secondary text-sm font-medium leading-normal">
+                      vs last week
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-1 flex-col justify-end pt-2">
+                <svg className="w-full h-auto" fill="none" viewBox="0 0 400 130" xmlns="http://www.w3.org/2000/svg">
+                  <g className="group" transform="translate(40, 30)">
+                    <polyline className="stroke-[#40E0D0]" points="0 20, 120 40, 220 60, 320 80" stroke-width="2"></polyline>
+                    <polyline className="stroke-[#6B7280]" points="0 30, 320 30" stroke-width="2"></polyline>
+                    <circle className="fill-[#40E0D0]" cx="0" cy="20" r="4"></circle>
+                    <circle className="fill-[#6B7280]" cx="0" cy="30" r="4"></circle>
+                    <circle className="fill-[#FDB913]" cx="120" cy="40" r="4"></circle>
+                    <text className="fill-[#FDB913] text-[10px] font-bold" x="126" y="44">
+                      -2%
+                    </text>
+                    <circle className="fill-[#6B7280]" cx="120" cy="30" r="4"></circle>
+                    <circle className="fill-[#FDB913]" cx="220" cy="60" r="4"></circle>
+                    <text className="fill-[#FDB913] text-[10px] font-bold" x="226" y="64">
+                      -5%
+                    </text>
+                    <circle className="fill-[#6B7280]" cx="220" cy="30" r="4"></circle>
+                    <circle className="fill-[#FDB913]" cx="320" cy="80" r="4"></circle>
+                    <text className="fill-[#FDB913] text-[10px] font-bold" x="294" y="84">
+                      -10%
+                    </text>
+                    <circle className="fill-[#6B7280]" cx="320" cy="30" r="4"></circle>
+                  </g>
+                </svg>
+                <div className="flex justify-around mt-2">
+                  <p className="text-secondary text-xs font-semibold leading-normal tracking-[0.015em]">
+                    W-1
+                  </p>
+                  <p className="text-secondary text-xs font-semibold leading-normal tracking-[0.015em]">
+                    W-2
+                  </p>
+                  <p className="text-secondary text-xs font-semibold leading-normal tracking-[0.015em]">
+                    W-3
+                  </p>
+                  <p className="text-secondary text-xs font-semibold leading-normal tracking-[0.015em]">
+                    W-4
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300 flex flex-col">
+              <p className="text-slate-100 text-sm font-semibold leading-normal">
+                Budget vs. Actual (CAPEX/OPEX)
+                <span className="text-green-400 ml-2">✓</span>
+              </p>
+              <div className="flex justify-between items-center my-4">
+                <div>
+                  <p className="text-secondary text-xs font-semibold">
+                    Écart (Budget - Réalisé)
+                  </p>
+                  <p className="text-emerald-400 text-2xl font-extrabold">
+                    +12 500 €
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-secondary text-xs font-semibold">
+                    Pourcentage de réalisation
+                  </p>
+                  <p className="text-white text-2xl font-extrabold">85%</p>
+                </div>
+              </div>
+              <div className="flex-1 flex flex-col justify-center">
+                <svg className="w-full" fill="none" viewBox="0 0 400 150" xmlns="http://www.w3.org/2000/svg">
+                  <line className="stroke-slate-500" stroke-dasharray="4 2" stroke-width="1.5" x1="20" x2="380" y1="50" y2="50"></line>
+                  <text className="fill-slate-400 text-[10px] font-semibold" dominant-baseline="middle" text-anchor="end" x="15" y="50">
+                    Budget
+                  </text>
+                  <polyline className="stroke-cyan-400" points="40 80, 140 60, 240 100, 340 70" stroke-width="2.5"></polyline>
+                  <g>
+                    <circle className="fill-cyan-400" cx="40" cy="80" r="5"></circle>
+                    <circle className="stroke-cyan-400/50" cx="40" cy="80" r="8" stroke-width="2"></circle>
+                    <text className="fill-slate-100 text-[10px] font-bold" dominant-baseline="baseline" text-anchor="middle" x="40" y="72">
+                      €45k
+                    </text>
+                    <text className="fill-emerald-400 text-[10px] font-medium" dominant-baseline="hanging" text-anchor="middle" x="40" y="88">
+                      +€5k
+                    </text>
+                  </g>
+                  <g>
+                    <circle className="fill-cyan-400" cx="140" cy="60" r="5"></circle>
+                    <circle className="stroke-cyan-400/50" cx="140" cy="60" r="8" stroke-width="2"></circle>
+                    <text className="fill-slate-100 text-[10px] font-bold" dominant-baseline="baseline" text-anchor="middle" x="140" y="52">
+                      €48k
+                    </text>
+                    <text className="fill-emerald-400 text-[10px] font-medium" dominant-baseline="hanging" text-anchor="middle" x="140" y="68">
+                      +€2k
+                    </text>
+                  </g>
+                  <g>
+                    <circle className="fill-cyan-400" cx="240" cy="100" r="5"></circle>
+                    <circle className="stroke-cyan-400/50" cx="240" cy="100" r="8" stroke-width="2"></circle>
+                    <text className="fill-slate-100 text-[10px] font-bold" dominant-baseline="baseline" text-anchor="middle" x="240" y="92">
+                      €40k
+                    </text>
+                    <text className="fill-red-400 text-[10px] font-medium" dominant-baseline="hanging" text-anchor="middle" x="240" y="108">
+                      -€10k
+                    </text>
+                  </g>
+                  <g>
+                    <circle className="fill-cyan-400" cx="340" cy="70" r="5"></circle>
+                    <circle className="stroke-cyan-400/50" cx="340" cy="70" r="8" stroke-width="2"></circle>
+                    <text className="fill-slate-100 text-[10px] font-bold" dominant-baseline="baseline" text-anchor="middle" x="340" y="62">
+                      €47.5k
+                    </text>
+                    <text className="fill-emerald-400 text-[10px] font-medium" dominant-baseline="hanging" text-anchor="middle" x="340" y="78">
+                      +€2.5k
+                    </text>
+                  </g>
+                </svg>
+                <div className="flex justify-around text-xs text-secondary font-semibold mt-2">
+                  <p>Poste 1</p>
+                  <p>Poste 2</p>
+                  <p>Poste 3</p>
+                  <p>Poste 4</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div className="bg-slate-700/50 p-3 rounded-lg border border-slate-600/30">
+                  <p className="text-slate-100 text-xs font-bold mb-2">CAPEX</p>
+                  <div className="relative h-2 w-full rounded-full bg-slate-600">
+                    <div className="absolute top-0 left-0 h-2 w-[75%] rounded-full bg-cyan-400"></div>
+                  </div>
+                  <div className="flex justify-between items-baseline mt-1">
+                    <p className="text-slate-100 text-sm font-bold">75%</p>
+                    <p className="text-emerald-400 text-xs font-medium">+5k €</p>
+                  </div>
+                </div>
+                <div className="bg-slate-700/50 p-3 rounded-lg border border-slate-600/30">
+                  <p className="text-slate-100 text-xs font-bold mb-2">OPEX</p>
+                  <div className="relative h-2 w-full rounded-full bg-slate-600">
+                    <div className="absolute top-0 left-0 h-2 w-[110%] rounded-full bg-red-400"></div>
+                  </div>
+                  <div className="flex justify-between items-baseline mt-1">
+                    <p className="text-slate-100 text-sm font-bold">110%</p>
+                    <p className="text-red-400 text-xs font-medium">-2.5k €</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300 flex flex-col">
+              <div className="flex flex-col gap-1">
+                <p className="text-slate-100 text-sm font-semibold leading-normal">
+                  Planning Progress (APQP)
+                </p>
+                <div className="flex justify-between items-end mt-2 mb-2">
+                  <div>
+                    <p className="text-secondary text-sm font-medium">
+                      Avancement total
+                    </p>
+                    <p className="text-cyan-400 tracking-tight text-3xl font-extrabold leading-tight">
+                      85%
+                    </p>
+                  </div>
+                  <div className="flex gap-4 text-xs text-secondary">
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-3 h-3 rounded-sm bg-blue-300/30"></div>
+                      <span>Prévision</span>
                     </div>
-                    
-                    <div className="text-sm text-slate-400 font-medium">Milestones achieved vs. forecast.</div>
-                    
-                    {/* Enhanced APQP Line Chart */}
-                    <div className="w-full bg-slate-900/30 rounded-lg p-4 border border-slate-700/50">
-                      <div className="h-48 relative">
-                        {/* Chart Container */}
-                        <div className="absolute inset-0">
-                          {/* Y-axis labels */}
-                          <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-slate-400 font-medium">
-                            <span>100%</span>
-                            <span>80%</span>
-                            <span>60%</span>
-                            <span>40%</span>
-                            <span>20%</span>
-                            <span>0%</span>
-                          </div>
-                          
-                          {/* Chart Area */}
-                          <div className="ml-8 mr-4 h-full relative">
-                            {/* Grid lines */}
-                            <div className="absolute inset-0">
-                              {[0, 20, 40, 60, 80, 100].map((value, index) => (
-                                <div
-                                  key={index}
-                                  className="absolute w-full border-t border-slate-700/30"
-                                  style={{ top: `${100 - value}%` }}
-                                />
-                              ))}
-                            </div>
-                            
-                            {/* Chart Lines */}
-                            <svg className="w-full h-full" viewBox="0 0 400 200">
-                              {/* Actual Progress Line (Blue) */}
-                              <polyline
-                                points="40,160 120,120 200,70 280,60 360,50"
-                                fill="none"
-                                stroke="#3B82F6"
-                                strokeWidth="3"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                              {/* Actual Progress Points */}
-                              {[
-                                { x: 40, y: 160, value: 20 },
-                                { x: 120, y: 120, value: 40 },
-                                { x: 200, y: 70, value: 65 },
-                                { x: 280, y: 60, value: 70 },
-                                { x: 360, y: 50, value: 75 }
-                              ].map((point, index) => (
-                                <circle
-                                  key={index}
-                                  cx={point.x}
-                                  cy={point.y}
-                                  r="4"
-                                  fill="#3B82F6"
-                                  stroke="#1E40AF"
-                                  strokeWidth="2"
-                                />
-                              ))}
-                              
-                              {/* Forecast Line (Gray Dotted) */}
-                              <polyline
-                                points="40,170 120,130 200,90 280,60 360,40"
-                                fill="none"
-                                stroke="#6B7280"
-                                strokeWidth="2"
-                                strokeDasharray="4,4"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                              {/* Forecast Points */}
-                              {[
-                                { x: 40, y: 170, value: 15 },
-                                { x: 120, y: 130, value: 35 },
-                                { x: 200, y: 90, value: 55 },
-                                { x: 280, y: 60, value: 70 },
-                                { x: 360, y: 40, value: 80 }
-                              ].map((point, index) => (
-                                <rect
-                                  key={index}
-                                  x={point.x - 3}
-                                  y={point.y - 3}
-                                  width="6"
-                                  height="6"
-                                  fill="#6B7280"
-                                  stroke="#4B5563"
-                                  strokeWidth="1"
-                                />
-                              ))}
-                            </svg>
-                            
-                            {/* X-axis labels */}
-                            <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-slate-400 font-medium">
-                              <span>Phase 1</span>
-                              <span>Phase 2</span>
-                              <span>Phase 3</span>
-                              <span>Phase 4</span>
-                              <span>Phase 5</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Legend */}
-                      <div className="flex justify-center space-x-6 mt-4">
-                        <div className="flex items-center space-x-2">
-                          <div className="w-4 h-0.5 bg-blue-500"></div>
-                          <span className="text-sm text-slate-300 font-medium">Actual Progress</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <div className="w-4 h-0.5 bg-gray-500 border-dashed border-t-2"></div>
-                          <span className="text-sm text-slate-300 font-medium">Forecast</span>
-                        </div>
-                      </div>
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-3 h-3 rounded-sm bg-emerald-500"></div>
+                      <span>Réel</span>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Right Column - Fixed Width */}
-            <div className="space-y-8 w-full">
-              {/* Monthly KPIs Section */}
-              <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-white">Monthly KPIs</h2>
-                
-                <div className="space-y-4 lg:space-y-6">
-                  {/* Budget Variance */}
-                  <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300 w-full">
-                    <CardContent className="p-6">
-                      <div className="space-y-5">
-                        <div className="flex items-center justify-between">
-                          <h3 className="font-bold text-white text-lg">Budget Variance</h3>
-                          <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
-                            Details
-                          </Button>
-                        </div>
-                        
-                        <div className="text-sm text-slate-400 font-medium">CAPEX / OPEX vs Actual.</div>
-                        
-                        <div className="space-y-4">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-bold text-slate-300 w-16">CAPEX</span>
-                            <div className="flex items-center gap-3 flex-1">
-                              <div className="flex-1 h-3 bg-slate-700 rounded-full overflow-hidden shadow-inner">
-                                <div className="h-full bg-red-500 rounded-full shadow-sm" style={{ width: '100%' }}></div>
-                              </div>
-                              <span className="text-sm font-bold text-white w-20 text-right">5000</span>
-                            </div>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-bold text-slate-300 w-16">OPEX</span>
-                            <div className="flex items-center gap-3 flex-1">
-                              <div className="flex-1 h-3 bg-slate-700 rounded-full overflow-hidden shadow-inner">
-                                <div className="h-full bg-green-500 rounded-full shadow-sm" style={{ width: '100%' }}></div>
-                              </div>
-                              <span className="text-sm font-bold text-white w-20 text-right">3000</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Equipment Availability */}
-                  <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300 w-full">
-                    <CardContent className="p-6">
-                      <div className="space-y-5">
-                        <div className="flex items-center justify-between">
-                          <h3 className="font-bold text-white text-lg">Equipment Availability</h3>
-                          <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
-                            Details
-                          </Button>
-                        </div>
-                        
-                        <div className="text-sm text-slate-400 font-medium">Availability status.</div>
-                        
-                        <div className="flex items-center justify-center py-4">
-                          <div className="relative w-32 h-32">
-                            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                              <defs>
-                                <linearGradient id="equipmentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                  <stop offset="0%" stopColor="#EF4444" />
-                                  <stop offset="100%" stopColor="#DC2626" />
-                                </linearGradient>
-                                <filter id="equipmentGlow">
-                                  <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                                  <feMerge> 
-                                    <feMergeNode in="coloredBlur"/>
-                                    <feMergeNode in="SourceGraphic"/>
-                                  </feMerge>
-                                </filter>
-                              </defs>
-                              <path
-                                d="M18 2.0845
-                                  a 15.9155 15.9155 0 0 1 0 31.831
-                                  a 15.9155 15.9155 0 0 1 0 -31.831"
-                                fill="none"
-                                stroke="#374151"
-                                strokeWidth="3"
-                              />
-                              <path
-                                d="M18 2.0845
-                                  a 15.9155 15.9155 0 0 1 0 31.831
-                                  a 15.9155 15.9155 0 0 1 0 -31.831"
-                                fill="none"
-                                stroke="url(#equipmentGradient)"
-                                strokeWidth="3"
-                                strokeDasharray="90, 100"
-                                strokeLinecap="round"
-                                filter="url(#equipmentGlow)"
-                              />
-                            </svg>
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <div className="text-center">
-                                <span className="text-3xl font-black text-white drop-shadow-lg">90%</span>
-                                <div className="text-xs text-slate-400 font-medium mt-1">Available</div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span className="text-slate-400">Current</span>
-                            <span className="text-white font-semibold">90%</span>
-                          </div>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-slate-400">Target</span>
-                            <span className="text-green-400 font-semibold">98%</span>
-                          </div>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-slate-400">Gap</span>
-                            <span className="text-red-400 font-semibold">-8%</span>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
                 </div>
               </div>
-
-              {/* Documentation Section */}
-              <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-white">Documentation</h2>
-                
-                <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm w-full">
-                  <CardContent className="p-6">
-                    <div className="space-y-5">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-white text-lg">Progress</h3>
-                        <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
-                          View All
-                        </Button>
-                      </div>
-                      
-                      <div className="text-sm text-slate-400 font-medium">% delivered vs. expected.</div>
-                      
-                      <div className="space-y-4">
-                        {[
-                          { name: "Plans", progress: 95, color: "bg-blue-500" },
-                          { name: "Procedures", progress: 80, color: "bg-blue-500" },
-                          { name: "Job Descriptions", progress: 75, color: "bg-yellow-500" },
-                          { name: "Work Instructions", progress: 60, color: "bg-red-500" },
-                          { name: "Quality Standards", progress: 90, color: "bg-blue-500" }
-                        ].map((item, index) => (
-                          <div key={index} className="flex items-center justify-between">
-                            <span className="text-sm font-bold text-slate-300 w-32">{item.name}</span>
-                            <div className="flex items-center gap-4 flex-1">
-                              <div className="flex-1 h-3 bg-slate-700 rounded-full overflow-hidden shadow-inner">
-                                <div 
-                                  className={`h-full ${item.color} rounded-full shadow-sm`}
-                                  style={{ width: `${item.progress}%` }}
-                                ></div>
-                              </div>
-                              <span className="text-sm font-bold text-white w-8 text-right">{item.progress}%</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+              <div className="flex flex-1 flex-col justify-center space-y-2 pt-4">
+                <div className="grid grid-cols-[80px_1fr_auto] items-center gap-2">
+                  <p className="text-xs text-secondary font-semibold truncate">
+                    Jalon 1
+                  </p>
+                  <div className="relative h-3">
+                    <div className="absolute h-full w-[100%] bg-blue-300/30 rounded-full"></div>
+                    <div className="absolute h-full w-[100%] bg-emerald-500 rounded-full"></div>
+                  </div>
+                  <p className="text-xs text-white font-bold w-10 text-right">
+                    100%
+                  </p>
+                </div>
+                <div className="grid grid-cols-[80px_1fr_auto] items-center gap-2">
+                  <p className="text-xs text-secondary font-semibold truncate">
+                    Jalon 2
+                  </p>
+                  <div className="relative h-3">
+                    <div className="absolute h-full w-[100%] bg-blue-300/30 rounded-full"></div>
+                    <div className="absolute h-full w-[100%] bg-emerald-500 rounded-full"></div>
+                  </div>
+                  <p className="text-xs text-white font-bold w-10 text-right">
+                    100%
+                  </p>
+                </div>
+                <div className="grid grid-cols-[80px_1fr_auto] items-center gap-2">
+                  <p className="text-xs text-secondary font-semibold truncate">
+                    Jalon 3
+                  </p>
+                  <div className="relative h-3">
+                    <div className="absolute h-full w-[90%] bg-blue-300/30 rounded-full"></div>
+                    <div className="absolute h-full w-[80%] bg-orange-400 rounded-full"></div>
+                  </div>
+                  <p className="text-xs text-white font-bold w-10 text-right">
+                    80%
+                  </p>
+                </div>
+                <div className="grid grid-cols-[80px_1fr_auto] items-center gap-2">
+                  <p className="text-xs text-secondary font-semibold truncate">
+                    Jalon 4
+                  </p>
+                  <div className="relative h-3">
+                    <div className="absolute h-full w-[70%] bg-blue-300/30 rounded-full"></div>
+                    <div className="absolute h-full w-[45%] bg-red-400 rounded-full"></div>
+                  </div>
+                  <p className="text-xs text-white font-bold w-10 text-right">
+                    45%
+                  </p>
+                </div>
+                <div className="grid grid-cols-[80px_1fr_auto] items-center gap-2">
+                  <p className="text-xs text-secondary font-semibold truncate">
+                    Jalon 5
+                  </p>
+                  <div className="relative h-3">
+                    <div className="absolute h-full w-[50%] bg-blue-300/30 rounded-full"></div>
+                    <div className="absolute h-full w-[0%] bg-red-400 rounded-full"></div>
+                  </div>
+                  <p className="text-xs text-white font-bold w-10 text-right">0%</p>
+                </div>
               </div>
             </div>
+
+            <div className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300 flex flex-col">
+              <p className="text-slate-100 text-sm font-semibold leading-normal">
+                Statut de la Documentation Projet
+                <span className="text-emerald-400 ml-2">✓</span>
+              </p>
+              <div className="flex flex-col flex-1">
+                <div className="flex-none pt-4 pb-2">
+                  <svg className="w-full h-auto" fill="none" viewBox="0 0 400 60" xmlns="http://www.w3.org/2000/svg">
+                    <g transform="translate(40, 0)">
+                      <polyline className="stroke-[#4A5568]" points="0 10, 320 10" stroke-dasharray="2 2" stroke-width="1.5"></polyline>
+                      <polyline className="stroke-[#40E0D0]" points="0 5, 120 20, 220 30, 320 40" stroke-width="2"></polyline>
+                      <circle className="fill-[#40E0D0]" cx="0" cy="5" r="3"></circle>
+                      <circle className="fill-[#FDB913]" cx="120" cy="20" r="3"></circle>
+                      <text className="fill-[#FDB913] text-[10px] font-bold" x="125" y="24">
+                        -5%
+                      </text>
+                      <circle className="fill-[#FDB913]" cx="220" cy="30" r="3"></circle>
+                      <text className="fill-[#FDB913] text-[10px] font-bold" x="225" y="34">
+                        -8%
+                      </text>
+                      <circle className="fill-[#FDB913]" cx="320" cy="40" r="3"></circle>
+                      <text className="fill-[#FDB913] text-[10px] font-bold" x="295" y="44">
+                        -12%
+                      </text>
+                    </g>
+                  </svg>
+                  <div className="flex justify-around -mt-1">
+                    <p className="text-secondary text-[10px] font-semibold leading-normal tracking-[0.015em]">
+                      M-1
+                    </p>
+                    <p className="text-secondary text-[10px] font-semibold leading-normal tracking-[0.015em]">
+                      M-2
+                    </p>
+                    <p className="text-secondary text-[10px] font-semibold leading-normal tracking-[0.015em]">
+                      M-3
+                    </p>
+                    <p className="text-secondary text-[10px] font-semibold leading-normal tracking-[0.015em]">
+                      M-4
+                    </p>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center justify-center flex-1 w-full pt-4">
+                  <div className="relative w-36 h-36">
+                    <svg className="w-full h-full" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+                      <circle className="stroke-current text-slate-600" cx="18" cy="18" fill="none" r="15.91549430918954" stroke-width="2"></circle>
+                      <circle className="stroke-current text-emerald-400 -rotate-90 origin-center" cx="18" cy="18" fill="none" r="15.91549430918954" stroke-dasharray="95, 100" stroke-linecap="round" stroke-width="2"></circle>
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <p className="text-emerald-400 text-3xl font-extrabold tracking-tight">
+                        95%
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex flex-col items-center">
+                    <div className="flex items-baseline gap-1">
+                      <p className="text-emerald-400 text-base font-bold leading-normal">
+                        +2%
+                      </p>
+                      <p className="text-secondary text-sm font-medium leading-normal">
+                        vs Mois Précédent
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
-      </div>
+      </main>
     );
   }
 
   // Special layout for Operations Dashboard - Factory Performance Overview
   if (category.id === "operations") {
     return (
-      <div className={`min-h-screen bg-slate-900 dark:bg-slate-900 ${className}`}>
-        <div className="p-6 space-y-8">
-          {/* Factory Performance Overview Title */}
-          <div className="space-y-2">
-            <h1 className="text-4xl font-bold text-white tracking-tight">Factory Performance Overview</h1>
-            <p className="text-slate-400 text-lg">Key Performance Indicators for the current period.</p>
-          </div>
-
-          {/* Weekly KPIs Section */}
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-white">Weekly KPIs</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <ChartKPICard
-                title="Overtime Rate"
-                value="6%"
-                trend="+1% vs target (5%)"
-                trendColor="text-red-400 bg-red-500/10"
-                chartData={[5, 6, 5, 3]}
-                chartColor="#F97316"
-              />
-              
-              <ChartKPICard
-                title="Technical Unemployment Rate"
-                value="2%"
-                trend="+1% vs target (1%)"
-                trendColor="text-red-400 bg-red-500/10"
-                chartData={[2, 1, 3, 4]}
-                chartColor="#EAB308"
-              />
-              
-              <ChartKPICard
-                title="Scrap Rate (Global)"
-                value="1.5%"
-                trend="+0.5% vs target (1%)"
-                trendColor="text-red-400 bg-red-500/10"
-                chartData={[2, 1, 1.5, 1.9]}
-                chartColor="#22C55E"
-              />
-              
-              <ChartKPICard
-                title="Weekly Efficiency (Global)"
-                value="92%"
-                trend="-3% vs target (95%)"
-                trendColor="text-red-400 bg-red-500/10"
-                chartData={[93, 95, 91, 96]}
-                chartColor="#10B981"
-              />
+      <main className="flex-1 overflow-hidden">
+        <div className="p-4 sm:p-6 lg:p-8">
+          <div
+            className="mb-6 flex flex-wrap items-center justify-start gap-4 sm:gap-6"
+          >
+            <div
+              className="rounded-lg bg-slate-800/90 border border-slate-700/50 px-4 py-2 text-sm font-medium text-secondary"
+            >
+              <span className="font-normal">Semaine actuelle :</span>
+              <span className="font-semibold text-slate-100 ml-1">S10</span>
+            </div>
+            <div
+              className="rounded-lg bg-slate-800/90 border border-slate-700/50 px-4 py-2 text-sm font-medium text-secondary"
+            >
+              <span className="font-normal">Mois en cours :</span>
+              <span className="font-semibold text-slate-100 ml-1">M12</span>
             </div>
           </div>
 
-          {/* Demo Chart with Positive/Negative Values */}
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-white">Performance Variance Analysis</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Positive/Negative Variance Chart */}
-              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="space-y-5">
-                    <h3 className="text-white font-semibold text-base tracking-wide">Performance Variance (vs Target)</h3>
-                    
-                    <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">-4%</div>
-                      <div className="flex items-center gap-1 text-sm font-semibold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
-                        <ArrowDown className="w-3 h-3" />
-                        Below Target
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[2fr,1fr] min-h-[calc(100vh-200px)]">
+            <div className="grid grid-cols-2 grid-rows-2 gap-4 h-fit">
+              <div className="overflow-hidden rounded-lg bg-slate-800/90 border border-slate-700/50 p-6 h-64 flex flex-col shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                <h2 className="mb-2 text-lg font-semibold text-secondary">
+                  Taux d&apos;heures supplémentaires
+                </h2>
+                <div className="flex items-end gap-4">
+                  <p className="text-4xl font-bold text-slate-100">2.5%</p>
+                  <div className="flex items-center text-xs text-green-500">
+                    <span className="material-symbols-outlined text-base"
+                      >arrow_downward</span
+                    >
+                    <p>-0.3% vs semaine précédente</p>
+                  </div>
+                </div>
+                <div className="mt-auto flex-1 min-h-0 flex items-end pb-2">
+                  <div className="relative h-16 w-full">
+                    <svg
+                      className="absolute bottom-0 left-0 h-12 w-full"
+                      fill="none"
+                      preserveAspectRatio="none"
+                      strokeWidth="2"
+                      viewBox="0 0 200 80"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <defs>
+                        <linearGradient
+                          id="gradient1"
+                          x1="0"
+                          x2="0"
+                          y1="0"
+                          y2="1"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor="#3b82f6"
+                            stopOpacity="0.2"
+                          ></stop>
+                          <stop
+                            offset="100%"
+                            stopColor="#3b82f6"
+                            stopOpacity="0"
+                          ></stop>
+                        </linearGradient>
+                      </defs>
+                      <path
+                        className="stroke-dashed stroke-gray-500"
+                        d="M 0 40 L 200 40"
+                        strokeDasharray="4 4"
+                      ></path>
+                      <path
+                        className="stroke-blue-500"
+                        d="M 0 20 L 66 60 L 132 30 L 200 50"
+                      ></path>
+                      <path
+                        d="M 0 20 L 66 60 L 132 30 L 200 50 L 200 80 L 0 80 Z"
+                        fill="url(#gradient1)"
+                      ></path>
+                      <circle className="fill-blue-500" cx="0" cy="20" r="3"></circle>
+                      <circle
+                        className="fill-blue-500"
+                        cx="66"
+                        cy="60"
+                        r="3"
+                      ></circle>
+                      <circle
+                        className="fill-blue-500"
+                        cx="132"
+                        cy="30"
+                        r="3"
+                      ></circle>
+                      <circle
+                        className="fill-blue-500"
+                        cx="200"
+                        cy="50"
+                        r="3"
+                      ></circle>
+                    </svg>
+                    <div
+                      className="absolute inset-x-0 bottom-0 flex justify-between text-xs text-secondary"
+                    >
+                      <span>S1</span>
+                      <span>S2</span>
+                      <span>S3</span>
+                      <span>S4</span>
+                    </div>
+                    <div className="absolute -top-1.5 left-0 text-xs text-secondary">
+                      Target
+                    </div>
+                    <div className="absolute inset-x-0 top-0 h-[calc(100%-1.5rem)]">
+                      <div
+                        className="absolute text-xs font-bold text-slate-100"
+                        style={{
+                          left: '0%',
+                          top: '20%',
+                          transform: 'translate(-50%, -120%)'
+                        }}
+                      >
+                        2.2%
+                      </div>
+                      <div
+                        className="absolute text-xs font-bold text-slate-100"
+                        style={{
+                          left: '33%',
+                          top: '60%',
+                          transform: 'translate(-50%, -120%)'
+                        }}
+                      >
+                        2.8%
+                      </div>
+                      <div
+                        className="absolute text-xs font-bold text-slate-100"
+                        style={{
+                          left: '66%',
+                          top: '30%',
+                          transform: 'translate(-50%, -120%)'
+                        }}
+                      >
+                        2.3%
+                      </div>
+                      <div
+                        className="absolute text-xs font-bold text-slate-100"
+                        style={{
+                          left: '100%',
+                          top: '50%',
+                          transform: 'translate(-50%, -120%)'
+                        }}
+                      >
+                        2.5%
                       </div>
                     </div>
-
-                    {/* Enhanced Chart with Positive/Negative Values */}
-                    <ChartComponent
-                      data={[
-                        { value: -4 },
-                        { value: -2 },
-                        { value: -6 },
-                        { value: 0 }
-                      ]}
-                      height={80}
-                      formatValue={(value) => `${value > 0 ? '+' : ''}${value}`}
-                      yAxisLabel="% Variance"
-                      {...ChartConfigs.variance}
-                    />
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
-              {/* Volatile Performance Chart */}
-              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="space-y-5">
-                    <h3 className="text-white font-semibold text-base tracking-wide">Market Performance Index</h3>
-                    
-                    <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">90%</div>
-                      <div className="flex items-center gap-1 text-sm font-semibold text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded-full">
-                        <TrendingUp className="w-3 h-3" />
-                        Volatile
+              <div className="overflow-hidden rounded-lg bg-slate-800/90 border border-slate-700/50 p-6 h-64 flex flex-col shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                <h2
+                  className="mb-2 flex items-center gap-2 text-lg font-semibold text-secondary"
+                >
+                  Taux de chômage technique
+                  <span className="text-2xl text-yellow-400">⚠️</span>
+                </h2>
+                <div className="flex items-center gap-4">
+                  <p className="flex items-center text-4xl font-bold text-red-500">
+                    1.68%
+                  </p>
+                  <div className="flex items-center text-xs text-red-500">
+                    <span className="material-symbols-outlined text-base"
+                      >arrow_upward</span
+                    >
+                    <p>+0.2% vs semaine précédente</p>
+                  </div>
+                </div>
+                <div className="mt-auto flex-1 min-h-0 flex items-end pb-2">
+                  <div className="relative h-16 w-full">
+                    <svg
+                      className="absolute bottom-0 left-0 h-12 w-full"
+                      fill="none"
+                      preserveAspectRatio="none"
+                      strokeWidth="2"
+                      viewBox="0 0 200 80"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <defs>
+                        <linearGradient
+                          id="gradient2"
+                          x1="0"
+                          x2="0"
+                          y1="0"
+                          y2="1"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor="#3b82f6"
+                            stopOpacity="0.2"
+                          ></stop>
+                          <stop
+                            offset="100%"
+                            stopColor="#3b82f6"
+                            stopOpacity="0"
+                          ></stop>
+                        </linearGradient>
+                      </defs>
+                      <path
+                        className="stroke-dashed stroke-gray-500"
+                        d="M 0 40 L 200 40"
+                        strokeDasharray="4 4"
+                      ></path>
+                      <path
+                        className="stroke-blue-500"
+                        d="M 0 60 L 66 20 L 132 50 L 200 30"
+                      ></path>
+                      <path
+                        d="M 0 60 L 66 20 L 132 50 L 200 30 L 200 80 L 0 80 Z"
+                        fill="url(#gradient2)"
+                      ></path>
+                      <circle className="fill-blue-500" cx="0" cy="60" r="3"></circle>
+                      <circle
+                        className="fill-blue-500"
+                        cx="66"
+                        cy="20"
+                        r="3"
+                      ></circle>
+                      <circle
+                        className="fill-blue-500"
+                        cx="132"
+                        cy="50"
+                        r="3"
+                      ></circle>
+                      <circle
+                        className="fill-blue-500"
+                        cx="200"
+                        cy="30"
+                        r="3"
+                      ></circle>
+                    </svg>
+                    <div
+                      className="absolute inset-x-0 bottom-0 flex justify-between text-xs text-secondary"
+                    >
+                      <span>S1</span>
+                      <span>S2</span>
+                      <span>S3</span>
+                      <span>S4</span>
+                    </div>
+                    <div className="absolute -top-1.5 left-0 text-xs text-secondary">
+                      Target
+                    </div>
+                    <div className="absolute inset-x-0 top-0 h-[calc(100%-1.5rem)]">
+                      <div
+                        className="absolute text-xs font-bold text-slate-100"
+                        style={{
+                          left: '0%',
+                          top: '60%',
+                          transform: 'translate(-50%, -120%)'
+                        }}
+                      >
+                        1.75%
+                      </div>
+                      <div
+                        className="absolute text-xs font-bold text-slate-100"
+                        style={{
+                          left: '33%',
+                          top: '20%',
+                          transform: 'translate(-50%, -120%)'
+                        }}
+                      >
+                        1.48%
+                      </div>
+                      <div
+                        className="absolute text-xs font-bold text-slate-100"
+                        style={{
+                          left: '66%',
+                          top: '50%',
+                          transform: 'translate(-50%, -120%)'
+                        }}
+                      >
+                        1.62%
+                      </div>
+                      <div
+                        className="absolute text-xs font-bold text-slate-100"
+                        style={{
+                          left: '100%',
+                          top: '30%',
+                          transform: 'translate(-50%, -120%)'
+                        }}
+                      >
+                        1.68%
                       </div>
                     </div>
-
-                    {/* Enhanced Chart with High Volatility */}
-                    <ChartComponent
-                      data={[
-                        { value: 80 },
-                        { value: 90 },
-                        { value: 70 },
-                        { value: 98 }
-                      ]}
-                      height={80}
-                      formatValue={(value) => value.toString()}
-                      yAxisLabel="% PIB"
-                      minValue={0}
-                      maxValue={120}
-                      {...ChartConfigs.volatile}
-                    />
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
+
+              <div className="overflow-hidden rounded-lg bg-slate-800/90 border border-slate-700/50 p-6 h-64 flex flex-col shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                <h2
+                  className="mb-2 flex items-center gap-2 text-lg font-semibold text-secondary"
+                >
+                  Taux de scrap <span className="text-2xl text-yellow-400">⚠️</span>
+                </h2>
+                <div className="flex items-center gap-4">
+                  <p className="flex items-center text-4xl font-bold text-red-500">
+                    1.12%
+                  </p>
+                  <div className="flex items-center text-xs text-red-500">
+                    <span className="material-symbols-outlined text-base"
+                      >arrow_upward</span
+                    >
+                    <p>+0.15% vs semaine précédente</p>
+                  </div>
+                </div>
+                <div className="mt-auto flex-1 min-h-0 flex items-end pb-2">
+                  <div className="relative h-16 w-full">
+                    <svg
+                      className="absolute bottom-0 left-0 h-12 w-full"
+                      fill="none"
+                      preserveAspectRatio="none"
+                      strokeWidth="2"
+                      viewBox="0 0 200 80"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <defs>
+                        <linearGradient
+                          id="gradient3"
+                          x1="0"
+                          x2="0"
+                          y1="0"
+                          y2="1"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor="#3b82f6"
+                            stopOpacity="0.2"
+                          ></stop>
+                          <stop
+                            offset="100%"
+                            stopColor="#3b82f6"
+                            stopOpacity="0"
+                          ></stop>
+                        </linearGradient>
+                      </defs>
+                      <path
+                        className="stroke-dashed stroke-gray-500"
+                        d="M 0 50 L 200 50"
+                        strokeDasharray="4 4"
+                      ></path>
+                      <path
+                        className="stroke-blue-500"
+                        d="M 0 70 L 66 40 L 132 60 L 200 20"
+                      ></path>
+                      <path
+                        d="M 0 70 L 66 40 L 132 60 L 200 20 L 200 80 L 0 80 Z"
+                        fill="url(#gradient3)"
+                      ></path>
+                      <circle className="fill-blue-500" cx="0" cy="70" r="3"></circle>
+                      <circle
+                        className="fill-blue-500"
+                        cx="66"
+                        cy="40"
+                        r="3"
+                      ></circle>
+                      <circle
+                        className="fill-blue-500"
+                        cx="132"
+                        cy="60"
+                        r="3"
+                      ></circle>
+                      <circle
+                        className="fill-blue-500"
+                        cx="200"
+                        cy="20"
+                        r="3"
+                      ></circle>
+                    </svg>
+                    <div
+                      className="absolute inset-x-0 bottom-0 flex justify-between text-xs text-secondary"
+                    >
+                      <span>S1</span>
+                      <span>S2</span>
+                      <span>S3</span>
+                      <span>S4</span>
+                    </div>
+                    <div className="absolute -top-1.5 left-0 text-xs text-secondary">
+                      Target
+                    </div>
+                    <div className="absolute inset-x-0 top-0 h-[calc(100%-1.5rem)]">
+                      <div
+                        className="absolute text-xs font-bold text-slate-100"
+                        style={{
+                          left: '0%',
+                          top: '70%',
+                          transform: 'translate(-50%, -120%)'
+                        }}
+                      >
+                        1.25%
+                      </div>
+                      <div
+                        className="absolute text-xs font-bold text-slate-100"
+                        style={{
+                          left: '33%',
+                          top: '40%',
+                          transform: 'translate(-50%, -120%)'
+                        }}
+                      >
+                        0.97%
+                      </div>
+                      <div
+                        className="absolute text-xs font-bold text-slate-100"
+                        style={{
+                          left: '66%',
+                          top: '60%',
+                          transform: 'translate(-50%, -120%)'
+                        }}
+                      >
+                        1.15%
+                      </div>
+                      <div
+                        className="absolute text-xs font-bold text-slate-100"
+                        style={{
+                          left: '100%',
+                          top: '20%',
+                          transform: 'translate(-50%, -120%)'
+                        }}
+                      >
+                        1.12%
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="overflow-hidden rounded-lg bg-slate-800/90 border border-slate-700/50 p-6 h-64 flex flex-col shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                <h2 className="mb-2 text-lg font-semibold text-secondary">
+                  Suivi de l&apos;efficience
+                </h2>
+                <div className="flex items-end gap-4">
+                  <p className="text-4xl font-bold text-slate-100">90%</p>
+                  <div className="flex items-center text-xs text-green-500">
+                    <span className="material-symbols-outlined text-base"
+                      >arrow_upward</span
+                    >
+                    <p>+2% vs semaine précédente</p>
+                  </div>
+                </div>
+                <div className="mt-auto flex-1 min-h-0 flex items-end pb-2">
+                  <div className="relative h-16 w-full">
+                    <svg
+                      className="absolute bottom-0 left-0 h-12 w-full"
+                      fill="none"
+                      preserveAspectRatio="none"
+                      strokeWidth="2"
+                      viewBox="0 0 200 80"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <defs>
+                        <linearGradient
+                          id="gradient4"
+                          x1="0"
+                          x2="0"
+                          y1="0"
+                          y2="1"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor="#3b82f6"
+                            stopOpacity="0.2"
+                          ></stop>
+                          <stop
+                            offset="100%"
+                            stopColor="#3b82f6"
+                            stopOpacity="0"
+                          ></stop>
+                        </linearGradient>
+                      </defs>
+                      <path
+                        className="stroke-dashed stroke-gray-500"
+                        d="M 0 25 L 200 25"
+                        strokeDasharray="4 4"
+                      ></path>
+                      <path
+                        className="stroke-blue-500"
+                        d="M 0 30 L 66 20 L 132 50 L 200 40"
+                      ></path>
+                      <path
+                        d="M 0 30 L 66 20 L 132 50 L 200 40 L 200 80 L 0 80 Z"
+                        fill="url(#gradient4)"
+                      ></path>
+                      <circle className="fill-blue-500" cx="0" cy="30" r="3"></circle>
+                      <circle
+                        className="fill-blue-500"
+                        cx="66"
+                        cy="20"
+                        r="3"
+                      ></circle>
+                      <circle
+                        className="fill-blue-500"
+                        cx="132"
+                        cy="50"
+                        r="3"
+                      ></circle>
+                      <circle
+                        className="fill-blue-500"
+                        cx="200"
+                        cy="40"
+                        r="3"
+                      ></circle>
+                    </svg>
+                    <div
+                      className="absolute inset-x-0 bottom-0 flex justify-between text-xs text-secondary"
+                    >
+                      <span>S1</span>
+                      <span>S2</span>
+                      <span>S3</span>
+                      <span>S4</span>
+                    </div>
+                    <div className="absolute -top-1.5 left-0 text-xs text-secondary">
+                      Target
+                    </div>
+                    <div className="absolute inset-x-0 top-0 h-[calc(100%-1.5rem)]">
+                      <div
+                        className="absolute text-xs font-bold text-slate-100"
+                        style={{
+                          left: '0%',
+                          top: '30%',
+                          transform: 'translate(-50%, -120%)'
+                        }}
+                      >
+                        88%
+                      </div>
+                      <div
+                        className="absolute text-xs font-bold text-slate-100"
+                        style={{
+                          left: '33%',
+                          top: '20%',
+                          transform: 'translate(-50%, -120%)'
+                        }}
+                      >
+                        92%
+                      </div>
+                      <div
+                        className="absolute text-xs font-bold text-slate-100"
+                        style={{
+                          left: '66%',
+                          top: '50%',
+                          transform: 'translate(-50%, -120%)'
+                        }}
+                      >
+                        89%
+                      </div>
+                      <div
+                        className="absolute text-xs font-bold text-slate-100"
+                        style={{
+                          left: '100%',
+                          top: '40%',
+                          transform: 'translate(-50%, -120%)'
+                        }}
+                      >
+                        90%
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
 
-          {/* Monthly KPIs Section */}
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-white">Monthly KPIs</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Production Variance */}
-              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="space-y-5">
-                    <h3 className="text-white font-semibold text-base tracking-wide">Production Variance</h3>
-                    
-                    <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">-4%</div>
-                      <div className="flex items-center gap-1 text-sm font-semibold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
-                        <ArrowDown className="w-3 h-3" />
-                        -4% vs plan (0%)
-                      </div>
-                    </div>
-
-                    {/* Enhanced Chart */}
-                    <ChartComponent
-                      data={[
-                        { value: -4 },
-                        { value: 0 },
-                        { value: -3 },
-                        { value: 0 }
-                      ]}
-                      height={60}
-                      formatValue={(value) => `${value > 0 ? '+' : ''}${value}`}
-                      {...ChartConfigs.efficiency}
-                      color="#3B82F6"
-                    />
+            <div className="flex flex-col gap-4">
+              <div
+                className="flex flex-col overflow-hidden rounded-lg bg-slate-800/90 border border-slate-700/50 p-6 min-h-[200px] shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300"
+              >
+                <h2 className="mb-2 text-lg font-semibold text-secondary">
+                  Écart de production
+                </h2>
+                <div className="flex items-end gap-4">
+                  <p className="text-4xl font-bold text-slate-100">-85</p>
+                  <div className="flex items-center text-xs text-green-500">
+                    <span className="material-symbols-outlined text-base"
+                      >arrow_upward</span
+                    >
+                    <p>+23 vs mois précédent</p>
                   </div>
-                </CardContent>
-              </Card>
-
-              {/* Scrap Valuation (Global) */}
-              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="space-y-5">
-                    <h3 className="text-white font-semibold text-base tracking-wide">Scrap Valuation (Global)</h3>
-                    
-                    <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">$12k</div>
-                      <div className="flex items-center gap-1 text-sm font-semibold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
-                        <ArrowDown className="w-3 h-3" />
-                        +$1k vs target ($11k)
-                      </div>
+                </div>
+                <div className="mt-auto grid grid-cols-4 gap-4 pt-6">
+                  <div
+                    className="flex flex-col items-center justify-center gap-2 text-center"
+                  >
+                    <p className="mb-1 text-xs text-secondary">Target: 0</p>
+                    <div
+                      className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-yellow-500 bg-transparent"
+                    >
+                      <p className="text-sm font-bold text-yellow-500">-180</p>
                     </div>
-
-                    {/* Enhanced Chart */}
-                    <ChartComponent
-                      data={[
-                        { value: 12 },
-                        { value: 10 },
-                        { value: 13 },
-                        { value: 11 }
-                      ]}
-                      height={60}
-                      formatValue={(value) => `${value}k`}
-                      {...ChartConfigs.cost}
-                      color="#EF4444"
-                    />
+                    <p className="text-sm font-medium text-secondary">Jan</p>
                   </div>
-                </CardContent>
-              </Card>
-
-              {/* Monthly Efficiency (Global) */}
-              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="space-y-5">
-                    <h3 className="text-white font-semibold text-base tracking-wide">Monthly Efficiency (Global)</h3>
-                    
-                    <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">91%</div>
-                      <div className="flex items-center gap-1 text-sm font-semibold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
-                        <ArrowDown className="w-3 h-3" />
-                        -2% vs target (93%)
-                      </div>
+                  <div
+                    className="flex flex-col items-center justify-center gap-2 text-center"
+                  >
+                    <p className="mb-1 text-xs text-secondary">Target: 0</p>
+                    <div
+                      className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-green-500 bg-transparent"
+                    >
+                      <p className="text-sm font-bold text-green-500">-20</p>
                     </div>
-
-                    {/* Enhanced Chart */}
-                    <ChartComponent
-                      data={[
-                        { value: 93 },
-                        { value: 95 },
-                        { value: 91 },
-                        { value: 96 }
-                      ]}
-                      height={60}
-                      formatValue={(value) => value.toString()}
-                      {...ChartConfigs.efficiency}
-                      color="#10B981"
-                    />
+                    <p className="text-sm font-medium text-secondary">Fév</p>
                   </div>
-                </CardContent>
-              </Card>
-
-              {/* Consumables & Parts Cost */}
-              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="space-y-5">
-                    <h3 className="text-white font-semibold text-base tracking-wide">Consumables & Parts Cost</h3>
-                    
-                    <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">$18.5k</div>
-                      <div className="flex items-center gap-1 text-sm font-semibold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
-                        <ArrowDown className="w-3 h-3" />
-                        +$1.5k vs target ($17k)
-                      </div>
+                  <div
+                    className="flex flex-col items-center justify-center gap-2 text-center"
+                  >
+                    <p className="mb-1 text-xs text-secondary">Target: 0</p>
+                    <div
+                      className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-red-500 bg-transparent"
+                    >
+                      <p className="text-sm font-bold text-red-500">-200</p>
                     </div>
-
-                    {/* Enhanced Chart */}
-                    <ChartComponent
-                      data={[
-                        { value: 18.4 },
-                        { value: 19.4 },
-                        { value: 17.4 },
-                        { value: 18.9 }
-                      ]}
-                      height={60}
-                      formatValue={(value) => `${value}k`}
-                      {...ChartConfigs.cost}
-                      color="#EF4444"
-                    />
+                    <p className="text-sm font-medium text-secondary">Mar</p>
                   </div>
-                </CardContent>
-              </Card>
-
-              {/* Energy Consumption */}
-              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="space-y-5">
-                    <h3 className="text-white font-semibold text-base tracking-wide">Energy Consumption</h3>
-                    
-                    <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">4200 MWh / 35%</div>
-                      <div className="flex items-center gap-1 text-sm font-semibold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
-                        <ArrowDown className="w-3 h-3" />
-                        +200 MWh / -5% vs target
-                      </div>
+                  <div
+                    className="flex flex-col items-center justify-center gap-2 text-center"
+                  >
+                    <p className="mb-1 text-xs text-secondary">Target: 0</p>
+                    <div
+                      className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-green-500 bg-transparent"
+                    >
+                      <p className="text-sm font-bold text-green-500">50</p>
                     </div>
-
-                    {/* Enhanced Chart */}
-                    <ChartComponent
-                      data={[
-                        { value: 4200 },
-                        { value: 4300 },
-                        { value: 4000 },
-                        { value: 4900 }
-                      ]}
-                      height={60}
-                      formatValue={(value) => value.toString()}
-                      {...ChartConfigs.cost}
-                      color="#EF4444"
-                    />
+                    <p className="text-sm font-medium text-secondary">Avr</p>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
-              {/* Green Energy Rate */}
-              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="space-y-5">
-                    <h3 className="text-white font-semibold text-base tracking-wide">Green Energy Rate</h3>
-                    
-                    <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">80%</div>
-                      <div className="flex items-center gap-1 text-sm font-semibold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
-                        <ArrowDown className="w-3 h-3" />
-                        -10% vs target (90%)
-                      </div>
+              <div
+                className="flex flex-col overflow-hidden rounded-lg bg-slate-800/90 border border-slate-700/50 p-6 min-h-[200px] shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300"
+              >
+                <h2 className="mb-2 text-lg font-semibold text-secondary">
+                  Scrap valuation indicator
+                </h2>
+                <div className="flex items-end gap-4">
+                  <p className="text-4xl font-bold text-slate-100">€1.1k</p>
+                  <div className="flex items-center text-xs text-green-500">
+                    <span className="material-symbols-outlined text-base"
+                      >arrow_downward</span
+                    >
+                    <p>-€0.1k vs mois précédent</p>
+                  </div>
+                </div>
+                <div className="mt-auto grid grid-cols-4 gap-4 pt-6">
+                  <div
+                    className="flex flex-col items-center justify-center gap-2 text-center"
+                  >
+                    <p className="mb-1 text-xs text-secondary">Target: &lt;€1k</p>
+                    <div
+                      className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-green-500 bg-transparent"
+                    >
+                      <p className="text-sm font-bold text-green-500">€0.8k</p>
                     </div>
-
-                    {/* Enhanced Chart */}
-                    <ChartComponent
-                      data={[
-                        { value: 93 },
-                        { value: 95 },
-                        { value: 91 },
-                        { value: 96 }
-                      ]}
-                      height={60}
-                      formatValue={(value) => value.toString()}
-                      {...ChartConfigs.efficiency}
-                      color="#10B981"
-                    />
+                    <p className="text-sm font-medium text-secondary">Jan</p>
                   </div>
-                </CardContent>
-              </Card>
+                  <div
+                    className="flex flex-col items-center justify-center gap-2 text-center"
+                  >
+                    <p className="mb-1 text-xs text-secondary">Target: &lt;€1.1k</p>
+                    <div
+                      className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-red-500 bg-transparent"
+                    >
+                      <p className="text-sm font-bold text-red-500">€1.2k</p>
+                    </div>
+                    <p className="text-sm font-medium text-secondary">Fév</p>
+                  </div>
+                  <div
+                    className="flex flex-col items-center justify-center gap-2 text-center"
+                  >
+                    <p className="mb-1 text-xs text-secondary">Target: &lt;€1.5k</p>
+                    <div
+                      className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-green-500 bg-transparent"
+                    >
+                      <p className="text-sm font-bold text-green-500">€1.4k</p>
+                    </div>
+                    <p className="text-sm font-medium text-secondary">Mar</p>
+                  </div>
+                  <div
+                    className="flex flex-col items-center justify-center gap-2 text-center"
+                  >
+                    <p className="mb-1 text-xs text-secondary">Target: &lt;€1.3k</p>
+                    <div
+                      className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-yellow-500 bg-transparent"
+                    >
+                      <p className="text-sm font-bold text-yellow-500">€1.4k</p>
+                    </div>
+                    <p className="text-sm font-medium text-secondary">Avr</p>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                className="flex flex-col overflow-hidden rounded-lg bg-slate-800/90 border border-slate-700/50 p-6 min-h-[200px] shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300"
+              >
+                <h2 className="mb-2 text-lg font-semibold text-secondary">
+                  Suivi de l&apos;efficience mensuelle
+                </h2>
+                <div className="flex items-end gap-4">
+                  <p className="text-4xl font-bold text-slate-100">91%</p>
+                  <div className="flex items-center text-xs text-green-500">
+                    <span className="material-symbols-outlined text-base"
+                      >arrow_upward</span
+                    >
+                    <p>+1% vs mois précédent</p>
+                  </div>
+                </div>
+                <div className="mt-auto grid grid-cols-4 gap-4 pt-6">
+                  <div
+                    className="flex flex-col items-center justify-center gap-2 text-center"
+                  >
+                    <p className="mb-1 text-xs text-secondary">Target: &gt;90%</p>
+                    <div
+                      className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-green-500 bg-transparent"
+                    >
+                      <p className="text-sm font-bold text-green-500">93%</p>
+                    </div>
+                    <p className="text-sm font-medium text-secondary">Jan</p>
+                  </div>
+                  <div
+                    className="flex flex-col items-center justify-center gap-2 text-center"
+                  >
+                    <p className="mb-1 text-xs text-secondary">Target: &gt;90%</p>
+                    <div
+                      className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-green-500 bg-transparent"
+                    >
+                      <p className="text-sm font-bold text-green-500">94%</p>
+                    </div>
+                    <p className="text-sm font-medium text-secondary">Fév</p>
+                  </div>
+                  <div
+                    className="flex flex-col items-center justify-center gap-2 text-center"
+                  >
+                    <p className="mb-1 text-xs text-secondary">Target: &gt;88%</p>
+                    <div
+                      className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-green-500 bg-transparent"
+                    >
+                      <p className="text-sm font-bold text-green-500">89%</p>
+                    </div>
+                    <p className="text-sm font-medium text-secondary">Mar</p>
+                  </div>
+                  <div
+                    className="flex flex-col items-center justify-center gap-2 text-center"
+                  >
+                    <p className="mb-1 text-xs text-secondary">Target: &gt;91%</p>
+                    <div
+                      className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-green-500 bg-transparent"
+                    >
+                      <p className="text-sm font-bold text-green-500">92%</p>
+                    </div>
+                    <p className="text-sm font-medium text-secondary">Avr</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </main>
     );
   }
 
-  // Special layout for Quality Dashboard - Dark theme with Weekly KPIs
   if (category.id === "quality") {
     return (
-      <div className={`min-h-screen bg-slate-900 dark:bg-slate-900 ${className}`}>
-        <div className="p-6 space-y-8">
-          {/* Quality Dashboard Title */}
-          <div className="space-y-2">
-            <h1 className="text-4xl font-bold text-white tracking-tight">Quality & Safety Dashboard</h1>
-            <p className="text-slate-400 text-lg">Key Performance Indicators for Quality and Safety</p>
+      <main className="flex-1 overflow-hidden bg-slate-900 p-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 grid-rows-2 gap-6 h-full">
+          {/* Réclamations Clients */}
+          <div className="flex flex-col gap-6 rounded-xl border border-slate-700/50 bg-slate-800/90 p-8 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+            <div className="flex-1 flex flex-col">
+              <p className="text-white text-lg font-semibold leading-normal">
+                Réclamations Clients
+              </p>
+              <div className="flex items-baseline gap-4 mt-2">
+                <p className="text-cyan-400 tracking-light text-5xl font-bold leading-tight truncate">
+                  12
+                </p>
+                <div className="flex flex-col">
+                  <span className="inline-block rounded-full bg-red-500/10 px-2 py-0.5 text-base font-medium text-red-400">
+                    +2
+                  </span>
+                  <span className="text-secondary text-xs">vs Sem. Préc.</span>
           </div>
-
-          {/* Weekly KPIs Section */}
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-white">Weekly KPIs</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Customer Complaints */}
-              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="space-y-5">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-bold text-white text-lg">Customer Complaints</h3>
-                      <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
-                        Action Plan
-                      </Button>
                     </div>
-                    
-                    <div className="text-sm text-slate-400 font-medium">Global</div>
-                    
-                    <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">5</div>
-                      <div className="flex items-center gap-1 text-sm font-bold text-red-400 bg-red-500/10 px-3 py-1 rounded-full">
+              <div className="flex gap-1 items-center mt-1">
+                <p className="text-secondary text-sm font-normal leading-normal">
+                  vs Target (8)
+                </p>
+                <p className="text-red-500 text-sm font-medium leading-normal flex items-center gap-1">
                         <ArrowUp className="w-4 h-4" />
-                        +2 vs target (3)
+                  <span>+50%</span>
+                </p>
+                      </div>
+              <div className="flex flex-1 flex-col justify-center pt-4">
+                <div className="h-[120px] relative">
+                  <svg
+                    className="absolute inset-0 w-full h-full"
+                    fill="none"
+                    preserveAspectRatio="none"
+                    viewBox="0 0 400 140"
+                  >
+                    <g>
+                      <path
+                        d="M50 83.3333 L 150 46.6667 L 250 105 L 350 70"
+                        stroke="#2563eb"
+                        strokeWidth="4"
+                      />
+                      <circle
+                        cx="50"
+                        cy="83.3333"
+                        fill="#2563eb"
+                        r="8"
+                        stroke="#ffffff"
+                        strokeWidth="3"
+                      />
+                      <text
+                        fill="#ffffff"
+                        fontSize="14"
+                        fontWeight="bold"
+                        textAnchor="middle"
+                        x="50"
+                        y="75.3333"
+                      >
+                        10
+                      </text>
+                      <circle
+                        cx="150"
+                        cy="46.6667"
+                        fill="#2563eb"
+                        r="8"
+                        stroke="#ffffff"
+                        strokeWidth="3"
+                      />
+                      <text
+                        fill="#ffffff"
+                        fontSize="14"
+                        fontWeight="bold"
+                        textAnchor="middle"
+                        x="150"
+                        y="38.6667"
+                      >
+                        15
+                      </text>
+                      <circle
+                        cx="250"
+                        cy="105"
+                        fill="#2563eb"
+                        r="8"
+                        stroke="#ffffff"
+                        strokeWidth="3"
+                      />
+                      <text
+                        fill="#ffffff"
+                        fontSize="14"
+                        fontWeight="bold"
+                        textAnchor="middle"
+                        x="250"
+                        y="97"
+                      >
+                        8
+                      </text>
+                      <circle
+                        cx="350"
+                        cy="70"
+                        fill="#2563eb"
+                        r="8"
+                        stroke="#ffffff"
+                        strokeWidth="3"
+                      />
+                      <text
+                        fill="#ffffff"
+                        fontSize="14"
+                        fontWeight="bold"
+                        textAnchor="middle"
+                        x="350"
+                        y="62"
+                      >
+                        12
+                      </text>
+                    </g>
+                  </svg>
+                </div>
+                <div className="flex justify-around pt-2">
+                  <p className="text-secondary text-xs font-bold leading-normal tracking-[0.015em]">
+                    S-4
+                  </p>
+                  <p className="text-secondary text-xs font-bold leading-normal tracking-[0.015em]">
+                    S-3
+                  </p>
+                  <p className="text-secondary text-xs font-bold leading-normal tracking-[0.015em]">
+                    S-2
+                  </p>
+                  <p className="text-secondary text-xs font-bold leading-normal tracking-[0.015em]">
+                    S-1
+                  </p>
+                </div>
+              </div>
+            </div>
+                    </div>
+
+          {/* Suivi de l'Efficience */}
+          <div className="flex flex-col gap-2 rounded-xl border border-slate-700/50 bg-slate-800/90 p-8 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+            <div className="flex-1 flex flex-col">
+              <p className="text-white text-lg font-semibold leading-normal">
+                Suivi de l&apos;Efficience
+              </p>
+              <div className="flex items-baseline gap-4 mt-2">
+                <p className="text-cyan-400 tracking-light text-5xl font-bold leading-tight truncate">
+                  92%
+                </p>
+                <div className="flex flex-col">
+                  <span className="inline-block rounded-full bg-green-500/10 px-2 py-0.5 text-base font-medium text-emerald-400">
+                    -5%
+                  </span>
+                  <span className="text-secondary text-xs">vs Sem. Préc.</span>
+                        </div>
+                      </div>
+              <div className="flex gap-1 items-center mt-1">
+                <p className="text-secondary text-sm font-normal leading-normal">
+                  vs Target (90%)
+                </p>
+                <p className="text-green-500 text-sm font-medium leading-normal flex items-center gap-1">
+                  <ArrowUp className="w-4 h-4" />
+                  <span>+1.5%</span>
+                </p>
+                      </div>
+              <div className="flex flex-1 flex-col justify-center pt-4">
+                <div className="h-[120px] relative">
+                  <svg
+                    className="absolute inset-0 w-full h-full"
+                    fill="none"
+                    preserveAspectRatio="none"
+                    viewBox="0 0 400 140"
+                  >
+                    <g>
+                      <path
+                        d="M50 112 L 150 42 L 250 84 L 350 28"
+                        stroke="#2563eb"
+                        strokeWidth="4"
+                      />
+                      <circle
+                        cx="50"
+                        cy="112"
+                        fill="#2563eb"
+                        r="8"
+                        stroke="#ffffff"
+                        strokeWidth="3"
+                      />
+                      <text
+                        fill="#ffffff"
+                        fontSize="14"
+                        fontWeight="bold"
+                        textAnchor="middle"
+                        x="50"
+                        y="104"
+                      >
+                        88%
+                      </text>
+                      <circle
+                        cx="150"
+                        cy="42"
+                        fill="#2563eb"
+                        r="8"
+                        stroke="#ffffff"
+                        strokeWidth="3"
+                      />
+                      <text
+                        fill="#ffffff"
+                        fontSize="14"
+                        fontWeight="bold"
+                        textAnchor="middle"
+                        x="150"
+                        y="34"
+                      >
+                        95%
+                      </text>
+                      <circle
+                        cx="250"
+                        cy="84"
+                        fill="#2563eb"
+                        r="8"
+                        stroke="#ffffff"
+                        strokeWidth="3"
+                      />
+                      <text
+                        fill="#ffffff"
+                        fontSize="14"
+                        fontWeight="bold"
+                        textAnchor="middle"
+                        x="250"
+                        y="76"
+                      >
+                        90%
+                      </text>
+                      <circle
+                        cx="350"
+                        cy="28"
+                        fill="#2563eb"
+                        r="8"
+                        stroke="#ffffff"
+                        strokeWidth="3"
+                      />
+                      <text
+                        fill="#ffffff"
+                        fontSize="14"
+                        fontWeight="bold"
+                        textAnchor="middle"
+                        x="350"
+                        y="20"
+                      >
+                        97%
+                      </text>
+                    </g>
+                  </svg>
+                    </div>
+                <div className="flex justify-around pt-2">
+                  <p className="text-secondary text-xs font-bold leading-normal tracking-[0.015em]">
+                    S-4
+                  </p>
+                  <p className="text-secondary text-xs font-bold leading-normal tracking-[0.015em]">
+                    S-3
+                  </p>
+                  <p className="text-secondary text-xs font-bold leading-normal tracking-[0.015em]">
+                    S-2
+                  </p>
+                  <p className="text-secondary text-xs font-bold leading-normal tracking-[0.015em]">
+                    S-1
+                  </p>
+                  </div>
+                    </div>
                       </div>
                     </div>
 
-                    {/* Chart Values */}
-                    <div className="space-y-3">
-                      <ChartComponent
-                        data={[
-                          { value: 2 },
-                          { value: 3 },
-                          { value: 5 },
-                          { value: 6 }
-                        ]}
-                        height={80}
-                        formatValue={(value: number) => value.toString()}
-                        {...ChartConfigs.mixed}
-                        showValues={true}
+          {/* PPM & Scrap Client */}
+          <div className="flex flex-col gap-6 rounded-xl border border-slate-700/50 bg-slate-800/90 p-8 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+            <div className="flex-1 flex flex-col">
+              <p className="text-white text-lg font-semibold leading-normal">
+                PPM & Scrap Client
+              </p>
+              <div className="flex items-baseline gap-4 mt-2">
+                <p className="text-cyan-400 tracking-light text-5xl font-bold leading-tight truncate">
+                  2,345€
+                </p>
+                <div className="flex flex-col">
+                  <span className="inline-block rounded-full bg-red-500/10 px-2 py-0.5 text-base font-medium text-red-400">
+                    +250€
+                  </span>
+                  <span className="text-secondary text-xs">vs Mois Préc.</span>
+                </div>
+              </div>
+              <div className="flex gap-1 items-center mt-1">
+                <p className="text-secondary text-sm font-normal leading-normal">
+                  Scrap Client
+                </p>
+                <p className="text-red-500 text-sm font-medium leading-normal flex items-center gap-1">
+                  <ArrowUp className="w-4 h-4" />
+                  <span>+12% vs M-1</span>
+                </p>
+              </div>
+              <div className="flex flex-1 flex-col justify-center pt-4">
+                <div className="relative h-[120px] w-full">
+                  <div className="grid h-full grid-cols-4 items-end gap-x-4 px-2">
+                    <div className="flex h-full flex-col items-center justify-end">
+                      <p className="text-sm font-semibold text-white">65</p>
+                      <div
+                        className="mt-1 w-full rounded-t-sm bg-blue-500"
+                        style={{height: '65%'}}
                       />
                     </div>
-
-                    {/* Target Range Progress Bar */}
-                    <div className="space-y-3">
-                      <div className="relative h-4 bg-slate-700 rounded-full overflow-hidden shadow-inner">
-                        <div className="absolute inset-0 flex">
-                          <div className="w-[33.33%] bg-green-500"></div>
-                          <div className="w-[33.33%] bg-yellow-500"></div>
-                          <div className="w-[20%] bg-orange-500"></div>
-                          <div className="w-[13.34%] bg-red-500"></div>
+                    <div className="flex h-full flex-col items-center justify-end">
+                      <p className="text-sm font-semibold text-white">52</p>
+                      <div
+                        className="mt-1 w-full rounded-t-sm bg-blue-500"
+                        style={{height: '52%'}}
+                      />
                         </div>
-                        {/* Current value indicator at 5 */}
-                        <div className="absolute left-[33.33%] top-0 w-1 h-full bg-white shadow-lg transform -translate-x-0.5"></div>
+                    <div className="flex h-full flex-col items-center justify-end">
+                      <p className="text-sm font-semibold text-white">48</p>
+                      <div
+                        className="mt-1 w-full rounded-t-sm bg-blue-500"
+                        style={{height: '48%'}}
+                      />
                       </div>
-                      <div className="flex justify-between text-xs text-slate-400 font-medium">
-                        <span>0 (OK)</span>
-                        <span>5 (Warn)</span>
-                        <span>10 (Limit)</span>
-                        <span>15 (Max)</span>
+                    <div className="flex h-full flex-col items-center justify-end">
+                      <p className="text-sm font-semibold text-white">45</p>
+                      <div
+                        className="mt-1 w-full rounded-t-sm bg-blue-500"
+                        style={{height: '45%'}}
+                      />
                       </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-
-              {/* Weekly Efficiency Tracking */}
-              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="space-y-5">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-bold text-white text-lg">Weekly Efficiency Tracking</h3>
-                      <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
-                        Action Plan
-                      </Button>
-                    </div>
-                    
-                    <div className="text-sm text-slate-400 font-medium">Global</div>
-                    
-                    <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">92%</div>
-                      <div className="flex items-center gap-1 text-sm font-bold text-red-400 bg-red-500/10 px-3 py-1 rounded-full">
-                        <ArrowDown className="w-4 h-4" />
-                        -3% vs target (95%)
-                      </div>
-                    </div>
-
-                    {/* Chart Values */}
-                    <div className="space-y-3">
-                      <ChartComponent
-                        data={[
-                          { value: 94 },
-                          { value: 99 },
-                          { value: 88 },
-                          { value: 90 }
-                        ]}
-                        height={80}
-                        formatValue={(value: number) => `${value}%`}
-                        {...ChartConfigs.efficiency}
-                        showValues={true}
-                      />
-                    </div>
-
-                    {/* Target Range Progress Bar */}
-                    <div className="space-y-3">
-                      <div className="relative h-4 bg-slate-700 rounded-full overflow-hidden shadow-inner">
-                        <div className="absolute inset-0 flex">
-                          <div className="w-[25%] bg-red-500"></div>
-                          <div className="w-[25%] bg-orange-500"></div>
-                          <div className="w-[25%] bg-yellow-500"></div>
-                          <div className="w-[25%] bg-green-500"></div>
-                        </div>
-                        {/* Current value indicator at 92% */}
-                        <div className="absolute left-[92%] top-0 w-1 h-full bg-white shadow-lg transform -translate-x-0.5"></div>
-                      </div>
-                      <div className="flex justify-between text-xs text-slate-400 font-medium">
-                        <span>85% (Min)</span>
-                        <span>88% (Limit)</span>
-                        <span>90% (Warn)</span>
-                        <span>95% (OK)</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                <div className="mt-2 flex justify-around">
+                  <p className="text-xs font-bold text-secondary">M-4</p>
+                  <p className="text-xs font-bold text-secondary">M-3</p>
+                  <p className="text-xs font-bold text-secondary">M-2</p>
+                  <p className="text-xs font-bold text-secondary">M-1</p>
             </div>
           </div>
-
-          {/* Monthly KPIs Section */}
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-white">Monthly KPIs</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* PPM (Parts Per Million) */}
-              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                  <CardContent className="p-6">
-                  <div className="space-y-5">
-                    <h3 className="font-bold text-white text-lg">PPM (Parts Per Million)</h3>
-                    
-                    <div className="flex items-end justify-between">
-                      <div className="text-4xl font-bold text-white tracking-tight">120</div>
+            </div>
                     </div>
 
-                    {/* Chart Values */}
-                    <ChartComponent
-                      data={[
-                        { value: 140 },
-                        { value: 200 },
-                        { value: 100 },
-                        { value: 160 }
-                      ]}
-                      height={60}
-                      formatValue={(value: number) => value.toString()}
-                      {...ChartConfigs.cost}
-                      color="#EF4444"
+          {/* Taux de Conformité aux Audits */}
+          <div className="flex flex-col gap-4 rounded-xl border border-slate-700/50 bg-slate-800/90 p-8 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+            <div className="flex-1 flex flex-col">
+              <p className="text-white text-lg font-semibold leading-normal">
+                Taux de Conformité aux Audits
+              </p>
+              <div className="flex-1 grid grid-cols-2 gap-4 items-center justify-center">
+                <div className="flex flex-col items-center gap-2">
+                  <svg className="w-28 h-28" viewBox="0 0 120 120">
+                    <circle
+                      className="stroke-slate-600"
+                      cx="60"
+                      cy="60"
+                      fill="transparent"
+                      r="54"
+                      strokeWidth="12"
                     />
-
-                    {/* Target Range Progress Bar */}
-                    <div className="space-y-3">
-                      <div className="relative h-4 bg-slate-700 rounded-full overflow-hidden shadow-inner">
-                        <div className="absolute inset-0 flex">
-                          <div className="w-[33.33%] bg-green-500"></div>
-                          <div className="w-[33.33%] bg-yellow-500"></div>
-                          <div className="w-[20%] bg-orange-500"></div>
-                          <div className="w-[13.34%] bg-red-500"></div>
-                        </div>
-                        {/* Current value indicator at 120 */}
-                        <div className="absolute left-[80%] top-0 w-1 h-full bg-white shadow-lg transform -translate-x-0.5"></div>
-                      </div>
-                      <div className="flex justify-between text-xs text-slate-400 font-medium">
-                        <span>0 (OK)</span>
-                        <span>50 (Warn)</span>
-                        <span>100 (Limit)</span>
-                        <span>150 (Max)</span>
-                      </div>
+                    <circle
+                      className="stroke-emerald-400"
+                      cx="60"
+                      cy="60"
+                      fill="transparent"
+                      r="54"
+                      strokeDasharray="339.29"
+                      strokeDashoffset="33.929"
+                      strokeLinecap="round"
+                      strokeWidth="12"
+                      transform="rotate(-90 60 60)"
+                    />
+                    <text
+                      className="fill-white text-lg font-bold"
+                      dominantBaseline="middle"
+                      textAnchor="middle"
+                      x="50%"
+                      y="50%"
+                    >
+                      90%
+                    </text>
+                  </svg>
+                  <p className="text-secondary text-center text-sm">
+                    Completion
+                  </p>
+                  <div className="flex flex-col text-center mt-1">
+                    <span className="inline-block rounded-full bg-green-500/10 px-2 py-0.5 text-base font-medium text-emerald-400">
+                      +5%
+                    </span>
+                    <span className="text-secondary text-xs">
+                      vs Mois Préc.
+                    </span>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <svg className="w-28 h-28" viewBox="0 0 120 120">
+                    <circle
+                      className="stroke-slate-600"
+                      cx="60"
+                      cy="60"
+                      fill="transparent"
+                      r="54"
+                      strokeWidth="12"
+                    />
+                    <circle
+                      className="stroke-orange-400"
+                      cx="60"
+                      cy="60"
+                      fill="transparent"
+                      r="54"
+                      strokeDasharray="339.29"
+                      strokeDashoffset="50.89"
+                      strokeLinecap="round"
+                      strokeWidth="12"
+                      transform="rotate(-90 60 60)"
+                    />
+                    <text
+                      className="fill-white text-lg font-bold"
+                      dominantBaseline="middle"
+                      textAnchor="middle"
+                      x="50%"
+                      y="50%"
+                    >
+                      85%
+                    </text>
+                  </svg>
+                  <p className="text-secondary text-center text-sm">
+                    Compliance
+                  </p>
+                  <div className="flex flex-col text-center mt-1">
+                    <span className="inline-block rounded-full bg-red-500/10 px-2 py-0.5 text-base font-medium text-red-400">
+                      -2%
+                    </span>
+                    <span className="text-secondary text-xs">
+                      vs Mois Préc.
+                    </span>
+                  </div>
                     </div>
-
-                    <div className="flex justify-end">
-                        <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
-                        Action Plan
-                        </Button>
                       </div>
                   </div>
-                </CardContent>
-              </Card>
+          </div>
 
-              {/* Customer Scrap Cost */}
-              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="space-y-5">
-                    <h3 className="font-bold text-white text-lg">Customer Scrap Cost</h3>
-                      
-                      <div className="flex items-end justify-between">
-                      <div className="text-4xl font-bold text-white tracking-tight">8k€</div>
-                      <div className="flex items-center gap-1 text-sm font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-full">
-                        <ArrowDown className="w-3 h-3" />
-                        -1k€ vs target (9k€)
+          {/* Incidents / Accidents de Travail */}
+          <div className="lg:col-span-2 row-start-2 flex flex-col gap-4 rounded-xl border border-slate-700/50 bg-slate-800/90 p-8 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+            <div className="flex-1 flex flex-col">
+              <p className="text-white text-lg font-semibold leading-normal">
+                Incidents / Accidents de Travail
+              </p>
+              <div className="flex items-baseline gap-4 mt-2">
+                <p className="text-cyan-400 tracking-light text-5xl font-bold leading-tight truncate">
+                  1
+                </p>
+                <div className="flex flex-col">
+                  <span className="inline-block rounded-full bg-green-500/10 px-2 py-0.5 text-base font-medium text-emerald-400">
+                    -4
+                  </span>
+                  <span className="text-secondary text-xs">vs Mois Préc.</span>
                           </div>
                       </div>
+              <div className="flex-1 flex flex-col justify-around pt-2">
+                <div className="mb-2">
+                  <div className="relative h-20 w-full mb-1">
+                    <div className="grid h-full grid-cols-4 items-end gap-x-6 px-4">
+                      <div
+                        className="relative flex h-full items-center justify-center rounded-t-sm bg-blue-200"
+                        style={{height: '60%'}}
+                      >
+                        <span className="text-sm font-semibold text-blue-900">6</span>
+                        </div>
+                      <div
+                        className="relative flex h-full items-center justify-center rounded-t-sm bg-blue-200"
+                        style={{height: '50%'}}
+                      >
+                        <span className="text-sm font-semibold text-blue-900">5</span>
+                    </div>
+                      <div
+                        className="relative flex h-full items-center justify-center rounded-t-sm bg-blue-200"
+                        style={{height: '20%'}}
+                      >
+                        <span className="text-sm font-semibold text-blue-900">2</span>
+                      </div>
+                      <div
+                        className="relative flex h-full items-center justify-center rounded-t-sm bg-blue-200"
+                        style={{height: '10%'}}
+                      >
+                        <span className="text-sm font-semibold text-blue-900">1</span>
+                    </div>
+                    </div>
+                  </div>
+                  <div className="flex justify-around">
+                    <p className="text-xs font-bold text-secondary">Jan</p>
+                    <p className="text-xs font-bold text-secondary">Fév</p>
+                    <p className="text-xs font-bold text-secondary">Mar</p>
+                    <p className="text-xs font-bold text-secondary">Avr</p>
+                    </div>
+                        </div>
+                <div>
+                    <p className="text-sm font-medium text-secondary mb-2">
+                    Jours Perdus
+                  </p>
+                  <div className="h-20 w-full relative mb-1">
+                    <svg
+                      className="absolute inset-0 w-full h-full"
+                      fill="none"
+                      preserveAspectRatio="none"
+                      viewBox="0 0 400 100"
+                    >
+                      <g>
+                        <path
+                          d="M50 40 L 150 20 L 250 80 L 350 50"
+                          stroke="#f59e0b"
+                          strokeWidth="3"
+                        />
+                        <circle
+                          cx="50"
+                          cy="40"
+                          fill="#f59e0b"
+                          r="5"
+                          stroke="#ffffff"
+                          strokeWidth="2"
+                        />
+                        <text
+                          fill="#ffffff"
+                          fontSize="12"
+                          fontWeight="bold"
+                          textAnchor="middle"
+                          x="50"
+                          y="32"
+                        >
+                          12
+                        </text>
+                        <circle
+                          cx="150"
+                          cy="20"
+                          fill="#f59e0b"
+                          r="5"
+                          stroke="#ffffff"
+                          strokeWidth="2"
+                        />
+                        <text
+                          fill="#ffffff"
+                          fontSize="12"
+                          fontWeight="bold"
+                          textAnchor="middle"
+                          x="150"
+                          y="12"
+                        >
+                          15
+                        </text>
+                        <circle
+                          cx="250"
+                          cy="80"
+                          fill="#f59e0b"
+                          r="5"
+                          stroke="#ffffff"
+                          strokeWidth="2"
+                        />
+                        <text
+                          fill="#ffffff"
+                          fontSize="12"
+                          fontWeight="bold"
+                          textAnchor="middle"
+                          x="250"
+                          y="72"
+                        >
+                          8
+                        </text>
+                        <circle
+                          cx="350"
+                          cy="50"
+                          fill="#f59e0b"
+                          r="5"
+                          stroke="#ffffff"
+                          strokeWidth="2"
+                        />
+                        <text
+                          fill="#ffffff"
+                          fontSize="12"
+                          fontWeight="bold"
+                          textAnchor="middle"
+                          x="350"
+                          y="42"
+                        >
+                          5
+                        </text>
+                      </g>
+                    </svg>
+                      </div>
+                  <div className="flex justify-around border-t border-border-color pt-2">
+                    <p className="text-xs font-bold text-secondary">Jan</p>
+                    <p className="text-xs font-bold text-secondary">Fév</p>
+                    <p className="text-xs font-bold text-secondary">Mar</p>
+                    <p className="text-xs font-bold text-secondary">Avr</p>
+                      </div>
+                    </div>
+                    </div>
+                  </div>
+          </div>
 
-                    {/* Chart Values */}
-                    <ChartComponent
-                      data={[
-                        { value: 8 },
-                        { value: 8 },
-                        { value: 9.9 },
-                        { value: 8.999 }
-                      ]}
-                      height={60}
-                      formatValue={(value: number) => `${value}k€`}
-                      {...ChartConfigs.cost}
-                      color="#10B981"
+          {/* Score Cards Clients */}
+          <div className="lg:col-span-2 row-start-2 flex flex-col gap-4 rounded-xl border border-slate-700/50 bg-slate-800/90 p-8 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+            <div className="flex-1 flex flex-col">
+              <p className="text-white text-lg font-semibold leading-normal">
+                Score Cards Clients
+              </p>
+              <div className="flex items-baseline gap-4 mt-2">
+                <p className="text-cyan-400 tracking-light text-5xl font-bold leading-tight truncate">
+                  84.2%
+                </p>
+                <div className="flex flex-col">
+                  <span className="inline-block rounded-full bg-green-500/10 px-2 py-0.5 text-base font-medium text-emerald-400">
+                    +1.2%
+                  </span>
+                  <span className="text-secondary text-xs">vs Mois Préc.</span>
+                        </div>
+                      </div>
+              <div className="flex-1 flex flex-col justify-center space-y-3 pt-2">
+                <div className="grid grid-cols-[120px_1fr_auto] items-center gap-4">
+                  <span className="text-secondary text-sm font-medium truncate">
+                    Client Alpha
+                  </span>
+                  <div className="w-full bg-slate-600 rounded-full h-2.5 relative">
+                    <div
+                      className="bg-blue-500 h-2.5 rounded-full"
+                      style={{width: '95%'}}
                     />
-
-                    <div className="flex justify-end">
-                      <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
-                        Action Plan
-                      </Button>
                         </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-              {/* Monthly Efficiency */}
-              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="space-y-5">
-                    <h3 className="font-bold text-white text-lg">Monthly Efficiency</h3>
-                    
-                    <div className="flex items-end justify-between">
-                      <div className="text-4xl font-bold text-white tracking-tight">91%</div>
-                      <div className="flex items-center gap-1 text-sm font-bold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
-                        <ArrowDown className="w-3 h-3" />
-                        -8% vs target (99%)
+                  <span className="text-white font-semibold text-sm">
+                    95%
+                  </span>
                       </div>
-                    </div>
-
-                    {/* Chart Values */}
-                    <ChartComponent
-                      data={[
-                        { value: 99 },
-                        { value: 88 },
-                        { value: 90 },
-                        { value: 97 }
-                      ]}
-                      height={60}
-                      formatValue={(value: number) => `${value}%`}
-                      {...ChartConfigs.efficiency}
-                      color="#10B981"
+                <div className="grid grid-cols-[120px_1fr_auto] items-center gap-4">
+                  <span className="text-secondary text-sm font-medium truncate">
+                    Client Beta
+                  </span>
+                  <div className="w-full bg-slate-600 rounded-full h-2.5 relative">
+                    <div
+                      className="bg-blue-500 h-2.5 rounded-full"
+                      style={{width: '82%'}}
                     />
-
-                    <div className="flex justify-end">
-                      <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
-                        Action Plan
-                      </Button>
-                    </div>
                   </div>
-                </CardContent>
-              </Card>
-
-              {/* Work Incidents/Accidents */}
-              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="space-y-5">
-                    <h3 className="font-bold text-white text-lg">Work Incidents/Accidents</h3>
-                    
-                    <div className="flex items-end justify-between">
-                      <div className="text-4xl font-bold text-white tracking-tight">2</div>
-                      <div className="text-sm text-slate-400 font-medium">3 Lost Days</div>
-                    </div>
-
-                    {/* Target Range Progress Bar */}
-                    <div className="space-y-3">
-                      <div className="relative h-4 bg-slate-700 rounded-full overflow-hidden shadow-inner">
-                        <div className="absolute inset-0 flex">
-                          <div className="w-[20%] bg-green-500"></div>
-                          <div className="w-[20%] bg-yellow-500"></div>
-                          <div className="w-[40%] bg-orange-500"></div>
-                          <div className="w-[20%] bg-red-500"></div>
-                        </div>
-                        {/* Current value indicator at 2 */}
-                        <div className="absolute left-[40%] top-0 w-1 h-full bg-white shadow-lg transform -translate-x-0.5"></div>
-                      </div>
-                      <div className="flex justify-between text-xs text-slate-400 font-medium">
-                        <span>0 (OK)</span>
-                        <span>1 (Warn)</span>
-                        <span>3 (Limit)</span>
-                        <span>5 (Max)</span>
-                      </div>
-                    </div>
-
-                    <div className="flex justify-end">
-                      <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
-                        Action Plan
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Process/Product Audit Compliance */}
-              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="space-y-5">
-                    <h3 className="font-bold text-white text-lg">Process/Product Audit Compliance</h3>
-                    
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-slate-300">Internal Audit Completion</span>
-                        <div className="flex items-center gap-1 text-sm font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-full">
-                          <ArrowUp className="w-3 h-3" />
-                          98% (+3% vs plan)
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-slate-300">Compliance %</span>
-                        <div className="flex items-center gap-1 text-sm font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-full">
-                          <ArrowUp className="w-3 h-3" />
-                          95% (+5% vs target)
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex justify-end">
-                      <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
-                        Action Plan
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Client Score Cards */}
-              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="space-y-5">
-                    <h3 className="font-bold text-white text-lg">Client Score Cards</h3>
-                    
-                    <div className="flex items-end justify-between">
-                      <div className="text-4xl font-bold text-white tracking-tight">78/100</div>
-                      <div className="flex items-center gap-1 text-sm font-bold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
-                        <ArrowDown className="w-3 h-3" />
-                        -12 vs target (90/100)
-                      </div>
-                    </div>
-
-                    {/* Chart Values */}
-                    <ChartComponent
-                      data={[
-                        { value: 78 },
-                        { value: 90 },
-                        { value: 79 },
-                        { value: 99 }
-                      ]}
-                      height={80}
-                      formatValue={(value: number) => value.toString()}
-                      {...ChartConfigs.mixed}
-                      color="#3B82F6"
+                  <span className="text-white font-semibold text-sm">
+                    82%
+                  </span>
+                </div>
+                <div className="grid grid-cols-[120px_1fr_auto] items-center gap-4">
+                  <span className="text-secondary text-sm font-medium truncate">
+                    Client Gamma
+                  </span>
+                  <div className="w-full bg-slate-600 rounded-full h-2.5 relative">
+                    <div
+                      className="bg-blue-500 h-2.5 rounded-full"
+                      style={{width: '88%'}}
                     />
-
-                    <div className="flex justify-end">
-                      <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
-                        Action Plan
-                      </Button>
-                    </div>
                   </div>
-                </CardContent>
-              </Card>
+                  <span className="text-white font-semibold text-sm">
+                    88%
+                  </span>
+                </div>
+                <div className="grid grid-cols-[120px_1fr_auto] items-center gap-4">
+                  <span className="text-secondary text-sm font-medium truncate">
+                    Client Delta
+                  </span>
+                  <div className="w-full bg-slate-600 rounded-full h-2.5 relative">
+                    <div
+                      className="bg-blue-500 h-2.5 rounded-full"
+                      style={{width: '91%'}}
+                    />
+                  </div>
+                  <span className="text-white font-semibold text-sm">
+                    91%
+                  </span>
+                </div>
+                <div className="grid grid-cols-[120px_1fr_auto] items-center gap-4">
+                  <span className="text-secondary text-sm font-medium truncate">
+                    Client Epsilon
+                  </span>
+                  <div className="w-full bg-slate-600 rounded-full h-2.5 relative">
+                    <div
+                      className="bg-red-500 h-2.5 rounded-full"
+                      style={{width: '65%'}}
+                    />
+                  </div>
+                  <span className="text-red-400 font-semibold text-sm">65%</span>
+                </div>
             </div>
           </div>
         </div>
       </div>
+      </main>
     );
   }
 
-  // Special layout for Supply Chain Dashboard - Dark theme with Global Indicators and Detailed KPIs
   if (category.id === "supplychain") {
     return (
-      <div className={`min-h-screen bg-slate-900 dark:bg-slate-900 ${className}`}>
+      <main className="flex-1 overflow-hidden bg-slate-900">
         <div className="p-6 space-y-8">
-          {/* Supply Chain Dashboard Title */}
-          <div className="space-y-2">
-            <h1 className="text-4xl font-bold text-white tracking-tight">Supply Chain Dashboard</h1>
-            <p className="text-slate-400 text-lg">Monitoring key supply chain performance indicators</p>
-          </div>
-
-          {/* Global Indicators Section */}
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-white">Global Indicators</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Customer Service Rate / OTIF */}
-              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="space-y-5">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-bold text-white text-lg">Customer Service Rate / OTIF</h3>
-                      <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
-                        Details
-                      </Button>
-                    </div>
-                    
-                    <div className="text-sm text-slate-400 font-medium">% of orders delivered on time.</div>
-                    
-                    <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">93%</div>
-                      <div className="flex items-center gap-1 text-sm font-bold text-red-400 bg-red-500/10 px-3 py-1 rounded-full">
-                        <ArrowDown className="w-4 h-4" />
-                        -2% vs target (95%)
-                      </div>
-                    </div>
-
-                    {/* Chart Values */}
-                    <ChartComponent
-                      data={[
-                        { value: 99 },
-                        { value: 88 },
-                        { value: 92 },
-                        { value: 90 }
-                      ]}
-                      height={80}
-                      formatValue={(value: number) => `${value}%`}
-                      {...ChartConfigs.efficiency}
-                      showValues={true}
-                    />
-
-                    {/* Enhanced Progress Bar */}
-                    <div className="space-y-3">
-                      <div className="relative h-4 bg-slate-700 rounded-full overflow-hidden shadow-inner">
-                        {/* Background segments with proper colors */}
-                        <div className="absolute inset-0 flex">
-                          <div className="w-[20%] bg-orange-400"></div>
-                          <div className="w-[10%] bg-yellow-400"></div>
-                          <div className="w-[5%] bg-green-400"></div>
-                          <div className="w-[3%] bg-emerald-500"></div>
-                          <div className="w-[62%] bg-slate-700"></div>
-                        </div>
-                        {/* Current value indicator at 93% */}
-                        <div className="absolute left-[93%] top-0 w-1 h-full bg-white shadow-lg transform -translate-x-0.5"></div>
-                      </div>
-                      <div className="flex justify-between text-xs text-slate-400 font-medium">
-                        <span>OK: 80%</span>
-                        <span>Good: 90%</span>
-                        <span>Excellent: 95%</span>
-                        <span>Target: 98%</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Supplier Service Rate OTIF */}
-              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="space-y-5">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-bold text-white text-lg">Supplier Service Rate OTIF</h3>
-                      <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
-                        Details
-                      </Button>
-                    </div>
-                    
-                    <div className="text-sm text-slate-400 font-medium">% of compliant supplier deliveries.</div>
-                    
-                    <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">88%</div>
-                      <div className="flex items-center gap-1 text-sm font-bold text-red-400 bg-red-500/10 px-3 py-1 rounded-full">
-                        <ArrowDown className="w-4 h-4" />
-                        -7% vs target (95%)
-                      </div>
-                    </div>
-
-                    {/* Chart Values */}
-                    <ChartComponent
-                      data={[
-                        { value: 80 },
-                        { value: 99 },
-                        { value: 90 },
-                        { value: 77 }
-                      ]}
-                      height={80}
-                      formatValue={(value: number) => `${value}%`}
-                      {...ChartConfigs.efficiency}
-                      showValues={true}
-                    />
-
-                    {/* Enhanced Progress Bar */}
-                    <div className="space-y-3">
-                      <div className="relative h-4 bg-slate-700 rounded-full overflow-hidden shadow-inner">
-                        {/* Background segments with proper colors */}
-                        <div className="absolute inset-0 flex">
-                          <div className="w-[15%] bg-orange-400"></div>
-                          <div className="w-[5%] bg-yellow-400"></div>
-                          <div className="w-[5%] bg-green-400"></div>
-                          <div className="w-[6%] bg-emerald-500"></div>
-                          <div className="w-[69%] bg-slate-700"></div>
-                        </div>
-                        {/* Current value indicator at 88% */}
-                        <div className="absolute left-[88%] top-0 w-1 h-full bg-white shadow-lg transform -translate-x-0.5"></div>
-                      </div>
-                      <div className="flex justify-between text-xs text-slate-400 font-medium">
-                        <span>OK: 85%</span>
-                        <span>Good: 90%</span>
-                        <span>Excellent: 95%</span>
-                        <span>Target: 98%</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Stock Reliability Rate */}
-              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="space-y-5">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-bold text-white text-lg">Stock Reliability Rate</h3>
-                      <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
-                        Details
-                      </Button>
-                    </div>
-                    
-                    <div className="text-sm text-slate-400 font-medium">% of compliant inventories.</div>
-                    
-                    <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">95%</div>
-                      <div className="flex items-center gap-1 text-sm font-bold text-red-400 bg-red-500/10 px-3 py-1 rounded-full">
-                        <ArrowDown className="w-4 h-4" />
-                        -3% vs target (98%)
-                      </div>
-                    </div>
-
-                    {/* Chart Values */}
-                    <ChartComponent
-                      data={[
-                        { value: 94 },
-                        { value: 88 },
-                        { value: 79 },
-                        { value: 90 }
-                      ]}
-                      height={80}
-                      formatValue={(value: number) => `${value}%`}
-                      {...ChartConfigs.efficiency}
-                      showValues={true}
-                    />
-
-                    {/* Enhanced Progress Bar */}
-                    <div className="space-y-3">
-                      <div className="relative h-4 bg-slate-700 rounded-full overflow-hidden shadow-inner">
-                        {/* Background segments with proper colors */}
-                        <div className="absolute inset-0 flex">
-                          <div className="w-[4%] bg-orange-400"></div>
-                          <div className="w-[3%] bg-yellow-400"></div>
-                          <div className="w-[1%] bg-green-400"></div>
-                          <div className="w-[0.5%] bg-emerald-500"></div>
-                          <div className="w-[91.5%] bg-slate-700"></div>
-                        </div>
-                        {/* Current value indicator at 95% */}
-                        <div className="absolute left-[95%] top-0 w-1 h-full bg-white shadow-lg transform -translate-x-0.5"></div>
-                      </div>
-                      <div className="flex justify-between text-xs text-slate-400 font-medium">
-                        <span>OK: 95%</span>
-                        <span>Good: 98%</span>
-                        <span>Excellent: 99%</span>
-                        <span>Target: 99.5%</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex flex-col gap-1">
+              <h1
+                className="text-3xl font-black tracking-tighter text-white"
+              >
+                Supply Chain Performance Dashboard
+              </h1>
+              <p
+                className="text-secondary text-base font-normal"
+              >
+                Semaine actuelle: 20-26 May | Mois en cours: Mai
+              </p>
+            </div>
+            <div className="flex items-center gap-4">
+              <div
+                className="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary/10 px-4"
+              >
+                <span className="material-symbols-outlined text-primary text-xl"
+                  >check_circle</span
+                >
+                <p className="text-sm font-medium text-primary">Stable</p>
+              </div>
+              <p
+                className="text-sm text-secondary"
+              >
+                Last updated: 27 May, 08:00 AM
+              </p>
             </div>
           </div>
-
-          {/* Detailed KPIs Section */}
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-white">Detailed KPIs</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Inventory Turnover */}
-              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="space-y-5">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-bold text-white text-lg">Inventory Turnover</h3>
-                      <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
-                        Action Plan
-                      </Button>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div className="flex flex-col gap-6">
+              <h2
+                className="text-xl font-bold tracking-tight text-white"
+              >
+                Weekly KPIs
+              </h2>
+              <div
+                className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300 flex flex-col"
+              >
+                <div className="flex items-start justify-between">
+                  <p
+                    className="text-base font-medium text-slate-100"
+                  >
+                    Taux de Service Client / OTIF
+                  </p>
+                  <span
+                    className="material-symbols-outlined text-secondary"
+                    >trending_up</span
+                  >
+                </div>
+                <div className="flex flex-wrap items-end gap-4">
+                  <p
+                    className="text-6xl font-extrabold tracking-tighter text-slate-100"
+                  >
+                    96%
+                  </p>
+                  <div className="flex items-center gap-1 pb-2">
+                    <span
+                      className="material-symbols-outlined text-sm text-primary"
+                      >arrow_upward</span
+                    >
+                    <p className="text-2xl font-extrabold text-primary">+1.0%</p>
+                    <p
+                      className="text-base font-normal text-secondary"
+                    >
+                      vs last week
+                    </p>
+                  </div>
+                </div>
+                <div className="relative h-[180px] w-full pt-4">
+                  <div className="target-line" style={{bottom: '95%'}}></div>
+                  <svg
+                    className="h-full w-full"
+                    preserveAspectRatio="none"
+                    viewBox="0 0 400 100"
+                  >
+                    <defs>
+                      <linearGradient
+                        id="line-chart-gradient"
+                        x1="0"
+                        x2="0"
+                        y1="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="0%"
+                          stopColor="#2c5282"
+                          stopOpacity="0.2"
+                        ></stop>
+                        <stop
+                          offset="100%"
+                          stopColor="#2c5282"
+                          stopOpacity="0"
+                        ></stop>
+                      </linearGradient>
+                    </defs>
+                    <path
+                      d="M 0 50 L 100 30 L 200 40 L 300 20 L 400 30"
+                      fill="url(#line-chart-gradient)"
+                      stroke="#2c5282"
+                      strokeWidth="3"
+                    ></path>
+                  </svg>
+                  <div
+                    className="absolute inset-0 flex items-center justify-between"
+                  >
+                    <div
+                      className="flex flex-col items-center gap-2"
+                      style={{
+                        bottom: '50%',
+                        left: '0%',
+                        transform: 'translate(0, 50%)',
+                        position: 'absolute'
+                      }}
+                    >
+                      <span
+                        className="text-3xl font-extrabold text-slate-100"
+                        >95%</span
+                      >
+                      <div
+                        className="h-3 w-3 rounded-full border-2 border-[#2c5282] bg-slate-800"
+                      ></div>
+                      <p
+                        className="text-sm font-bold text-secondary"
+                      >
+                        W1
+                      </p>
                     </div>
-                    
-                    <div className="text-sm text-slate-400 font-medium">Average days of stock.</div>
-                    
-                    <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">42 days</div>
-                      <div className="flex items-center gap-1 text-sm font-bold text-red-400 bg-red-500/10 px-3 py-1 rounded-full">
-                        <ArrowUp className="w-4 h-4" />
-                        +7 days vs target (35 days)
+                    <div
+                      className="flex flex-col items-center gap-2"
+                      style={{
+                        bottom: '70%',
+                        left: '25%',
+                        transform: 'translate(-50%, 50%)',
+                        position: 'absolute'
+                      }}
+                    >
+                      <span
+                        className="text-3xl font-extrabold text-slate-100"
+                        >97%</span
+                      >
+                      <div
+                        className="h-3 w-3 rounded-full border-2 border-[#2c5282] bg-slate-800"
+                      ></div>
+                      <p
+                        className="text-sm font-bold text-secondary"
+                      >
+                        W2
+                      </p>
+                    </div>
+                    <div
+                      className="flex flex-col items-center gap-2"
+                      style={{
+                        bottom: '60%',
+                        left: '50%',
+                        transform: 'translate(-50%, 50%)',
+                        position: 'absolute'
+                      }}
+                    >
+                      <span
+                        className="text-3xl font-extrabold text-slate-100"
+                        >96%</span
+                      >
+                      <div
+                        className="h-3 w-3 rounded-full border-2 border-[#2c5282] bg-slate-800"
+                      ></div>
+                      <p
+                        className="text-sm font-bold text-secondary"
+                      >
+                        W3
+                      </p>
+                    </div>
+                    <div
+                      className="flex flex-col items-center gap-2"
+                      style={{
+                        bottom: '80%',
+                        left: '75%',
+                        transform: 'translate(-50%, 50%)',
+                        position: 'absolute'
+                      }}
+                    >
+                      <span
+                        className="text-3xl font-extrabold text-slate-100"
+                        >98%</span
+                      >
+                      <div
+                        className="h-3 w-3 rounded-full border-2 border-[#2c5282] bg-slate-800"
+                      ></div>
+                      <p
+                        className="text-sm font-bold text-secondary"
+                      >
+                        W4
+                      </p>
+                    </div>
+                    <div
+                      className="flex flex-col items-center gap-2"
+                      style={{
+                        bottom: '70%',
+                        left: '100%',
+                        transform: 'translate(-100%, 50%)',
+                        position: 'absolute'
+                      }}
+                    >
+                      <span
+                        className="text-3xl font-extrabold text-slate-100"
+                        >97%</span
+                      >
+                      <div
+                        className="h-3 w-3 rounded-full border-2 border-[#2c5282] bg-slate-800"
+                      ></div>
+                      <p
+                        className="text-sm font-bold text-secondary"
+                      >
+                        W5
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  className="h-px w-full bg-slate-700"
+                ></div>
+                <div className="flex items-center gap-6">
+                  <p
+                    className="text-base font-medium text-slate-100"
+                  >
+                    Fiabilité Client
+                  </p>
+                  <div
+                    className="relative flex h-24 w-24 items-center justify-center"
+                  >
+                    <svg
+                      className="h-full w-full -rotate-90 transform"
+                      viewBox="0 0 36 36"
+                    >
+                      <circle
+                        className="stroke-current text-slate-600"
+                        cx="18"
+                        cy="18"
+                        fill="none"
+                        r="16"
+                        strokeWidth="3"
+                      ></circle>
+                      <circle
+                        className="stroke-current text-primary"
+                        cx="18"
+                        cy="18"
+                        fill="none"
+                        r="16"
+                        strokeDasharray="100"
+                        strokeDashoffset="8"
+                        strokeWidth="3"
+                      ></circle>
+                    </svg>
+                    <p
+                      className="absolute text-xl font-bold text-slate-100"
+                    >
+                      92%
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div
+                className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300 flex flex-col"
+              >
+                <div className="flex items-start justify-between">
+                  <p
+                    className="text-base font-medium text-slate-100"
+                  >
+                    Taux de Service Fournisseurs OTIF
+                  </p>
+                  <span
+                    className="material-symbols-outlined text-secondary"
+                    >local_shipping</span
+                  >
+                </div>
+                <div className="flex flex-wrap items-end gap-4">
+                  <p
+                    className="text-5xl font-extrabold tracking-tighter text-slate-100"
+                  >
+                    96%
+                  </p>
+                  <div className="flex items-center gap-1 pb-1">
+                    <span
+                      className="material-symbols-outlined text-sm text-danger"
+                      >arrow_downward</span
+                    >
+                    <p className="text-2xl font-extrabold text-danger">-0.5%</p>
+                    <p
+                      className="text-base font-normal text-secondary"
+                    >
+                      vs last week
+                    </p>
+                  </div>
+                </div>
+                <div
+                  className="flex h-[180px] w-full flex-col items-center justify-center pt-4"
+                >
+                  <div className="flex w-full items-start justify-around">
+                    <div className="flex flex-col items-center gap-2">
+                      <p className="mb-1 text-xs font-semibold text-info">
+                        Target: 95%
+                      </p>
+                      <div
+                        className="flex h-20 w-20 items-center justify-center rounded-full bg-warning/20 text-warning dark:bg-warning/30"
+                      >
+                        <span className="text-2xl font-bold">94%</span>
+                      </div>
+                      <p
+                        className="mt-2 text-sm font-medium text-secondary"
+                      >
+                        W1
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-center gap-2">
+                      <p className="mb-1 text-xs font-semibold text-info">
+                        Target: 95%
+                      </p>
+                      <div
+                        className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/20 text-primary dark:bg-primary/30"
+                      >
+                        <span className="text-2xl font-bold">95%</span>
+                      </div>
+                      <p
+                        className="mt-2 text-sm font-medium text-secondary"
+                      >
+                        W2
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-center gap-2">
+                      <p className="mb-1 text-xs font-semibold text-info">
+                        Target: 95%
+                      </p>
+                      <div
+                        className="flex h-20 w-20 items-center justify-center rounded-full bg-warning/20 text-warning dark:bg-warning/30"
+                      >
+                        <span className="text-2xl font-bold">93%</span>
+                      </div>
+                      <p
+                        className="mt-2 text-sm font-medium text-secondary"
+                      >
+                        W3
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-center gap-2">
+                      <p className="mb-1 text-xs font-semibold text-info">
+                        Target: 95%
+                      </p>
+                      <div
+                        className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/20 text-primary dark:bg-primary/30"
+                      >
+                        <span className="text-2xl font-bold">97%</span>
+                      </div>
+                      <p
+                        className="mt-2 text-sm font-medium text-secondary"
+                      >
+                        W4
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-center gap-2">
+                      <p className="mb-1 text-xs font-semibold text-info">
+                        Target: 95%
+                      </p>
+                      <div
+                        className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/20 text-primary dark:bg-primary/30"
+                      >
+                        <span className="text-2xl font-bold">96%</span>
+                      </div>
+                      <p
+                        className="mt-2 text-sm font-medium text-secondary"
+                      >
+                        W5
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col gap-6">
+              <h2
+                className="text-xl font-bold tracking-tight text-white"
+              >
+                Monthly KPIs
+              </h2>
+              <div
+                className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300 flex flex-col"
+              >
+                <div className="flex items-start justify-between">
+                  <p
+                    className="text-base font-medium text-slate-100"
+                  >
+                    Rotation des Stocks
+                  </p>
+                  <span
+                    className="material-symbols-outlined text-secondary"
+                    >inventory</span
+                  >
+                </div>
+                <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
+                  <p
+                    className="text-6xl font-extrabold tracking-tighter text-slate-100"
+                  >
+                    22 <span className="text-4xl font-bold">jours</span>
+                  </p>
+                  <div className="flex items-baseline gap-2">
+                    <p
+                      className="text-xl font-medium text-secondary"
+                    >
+                      Target:
+                    </p>
+                    <p className="text-3xl font-bold text-primary">20 jours</p>
+                  </div>
+                </div>
+                <div className="relative h-[120px] w-full pt-4">
+                  <div
+                    className="absolute inset-x-0 w-full border-t-2 border-green-800"
+                    style={{bottom: '70%'}}
+                  ></div>
+                  <div className="grid h-full grid-cols-6 items-end gap-x-6">
+                    <div className="relative h-full w-full">
+                      <div
+                        className="absolute inset-x-0 bottom-0 flex items-center justify-center rounded-t-sm bg-info/50"
+                        style={{height: '80%'}}
+                      >
+                        <span className="text-base font-bold text-white">24</span>
+                      </div>
+                    </div>
+                    <div className="relative h-full w-full">
+                      <div
+                        className="absolute inset-x-0 bottom-0 flex items-center justify-center rounded-t-sm bg-info/50"
+                        style={{height: '70%'}}
+                      >
+                        <span className="text-base font-bold text-white">21</span>
+                      </div>
+                    </div>
+                    <div className="relative h-full w-full">
+                      <div
+                        className="absolute inset-x-0 bottom-0 flex items-center justify-center rounded-t-sm bg-warning"
+                        style={{height: '85%'}}
+                      >
+                        <span className="text-black text-xl font-extrabold"
+                          >25</span
+                        >
+                      </div>
+                    </div>
+                    <div className="relative h-full w-full">
+                      <div
+                        className="absolute inset-x-0 bottom-0 flex items-center justify-center rounded-t-sm bg-info/50"
+                        style={{height: '75%'}}
+                      >
+                        <span className="text-base font-bold text-white">22</span>
+                      </div>
+                    </div>
+                    <div className="relative h-full w-full">
+                      <div
+                        className="absolute inset-x-0 bottom-0 flex items-center justify-center rounded-t-sm bg-warning"
+                        style={{height: '90%'}}
+                      >
+                        <span className="text-black text-xl font-extrabold"
+                          >26</span
+                        >
+                      </div>
+                    </div>
+                    <div className="relative h-full w-full">
+                      <div
+                        className="absolute inset-x-0 bottom-0 flex items-center justify-center rounded-t-sm bg-warning"
+                        style={{height: '95%'}}
+                      >
+                        <span className="text-black text-xl font-extrabold"
+                          >28</span
+                        >
                       </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-
-              {/* Total Logistics Cost */}
-              <Card className="bg-slate-800/90 border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="space-y-5">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-bold text-white text-lg">Total Logistics Cost</h3>
-                      <Button variant="link" className="text-blue-400 p-0 h-auto text-sm font-medium hover:text-blue-300">
-                        Action Plan
-                      </Button>
+                </div>
+                <div className="grid grid-cols-6 text-center">
+                  <p
+                    className="text-xs font-medium text-secondary"
+                  >
+                    Déc
+                  </p>
+                  <p
+                    className="text-xs font-medium text-secondary"
+                  >
+                    Jan
+                  </p>
+                  <p
+                    className="text-xs font-medium text-secondary"
+                  >
+                    Fév
+                  </p>
+                  <p
+                    className="text-xs font-medium text-secondary"
+                  >
+                    Mar
+                  </p>
+                  <p
+                    className="text-xs font-medium text-secondary"
+                  >
+                    Avr
+                  </p>
+                  <p
+                    className="text-xs font-bold text-slate-100"
+                  >
+                    Mai
+                  </p>
+                </div>
+              </div>
+              <div
+                className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300 flex flex-col"
+              >
+                <p
+                  className="text-base font-medium text-slate-100"
+                >
+                  Taux de Fiabilité des Stocks
+                </p>
+                <div className="flex flex-col gap-6">
+                  <div
+                    className="grid grid-cols-[100px_1fr_50px] items-center gap-3"
+                  >
+                    <p
+                      className="text-sm font-medium text-secondary"
+                    >
+                      Warehouse A
+                    </p>
+                    <div
+                      className="w-full rounded-full bg-slate-700"
+                    >
+                      <div
+                        className="h-2.5 rounded-full bg-primary"
+                        style={{width: '98%'}}
+                      ></div>
                     </div>
-                    
-                    <div className="text-sm text-slate-400 font-medium">Total logistics expenses.</div>
-                    
-                    <div className="flex items-end justify-between">
-                      <div className="text-5xl font-bold text-white tracking-tight">120k€</div>
-                      <div className="flex items-center gap-1 text-sm font-bold text-red-400 bg-red-500/10 px-3 py-1 rounded-full">
-                        <ArrowUp className="w-4 h-4" />
-                        +10k€ vs target (110k€)
+                    <p
+                      className="text-sm font-bold text-slate-100"
+                    >
+                      98%
+                    </p>
+                  </div>
+                  <div
+                    className="grid grid-cols-[100px_1fr_50px] items-center gap-3"
+                  >
+                    <p
+                      className="text-sm font-medium text-secondary"
+                    >
+                      Warehouse B
+                    </p>
+                    <div
+                      className="w-full rounded-full bg-slate-700"
+                    >
+                      <div
+                        className="h-2.5 rounded-full bg-primary"
+                        style={{width: '96%'}}
+                      ></div>
+                    </div>
+                    <p
+                      className="text-sm font-bold text-slate-100"
+                    >
+                      96%
+                    </p>
+                  </div>
+                  <div
+                    className="grid grid-cols-[100px_1fr_50px] items-center gap-3"
+                  >
+                    <p
+                      className="text-sm font-medium text-secondary"
+                    >
+                      Warehouse C
+                    </p>
+                    <div
+                      className="w-full rounded-full bg-slate-700"
+                    >
+                      <div
+                        className="h-2.5 rounded-full bg-warning"
+                        style={{width: '93%'}}
+                      ></div>
+                    </div>
+                    <p
+                      className="text-sm font-bold text-slate-100"
+                    >
+                      93%
+                    </p>
+                  </div>
+                  <div
+                    className="grid grid-cols-[100px_1fr_50px] items-center gap-3"
+                  >
+                    <p
+                      className="text-sm font-medium text-secondary"
+                    >
+                      Warehouse D
+                    </p>
+                    <div
+                      className="w-full rounded-full bg-slate-700"
+                    >
+                      <div
+                        className="h-2.5 rounded-full bg-danger"
+                        style={{width: '88%'}}
+                      ></div>
+                    </div>
+                    <p
+                      className="text-sm font-bold text-slate-100"
+                    >
+                      88%
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div
+                className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300 flex flex-col"
+              >
+                <p
+                  className="text-base font-medium text-slate-100"
+                >
+                  Coût Logistique Total
+                </p>
+                <div className="flex flex-wrap items-end gap-4">
+                  <p
+                    className="text-5xl font-extrabold tracking-tighter text-slate-100"
+                  >
+                    €1.2M
+                  </p>
+                  <div className="flex items-center gap-1 pb-1">
+                    <span
+                      className="material-symbols-outlined text-sm text-primary"
+                      >arrow_downward</span
+                    >
+                    <p className="text-2xl font-extrabold text-primary">-5%</p>
+                    <p
+                      className="text-base font-normal text-secondary"
+                    >
+                      vs last month
+                    </p>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-4">
+                  <div className="relative w-full flex-grow pt-4">
+                    <div className="grid h-[150px] grid-cols-3 items-end gap-4">
+                      <div
+                        className="relative flex h-full items-end justify-center gap-1"
+                      >
+                        <div
+                          className="relative w-1/2 rounded-t bg-blue-500"
+                          style={{height: '60%'}}
+                        >
+                          <div
+                            className="absolute -top-5 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-100"
+                          >
+                            240k
+                          </div>
+                        </div>
+                        <div
+                          className="relative w-1/2 rounded-t bg-orange-500"
+                          style={{height: '40%'}}
+                        >
+                          <div
+                            className="absolute -top-5 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-100"
+                          >
+                            160k
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        className="relative flex h-full items-end justify-center gap-1"
+                      >
+                        <div
+                          className="relative w-1/2 rounded-t bg-blue-500"
+                          style={{height: '75%'}}
+                        >
+                          <div
+                            className="absolute -top-5 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-100"
+                          >
+                            300k
+                          </div>
+                        </div>
+                        <div
+                          className="relative w-1/2 rounded-t bg-orange-500"
+                          style={{height: '50%'}}
+                        >
+                          <div
+                            className="absolute -top-5 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-100"
+                          >
+                            200k
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        className="relative flex h-full items-end justify-center gap-1"
+                      >
+                        <div
+                          className="relative w-1/2 rounded-t bg-blue-500"
+                          style={{height: '70%'}}
+                        >
+                          <div
+                            className="absolute -top-5 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-100"
+                          >
+                            280k
+                          </div>
+                        </div>
+                        <div
+                          className="relative w-1/2 rounded-t bg-orange-500"
+                          style={{height: '45%'}}
+                        >
+                          <div
+                            className="absolute -top-5 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-100"
+                          >
+                            180k
+                          </div>
+                        </div>
                       </div>
                     </div>
+                    <div className="mt-2 grid grid-cols-3 text-center">
+                      <p
+                        className="text-xs font-bold text-secondary"
+                      >
+                        Mar
+                      </p>
+                      <p
+                        className="text-xs font-bold text-secondary"
+                      >
+                        Apr
+                      </p>
+                      <p
+                        className="text-xs font-bold text-secondary"
+                      >
+                        May
+                      </p>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="mt-4 flex items-center justify-center gap-6">
+                    <div className="flex items-center gap-2">
+                      <div className="h-3 w-3 rounded-sm bg-blue-500"></div>
+                      <p
+                        className="text-sm font-medium text-secondary"
+                      >
+                        Freight IN
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="h-3 w-3 rounded-sm bg-orange-500"></div>
+                      <p
+                        className="text-sm font-medium text-secondary"
+                      >
+                        Freight OUT
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </main>
     );
   }
 
-  // Special layout for HR Dashboard (light theme)
   if (category.id === "rh") {
     return (
-      <div className={`min-h-screen bg-slate-50 ${className}`}>
-        <div className="p-6 space-y-8">
+      <div className={`min-h-screen bg-slate-900 ${className}`}>
+        <div className="p-6 space-y-6">
           {/* HR Dashboard Title */}
           <div className="space-y-2">
-            <h1 className="text-4xl font-bold text-slate-900 tracking-tight">HR Dashboard</h1>
-            <p className="text-slate-600 text-lg">Key Human Resources Performance Indicators</p>
+            <h1 className="text-4xl font-bold text-slate-100 tracking-tight">HR Dashboard</h1>
+            <p className="text-secondary text-lg">Key Human Resources Performance Indicators</p>
           </div>
 
           {/* HR KPIs Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* HeadCount */}
-            <Card className="bg-white border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300">
-              <CardContent className="p-6">
-                <div className="space-y-5">
-                  <h3 className="font-bold text-slate-900 text-lg">HeadCount</h3>
-                  
-                  <div className="flex items-end justify-between">
-                    <div className="text-4xl font-bold text-slate-900 tracking-tight">Target</div>
-                    <div className="flex items-center gap-1 text-sm font-bold text-green-600 bg-green-100 px-2 py-1 rounded-full">
-                      <ArrowUp className="w-3 h-3" />
-                      On Target
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 grid-rows-2 gap-6">
+          <div className="flex flex-col gap-6 rounded-lg border border-slate-700/50 bg-slate-800/90 p-6 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+            <div className="flex-1 flex flex-col">
+              <p className="text-slate-100 text-base font-medium leading-normal">
+                Réclamations Clients
+              </p>
+              <div className="flex items-baseline gap-4 mt-2">
+                <p className="text-slate-100 tracking-light text-5xl font-bold leading-tight truncate">
+                  12
+                </p>
+                <div className="flex flex-col">
+                  <span className="inline-block rounded-full bg-red-100 px-2 py-0.5 text-base font-medium text-red-600">
+                    +2
+                  </span>
+                  <span className="text-secondary text-xs">vs Sem. Préc.</span>
+                </div>
+              </div>
+              <div className="flex gap-1 items-center mt-1">
+                <p className="text-secondary text-sm font-normal leading-normal">
+                  vs Target (8)
+                </p>
+                <p className="text-red-500 text-sm font-medium leading-normal flex items-center gap-1">
+                  <span className="material-symbols-outlined text-base">arrow_upward</span>
+                  <span>+50%</span>
+                </p>
+              </div>
+              <div className="flex flex-1 flex-col justify-center pt-4">
+                <div className="h-[120px] relative">
+                  <svg
+                    className="absolute inset-0 w-full h-full"
+                    fill="none"
+                    preserveAspectRatio="none"
+                    viewBox="0 0 400 140"
+                  >
+                    <g>
+                      <path
+                        d="M50 83.3333 L 150 46.6667 L 250 105 L 350 70"
+                        stroke="#2563eb"
+                        strokeWidth="4"
+                      />
+                      <circle
+                        cx="50"
+                        cy="83.3333"
+                        fill="#2563eb"
+                        r="8"
+                        stroke="#ffffff"
+                        strokeWidth="3"
+                      />
+                      <text
+                        fill="#111827"
+                        fontSize="14"
+                        fontWeight="bold"
+                        textAnchor="middle"
+                        x="50"
+                        y="75.3333"
+                      >
+                        10
+                      </text>
+                      <circle
+                        cx="150"
+                        cy="46.6667"
+                        fill="#2563eb"
+                        r="8"
+                        stroke="#ffffff"
+                        strokeWidth="3"
+                      />
+                      <text
+                        fill="#111827"
+                        fontSize="14"
+                        fontWeight="bold"
+                        textAnchor="middle"
+                        x="150"
+                        y="38.6667"
+                      >
+                        15
+                      </text>
+                      <circle
+                        cx="250"
+                        cy="105"
+                        fill="#2563eb"
+                        r="8"
+                        stroke="#ffffff"
+                        strokeWidth="3"
+                      />
+                      <text
+                        fill="#111827"
+                        fontSize="14"
+                        fontWeight="bold"
+                        textAnchor="middle"
+                        x="250"
+                        y="97"
+                      >
+                        8
+                      </text>
+                      <circle
+                        cx="350"
+                        cy="70"
+                        fill="#2563eb"
+                        r="8"
+                        stroke="#ffffff"
+                        strokeWidth="3"
+                      />
+                      <text
+                        fill="#111827"
+                        fontSize="14"
+                        fontWeight="bold"
+                        textAnchor="middle"
+                        x="350"
+                        y="62"
+                      >
+                        12
+                      </text>
+                    </g>
+                  </svg>
+                </div>
+                <div className="flex justify-around pt-2">
+                  <p className="text-secondary text-xs font-bold leading-normal tracking-[0.015em]">
+                    S-4
+                  </p>
+                  <p className="text-secondary text-xs font-bold leading-normal tracking-[0.015em]">
+                    S-3
+                  </p>
+                  <p className="text-secondary text-xs font-bold leading-normal tracking-[0.015em]">
+                    S-2
+                  </p>
+                  <p className="text-secondary text-xs font-bold leading-normal tracking-[0.015em]">
+                    S-1
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2 rounded-lg border border-slate-700/50 bg-slate-800/90 p-6 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+            <div className="flex-1 flex flex-col">
+              <p className="text-slate-100 text-base font-medium leading-normal">
+                Suivi de l&apos;Efficience
+              </p>
+              <div className="flex items-baseline gap-4 mt-2">
+                <p className="text-slate-100 tracking-light text-5xl font-bold leading-tight truncate">
+                  92%
+                </p>
+                <div className="flex flex-col">
+                  <span className="inline-block rounded-full bg-green-100 px-2 py-0.5 text-base font-medium text-green-600">
+                    -5%
+                  </span>
+                  <span className="text-secondary text-xs">vs Sem. Préc.</span>
+                </div>
+              </div>
+              <div className="flex gap-1 items-center mt-1">
+                <p className="text-secondary text-sm font-normal leading-normal">
+                  vs Target (90%)
+                </p>
+                <p className="text-green-500 text-sm font-medium leading-normal flex items-center gap-1">
+                  <span className="material-symbols-outlined text-base">arrow_upward</span>
+                  <span>+1.5%</span>
+                </p>
+              </div>
+              <div className="flex flex-1 flex-col justify-center pt-4">
+                <div className="h-[120px] relative">
+                  <svg
+                    className="absolute inset-0 w-full h-full"
+                    fill="none"
+                    preserveAspectRatio="none"
+                    viewBox="0 0 400 140"
+                  >
+                    <g>
+                      <path
+                        d="M50 112 L 150 42 L 250 84 L 350 28"
+                        stroke="#2563eb"
+                        strokeWidth="4"
+                      />
+                      <circle
+                        cx="50"
+                        cy="112"
+                        fill="#2563eb"
+                        r="8"
+                        stroke="#ffffff"
+                        strokeWidth="3"
+                      />
+                      <text
+                        fill="#111827"
+                        fontSize="14"
+                        fontWeight="bold"
+                        textAnchor="middle"
+                        x="50"
+                        y="104"
+                      >
+                        88%
+                      </text>
+                      <circle
+                        cx="150"
+                        cy="42"
+                        fill="#2563eb"
+                        r="8"
+                        stroke="#ffffff"
+                        strokeWidth="3"
+                      />
+                      <text
+                        fill="#111827"
+                        fontSize="14"
+                        fontWeight="bold"
+                        textAnchor="middle"
+                        x="150"
+                        y="34"
+                      >
+                        95%
+                      </text>
+                      <circle
+                        cx="250"
+                        cy="84"
+                        fill="#2563eb"
+                        r="8"
+                        stroke="#ffffff"
+                        strokeWidth="3"
+                      />
+                      <text
+                        fill="#111827"
+                        fontSize="14"
+                        fontWeight="bold"
+                        textAnchor="middle"
+                        x="250"
+                        y="76"
+                      >
+                        90%
+                      </text>
+                      <circle
+                        cx="350"
+                        cy="28"
+                        fill="#2563eb"
+                        r="8"
+                        stroke="#ffffff"
+                        strokeWidth="3"
+                      />
+                      <text
+                        fill="#111827"
+                        fontSize="14"
+                        fontWeight="bold"
+                        textAnchor="middle"
+                        x="350"
+                        y="20"
+                      >
+                        97%
+                      </text>
+                    </g>
+                  </svg>
+                </div>
+                <div className="flex justify-around pt-2">
+                  <p className="text-secondary text-xs font-bold leading-normal tracking-[0.015em]">
+                    S-4
+                  </p>
+                  <p className="text-secondary text-xs font-bold leading-normal tracking-[0.015em]">
+                    S-3
+                  </p>
+                  <p className="text-secondary text-xs font-bold leading-normal tracking-[0.015em]">
+                    S-2
+                  </p>
+                  <p className="text-secondary text-xs font-bold leading-normal tracking-[0.015em]">
+                    S-1
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-6 rounded-lg border border-slate-700/50 bg-slate-800/90 p-6 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+            <div className="flex-1 flex flex-col">
+              <p className="text-slate-100 text-base font-medium leading-normal">
+                PPM &amp; Scrap Client
+              </p>
+              <div className="flex items-baseline gap-4 mt-2">
+                <p className="text-slate-100 tracking-light text-5xl font-bold leading-tight truncate">
+                  2,345€
+                </p>
+                <div className="flex flex-col">
+                  <span className="inline-block rounded-full bg-red-100 px-2 py-0.5 text-base font-medium text-red-600">
+                    +250€
+                  </span>
+                  <span className="text-secondary text-xs">vs Mois Préc.</span>
+                </div>
+              </div>
+              <div className="flex gap-1 items-center mt-1">
+                <p className="text-secondary text-sm font-normal leading-normal">
+                  Scrap Client
+                </p>
+                <p className="text-red-500 text-sm font-medium leading-normal flex items-center gap-1">
+                  <span className="material-symbols-outlined text-base">arrow_upward</span>
+                  <span>+12% vs M-1</span>
+                </p>
+              </div>
+              <div className="flex flex-1 flex-col justify-center pt-4">
+                <div className="relative h-[120px] w-full">
+                  <div className="grid h-full grid-cols-4 items-end gap-x-4 px-2">
+                    <div className="flex h-full flex-col items-center justify-end">
+                      <p className="text-sm font-semibold text-slate-100">65</p>
+                      <div
+                        className="mt-1 w-full rounded-t-sm bg-blue-600"
+                        style={{height: '65%'}}
+                      />
+                    </div>
+                    <div className="flex h-full flex-col items-center justify-end">
+                      <p className="text-sm font-semibold text-slate-100">52</p>
+                      <div
+                        className="mt-1 w-full rounded-t-sm bg-blue-600"
+                        style={{height: '52%'}}
+                      />
+                    </div>
+                    <div className="flex h-full flex-col items-center justify-end">
+                      <p className="text-sm font-semibold text-slate-100">48</p>
+                      <div
+                        className="mt-1 w-full rounded-t-sm bg-blue-600"
+                        style={{height: '48%'}}
+                      />
+                    </div>
+                    <div className="flex h-full flex-col items-center justify-end">
+                      <p className="text-sm font-semibold text-slate-100">45</p>
+                      <div
+                        className="mt-1 w-full rounded-t-sm bg-blue-600"
+                        style={{height: '45%'}}
+                      />
                     </div>
                   </div>
+                </div>
+                <div className="mt-2 flex justify-around">
+                  <p className="text-xs font-bold text-secondary">M-4</p>
+                  <p className="text-xs font-bold text-secondary">M-3</p>
+                  <p className="text-xs font-bold text-secondary">M-2</p>
+                  <p className="text-xs font-bold text-secondary">M-1</p>
+                </div>
+              </div>
+            </div>
+          </div>
 
-                  <div className="flex justify-end">
-                    <Button variant="link" className="text-blue-600 p-0 h-auto text-sm font-medium hover:text-blue-700">
-                      View Details
-                    </Button>
+          <div className="flex flex-col gap-4 rounded-lg border border-slate-700/50 bg-slate-800/90 p-6 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+            <div className="flex-1 flex flex-col">
+              <p className="text-slate-100 text-base font-medium leading-normal">
+                Taux de Conformité aux Audits
+              </p>
+              <div className="flex-1 grid grid-cols-2 gap-4 items-center justify-center">
+                <div className="flex flex-col items-center gap-2">
+                  <svg className="size-28" viewBox="0 0 120 120">
+                    <circle
+                      className="fill-none stroke-gray-200"
+                      cx="60"
+                      cy="60"
+                      r="54"
+                      strokeWidth="12"
+                    />
+                    <circle
+                      className="fill-none stroke-blue-600"
+                      cx="60"
+                      cy="60"
+                      r="54"
+                      strokeDasharray="339.29"
+                      strokeDashoffset="33.929"
+                      strokeLinecap="round"
+                      strokeWidth="12"
+                      transform="rotate(-90 60 60)"
+                    />
+                    <text
+                      className="text-2xl font-bold fill-gray-900"
+                      dominantBaseline="middle"
+                      textAnchor="middle"
+                      x="50%"
+                      y="50%"
+                    >
+                      90%
+                    </text>
+                  </svg>
+                  <p className="text-secondary text-center text-sm">
+                    Completion
+                  </p>
+                  <div className="flex flex-col text-center mt-1">
+                    <span className="inline-block rounded-full bg-green-100 px-2 py-0.5 text-base font-medium text-green-600">
+                      +5%
+                    </span>
+                    <span className="text-secondary text-xs">vs Mois Préc.</span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="flex flex-col items-center gap-2">
+                  <svg className="size-28" viewBox="0 0 120 120">
+                    <circle
+                      className="fill-none stroke-gray-200"
+                      cx="60"
+                      cy="60"
+                      r="54"
+                      strokeWidth="12"
+                    />
+                    <circle
+                      className="fill-none stroke-blue-600"
+                      cx="60"
+                      cy="60"
+                      r="54"
+                      strokeDasharray="339.29"
+                      strokeDashoffset="50.89"
+                      strokeLinecap="round"
+                      strokeWidth="12"
+                      transform="rotate(-90 60 60)"
+                    />
+                    <text
+                      className="text-2xl font-bold fill-gray-900"
+                      dominantBaseline="middle"
+                      textAnchor="middle"
+                      x="50%"
+                      y="50%"
+                    >
+                      85%
+                    </text>
+                  </svg>
+                  <p className="text-secondary text-center text-sm">
+                    Compliance
+                  </p>
+                  <div className="flex flex-col text-center mt-1">
+                    <span className="inline-block rounded-full bg-red-100 px-2 py-0.5 text-base font-medium text-red-600">
+                      -2%
+                    </span>
+                    <span className="text-secondary text-xs">vs Mois Préc.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-            {/* Personal Transport Bus Occupancy Rate */}
-            <Card className="bg-white border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300">
-              <CardContent className="p-6">
-                <div className="space-y-5">
-                  <h3 className="font-bold text-slate-900 text-lg">Personal Transport Bus Occupancy Rate</h3>
-                  
-                  <div className="flex items-end justify-between">
-                    <div className="text-4xl font-bold text-slate-900 tracking-tight">78%</div>
-                    <div className="flex items-center gap-1 text-sm font-bold text-red-600 bg-red-100 px-2 py-1 rounded-full">
-                      <ArrowDown className="w-3 h-3" />
-                      -7% vs target (85%)
+          <div className="lg:col-span-2 row-start-2 flex flex-col gap-4 rounded-lg border border-slate-700/50 bg-slate-800/90 p-6 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+            <div className="flex-1 flex flex-col">
+              <p className="text-slate-100 text-base font-medium leading-normal">
+                Incidents / Accidents de Travail
+              </p>
+              <div className="flex items-baseline gap-4 mt-2">
+                <p className="text-slate-100 tracking-light text-5xl font-bold leading-tight truncate">
+                  1
+                </p>
+                <div className="flex flex-col">
+                  <span className="inline-block rounded-full bg-green-100 px-2 py-0.5 text-base font-medium text-green-600">
+                    -4
+                  </span>
+                  <span className="text-secondary text-xs">vs Mois Préc.</span>
+                </div>
+              </div>
+              <div className="flex-1 flex flex-col justify-around pt-2">
+                <div className="mb-2">
+                  <div className="relative h-20 w-full mb-1">
+                    <div className="grid h-full grid-cols-4 items-end gap-x-6 px-4">
+                      <div
+                        className="relative flex h-full items-center justify-center rounded-t-sm bg-blue-200"
+                        style={{height: '60%'}}
+                      >
+                        <span className="text-sm font-semibold text-blue-900">6</span>
+                      </div>
+                      <div
+                        className="relative flex h-full items-center justify-center rounded-t-sm bg-blue-200"
+                        style={{height: '50%'}}
+                      >
+                        <span className="text-sm font-semibold text-blue-900">5</span>
+                      </div>
+                      <div
+                        className="relative flex h-full items-center justify-center rounded-t-sm bg-blue-200"
+                        style={{height: '20%'}}
+                      >
+                        <span className="text-sm font-semibold text-blue-900">2</span>
+                      </div>
+                      <div
+                        className="relative flex h-full items-center justify-center rounded-t-sm bg-blue-200"
+                        style={{height: '10%'}}
+                      >
+                        <span className="text-sm font-semibold text-blue-900">1</span>
+                      </div>
                     </div>
                   </div>
-
-                  {/* Chart Values */}
-                  <ChartComponent
-                    data={[
-                      { value: 85 },
-                      { value: 90 },
-                      { value: 80 },
-                      { value: 99 }
-                    ]}
-                    height={60}
-                    formatValue={(value: number) => `${value}%`}
-                    {...ChartConfigs.efficiency}
-                    color="#10B981"
-                  />
-
-                  <div className="flex justify-end">
-                    <Button variant="link" className="text-blue-600 p-0 h-auto text-sm font-medium hover:text-blue-700">
-                      View Details
-                    </Button>
+                  <div className="flex justify-around">
+                    <p className="text-xs font-bold text-secondary">Jan</p>
+                    <p className="text-xs font-bold text-secondary">Fév</p>
+                    <p className="text-xs font-bold text-secondary">Mar</p>
+                    <p className="text-xs font-bold text-secondary">Avr</p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Turnover Rate */}
-            <Card className="bg-white border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300">
-              <CardContent className="p-6">
-                <div className="space-y-5">
-                  <h3 className="font-bold text-slate-900 text-lg">Turnover Rate</h3>
-                  
-                  <div className="flex items-end justify-between">
-                    <div className="text-4xl font-bold text-slate-900 tracking-tight">4.2%</div>
-                    <div className="flex items-center gap-1 text-sm font-bold text-red-600 bg-red-100 px-2 py-1 rounded-full">
-                      <ArrowUp className="w-3 h-3" />
-                      +1.2% vs target (3%)
-                    </div>
+                <div>
+                  <p className="text-sm font-medium text-secondary mb-2">
+                    Jours Perdus
+                  </p>
+                  <div className="h-20 w-full relative mb-1">
+                    <svg
+                      className="absolute inset-0 w-full h-full"
+                      fill="none"
+                      preserveAspectRatio="none"
+                      viewBox="0 0 400 100"
+                    >
+                      <g>
+                        <path
+                          d="M50 40 L 150 20 L 250 80 L 350 50"
+                          stroke="#f59e0b"
+                          strokeWidth="3"
+                        />
+                        <circle
+                          cx="50"
+                          cy="40"
+                          fill="#f59e0b"
+                          r="5"
+                          stroke="#ffffff"
+                          strokeWidth="2"
+                        />
+                        <text
+                          fill="#111827"
+                          fontSize="12"
+                          fontWeight="bold"
+                          textAnchor="middle"
+                          x="50"
+                          y="32"
+                        >
+                          12
+                        </text>
+                        <circle
+                          cx="150"
+                          cy="20"
+                          fill="#f59e0b"
+                          r="5"
+                          stroke="#ffffff"
+                          strokeWidth="2"
+                        />
+                        <text
+                          fill="#111827"
+                          fontSize="12"
+                          fontWeight="bold"
+                          textAnchor="middle"
+                          x="150"
+                          y="12"
+                        >
+                          15
+                        </text>
+                        <circle
+                          cx="250"
+                          cy="80"
+                          fill="#f59e0b"
+                          r="5"
+                          stroke="#ffffff"
+                          strokeWidth="2"
+                        />
+                        <text
+                          fill="#111827"
+                          fontSize="12"
+                          fontWeight="bold"
+                          textAnchor="middle"
+                          x="250"
+                          y="72"
+                        >
+                          8
+                        </text>
+                        <circle
+                          cx="350"
+                          cy="50"
+                          fill="#f59e0b"
+                          r="5"
+                          stroke="#ffffff"
+                          strokeWidth="2"
+                        />
+                        <text
+                          fill="#111827"
+                          fontSize="12"
+                          fontWeight="bold"
+                          textAnchor="middle"
+                          x="350"
+                          y="42"
+                        >
+                          5
+                        </text>
+                      </g>
+                    </svg>
                   </div>
-
-                  {/* Chart Values */}
-                  <ChartComponent
-                    data={[
-                      { value: 3.2 },
-                      { value: 3 },
-                      { value: 5.2 },
-                      { value: 4 }
-                    ]}
-                    height={60}
-                    formatValue={(value: number) => `${value}%`}
-                    {...ChartConfigs.cost}
-                    color="#EF4444"
-                  />
-
-                  <div className="flex justify-end">
-                    <Button variant="link" className="text-blue-600 p-0 h-auto text-sm font-medium hover:text-blue-700">
-                      View Details
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Time To Fill */}
-            <Card className="bg-white border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300">
-              <CardContent className="p-6">
-                <div className="space-y-5">
-                  <h3 className="font-bold text-slate-900 text-lg">Time To Fill</h3>
-                  
-                  <div className="flex items-end justify-between">
-                    <div className="text-4xl font-bold text-slate-900 tracking-tight">32 days</div>
-                    <div className="flex items-center gap-1 text-sm font-bold text-red-600 bg-red-100 px-2 py-1 rounded-full">
-                      <ArrowUp className="w-3 h-3" />
-                      +7 days vs target (25 days)
-                    </div>
-                  </div>
-
-                  {/* Chart Values */}
-                  <ChartComponent
-                    data={[
-                      { value: 33 },
-                      { value: 36 },
-                      { value: 24 },
-                      { value: 20 }
-                    ]}
-                    height={60}
-                    formatValue={(value: number) => `${value}d`}
-                    {...ChartConfigs.cost}
-                    color="#EF4444"
-                  />
-
-                  <div className="flex justify-end">
-                    <Button variant="link" className="text-blue-600 p-0 h-auto text-sm font-medium hover:text-blue-700">
-                      View Details
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Absenteeism Rate */}
-            <Card className="bg-white border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300">
-              <CardContent className="p-6">
-                <div className="space-y-5">
-                  <h3 className="font-bold text-slate-900 text-lg">Absenteeism Rate</h3>
-                  
-                  <div className="flex items-end justify-between">
-                    <div className="text-4xl font-bold text-slate-900 tracking-tight">2.8%</div>
-                    <div className="flex items-center gap-1 text-sm font-bold text-red-600 bg-red-100 px-2 py-1 rounded-full">
-                      <ArrowUp className="w-3 h-3" />
-                      +0.8% vs target (2.0%)
-                    </div>
-                  </div>
-
-                  {/* Chart Values */}
-                  <ChartComponent
-                    data={[
-                      { value: 2.0 },
-                      { value: 2.9 },
-                      { value: 3.0 },
-                      { value: 2.0 }
-                    ]}
-                    height={60}
-                    formatValue={(value: number) => `${value}%`}
-                    {...ChartConfigs.cost}
-                    color="#EF4444"
-                  />
-
-                  <div className="flex justify-end">
-                    <Button variant="link" className="text-blue-600 p-0 h-auto text-sm font-medium hover:text-blue-700">
-                      View Details
-                    </Button>
+                  <div className="flex justify-around border-t border-border-color pt-2">
+                    <p className="text-xs font-bold text-secondary">Jan</p>
+                    <p className="text-xs font-bold text-secondary">Fév</p>
+                    <p className="text-xs font-bold text-secondary">Mar</p>
+                    <p className="text-xs font-bold text-secondary">Avr</p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
+          </div>
 
-            {/* Social Incidents */}
-            <Card className="bg-white border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300">
-              <CardContent className="p-6">
-                <div className="space-y-5">
-                  <h3 className="font-bold text-slate-900 text-lg">Social Incidents</h3>
-                  
-                  <div className="flex items-end justify-between">
-                    <div className="text-4xl font-bold text-slate-900 tracking-tight">3</div>
-                    <div className="flex items-center gap-1 text-sm font-bold text-red-600 bg-red-100 px-2 py-1 rounded-full">
-                      <ArrowUp className="w-3 h-3" />
-                      +2 vs target (1)
-                    </div>
-                  </div>
-
-                  {/* Chart Values */}
-                  <ChartComponent
-                    data={[
-                      { value: 2 },
-                      { value: 4 },
-                      { value: 2 },
-                      { value: 5 }
-                    ]}
-                    height={60}
-                    formatValue={(value: number) => value.toString()}
-                    {...ChartConfigs.cost}
-                    color="#EF4444"
-                  />
-
-                  <div className="flex justify-end">
-                    <Button variant="link" className="text-blue-600 p-0 h-auto text-sm font-medium hover:text-blue-700">
-                      View Details
-                    </Button>
-                  </div>
+          <div className="lg:col-span-2 row-start-2 flex flex-col gap-4 rounded-lg border border-slate-700/50 bg-slate-800/90 p-6 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+            <div className="flex-1 flex flex-col">
+              <p className="text-slate-100 text-base font-medium leading-normal">
+                Score Cards Clients
+              </p>
+              <div className="flex items-baseline gap-4 mt-2">
+                <p className="text-slate-100 tracking-light text-5xl font-bold leading-tight truncate">
+                  84.2%
+                </p>
+                <div className="flex flex-col">
+                  <span className="inline-block rounded-full bg-green-100 px-2 py-0.5 text-base font-medium text-green-600">
+                    +1.2%
+                  </span>
+                  <span className="text-secondary text-xs">vs Mois Préc.</span>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+              <div className="flex-1 flex flex-col justify-center space-y-3 pt-2">
+                <div className="grid grid-cols-[120px_1fr_auto] items-center gap-4">
+                  <span className="text-secondary text-sm font-medium truncate">
+                    Client Alpha
+                  </span>
+                  <div className="w-full bg-gray-200 rounded-full h-2.5 relative">
+                    <div
+                      className="bg-blue-600 h-2.5 rounded-full"
+                      style={{width: '95%'}}
+                    />
+                  </div>
+                  <span className="text-slate-100 font-semibold text-sm">95%</span>
+                </div>
+                <div className="grid grid-cols-[120px_1fr_auto] items-center gap-4">
+                  <span className="text-secondary text-sm font-medium truncate">
+                    Client Beta
+                  </span>
+                  <div className="w-full bg-gray-200 rounded-full h-2.5 relative">
+                    <div
+                      className="bg-blue-600 h-2.5 rounded-full"
+                      style={{width: '82%'}}
+                    />
+                  </div>
+                  <span className="text-slate-100 font-semibold text-sm">82%</span>
+                </div>
+                <div className="grid grid-cols-[120px_1fr_auto] items-center gap-4">
+                  <span className="text-secondary text-sm font-medium truncate">
+                    Client Gamma
+                  </span>
+                  <div className="w-full bg-gray-200 rounded-full h-2.5 relative">
+                    <div
+                      className="bg-blue-600 h-2.5 rounded-full"
+                      style={{width: '88%'}}
+                    />
+                  </div>
+                  <span className="text-slate-100 font-semibold text-sm">88%</span>
+                </div>
+                <div className="grid grid-cols-[120px_1fr_auto] items-center gap-4">
+                  <span className="text-secondary text-sm font-medium truncate">
+                    Client Delta
+                  </span>
+                  <div className="w-full bg-gray-200 rounded-full h-2.5 relative">
+                    <div
+                      className="bg-blue-600 h-2.5 rounded-full"
+                      style={{width: '91%'}}
+                    />
+                  </div>
+                  <span className="text-slate-100 font-semibold text-sm">91%</span>
+                </div>
+                <div className="grid grid-cols-[120px_1fr_auto] items-center gap-4">
+                  <span className="text-secondary text-sm font-medium truncate">
+                    Client Epsilon
+                  </span>
+                  <div className="w-full bg-gray-200 rounded-full h-2.5 relative">
+                    <div
+                      className="bg-red-500 h-2.5 rounded-full"
+                      style={{width: '65%'}}
+                    />
+                  </div>
+                  <span className="text-red-500 font-semibold text-sm">65%</span>
+                </div>
+              </div>
+            </div>
+          </div>
           </div>
         </div>
       </div>
@@ -2216,21 +4031,21 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
   }
 
   return (
-    <div className={`min-h-screen bg-slate-900 dark:bg-slate-900 ${className}`}>
+    <div className={`min-h-screen bg-gray-50 dark:bg-gray-50 ${className}`}>
       <div className="p-6 space-y-6">
         {/* Dashboard Title */}
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-white">
+          <h1 className="text-3xl font-bold text-slate-100">
             {getCategoryTitle()}
           </h1>
-          <p className="text-slate-400">
+          <p className="text-secondary">
             {getCategorySubtitle()}
           </p>
         </div>
 
         {/* Weekly KPIs Section */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-white">Weekly KPIs</h2>
+          <h2 className="text-xl font-semibold text-slate-100">Weekly KPIs</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {getTopKPIs(4).map((kpi, index) => (
               <DashboardKPICard
@@ -2254,7 +4069,7 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
         {/* Monthly KPIs Section */}
         {category.kpis.length > 4 && (
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-white">Monthly KPIs</h2>
+            <h2 className="text-xl font-semibold text-slate-100">Monthly KPIs</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {getTopKPIs(6).slice(4).map((kpi, index) => (
                 <DashboardKPICard
@@ -2279,7 +4094,7 @@ export function CategoryDashboard({ category, className }: CategoryDashboardProp
         {/* Additional KPIs Grid */}
         {category.kpis.length > 6 && (
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-white">Additional Metrics</h2>
+            <h2 className="text-xl font-semibold text-slate-100">Additional Metrics</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {category.kpis.slice(6).map((kpi, index) => (
                 <DashboardKPICard

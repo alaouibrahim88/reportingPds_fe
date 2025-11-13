@@ -293,6 +293,7 @@ export interface WeeklyIndicator {
 	Semaine_M2: number
 	Semaine_M3: number
 	Semaine_M4: number
+	LowerIsBetter?: boolean
 }
 
 export interface IndicateursData {

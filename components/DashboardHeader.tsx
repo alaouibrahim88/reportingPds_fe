@@ -18,7 +18,7 @@ export function DashboardHeader({ currentCategory, onNavigate, onBack }: Dashboa
   const router = useRouter();
 
   // Finance and HR Dashboards have light theme, others have dark theme
-  const isLightTheme = currentCategory === "rh" || currentCategory === "finance";
+  const isLightTheme = currentCategory === "rh";
   const headerBg = isLightTheme ? "bg-white/95 border-b border-slate-200/50" : "bg-slate-900/95 dark:bg-slate-900/95 border-b border-slate-800/50";
 
   return (

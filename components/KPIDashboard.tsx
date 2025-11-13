@@ -4,7 +4,6 @@ import React from "react";
 import {  navigationItems } from "@/lib/kpi-data";
 import { useRouter } from "next/navigation";
 import { WeeklyIndicators } from "@/components/WeeklyIndicators";
-import { weeklyIndicatorsData } from '@/lib/kpi-data'
 
 interface KPIDashboardProps {
   className?: string;
@@ -13,8 +12,6 @@ interface KPIDashboardProps {
 
 export function KPIDashboard({ className, dataset = "executive-horizon" }: KPIDashboardProps) {
   const router = useRouter();
-  const { Indicateurs } = weeklyIndicatorsData
-
 
   // Get the appropriate categories based on dataset
 
@@ -51,12 +48,6 @@ export function KPIDashboard({ className, dataset = "executive-horizon" }: KPIDa
                   <h1 className="text-3xl font-black bg-gradient-to-r from-foreground via-foreground to-foreground/60 bg-clip-text text-transparent tracking-tight">
                     Professional KPI Dashboard
                   </h1>
-                  <div className="flex items-center gap-2 mt-1">
-                    <div className="h-1 w-8 bg-gradient-to-r from-primary to-primary/50 rounded-full"></div>
-                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      {Indicateurs.length} Categories
-                    </span>
-                  </div>
                 </div>
               </div>
               
@@ -73,9 +64,6 @@ export function KPIDashboard({ className, dataset = "executive-horizon" }: KPIDa
                 ))}
               </nav>
             </div>
-            <p className="text-muted-foreground max-w-2xl leading-relaxed">
-              Monitor key performance indicators across departments with real-time insights and analytics.
-            </p>
           </div>
         </div>
       </div>
