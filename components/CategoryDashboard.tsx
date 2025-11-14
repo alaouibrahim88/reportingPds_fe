@@ -76,12 +76,12 @@ function ChartKPICard({
     <Card className="bg-white border-border-color shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
       <CardContent className="p-6">
         <div className="space-y-5">
-          <h3 className="text-slate-100 font-semibold text-base tracking-wide">
+          <h3 className="text-white font-semibold text-base tracking-wide">
             {title}
           </h3>
 
           <div className="flex items-end justify-between">
-            <div className="text-5xl font-bold text-slate-100 tracking-tight">
+            <div className="text-5xl font-bold text-white tracking-tight">
               {value}
             </div>
             {trend && (
@@ -168,9 +168,9 @@ function DashboardKPICard({
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-slate-100 font-semibold text-sm">{title}</h3>
+              <h3 className="text-white font-semibold text-sm">{title}</h3>
               {subtitle && (
-                <p className="text-secondary text-xs mt-1">{subtitle}</p>
+                <p className="text-gray-300 text-xs mt-1">{subtitle}</p>
               )}
             </div>
             {actionLink && (
@@ -185,7 +185,7 @@ function DashboardKPICard({
 
           {/* Main Value and Trend */}
           <div className="flex items-end justify-between">
-            <div className={`font-bold text-slate-100 ${valueSizes[size]}`}>
+            <div className={`font-bold text-white ${valueSizes[size]}`}>
               {value}
             </div>
             {trend && (
@@ -210,12 +210,12 @@ function DashboardKPICard({
                   />
                 ))}
               </div>
-              <div className="flex justify-between text-xs text-secondary">
+              <div className="flex justify-between text-xs text-gray-300">
                 <span>0%</span>
                 <span>50%</span>
                 <span>100%</span>
               </div>
-              {target && <div className="text-xs text-secondary">{target}</div>}
+              {target && <div className="text-xs text-gray-300">{target}</div>}
             </div>
           )}
 
@@ -237,7 +237,7 @@ function DashboardKPICard({
 
           {/* Target Info */}
           {target && !showProgressBar && (
-            <div className="text-xs text-secondary bg-gray-50/50 px-3 py-2 rounded-lg">
+            <div className="text-xs text-gray-300 bg-gray-800/50 px-3 py-2 rounded-lg">
               {target}
             </div>
           )}
@@ -289,7 +289,7 @@ export function CategoryDashboard({
       <main className="flex-1 overflow-hidden">
         <div className="p-8 lg:p-12">
           <div className="mb-12">
-            <p className="text-secondary text-xl font-light leading-relaxed tracking-wide max-w-4xl">
+            <p className="text-gray-300 text-xl font-light leading-relaxed tracking-wide max-w-4xl">
               Vue en direct des indicateurs de performance clés hebdomadaires et
               mensuels.
             </p>
@@ -297,11 +297,11 @@ export function CategoryDashboard({
           <div className="flex flex-col gap-10 min-h-[calc(100vh-200px)]">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 min-h-[500px]">
               <div className="flex flex-col gap-8 rounded-xl border border-slate-700/50 bg-slate-800/90 p-10 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <h3 className="text-slate-100 text-2xl font-semibold leading-tight mb-2">
+                <h3 className="text-white text-2xl font-semibold leading-tight mb-2">
                   Revenus Hebdomadaires vs. Objectifs
                 </h3>
                 <div className="flex items-end gap-4 mb-2">
-                  <p className="text-blue-600 tracking-tight text-6xl font-black leading-none">
+                  <p className="text-blue-600 tracking-tight text-4xl font-black leading-none">
                     3,2 M€
                   </p>
                   <div className="flex items-center text-green-600 mb-2">
@@ -311,7 +311,7 @@ export function CategoryDashboard({
                     <p className="text-xl font-bold ml-1">+5% vs S-1</p>
                   </div>
                 </div>
-                <p className="text-secondary text-lg font-medium mb-4">
+                <p className="text-gray-300 text-lg font-medium mb-4">
                   Objectif : 3,5 M€
                 </p>
                 <div className="h-48 relative pt-4">
@@ -376,7 +376,7 @@ export function CategoryDashboard({
                       className="bg-blue-500 rounded-t-md relative mx-auto w-1/3 flex items-center justify-center"
                       style={{ height: "60%" }}
                     >
-                      <div className="absolute top-1 text-slate-100 text-xs font-bold">
+                      <div className="absolute top-1 text-white text-xs font-bold">
                         0,7 M€
                       </div>
                     </div>
@@ -384,7 +384,7 @@ export function CategoryDashboard({
                       className="bg-blue-500  rounded-t-md relative mx-auto w-1/3 flex items-center justify-center"
                       style={{ height: "75%" }}
                     >
-                      <div className="absolute top-1 text-slate-100 text-xs font-bold">
+                      <div className="absolute top-1 text-white text-xs font-bold">
                         0,9 M€
                       </div>
                     </div>
@@ -392,7 +392,7 @@ export function CategoryDashboard({
                       className="bg-blue-500  rounded-t-md relative mx-auto w-1/3 flex items-center justify-center "
                       style={{ height: "55%" }}
                     >
-                      <div className="absolute top-1 text-slate-100 text-xs font-bold">
+                      <div className="absolute top-1 text-white text-xs font-bold">
                         0,6 M€
                       </div>
                     </div>
@@ -400,7 +400,7 @@ export function CategoryDashboard({
                       className="bg-blue-500  rounded-t-md relative mx-auto w-1/3 flex items-center justify-center"
                       style={{ height: "85%" }}
                     >
-                      <div className="absolute top-1 text-slate-100 text-xs font-bold">
+                      <div className="absolute top-1 text-white text-xs font-bold">
                         1,0 M€
                       </div>
                     </div>
@@ -420,28 +420,28 @@ export function CategoryDashboard({
                     </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-4 text-center text-xs text-secondary">
+                <div className="grid grid-cols-4 text-center text-xs text-gray-300">
                   <div className="flex flex-col items-center gap-1">
                     <span className="font-bold">S1</span>
-                    <span className="text-secondary text-[10px] font-medium">
+                    <span className="text-gray-300 text-[10px] font-medium">
                       0,7 M€
                     </span>
                   </div>
                   <div className="flex flex-col items-center gap-1">
                     <span className="font-bold">S2</span>
-                    <span className="text-secondary text-[10px] font-medium">
+                    <span className="text-gray-300 text-[10px] font-medium">
                       1,6 M€
                     </span>
                   </div>
                   <div className="flex flex-col items-center gap-1">
                     <span className="font-bold">S3</span>
-                    <span className="text-secondary text-[10px] font-medium">
+                    <span className="text-gray-300 text-[10px] font-medium">
                       2,2 M€
                     </span>
                   </div>
                   <div className="flex flex-col items-center gap-1">
                     <span className="font-bold">S4</span>
-                    <span className="text-secondary text-[10px] font-medium">
+                    <span className="text-gray-300 text-[10px] font-medium">
                       3,2 M€
                     </span>
                   </div>
@@ -449,7 +449,7 @@ export function CategoryDashboard({
               </div>
 
               <div className="flex flex-col gap-6 rounded-xl border border-slate-700/50 bg-slate-800/90 p-10 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <h3 className="text-slate-100 text-2xl font-semibold leading-tight mb-2">
+                <h3 className="text-white text-2xl font-semibold leading-tight mb-2">
                   Taux de Facturation &amp; Livraison
                 </h3>
                 <div className="flex items-end gap-4 mb-2">
@@ -466,24 +466,24 @@ export function CategoryDashboard({
                 <div className="flex-grow flex flex-col justify-center py-2">
                   <div className="h-40 w-full relative pt-4">
                     <div className="absolute inset-0 px-2 flex flex-col justify-between">
-                      <div className="flex justify-between items-center text-secondary text-xs">
+                      <div className="flex justify-between items-center text-gray-300 text-xs">
                         <span>100%</span>
-                        <hr className="w-full border-dashed border-gray-300 mx-2" />
+                        <hr className="w-full border-dashed border-gray-400 mx-2" />
                       </div>
-                      <div className="relative flex justify-between items-center text-secondary text-xs">
+                      <div className="relative flex justify-between items-center text-gray-300 text-xs">
                         <span>95%</span>
-                        <hr className="w-full border-dashed border-gray-300 mx-2" />
+                        <hr className="w-full border-dashed border-gray-400 mx-2" />
                         <span className="absolute -right-1.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-primary text-base">
                           tour
                         </span>
                       </div>
-                      <div className="flex justify-between items-center text-secondary text-xs">
+                      <div className="flex justify-between items-center text-gray-300 text-xs">
                         <span>90%</span>
-                        <hr className="w-full border-dashed border-gray-300 mx-2" />
+                        <hr className="w-full border-dashed border-gray-400 mx-2" />
                       </div>
-                      <div className="flex justify-between items-center text-secondary text-xs">
+                      <div className="flex justify-between items-center text-gray-300 text-xs">
                         <span>85%</span>
-                        <hr className="w-full border-dashed border-gray-300 mx-2" />
+                        <hr className="w-full border-dashed border-gray-400 mx-2" />
                       </div>
                     </div>
                     <svg
@@ -565,7 +565,7 @@ export function CategoryDashboard({
                     </div>
                   </div>
                 </div>
-                <div className="text-lg text-secondary text-right pr-2 mt-4">
+                <div className="text-lg text-gray-300 text-right pr-2 mt-4">
                   Objectif : 95%
                 </div>
               </div>
@@ -573,18 +573,18 @@ export function CategoryDashboard({
 
             <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-8 min-h-[400px]">
               <div className="flex flex-col gap-6 rounded-xl border border-slate-700/50 bg-slate-800/90 p-8 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <h3 className="text-slate-100 text-xl font-semibold leading-tight mb-2">
+                <h3 className="text-white text-xl font-semibold leading-tight mb-2">
                   Efficacité Financière Mensuelle
                 </h3>
                 <div className="flex items-end gap-3 mb-2">
-                  <p className="text-slate-100 tracking-tight text-4xl font-black leading-none">
+                  <p className="text-white tracking-tight text-4xl font-black leading-none">
                     88%
                   </p>
                   <p className="text-red-400 text-sm font-bold mb-1">
                     (-2 pts vs M-1)
                   </p>
                 </div>
-                <p className="text-secondary text-base font-medium mb-4">
+                <p className="text-gray-300 text-base font-medium mb-4">
                   Efficacité Globale (Objectif : 90%)
                 </p>
                 <div className="flex-grow flex items-center justify-around gap-4 pt-4 min-h-[144px]">
@@ -595,7 +595,7 @@ export function CategoryDashboard({
                       </span>
                     </div>
                     <div className="text-center">
-                      <p className="text-xs text-secondary">Obj: 90%</p>
+                      <p className="text-xs text-gray-300">Obj: 90%</p>
                     </div>
                   </div>
                   <div className="flex flex-col items-center gap-2">
@@ -605,7 +605,7 @@ export function CategoryDashboard({
                       </span>
                     </div>
                     <div className="text-center">
-                      <p className="text-xs text-secondary">Obj: 90%</p>
+                      <p className="text-xs text-gray-300">Obj: 90%</p>
                     </div>
                   </div>
                   <div className="flex flex-col items-center gap-2">
@@ -615,7 +615,7 @@ export function CategoryDashboard({
                       </span>
                     </div>
                     <div className="text-center">
-                      <p className="text-xs text-secondary">Obj: 90%</p>
+                      <p className="text-xs text-gray-300">Obj: 90%</p>
                     </div>
                   </div>
                   <div className="flex flex-col items-center gap-2">
@@ -625,18 +625,18 @@ export function CategoryDashboard({
                       </span>
                     </div>
                     <div className="text-center">
-                      <p className="text-xs text-secondary">Obj: 90%</p>
+                      <p className="text-xs text-gray-300">Obj: 90%</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className="flex flex-col gap-6 rounded-xl border border-slate-700/50 bg-slate-800/90 p-8 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <h3 className="text-slate-100 text-xl font-semibold leading-tight mb-2">
+                <h3 className="text-white text-xl font-semibold leading-tight mb-2">
                   Exécution Budgétaire
                 </h3>
                 <div className="flex items-end gap-3 mb-2">
-                  <p className="text-slate-100 tracking-tight text-4xl font-black leading-none">
+                  <p className="text-white tracking-tight text-4xl font-black leading-none">
                     78%
                   </p>
                   <div className="flex items-center text-green-400 mb-1">
@@ -646,7 +646,7 @@ export function CategoryDashboard({
                     <p className="text-sm font-bold ml-1">+3 pts</p>
                   </div>
                 </div>
-                <p className="text-secondary text-base font-medium mb-4">
+                <p className="text-gray-300 text-base font-medium mb-4">
                   Consommé vs. mois dernier
                 </p>
                 <div className="flex-grow flex items-center justify-center py-2">
@@ -672,14 +672,14 @@ export function CategoryDashboard({
                       <span className="text-3xl font-bold text-blue-500">
                         78%
                       </span>
-                      <span className="text-sm text-secondary">Consommé</span>
+                      <span className="text-sm text-gray-300">Consommé</span>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className="flex flex-col gap-6 rounded-xl border border-slate-700/50 bg-slate-800/90 p-8 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <h3 className="text-slate-100 text-xl font-semibold leading-tight mb-2">
+                <h3 className="text-white text-xl font-semibold leading-tight mb-2">
                   Total des Paiements en Retard
                 </h3>
                 <div className="flex items-end gap-3 mb-2">
@@ -693,7 +693,7 @@ export function CategoryDashboard({
                     <p className="text-sm font-bold ml-1">-0,3 M€</p>
                   </div>
                 </div>
-                <p className="text-secondary text-base font-medium mb-4">
+                <p className="text-gray-300 text-base font-medium mb-4">
                   Amélioration vs mois dernier
                 </p>
                 <div className="flex-grow flex items-center justify-around gap-4 pt-4 min-h-[144px]">
@@ -704,7 +704,7 @@ export function CategoryDashboard({
                       </span>
                     </div>
                     <div className="text-center">
-                      <p className="text-xs text-secondary">Obj: 1,0 M€</p>
+                      <p className="text-xs text-gray-300">Obj: 1,0 M€</p>
                     </div>
                   </div>
                   <div className="flex flex-col items-center gap-2">
@@ -714,7 +714,7 @@ export function CategoryDashboard({
                       </span>
                     </div>
                     <div className="text-center">
-                      <p className="text-xs text-secondary">Obj: 1,0 M€</p>
+                      <p className="text-xs text-gray-300">Obj: 1,0 M€</p>
                     </div>
                   </div>
                   <div className="flex flex-col items-center gap-2">
@@ -724,7 +724,7 @@ export function CategoryDashboard({
                       </span>
                     </div>
                     <div className="text-center">
-                      <p className="text-xs text-secondary">Obj: 1,0 M€</p>
+                      <p className="text-xs text-gray-300">Obj: 1,0 M€</p>
                     </div>
                   </div>
                   <div className="flex flex-col items-center gap-2">
@@ -734,7 +734,7 @@ export function CategoryDashboard({
                       </span>
                     </div>
                     <div className="text-center">
-                      <p className="text-xs text-secondary">Obj: 1,0 M€</p>
+                      <p className="text-xs text-gray-300">Obj: 1,0 M€</p>
                     </div>
                   </div>
                 </div>
@@ -762,7 +762,7 @@ export function CategoryDashboard({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1">
             <div className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300 flex flex-col">
               <div className="flex flex-col gap-1">
-                <p className="text-slate-100 text-sm font-semibold leading-normal flex items-center">
+                <p className="text-white text-sm font-semibold leading-normal flex items-center">
                   On-Time Delivery (OTD)
                   <span className="text-amber-400 ml-2">⚠️</span>
                 </p>
@@ -774,7 +774,7 @@ export function CategoryDashboard({
                     <p className="text-orange-400 text-lg font-bold leading-normal">
                       -1.5%
                     </p>
-                    <p className="text-secondary text-sm font-medium leading-normal">
+                    <p className="text-gray-300 text-sm font-medium leading-normal">
                       vs last week
                     </p>
                   </div>
@@ -863,16 +863,16 @@ export function CategoryDashboard({
                   </g>
                 </svg>
                 <div className="flex justify-around mt-2">
-                  <p className="text-secondary text-xs font-semibold leading-normal tracking-[0.015em]">
+                  <p className="text-gray-300 text-xs font-semibold leading-normal tracking-[0.015em]">
                     W-1
                   </p>
-                  <p className="text-secondary text-xs font-semibold leading-normal tracking-[0.015em]">
+                  <p className="text-gray-300 text-xs font-semibold leading-normal tracking-[0.015em]">
                     W-2
                   </p>
-                  <p className="text-secondary text-xs font-semibold leading-normal tracking-[0.015em]">
+                  <p className="text-gray-300 text-xs font-semibold leading-normal tracking-[0.015em]">
                     W-3
                   </p>
-                  <p className="text-secondary text-xs font-semibold leading-normal tracking-[0.015em]">
+                  <p className="text-gray-300 text-xs font-semibold leading-normal tracking-[0.015em]">
                     W-4
                   </p>
                 </div>
@@ -881,7 +881,7 @@ export function CategoryDashboard({
 
             <div className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300 flex flex-col">
               <div className="flex flex-col gap-1">
-                <p className="text-slate-100 text-sm font-semibold leading-normal">
+                <p className="text-white text-sm font-semibold leading-normal">
                   Equipment Availability
                 </p>
                 <div className="flex items-baseline gap-4 mt-2 mb-2">
@@ -892,7 +892,7 @@ export function CategoryDashboard({
                     <p className="text-emerald-400 text-lg font-bold leading-normal">
                       +0.2%
                     </p>
-                    <p className="text-secondary text-sm font-medium leading-normal">
+                    <p className="text-gray-300 text-sm font-medium leading-normal">
                       vs last week
                     </p>
                   </div>
@@ -988,16 +988,16 @@ export function CategoryDashboard({
                   </g>
                 </svg>
                 <div className="flex justify-around mt-2">
-                  <p className="text-secondary text-xs font-semibold leading-normal tracking-[0.015em]">
+                  <p className="text-gray-300 text-xs font-semibold leading-normal tracking-[0.015em]">
                     W-1
                   </p>
-                  <p className="text-secondary text-xs font-semibold leading-normal tracking-[0.015em]">
+                  <p className="text-gray-300 text-xs font-semibold leading-normal tracking-[0.015em]">
                     W-2
                   </p>
-                  <p className="text-secondary text-xs font-semibold leading-normal tracking-[0.015em]">
+                  <p className="text-gray-300 text-xs font-semibold leading-normal tracking-[0.015em]">
                     W-3
                   </p>
-                  <p className="text-secondary text-xs font-semibold leading-normal tracking-[0.015em]">
+                  <p className="text-gray-300 text-xs font-semibold leading-normal tracking-[0.015em]">
                     W-4
                   </p>
                 </div>
@@ -1006,7 +1006,7 @@ export function CategoryDashboard({
 
             <div className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300 flex flex-col">
               <div className="flex flex-col gap-1">
-                <p className="text-slate-100 text-sm font-semibold leading-normal">
+                <p className="text-white text-sm font-semibold leading-normal">
                   Recruitment Progress
                 </p>
                 <div className="flex items-baseline gap-4 mt-2 mb-2">
@@ -1017,7 +1017,7 @@ export function CategoryDashboard({
                     <p className="text-emerald-400 text-lg font-bold leading-normal">
                       +5%
                     </p>
-                    <p className="text-secondary text-sm font-medium leading-normal">
+                    <p className="text-gray-300 text-sm font-medium leading-normal">
                       vs last week
                     </p>
                   </div>
@@ -1113,16 +1113,16 @@ export function CategoryDashboard({
                   </g>
                 </svg>
                 <div className="flex justify-around mt-2">
-                  <p className="text-secondary text-xs font-semibold leading-normal tracking-[0.015em]">
+                  <p className="text-gray-300 text-xs font-semibold leading-normal tracking-[0.015em]">
                     W-1
                   </p>
-                  <p className="text-secondary text-xs font-semibold leading-normal tracking-[0.015em]">
+                  <p className="text-gray-300 text-xs font-semibold leading-normal tracking-[0.015em]">
                     W-2
                   </p>
-                  <p className="text-secondary text-xs font-semibold leading-normal tracking-[0.015em]">
+                  <p className="text-gray-300 text-xs font-semibold leading-normal tracking-[0.015em]">
                     W-3
                   </p>
-                  <p className="text-secondary text-xs font-semibold leading-normal tracking-[0.015em]">
+                  <p className="text-gray-300 text-xs font-semibold leading-normal tracking-[0.015em]">
                     W-4
                   </p>
                 </div>
@@ -1130,13 +1130,13 @@ export function CategoryDashboard({
             </div>
 
             <div className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300 flex flex-col">
-              <p className="text-slate-100 text-sm font-semibold leading-normal">
+              <p className="text-white text-sm font-semibold leading-normal">
                 Budget vs. Actual (CAPEX/OPEX)
                 <span className="text-green-400 ml-2">✓</span>
               </p>
               <div className="flex justify-between items-center my-4">
                 <div>
-                  <p className="text-secondary text-xs font-semibold">
+                  <p className="text-gray-300 text-xs font-semibold">
                     Écart (Budget - Réalisé)
                   </p>
                   <p className="text-emerald-400 text-2xl font-extrabold">
@@ -1144,7 +1144,7 @@ export function CategoryDashboard({
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-secondary text-xs font-semibold">
+                  <p className="text-gray-300 text-xs font-semibold">
                     Pourcentage de réalisation
                   </p>
                   <p className="text-white text-2xl font-extrabold">85%</p>
@@ -1313,7 +1313,7 @@ export function CategoryDashboard({
                     </text>
                   </g>
                 </svg>
-                <div className="flex justify-around text-xs text-secondary font-semibold mt-2">
+                <div className="flex justify-around text-xs text-gray-300 font-semibold mt-2">
                   <p>Poste 1</p>
                   <p>Poste 2</p>
                   <p>Poste 3</p>
@@ -1322,24 +1322,24 @@ export function CategoryDashboard({
               </div>
               <div className="grid grid-cols-2 gap-4 mt-4">
                 <div className="bg-slate-700/50 p-3 rounded-lg border border-slate-600/30">
-                  <p className="text-slate-100 text-xs font-bold mb-2">CAPEX</p>
+                  <p className="text-white text-xs font-bold mb-2">CAPEX</p>
                   <div className="relative h-2 w-full rounded-full bg-slate-600">
                     <div className="absolute top-0 left-0 h-2 w-[75%] rounded-full bg-cyan-400"></div>
                   </div>
                   <div className="flex justify-between items-baseline mt-1">
-                    <p className="text-slate-100 text-sm font-bold">75%</p>
+                    <p className="text-white text-sm font-bold">75%</p>
                     <p className="text-emerald-400 text-xs font-medium">
                       +5k €
                     </p>
                   </div>
                 </div>
                 <div className="bg-slate-700/50 p-3 rounded-lg border border-slate-600/30">
-                  <p className="text-slate-100 text-xs font-bold mb-2">OPEX</p>
+                  <p className="text-white text-xs font-bold mb-2">OPEX</p>
                   <div className="relative h-2 w-full rounded-full bg-slate-600">
                     <div className="absolute top-0 left-0 h-2 w-[110%] rounded-full bg-red-400"></div>
                   </div>
                   <div className="flex justify-between items-baseline mt-1">
-                    <p className="text-slate-100 text-sm font-bold">110%</p>
+                    <p className="text-white text-sm font-bold">110%</p>
                     <p className="text-red-400 text-xs font-medium">-2.5k €</p>
                   </div>
                 </div>
@@ -1348,19 +1348,19 @@ export function CategoryDashboard({
 
             <div className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300 flex flex-col">
               <div className="flex flex-col gap-1">
-                <p className="text-slate-100 text-sm font-semibold leading-normal">
+                <p className="text-white text-sm font-semibold leading-normal">
                   Planning Progress (APQP)
                 </p>
                 <div className="flex justify-between items-end mt-2 mb-2">
                   <div>
-                    <p className="text-secondary text-sm font-medium">
+                    <p className="text-gray-300 text-sm font-medium">
                       Avancement total
                     </p>
                     <p className="text-cyan-400 tracking-tight text-3xl font-extrabold leading-tight">
                       85%
                     </p>
                   </div>
-                  <div className="flex gap-4 text-xs text-secondary">
+                  <div className="flex gap-4 text-xs text-gray-300">
                     <div className="flex items-center gap-1.5">
                       <div className="w-3 h-3 rounded-sm bg-blue-300/30"></div>
                       <span>Prévision</span>
@@ -1374,7 +1374,7 @@ export function CategoryDashboard({
               </div>
               <div className="flex flex-1 flex-col justify-center space-y-2 pt-4">
                 <div className="grid grid-cols-[80px_1fr_auto] items-center gap-2">
-                  <p className="text-xs text-secondary font-semibold truncate">
+                  <p className="text-xs text-gray-300 font-semibold truncate">
                     Jalon 1
                   </p>
                   <div className="relative h-3">
@@ -1386,7 +1386,7 @@ export function CategoryDashboard({
                   </p>
                 </div>
                 <div className="grid grid-cols-[80px_1fr_auto] items-center gap-2">
-                  <p className="text-xs text-secondary font-semibold truncate">
+                  <p className="text-xs text-gray-300 font-semibold truncate">
                     Jalon 2
                   </p>
                   <div className="relative h-3">
@@ -1398,7 +1398,7 @@ export function CategoryDashboard({
                   </p>
                 </div>
                 <div className="grid grid-cols-[80px_1fr_auto] items-center gap-2">
-                  <p className="text-xs text-secondary font-semibold truncate">
+                  <p className="text-xs text-gray-300 font-semibold truncate">
                     Jalon 3
                   </p>
                   <div className="relative h-3">
@@ -1410,7 +1410,7 @@ export function CategoryDashboard({
                   </p>
                 </div>
                 <div className="grid grid-cols-[80px_1fr_auto] items-center gap-2">
-                  <p className="text-xs text-secondary font-semibold truncate">
+                  <p className="text-xs text-gray-300 font-semibold truncate">
                     Jalon 4
                   </p>
                   <div className="relative h-3">
@@ -1422,7 +1422,7 @@ export function CategoryDashboard({
                   </p>
                 </div>
                 <div className="grid grid-cols-[80px_1fr_auto] items-center gap-2">
-                  <p className="text-xs text-secondary font-semibold truncate">
+                  <p className="text-xs text-gray-300 font-semibold truncate">
                     Jalon 5
                   </p>
                   <div className="relative h-3">
@@ -1437,7 +1437,7 @@ export function CategoryDashboard({
             </div>
 
             <div className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300 flex flex-col">
-              <p className="text-slate-100 text-sm font-semibold leading-normal">
+              <p className="text-white text-sm font-semibold leading-normal">
                 Statut de la Documentation Projet
                 <span className="text-emerald-400 ml-2">✓</span>
               </p>
@@ -1509,16 +1509,16 @@ export function CategoryDashboard({
                     </g>
                   </svg>
                   <div className="flex justify-around -mt-1">
-                    <p className="text-secondary text-[10px] font-semibold leading-normal tracking-[0.015em]">
+                    <p className="text-gray-300 text-[10px] font-semibold leading-normal tracking-[0.015em]">
                       M-1
                     </p>
-                    <p className="text-secondary text-[10px] font-semibold leading-normal tracking-[0.015em]">
+                    <p className="text-gray-300 text-[10px] font-semibold leading-normal tracking-[0.015em]">
                       M-2
                     </p>
-                    <p className="text-secondary text-[10px] font-semibold leading-normal tracking-[0.015em]">
+                    <p className="text-gray-300 text-[10px] font-semibold leading-normal tracking-[0.015em]">
                       M-3
                     </p>
-                    <p className="text-secondary text-[10px] font-semibold leading-normal tracking-[0.015em]">
+                    <p className="text-gray-300 text-[10px] font-semibold leading-normal tracking-[0.015em]">
                       M-4
                     </p>
                   </div>
@@ -1560,7 +1560,7 @@ export function CategoryDashboard({
                       <p className="text-emerald-400 text-base font-bold leading-normal">
                         +2%
                       </p>
-                      <p className="text-secondary text-sm font-medium leading-normal">
+                      <p className="text-gray-300 text-sm font-medium leading-normal">
                         vs Mois Précédent
                       </p>
                     </div>
@@ -1580,24 +1580,24 @@ export function CategoryDashboard({
       <main className="flex-1 overflow-hidden">
         <div className="p-4 sm:p-6 lg:p-8">
           <div className="mb-6 flex flex-wrap items-center justify-start gap-4 sm:gap-6">
-            <div className="rounded-lg bg-slate-800/90 border border-slate-700/50 px-4 py-2 text-sm font-medium text-secondary">
+            <div className="rounded-lg bg-slate-800/90 border border-slate-700/50 px-4 py-2 text-sm font-medium text-gray-300">
               <span className="font-normal">Semaine actuelle :</span>
-              <span className="font-semibold text-slate-100 ml-1">S10</span>
+              <span className="font-semibold text-white ml-1">S10</span>
             </div>
-            <div className="rounded-lg bg-slate-800/90 border border-slate-700/50 px-4 py-2 text-sm font-medium text-secondary">
+            <div className="rounded-lg bg-slate-800/90 border border-slate-700/50 px-4 py-2 text-sm font-medium text-gray-300">
               <span className="font-normal">Mois en cours :</span>
-              <span className="font-semibold text-slate-100 ml-1">M12</span>
+              <span className="font-semibold text-white ml-1">M12</span>
             </div>
           </div>
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[2fr,1fr] mb-5">
             <div className="grid grid-cols-2 grid-rows-2 gap-4 h-fit">
               <div className="overflow-hidden rounded-lg bg-slate-800/90 border border-slate-700/50 p-6 h-64 flex flex-col shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <h2 className="mb-2 text-lg font-semibold text-secondary">
+                <h2 className="mb-2 text-lg font-semibold text-gray-300">
                   Taux d&apos;heures supplémentaires
                 </h2>
                 <div className="flex items-end gap-4">
-                  <p className="text-4xl font-bold text-slate-100">2.5%</p>
+                  <p className="text-4xl font-bold text-white">2.5%</p>
                   <div className="flex items-center text-xs text-green-500">
                     <span className="material-symbols-outlined text-base">
                       arrow_downward
@@ -1673,18 +1673,18 @@ export function CategoryDashboard({
                         r="3"
                       ></circle>
                     </svg>
-                    <div className="absolute inset-x-0 bottom-0 flex justify-between text-xs text-secondary">
+                    <div className="absolute inset-x-0 bottom-0 flex justify-between text-xs text-gray-300">
                       <span>S1</span>
                       <span>S2</span>
                       <span>S3</span>
                       <span>S4</span>
                     </div>
-                    <div className="absolute -top-1.5 left-0 text-xs text-secondary">
+                    <div className="absolute -top-1.5 left-0 text-xs text-gray-300">
                       Target
                     </div>
                     <div className="absolute inset-x-0 top-0 h-[calc(100%-1.5rem)]">
                       <div
-                        className="absolute text-xs font-bold text-slate-100"
+                        className="absolute text-xs font-bold text-white"
                         style={{
                           left: "0%",
                           top: "20%",
@@ -1694,7 +1694,7 @@ export function CategoryDashboard({
                         2.2%
                       </div>
                       <div
-                        className="absolute text-xs font-bold text-slate-100"
+                        className="absolute text-xs font-bold text-white"
                         style={{
                           left: "33%",
                           top: "60%",
@@ -1704,7 +1704,7 @@ export function CategoryDashboard({
                         2.8%
                       </div>
                       <div
-                        className="absolute text-xs font-bold text-slate-100"
+                        className="absolute text-xs font-bold text-white"
                         style={{
                           left: "66%",
                           top: "30%",
@@ -1714,7 +1714,7 @@ export function CategoryDashboard({
                         2.3%
                       </div>
                       <div
-                        className="absolute text-xs font-bold text-slate-100"
+                        className="absolute text-xs font-bold text-white"
                         style={{
                           left: "100%",
                           top: "50%",
@@ -1729,7 +1729,7 @@ export function CategoryDashboard({
               </div>
 
               <div className="overflow-hidden rounded-lg bg-slate-800/90 border border-slate-700/50 p-6 h-64 flex flex-col shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <h2 className="mb-2 flex items-center gap-2 text-lg font-semibold text-secondary">
+                <h2 className="mb-2 flex items-center gap-2 text-lg font-semibold text-gray-300">
                   Taux de chômage technique
                   <span className="text-2xl text-yellow-400">⚠️</span>
                 </h2>
@@ -1812,18 +1812,18 @@ export function CategoryDashboard({
                         r="3"
                       ></circle>
                     </svg>
-                    <div className="absolute inset-x-0 bottom-0 flex justify-between text-xs text-secondary">
+                    <div className="absolute inset-x-0 bottom-0 flex justify-between text-xs text-gray-300">
                       <span>S1</span>
                       <span>S2</span>
                       <span>S3</span>
                       <span>S4</span>
                     </div>
-                    <div className="absolute -top-1.5 left-0 text-xs text-secondary">
+                    <div className="absolute -top-1.5 left-0 text-xs text-gray-300">
                       Target
                     </div>
                     <div className="absolute inset-x-0 top-0 h-[calc(100%-1.5rem)]">
                       <div
-                        className="absolute text-xs font-bold text-slate-100"
+                        className="absolute text-xs font-bold text-white"
                         style={{
                           left: "0%",
                           top: "60%",
@@ -1833,7 +1833,7 @@ export function CategoryDashboard({
                         1.75%
                       </div>
                       <div
-                        className="absolute text-xs font-bold text-slate-100"
+                        className="absolute text-xs font-bold text-white"
                         style={{
                           left: "33%",
                           top: "20%",
@@ -1843,7 +1843,7 @@ export function CategoryDashboard({
                         1.48%
                       </div>
                       <div
-                        className="absolute text-xs font-bold text-slate-100"
+                        className="absolute text-xs font-bold text-white"
                         style={{
                           left: "66%",
                           top: "50%",
@@ -1853,7 +1853,7 @@ export function CategoryDashboard({
                         1.62%
                       </div>
                       <div
-                        className="absolute text-xs font-bold text-slate-100"
+                        className="absolute text-xs font-bold text-white"
                         style={{
                           left: "100%",
                           top: "30%",
@@ -1868,7 +1868,7 @@ export function CategoryDashboard({
               </div>
 
               <div className="overflow-hidden rounded-lg bg-slate-800/90 border border-slate-700/50 p-6 h-64 flex flex-col shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <h2 className="mb-2 flex items-center gap-2 text-lg font-semibold text-secondary">
+                <h2 className="mb-2 flex items-center gap-2 text-lg font-semibold text-gray-300">
                   Taux de scrap{" "}
                   <span className="text-2xl text-yellow-400">⚠️</span>
                 </h2>
@@ -1951,18 +1951,18 @@ export function CategoryDashboard({
                         r="3"
                       ></circle>
                     </svg>
-                    <div className="absolute inset-x-0 bottom-0 flex justify-between text-xs text-secondary">
+                    <div className="absolute inset-x-0 bottom-0 flex justify-between text-xs text-gray-300">
                       <span>S1</span>
                       <span>S2</span>
                       <span>S3</span>
                       <span>S4</span>
                     </div>
-                    <div className="absolute -top-1.5 left-0 text-xs text-secondary">
+                    <div className="absolute -top-1.5 left-0 text-xs text-gray-300">
                       Target
                     </div>
                     <div className="absolute inset-x-0 top-0 h-[calc(100%-1.5rem)]">
                       <div
-                        className="absolute text-xs font-bold text-slate-100"
+                        className="absolute text-xs font-bold text-white"
                         style={{
                           left: "0%",
                           top: "70%",
@@ -1972,7 +1972,7 @@ export function CategoryDashboard({
                         1.25%
                       </div>
                       <div
-                        className="absolute text-xs font-bold text-slate-100"
+                        className="absolute text-xs font-bold text-white"
                         style={{
                           left: "33%",
                           top: "40%",
@@ -1982,7 +1982,7 @@ export function CategoryDashboard({
                         0.97%
                       </div>
                       <div
-                        className="absolute text-xs font-bold text-slate-100"
+                        className="absolute text-xs font-bold text-white"
                         style={{
                           left: "66%",
                           top: "60%",
@@ -1992,7 +1992,7 @@ export function CategoryDashboard({
                         1.15%
                       </div>
                       <div
-                        className="absolute text-xs font-bold text-slate-100"
+                        className="absolute text-xs font-bold text-white"
                         style={{
                           left: "100%",
                           top: "20%",
@@ -2007,11 +2007,11 @@ export function CategoryDashboard({
               </div>
 
               <div className="overflow-hidden rounded-lg bg-slate-800/90 border border-slate-700/50 p-6 h-64 flex flex-col shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <h2 className="mb-2 text-lg font-semibold text-secondary">
+                <h2 className="mb-2 text-lg font-semibold text-gray-300">
                   Suivi de l&apos;efficience
                 </h2>
                 <div className="flex items-end gap-4">
-                  <p className="text-4xl font-bold text-slate-100">90%</p>
+                  <p className="text-4xl font-bold text-white">90%</p>
                   <div className="flex items-center text-xs text-green-500">
                     <span className="material-symbols-outlined text-base">
                       arrow_upward
@@ -2087,18 +2087,18 @@ export function CategoryDashboard({
                         r="3"
                       ></circle>
                     </svg>
-                    <div className="absolute inset-x-0 bottom-0 flex justify-between text-xs text-secondary">
+                    <div className="absolute inset-x-0 bottom-0 flex justify-between text-xs text-gray-300">
                       <span>S1</span>
                       <span>S2</span>
                       <span>S3</span>
                       <span>S4</span>
                     </div>
-                    <div className="absolute -top-1.5 left-0 text-xs text-secondary">
+                    <div className="absolute -top-1.5 left-0 text-xs text-gray-300">
                       Target
                     </div>
                     <div className="absolute inset-x-0 top-0 h-[calc(100%-1.5rem)]">
                       <div
-                        className="absolute text-xs font-bold text-slate-100"
+                        className="absolute text-xs font-bold text-white"
                         style={{
                           left: "0%",
                           top: "30%",
@@ -2108,7 +2108,7 @@ export function CategoryDashboard({
                         88%
                       </div>
                       <div
-                        className="absolute text-xs font-bold text-slate-100"
+                        className="absolute text-xs font-bold text-white"
                         style={{
                           left: "33%",
                           top: "20%",
@@ -2118,7 +2118,7 @@ export function CategoryDashboard({
                         92%
                       </div>
                       <div
-                        className="absolute text-xs font-bold text-slate-100"
+                        className="absolute text-xs font-bold text-white"
                         style={{
                           left: "66%",
                           top: "50%",
@@ -2128,7 +2128,7 @@ export function CategoryDashboard({
                         89%
                       </div>
                       <div
-                        className="absolute text-xs font-bold text-slate-100"
+                        className="absolute text-xs font-bold text-white"
                         style={{
                           left: "100%",
                           top: "40%",
@@ -2145,11 +2145,11 @@ export function CategoryDashboard({
 
             <div className="flex flex-col gap-4">
               <div className="flex flex-col overflow-hidden rounded-lg bg-slate-800/90 border border-slate-700/50 p-6 min-h-[200px] shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <h2 className="mb-2 text-lg font-semibold text-secondary">
+                <h2 className="mb-2 text-lg font-semibold text-gray-300">
                   Écart de production
                 </h2>
                 <div className="flex items-end gap-4">
-                  <p className="text-4xl font-bold text-slate-100">-85</p>
+                  <p className="text-4xl font-bold text-white">-85</p>
                   <div className="flex items-center text-xs text-green-500">
                     <span className="material-symbols-outlined text-base">
                       arrow_upward
@@ -2159,42 +2159,42 @@ export function CategoryDashboard({
                 </div>
                 <div className="mt-auto grid grid-cols-4 gap-4 pt-6">
                   <div className="flex flex-col items-center justify-center gap-2 text-center">
-                    <p className="mb-1 text-xs text-secondary">Target: 0</p>
+                    <p className="mb-1 text-xs text-gray-300">Target: 0</p>
                     <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-yellow-500 bg-transparent">
                       <p className="text-sm font-bold text-yellow-500">-180</p>
                     </div>
-                    <p className="text-sm font-medium text-secondary">Jan</p>
+                    <p className="text-sm font-medium text-gray-300">Jan</p>
                   </div>
                   <div className="flex flex-col items-center justify-center gap-2 text-center">
-                    <p className="mb-1 text-xs text-secondary">Target: 0</p>
+                    <p className="mb-1 text-xs text-gray-300">Target: 0</p>
                     <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-green-500 bg-transparent">
                       <p className="text-sm font-bold text-green-500">-20</p>
                     </div>
-                    <p className="text-sm font-medium text-secondary">Fév</p>
+                    <p className="text-sm font-medium text-gray-300">Fév</p>
                   </div>
                   <div className="flex flex-col items-center justify-center gap-2 text-center">
-                    <p className="mb-1 text-xs text-secondary">Target: 0</p>
+                    <p className="mb-1 text-xs text-gray-300">Target: 0</p>
                     <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-red-500 bg-transparent">
                       <p className="text-sm font-bold text-red-500">-200</p>
                     </div>
-                    <p className="text-sm font-medium text-secondary">Mar</p>
+                    <p className="text-sm font-medium text-gray-300">Mar</p>
                   </div>
                   <div className="flex flex-col items-center justify-center gap-2 text-center">
-                    <p className="mb-1 text-xs text-secondary">Target: 0</p>
+                    <p className="mb-1 text-xs text-gray-300">Target: 0</p>
                     <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-green-500 bg-transparent">
                       <p className="text-sm font-bold text-green-500">50</p>
                     </div>
-                    <p className="text-sm font-medium text-secondary">Avr</p>
+                    <p className="text-sm font-medium text-gray-300">Avr</p>
                   </div>
                 </div>
               </div>
 
               <div className="flex flex-col overflow-hidden rounded-lg bg-slate-800/90 border border-slate-700/50 p-6 min-h-[200px] shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <h2 className="mb-2 text-lg font-semibold text-secondary">
+                <h2 className="mb-2 text-lg font-semibold text-gray-300">
                   Scrap valuation indicator
                 </h2>
                 <div className="flex items-end gap-4">
-                  <p className="text-4xl font-bold text-slate-100">€1.1k</p>
+                  <p className="text-4xl font-bold text-white">€1.1k</p>
                   <div className="flex items-center text-xs text-green-500">
                     <span className="material-symbols-outlined text-base">
                       arrow_downward
@@ -2204,40 +2204,40 @@ export function CategoryDashboard({
                 </div>
                 <div className="mt-auto grid grid-cols-4 gap-4 pt-6">
                   <div className="flex flex-col items-center justify-center gap-2 text-center">
-                    <p className="mb-1 text-xs text-secondary">
+                    <p className="mb-1 text-xs text-gray-300">
                       Target: &lt;€1k
                     </p>
                     <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-green-500 bg-transparent">
                       <p className="text-sm font-bold text-green-500">€0.8k</p>
                     </div>
-                    <p className="text-sm font-medium text-secondary">Jan</p>
+                    <p className="text-sm font-medium text-gray-300">Jan</p>
                   </div>
                   <div className="flex flex-col items-center justify-center gap-2 text-center">
-                    <p className="mb-1 text-xs text-secondary">
+                    <p className="mb-1 text-xs text-gray-300">
                       Target: &lt;€1.1k
                     </p>
                     <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-red-500 bg-transparent">
                       <p className="text-sm font-bold text-red-500">€1.2k</p>
                     </div>
-                    <p className="text-sm font-medium text-secondary">Fév</p>
+                    <p className="text-sm font-medium text-gray-300">Fév</p>
                   </div>
                   <div className="flex flex-col items-center justify-center gap-2 text-center">
-                    <p className="mb-1 text-xs text-secondary">
+                    <p className="mb-1 text-xs text-gray-300">
                       Target: &lt;€1.5k
                     </p>
                     <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-green-500 bg-transparent">
                       <p className="text-sm font-bold text-green-500">€1.4k</p>
                     </div>
-                    <p className="text-sm font-medium text-secondary">Mar</p>
+                    <p className="text-sm font-medium text-gray-300">Mar</p>
                   </div>
                   <div className="flex flex-col items-center justify-center gap-2 text-center">
-                    <p className="mb-1 text-xs text-secondary">
+                    <p className="mb-1 text-xs text-gray-300">
                       Target: &lt;€1.3k
                     </p>
                     <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-yellow-500 bg-transparent">
                       <p className="text-sm font-bold text-yellow-500">€1.4k</p>
                     </div>
-                    <p className="text-sm font-medium text-secondary">Avr</p>
+                    <p className="text-sm font-medium text-gray-300">Avr</p>
                   </div>
                 </div>
               </div>
@@ -2245,11 +2245,11 @@ export function CategoryDashboard({
           </div>
           <div className="flex flex-col gap-4">
             <div className="flex flex-col overflow-hidden rounded-lg bg-slate-800/90 border border-slate-700/50 p-6 min-h-[200px] shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-              <h2 className="mb-2 text-lg font-semibold text-secondary">
+              <h2 className="mb-2 text-lg font-semibold text-gray-300">
                 Suivi de l&apos;efficience mensuelle
               </h2>
               <div className="flex items-end gap-4">
-                <p className="text-4xl font-bold text-slate-100">91%</p>
+                <p className="text-4xl font-bold text-white">91%</p>
                 <div className="flex items-center text-xs text-green-500">
                   <span className="material-symbols-outlined text-base">
                     arrow_upward
@@ -2259,48 +2259,48 @@ export function CategoryDashboard({
               </div>
               <div className="mt-auto grid grid-cols-6 gap-4">
                 <div className="flex flex-col items-center justify-center gap-2 text-center">
-                  <p className="mb-1 text-xs text-secondary">Target: &gt;90%</p>
+                  <p className="mb-1 text-xs text-gray-300">Target: &gt;90%</p>
                   <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-green-500 bg-transparent">
                     <p className="text-sm font-bold text-green-500">93%</p>
                   </div>
-                  <p className="text-sm font-medium text-secondary">Jan</p>
+                  <p className="text-sm font-medium text-gray-300">Jan</p>
                 </div>
                 <div className="flex flex-col items-center justify-center gap-2 text-center">
-                  <p className="mb-1 text-xs text-secondary">Target: &gt;90%</p>
+                  <p className="mb-1 text-xs text-gray-300">Target: &gt;90%</p>
                   <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-green-500 bg-transparent">
                     <p className="text-sm font-bold text-green-500">94%</p>
                   </div>
-                  <p className="text-sm font-medium text-secondary">Fév</p>
+                  <p className="text-sm font-medium text-gray-300">Fév</p>
                 </div>
                 <div className="flex flex-col items-center justify-center gap-2 text-center">
-                  <p className="mb-1 text-xs text-secondary">
+                  <p className="mb-1 text-xs text-gray-300">
                     Target: &lt;€1.1k
                   </p>
                   <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-red-500 bg-transparent">
                     <p className="text-sm font-bold text-red-500">€1.2k</p>
                   </div>
-                  <p className="text-sm font-medium text-secondary">Fév</p>
+                  <p className="text-sm font-medium text-gray-300">Fév</p>
                 </div>
                 <div className="flex flex-col items-center justify-center gap-2 text-center">
-                  <p className="mb-1 text-xs text-secondary">Target: &gt;88%</p>
+                  <p className="mb-1 text-xs text-gray-300">Target: &gt;88%</p>
                   <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-green-500 bg-transparent">
                     <p className="text-sm font-bold text-green-500">89%</p>
                   </div>
-                  <p className="text-sm font-medium text-secondary">Mar</p>
+                  <p className="text-sm font-medium text-gray-300">Mar</p>
                 </div>
                 <div className="flex flex-col items-center justify-center gap-2 text-center">
-                  <p className="mb-1 text-xs text-secondary">Target: &gt;91%</p>
+                  <p className="mb-1 text-xs text-gray-300">Target: &gt;91%</p>
                   <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-green-500 bg-transparent">
                     <p className="text-sm font-bold text-green-500">92%</p>
                   </div>
-                  <p className="text-sm font-medium text-secondary">Avr</p>
+                  <p className="text-sm font-medium text-gray-300">Avr</p>
                 </div>
                 <div className="flex flex-col items-center justify-center gap-2 text-center">
-                  <p className="mb-1 text-xs text-secondary">Target: 0</p>
+                  <p className="mb-1 text-xs text-gray-300">Target: 0</p>
                   <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-yellow-500 bg-transparent">
                     <p className="text-sm font-bold text-yellow-500">-180</p>
                   </div>
-                  <p className="text-sm font-medium text-secondary">Jan</p>
+                  <p className="text-sm font-medium text-gray-300">Jan</p>
                 </div>
               </div>
             </div>
@@ -2328,11 +2328,11 @@ export function CategoryDashboard({
                   <span className="inline-block rounded-full bg-red-500/10 px-2 py-0.5 text-base font-medium text-red-400">
                     +2
                   </span>
-                  <span className="text-secondary text-xs">vs Sem. Préc.</span>
+                  <span className="text-gray-300 text-xs">vs Sem. Préc.</span>
                 </div>
               </div>
               <div className="flex gap-1 items-center mt-1">
-                <p className="text-secondary text-sm font-normal leading-normal">
+                <p className="text-gray-300 text-sm font-normal leading-normal">
                   vs Target (8)
                 </p>
                 <p className="text-red-500 text-sm font-medium leading-normal flex items-center gap-1">
@@ -2363,7 +2363,7 @@ export function CategoryDashboard({
                         strokeWidth="3"
                       />
                       <text
-                        fill="#ffffff"
+                        fill="#f8fafc"
                         fontSize="14"
                         fontWeight="bold"
                         textAnchor="middle"
@@ -2381,7 +2381,7 @@ export function CategoryDashboard({
                         strokeWidth="3"
                       />
                       <text
-                        fill="#ffffff"
+                        fill="#f8fafc"
                         fontSize="14"
                         fontWeight="bold"
                         textAnchor="middle"
@@ -2399,7 +2399,7 @@ export function CategoryDashboard({
                         strokeWidth="3"
                       />
                       <text
-                        fill="#ffffff"
+                        fill="#f8fafc"
                         fontSize="14"
                         fontWeight="bold"
                         textAnchor="middle"
@@ -2417,7 +2417,7 @@ export function CategoryDashboard({
                         strokeWidth="3"
                       />
                       <text
-                        fill="#ffffff"
+                        fill="#f8fafc"
                         fontSize="14"
                         fontWeight="bold"
                         textAnchor="middle"
@@ -2430,16 +2430,16 @@ export function CategoryDashboard({
                   </svg>
                 </div>
                 <div className="flex justify-around pt-2">
-                  <p className="text-secondary text-xs font-bold leading-normal tracking-[0.015em]">
+                  <p className="text-gray-300 text-xs font-bold leading-normal tracking-[0.015em]">
                     S-4
                   </p>
-                  <p className="text-secondary text-xs font-bold leading-normal tracking-[0.015em]">
+                  <p className="text-gray-300 text-xs font-bold leading-normal tracking-[0.015em]">
                     S-3
                   </p>
-                  <p className="text-secondary text-xs font-bold leading-normal tracking-[0.015em]">
+                  <p className="text-gray-300 text-xs font-bold leading-normal tracking-[0.015em]">
                     S-2
                   </p>
-                  <p className="text-secondary text-xs font-bold leading-normal tracking-[0.015em]">
+                  <p className="text-gray-300 text-xs font-bold leading-normal tracking-[0.015em]">
                     S-1
                   </p>
                 </div>
@@ -2461,11 +2461,11 @@ export function CategoryDashboard({
                   <span className="inline-block rounded-full bg-green-500/10 px-2 py-0.5 text-base font-medium text-emerald-400">
                     -5%
                   </span>
-                  <span className="text-secondary text-xs">vs Sem. Préc.</span>
+                  <span className="text-gray-300 text-xs">vs Sem. Préc.</span>
                 </div>
               </div>
               <div className="flex gap-1 items-center mt-1">
-                <p className="text-secondary text-sm font-normal leading-normal">
+                <p className="text-gray-300 text-sm font-normal leading-normal">
                   vs Target (90%)
                 </p>
                 <p className="text-green-500 text-sm font-medium leading-normal flex items-center gap-1">
@@ -2496,7 +2496,7 @@ export function CategoryDashboard({
                         strokeWidth="3"
                       />
                       <text
-                        fill="#ffffff"
+                        fill="#f8fafc"
                         fontSize="14"
                         fontWeight="bold"
                         textAnchor="middle"
@@ -2514,7 +2514,7 @@ export function CategoryDashboard({
                         strokeWidth="3"
                       />
                       <text
-                        fill="#ffffff"
+                        fill="#f8fafc"
                         fontSize="14"
                         fontWeight="bold"
                         textAnchor="middle"
@@ -2532,7 +2532,7 @@ export function CategoryDashboard({
                         strokeWidth="3"
                       />
                       <text
-                        fill="#ffffff"
+                        fill="#f8fafc"
                         fontSize="14"
                         fontWeight="bold"
                         textAnchor="middle"
@@ -2550,7 +2550,7 @@ export function CategoryDashboard({
                         strokeWidth="3"
                       />
                       <text
-                        fill="#ffffff"
+                        fill="#f8fafc"
                         fontSize="14"
                         fontWeight="bold"
                         textAnchor="middle"
@@ -2563,16 +2563,16 @@ export function CategoryDashboard({
                   </svg>
                 </div>
                 <div className="flex justify-around pt-2">
-                  <p className="text-secondary text-xs font-bold leading-normal tracking-[0.015em]">
+                  <p className="text-gray-300 text-xs font-bold leading-normal tracking-[0.015em]">
                     S-4
                   </p>
-                  <p className="text-secondary text-xs font-bold leading-normal tracking-[0.015em]">
+                  <p className="text-gray-300 text-xs font-bold leading-normal tracking-[0.015em]">
                     S-3
                   </p>
-                  <p className="text-secondary text-xs font-bold leading-normal tracking-[0.015em]">
+                  <p className="text-gray-300 text-xs font-bold leading-normal tracking-[0.015em]">
                     S-2
                   </p>
-                  <p className="text-secondary text-xs font-bold leading-normal tracking-[0.015em]">
+                  <p className="text-gray-300 text-xs font-bold leading-normal tracking-[0.015em]">
                     S-1
                   </p>
                 </div>
@@ -2594,11 +2594,11 @@ export function CategoryDashboard({
                   <span className="inline-block rounded-full bg-red-500/10 px-2 py-0.5 text-base font-medium text-red-400">
                     +250€
                   </span>
-                  <span className="text-secondary text-xs">vs Mois Préc.</span>
+                  <span className="text-gray-300 text-xs">vs Mois Préc.</span>
                 </div>
               </div>
               <div className="flex gap-1 items-center mt-1">
-                <p className="text-secondary text-sm font-normal leading-normal">
+                <p className="text-gray-300 text-sm font-normal leading-normal">
                   Scrap Client
                 </p>
                 <p className="text-red-500 text-sm font-medium leading-normal flex items-center gap-1">
@@ -2640,10 +2640,10 @@ export function CategoryDashboard({
                   </div>
                 </div>
                 <div className="mt-2 flex justify-around">
-                  <p className="text-xs font-bold text-secondary">M-4</p>
-                  <p className="text-xs font-bold text-secondary">M-3</p>
-                  <p className="text-xs font-bold text-secondary">M-2</p>
-                  <p className="text-xs font-bold text-secondary">M-1</p>
+                  <p className="text-xs font-bold text-gray-300">M-4</p>
+                  <p className="text-xs font-bold text-gray-300">M-3</p>
+                  <p className="text-xs font-bold text-gray-300">M-2</p>
+                  <p className="text-xs font-bold text-gray-300">M-1</p>
                 </div>
               </div>
             </div>
@@ -2679,7 +2679,7 @@ export function CategoryDashboard({
                       transform="rotate(-90 60 60)"
                     />
                     <text
-                      className="fill-white text-lg font-bold"
+                      className="fill-gray-100 text-lg font-bold"
                       dominantBaseline="middle"
                       textAnchor="middle"
                       x="50%"
@@ -2688,14 +2688,14 @@ export function CategoryDashboard({
                       90%
                     </text>
                   </svg>
-                  <p className="text-secondary text-center text-sm">
+                  <p className="text-gray-300 text-center text-sm">
                     Completion
                   </p>
                   <div className="flex flex-col text-center mt-1">
                     <span className="inline-block rounded-full bg-green-500/10 px-2 py-0.5 text-base font-medium text-emerald-400">
                       +5%
                     </span>
-                    <span className="text-secondary text-xs">
+                    <span className="text-gray-300 text-xs">
                       vs Mois Préc.
                     </span>
                   </div>
@@ -2723,7 +2723,7 @@ export function CategoryDashboard({
                       transform="rotate(-90 60 60)"
                     />
                     <text
-                      className="fill-white text-lg font-bold"
+                      className="fill-gray-100 text-lg font-bold"
                       dominantBaseline="middle"
                       textAnchor="middle"
                       x="50%"
@@ -2732,14 +2732,14 @@ export function CategoryDashboard({
                       85%
                     </text>
                   </svg>
-                  <p className="text-secondary text-center text-sm">
+                  <p className="text-gray-300 text-center text-sm">
                     Compliance
                   </p>
                   <div className="flex flex-col text-center mt-1">
                     <span className="inline-block rounded-full bg-red-500/10 px-2 py-0.5 text-base font-medium text-red-400">
                       -2%
                     </span>
-                    <span className="text-secondary text-xs">
+                    <span className="text-gray-300 text-xs">
                       vs Mois Préc.
                     </span>
                   </div>
@@ -2762,7 +2762,7 @@ export function CategoryDashboard({
                   <span className="inline-block rounded-full bg-green-500/10 px-2 py-0.5 text-base font-medium text-emerald-400">
                     -4
                   </span>
-                  <span className="text-secondary text-xs">vs Mois Préc.</span>
+                  <span className="text-gray-300 text-xs">vs Mois Préc.</span>
                 </div>
               </div>
               <div className="flex-1 flex flex-col justify-around pt-2">
@@ -2773,7 +2773,7 @@ export function CategoryDashboard({
                         className="relative flex h-full items-center justify-center rounded-t-sm bg-blue-200"
                         style={{ height: "60%" }}
                       >
-                        <span className="text-sm font-semibold text-blue-900">
+                        <span className="text-sm font-semibold text-white">
                           6
                         </span>
                       </div>
@@ -2781,7 +2781,7 @@ export function CategoryDashboard({
                         className="relative flex h-full items-center justify-center rounded-t-sm bg-blue-200"
                         style={{ height: "50%" }}
                       >
-                        <span className="text-sm font-semibold text-blue-900">
+                        <span className="text-sm font-semibold text-white">
                           5
                         </span>
                       </div>
@@ -2789,7 +2789,7 @@ export function CategoryDashboard({
                         className="relative flex h-full items-center justify-center rounded-t-sm bg-blue-200"
                         style={{ height: "20%" }}
                       >
-                        <span className="text-sm font-semibold text-blue-900">
+                        <span className="text-sm font-semibold text-white">
                           2
                         </span>
                       </div>
@@ -2797,21 +2797,21 @@ export function CategoryDashboard({
                         className="relative flex h-full items-center justify-center rounded-t-sm bg-blue-200"
                         style={{ height: "10%" }}
                       >
-                        <span className="text-sm font-semibold text-blue-900">
+                        <span className="text-sm font-semibold text-white">
                           1
                         </span>
                       </div>
                     </div>
                   </div>
                   <div className="flex justify-around">
-                    <p className="text-xs font-bold text-secondary">Jan</p>
-                    <p className="text-xs font-bold text-secondary">Fév</p>
-                    <p className="text-xs font-bold text-secondary">Mar</p>
-                    <p className="text-xs font-bold text-secondary">Avr</p>
+                    <p className="text-xs font-bold text-gray-300">Jan</p>
+                    <p className="text-xs font-bold text-gray-300">Fév</p>
+                    <p className="text-xs font-bold text-gray-300">Mar</p>
+                    <p className="text-xs font-bold text-gray-300">Avr</p>
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-secondary mb-2">
+                  <p className="text-sm font-medium text-gray-300 mb-2">
                     Jours Perdus
                   </p>
                   <div className="h-20 w-full relative mb-1">
@@ -2836,7 +2836,7 @@ export function CategoryDashboard({
                           strokeWidth="2"
                         />
                         <text
-                          fill="#ffffff"
+                          fill="#f8fafc"
                           fontSize="12"
                           fontWeight="bold"
                           textAnchor="middle"
@@ -2854,7 +2854,7 @@ export function CategoryDashboard({
                           strokeWidth="2"
                         />
                         <text
-                          fill="#ffffff"
+                          fill="#f8fafc"
                           fontSize="12"
                           fontWeight="bold"
                           textAnchor="middle"
@@ -2872,7 +2872,7 @@ export function CategoryDashboard({
                           strokeWidth="2"
                         />
                         <text
-                          fill="#ffffff"
+                          fill="#f8fafc"
                           fontSize="12"
                           fontWeight="bold"
                           textAnchor="middle"
@@ -2890,7 +2890,7 @@ export function CategoryDashboard({
                           strokeWidth="2"
                         />
                         <text
-                          fill="#ffffff"
+                          fill="#f8fafc"
                           fontSize="12"
                           fontWeight="bold"
                           textAnchor="middle"
@@ -2903,10 +2903,10 @@ export function CategoryDashboard({
                     </svg>
                   </div>
                   <div className="flex justify-around border-t border-border-color pt-2">
-                    <p className="text-xs font-bold text-secondary">Jan</p>
-                    <p className="text-xs font-bold text-secondary">Fév</p>
-                    <p className="text-xs font-bold text-secondary">Mar</p>
-                    <p className="text-xs font-bold text-secondary">Avr</p>
+                    <p className="text-xs font-bold text-gray-300">Jan</p>
+                    <p className="text-xs font-bold text-gray-300">Fév</p>
+                    <p className="text-xs font-bold text-gray-300">Mar</p>
+                    <p className="text-xs font-bold text-gray-300">Avr</p>
                   </div>
                 </div>
               </div>
@@ -2927,12 +2927,12 @@ export function CategoryDashboard({
                   <span className="inline-block rounded-full bg-green-500/10 px-2 py-0.5 text-base font-medium text-emerald-400">
                     +1.2%
                   </span>
-                  <span className="text-secondary text-xs">vs Mois Préc.</span>
+                  <span className="text-gray-300 text-xs">vs Mois Préc.</span>
                 </div>
               </div>
               <div className="flex-1 flex flex-col justify-center space-y-3 pt-2">
                 <div className="grid grid-cols-[120px_1fr_auto] items-center gap-4">
-                  <span className="text-secondary text-sm font-medium truncate">
+                  <span className="text-gray-300 text-sm font-medium truncate">
                     Client Alpha
                   </span>
                   <div className="w-full bg-slate-600 rounded-full h-2.5 relative">
@@ -2944,7 +2944,7 @@ export function CategoryDashboard({
                   <span className="text-white font-semibold text-sm">95%</span>
                 </div>
                 <div className="grid grid-cols-[120px_1fr_auto] items-center gap-4">
-                  <span className="text-secondary text-sm font-medium truncate">
+                  <span className="text-gray-300 text-sm font-medium truncate">
                     Client Beta
                   </span>
                   <div className="w-full bg-slate-600 rounded-full h-2.5 relative">
@@ -2956,7 +2956,7 @@ export function CategoryDashboard({
                   <span className="text-white font-semibold text-sm">82%</span>
                 </div>
                 <div className="grid grid-cols-[120px_1fr_auto] items-center gap-4">
-                  <span className="text-secondary text-sm font-medium truncate">
+                  <span className="text-gray-300 text-sm font-medium truncate">
                     Client Gamma
                   </span>
                   <div className="w-full bg-slate-600 rounded-full h-2.5 relative">
@@ -2968,7 +2968,7 @@ export function CategoryDashboard({
                   <span className="text-white font-semibold text-sm">88%</span>
                 </div>
                 <div className="grid grid-cols-[120px_1fr_auto] items-center gap-4">
-                  <span className="text-secondary text-sm font-medium truncate">
+                  <span className="text-gray-300 text-sm font-medium truncate">
                     Client Delta
                   </span>
                   <div className="w-full bg-slate-600 rounded-full h-2.5 relative">
@@ -2980,7 +2980,7 @@ export function CategoryDashboard({
                   <span className="text-white font-semibold text-sm">91%</span>
                 </div>
                 <div className="grid grid-cols-[120px_1fr_auto] items-center gap-4">
-                  <span className="text-secondary text-sm font-medium truncate">
+                  <span className="text-gray-300 text-sm font-medium truncate">
                     Client Epsilon
                   </span>
                   <div className="w-full bg-slate-600 rounded-full h-2.5 relative">
@@ -3003,16 +3003,16 @@ export function CategoryDashboard({
 
   if (category.id === "supplychain") {
     return (
-      <div className="flex h-screen w-screen flex-col bg-slate-900 text-white overflow-hidden">
-        <div className="flex h-full grow flex-col">
-          <div className="flex flex-1 p-6">
+      <div className="flex min-h-screen w-screen flex-col bg-slate-900 text-white">
+        <div className="flex flex-1 flex-col">
+          <div className="flex flex-1 p-6 overflow-y-auto">
             <div className="flex w-full flex-col gap-6">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="flex flex-col gap-1">
                   <h1 className="text-4xl font-black tracking-tighter text-white">
                     Supply Chain Performance Dashboard
                   </h1>
-                  <p className="text-lg font-normal text-slate-300">
+                  <p className="text-lg font-normal text-gray-200">
                     Semaine actuelle: 20-26 May | Mois en cours: Mai
                   </p>
                 </div>
@@ -3021,9 +3021,11 @@ export function CategoryDashboard({
                     <span className="material-symbols-outlined text-emerald-400 text-xl">
                       check_circle
                     </span>
-                    <p className="text-base font-medium text-emerald-400">Stable</p>
+                    <p className="text-base font-medium text-emerald-400">
+                      Stable
+                    </p>
                   </div>
-                  <p className="text-base text-slate-300">
+                  <p className="text-base text-gray-200">
                     Last updated: 27 May, 08:00 AM
                   </p>
                 </div>
@@ -3053,7 +3055,7 @@ export function CategoryDashboard({
                         <p className="text-3xl font-extrabold text-emerald-400">
                           +1.0%
                         </p>
-                        <p className="text-lg font-normal text-slate-300">
+                        <p className="text-lg font-normal text-gray-200">
                           vs last week
                         </p>
                       </div>
@@ -3109,7 +3111,7 @@ export function CategoryDashboard({
                             95%
                           </span>
                           <div className="h-4 w-4 rounded-full border-2 border-blue-400 bg-slate-800"></div>
-                          <p className="text-base font-bold text-slate-300">
+                          <p className="text-base font-bold text-gray-200">
                             W1
                           </p>
                         </div>
@@ -3126,7 +3128,7 @@ export function CategoryDashboard({
                             97%
                           </span>
                           <div className="h-4 w-4 rounded-full border-2 border-blue-400 bg-slate-800"></div>
-                          <p className="text-base font-bold text-slate-300">
+                          <p className="text-base font-bold text-gray-200">
                             W2
                           </p>
                         </div>
@@ -3143,7 +3145,7 @@ export function CategoryDashboard({
                             96%
                           </span>
                           <div className="h-4 w-4 rounded-full border-2 border-blue-400 bg-slate-800"></div>
-                          <p className="text-base font-bold text-slate-300">
+                          <p className="text-base font-bold text-gray-200">
                             W3
                           </p>
                         </div>
@@ -3160,7 +3162,7 @@ export function CategoryDashboard({
                             98%
                           </span>
                           <div className="h-4 w-4 rounded-full border-2 border-blue-400 bg-slate-800"></div>
-                          <p className="text-base font-bold text-slate-300">
+                          <p className="text-base font-bold text-gray-200">
                             W4
                           </p>
                         </div>
@@ -3177,7 +3179,7 @@ export function CategoryDashboard({
                             97%
                           </span>
                           <div className="h-4 w-4 rounded-full border-2 border-blue-400 bg-slate-800"></div>
-                          <p className="text-base font-bold text-slate-300">
+                          <p className="text-base font-bold text-gray-200">
                             W5
                           </p>
                         </div>
@@ -3238,7 +3240,7 @@ export function CategoryDashboard({
                         <p className="text-3xl font-extrabold text-red-400">
                           -0.5%
                         </p>
-                        <p className="text-lg font-normal text-slate-300">
+                        <p className="text-lg font-normal text-gray-200">
                           vs last week
                         </p>
                       </div>
@@ -3252,7 +3254,7 @@ export function CategoryDashboard({
                           <div className="flex h-24 w-24 items-center justify-center rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
                             <span className="text-3xl font-bold">94%</span>
                           </div>
-                          <p className="mt-2 text-base font-medium text-slate-300">
+                          <p className="mt-2 text-base font-medium text-gray-200">
                             W1
                           </p>
                         </div>
@@ -3263,7 +3265,7 @@ export function CategoryDashboard({
                           <div className="flex h-24 w-24 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                             <span className="text-3xl font-bold">95%</span>
                           </div>
-                          <p className="mt-2 text-base font-medium text-slate-300">
+                          <p className="mt-2 text-base font-medium text-gray-200">
                             W2
                           </p>
                         </div>
@@ -3274,7 +3276,7 @@ export function CategoryDashboard({
                           <div className="flex h-24 w-24 items-center justify-center rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
                             <span className="text-3xl font-bold">93%</span>
                           </div>
-                          <p className="mt-2 text-base font-medium text-slate-300">
+                          <p className="mt-2 text-base font-medium text-gray-200">
                             W3
                           </p>
                         </div>
@@ -3285,7 +3287,7 @@ export function CategoryDashboard({
                           <div className="flex h-24 w-24 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                             <span className="text-3xl font-bold">97%</span>
                           </div>
-                          <p className="mt-2 text-base font-medium text-slate-300">
+                          <p className="mt-2 text-base font-medium text-gray-200">
                             W4
                           </p>
                         </div>
@@ -3296,7 +3298,7 @@ export function CategoryDashboard({
                           <div className="flex h-24 w-24 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                             <span className="text-3xl font-bold">96%</span>
                           </div>
-                          <p className="mt-2 text-base font-medium text-slate-300">
+                          <p className="mt-2 text-base font-medium text-gray-200">
                             W5
                           </p>
                         </div>
@@ -3322,7 +3324,7 @@ export function CategoryDashboard({
                         22 <span className="text-5xl font-bold">jours</span>
                       </p>
                       <div className="flex items-baseline gap-2">
-                        <p className="text-2xl font-medium text-slate-300">
+                        <p className="text-2xl font-medium text-gray-200">
                           Target:
                         </p>
                         <p className="text-4xl font-bold text-emerald-400">
@@ -3361,7 +3363,7 @@ export function CategoryDashboard({
                             className="absolute inset-x-0 bottom-0 flex items-center justify-center rounded-t-sm bg-yellow-500"
                             style={{ height: "85%" }}
                           >
-                            <span className="text-black text-xl font-extrabold">
+                            <span className="text-gray-900 text-xl font-extrabold">
                               25
                             </span>
                           </div>
@@ -3381,7 +3383,7 @@ export function CategoryDashboard({
                             className="absolute inset-x-0 bottom-0 flex items-center justify-center rounded-t-sm bg-yellow-500"
                             style={{ height: "90%" }}
                           >
-                            <span className="text-black text-xl font-extrabold">
+                            <span className="text-gray-900 text-xl font-extrabold">
                               26
                             </span>
                           </div>
@@ -3399,24 +3401,12 @@ export function CategoryDashboard({
                       </div>
                     </div>
                     <div className="grid grid-cols-6 text-center">
-                      <p className="text-sm font-medium text-slate-300">
-                        Déc
-                      </p>
-                      <p className="text-sm font-medium text-slate-300">
-                        Jan
-                      </p>
-                      <p className="text-sm font-medium text-slate-300">
-                        Fév
-                      </p>
-                      <p className="text-sm font-medium text-slate-300">
-                        Mar
-                      </p>
-                      <p className="text-sm font-medium text-slate-300">
-                        Avr
-                      </p>
-                      <p className="text-sm font-bold text-white">
-                        Mai
-                      </p>
+                      <p className="text-sm font-medium text-gray-200">Déc</p>
+                      <p className="text-sm font-medium text-gray-200">Jan</p>
+                      <p className="text-sm font-medium text-gray-200">Fév</p>
+                      <p className="text-sm font-medium text-gray-200">Mar</p>
+                      <p className="text-sm font-medium text-gray-200">Avr</p>
+                      <p className="text-sm font-bold text-white">Mai</p>
                     </div>
                   </div>
                   <div className="flex flex-col gap-4 rounded-lg border border-slate-700 bg-slate-800/50 backdrop-blur p-6">
@@ -3425,7 +3415,7 @@ export function CategoryDashboard({
                     </p>
                     <div className="flex flex-col gap-3">
                       <div className="grid grid-cols-[100px_1fr_60px] items-center gap-3">
-                        <p className="text-base font-medium text-slate-300">
+                        <p className="text-base font-medium text-gray-200">
                           Warehouse A
                         </p>
                         <div className="w-full rounded-full bg-slate-700">
@@ -3434,12 +3424,10 @@ export function CategoryDashboard({
                             style={{ width: "98%" }}
                           ></div>
                         </div>
-                        <p className="text-base font-bold text-white">
-                          98%
-                        </p>
+                        <p className="text-base font-bold text-white">98%</p>
                       </div>
                       <div className="grid grid-cols-[100px_1fr_60px] items-center gap-3">
-                        <p className="text-base font-medium text-slate-300">
+                        <p className="text-base font-medium text-gray-200">
                           Warehouse B
                         </p>
                         <div className="w-full rounded-full bg-slate-700">
@@ -3448,12 +3436,10 @@ export function CategoryDashboard({
                             style={{ width: "96%" }}
                           ></div>
                         </div>
-                        <p className="text-base font-bold text-white">
-                          96%
-                        </p>
+                        <p className="text-base font-bold text-white">96%</p>
                       </div>
                       <div className="grid grid-cols-[100px_1fr_60px] items-center gap-3">
-                        <p className="text-base font-medium text-slate-300">
+                        <p className="text-base font-medium text-gray-200">
                           Warehouse C
                         </p>
                         <div className="w-full rounded-full bg-slate-700">
@@ -3462,12 +3448,10 @@ export function CategoryDashboard({
                             style={{ width: "93%" }}
                           ></div>
                         </div>
-                        <p className="text-base font-bold text-white">
-                          93%
-                        </p>
+                        <p className="text-base font-bold text-white">93%</p>
                       </div>
                       <div className="grid grid-cols-[100px_1fr_60px] items-center gap-3">
-                        <p className="text-base font-medium text-slate-300">
+                        <p className="text-base font-medium text-gray-200">
                           Warehouse D
                         </p>
                         <div className="w-full rounded-full bg-slate-700">
@@ -3476,9 +3460,7 @@ export function CategoryDashboard({
                             style={{ width: "88%" }}
                           ></div>
                         </div>
-                        <p className="text-base font-bold text-white">
-                          88%
-                        </p>
+                        <p className="text-base font-bold text-white">88%</p>
                       </div>
                     </div>
                   </div>
@@ -3497,7 +3479,7 @@ export function CategoryDashboard({
                         <p className="text-3xl font-extrabold text-emerald-400">
                           -5%
                         </p>
-                        <p className="text-lg font-normal text-slate-300">
+                        <p className="text-lg font-normal text-gray-200">
                           vs last month
                         </p>
                       </div>
@@ -3561,27 +3543,25 @@ export function CategoryDashboard({
                           </div>
                         </div>
                         <div className="mt-2 grid grid-cols-3 text-center">
-                          <p className="text-sm font-bold text-slate-300">
+                          <p className="text-sm font-bold text-gray-200">
                             Mar
                           </p>
-                          <p className="text-sm font-bold text-slate-300">
+                          <p className="text-sm font-bold text-gray-200">
                             Apr
                           </p>
-                          <p className="text-sm font-bold text-white">
-                            May
-                          </p>
+                          <p className="text-sm font-bold text-white">May</p>
                         </div>
                       </div>
                       <div className="mt-4 flex items-center justify-center gap-6">
                         <div className="flex items-center gap-2">
                           <div className="h-4 w-4 rounded-sm bg-blue-500"></div>
-                          <p className="text-base font-medium text-slate-300">
+                          <p className="text-base font-medium text-gray-200">
                             Freight IN
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
                           <div className="h-4 w-4 rounded-sm bg-orange-500"></div>
-                          <p className="text-base font-medium text-slate-300">
+                          <p className="text-base font-medium text-gray-200">
                             Freight OUT
                           </p>
                         </div>
@@ -3599,17 +3579,13 @@ export function CategoryDashboard({
 
   if (category.id === "rh") {
     return (
-      <div className="fixed inset-0 w-screen h-screen flex flex-col bg-gradient-to-br from-slate-900 via-gray-900 to-black">
-        {/* Dashboard Header */}
-        <DashboardHeader currentCategory="rh" />
-        
-        {/* Status Header */}
+      <div className="min-h-screen w-full flex flex-col bg-gradient-to-br from-slate-900 via-gray-900 to-black pb-10">
         <header className="mb-6 flex items-center justify-end px-8 pt-4">
           <p className="text-base text-gray-300 font-medium">
             Dernière mise à jour : il y a 2 minutes
           </p>
         </header>
-        <main className="grid flex-1 grid-cols-3 grid-rows-2 gap-4 px-6 pb-6">
+        <main className="grid flex-1 grid-cols-3 grid-rows-2 gap-4 px-6">
           <div className="bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-8 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm">
             <div className="flex items-start justify-between">
               <h2 className="text-xl font-bold text-white tracking-wide">
@@ -3624,7 +3600,7 @@ export function CategoryDashboard({
               <div className="mb-6">
                 <div className="flex items-baseline gap-4">
                   <div className="flex flex-col">
-                    <span className="text-6xl font-black text-blue-400 tracking-tight">
+                    <span className="text-4xl font-black text-blue-400 tracking-tight">
                       3.4%
                     </span>
                   </div>
@@ -3803,28 +3779,26 @@ export function CategoryDashboard({
               </div>
             </div>
           </div>
-          <div className="bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-8 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm">
+          <div className="bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm p-6 flex flex-col">
             <div className="flex items-start justify-between">
-              <h2 className="text-xl font-bold text-white tracking-wide">
+              <h2 className="text-lg font-semibold">
                 Taux de Remplissage du Transport
               </h2>
             </div>
-            <div className="flex-1 flex flex-col mt-6">
-              <div className="mb-6">
-                <div className="flex items-baseline gap-4">
+            <div className="flex-1 flex flex-col mt-4">
+              <div className="mb-4">
+                <div className="flex items-baseline gap-3">
                   <div className="flex flex-col">
-                    <span className="text-6xl font-black text-green-400 tracking-tight">
-                      92%
-                    </span>
+                    <span className="text-5xl font-bold text-success">92%</span>
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-bold text-green-400 flex items-center gap-2 text-4xl">
-                      <span className="material-symbols-outlined text-3xl">
+                    <span className="font-extrabold text-success flex items-center gap-1 text-3xl">
+                      <span className="material-symbols-outlined text-2xl">
                         arrow_upward
                       </span>
                       <span>+3%</span>
                     </span>
-                    <span className="text-sm text-gray-300 mt-2 font-medium">
+                    <span className="text-sm text-gray-300 mt-1">
                       vs Mois Précédent
                     </span>
                   </div>
@@ -3917,7 +3891,7 @@ export function CategoryDashboard({
                   ></circle>
                   <g
                     className="text-base font-bold"
-                    fill="#FFFFFF"
+                    fill="#f1f5f9"
                     text-anchor="middle"
                   >
                     <text x="50" y="102">
@@ -3935,20 +3909,20 @@ export function CategoryDashboard({
                   </g>
                 </svg>
               </div>
-              <div className="mt-3 flex justify-around text-sm text-gray-300 font-medium">
+              <div className="mt-2 flex justify-around text-xs text-gray-300">
                 <span>M-4</span>
                 <span>M-3</span>
                 <span>M-2</span>
                 <span>M-1</span>
               </div>
-              <div className="mt-6 flex justify-center gap-8 text-sm text-white">
-                <div className="flex items-center gap-3">
-                  <span className="h-1 w-6 bg-blue-500 rounded shadow-md"></span>
-                  <span className="font-medium">Actuel</span>
+              <div className="mt-4 flex justify-center gap-6 text-sm">
+                <div className="flex items-center gap-2">
+                  <span className="h-0.5 w-4 bg-neutral-blue"></span>
+                  <span>Actuel</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="h-1 w-6 border-b-2 border-dashed border-red-500"></span>
-                  <span className="font-medium">Cible (90%)</span>
+                <div className="flex items-center gap-2">
+                  <span className="h-0.5 w-4 border-b border-dashed border-danger"></span>
+                  <span>Cible (90%)</span>
                 </div>
               </div>
             </div>
@@ -3960,10 +3934,14 @@ export function CategoryDashboard({
             <div className="mt-6 mb-6">
               <div className="flex items-baseline gap-6">
                 <div className="flex flex-col items-start">
-                  <span className="text-6xl font-black text-white tracking-tight">1,242</span>
+                  <span className="text-4xl font-black text-white tracking-tight">
+                    1,242
+                  </span>
                 </div>
                 <div className="self-end pb-3">
-                  <p className="text-sm text-gray-300 mb-2 font-medium">Coûts Actuels</p>
+                  <p className="text-sm text-gray-300 mb-2 font-medium">
+                    Coûts Actuels
+                  </p>
                   <span className="text-2xl font-bold text-yellow-400">
                     € 3.2M
                   </span>
@@ -3978,7 +3956,7 @@ export function CategoryDashboard({
                   preserveAspectRatio="none"
                   viewBox="0 0 400 200"
                 >
-                  <g className="text-[10px] text-gray-400 fill-current">
+                  <g className="text-[10px] text-gray-300 fill-current">
                     <text x="375" y="195">
                       2.6M
                     </text>
@@ -4186,15 +4164,17 @@ export function CategoryDashboard({
               Délai Moyen de Recrutement
             </h2>
             <div className="mt-6 mb-6">
-              <p className="text-sm text-gray-300 font-medium mb-3">Délai Moyen Global</p>
+              <p className="text-sm text-gray-300 font-medium mb-3">
+                Délai Moyen Global
+              </p>
               <div className="flex items-baseline gap-4">
                 <div className="flex flex-col">
-                  <span className="text-6xl font-black text-red-400 tracking-tight">
+                  <span className="text-4xl font-black text-red-400">
                     32 jours
                   </span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-bold text-red-400 flex items-center gap-2 text-4xl">
+                  <span className="font-bold text-red-400 flex items-center gap-2 text-2xl">
                     <span className="material-symbols-outlined text-3xl">
                       arrow_upward
                     </span>
@@ -4254,29 +4234,29 @@ export function CategoryDashboard({
               <span>RH</span>
             </div>
           </div>
-          <div className="bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-8 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm">
+          <div className="bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-4 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm">
             <div className="flex items-start justify-between">
-              <h2 className="text-xl font-bold text-white tracking-wide">
-                Taux d&apos;absentéisme Hebdo
+              <h2 className="text-lg font-semibold">
+                Taux d’absentéisme Hebdo
               </h2>
-              <div className="flex items-center gap-2 text-sm text-white">
-                <span className="h-3 w-3 rounded-full bg-red-500 shadow-lg shadow-red-500/50"></span>
-                <span className="font-medium">Cible Dépassée</span>
+              <div className="flex items-center gap-2 text-sm text-danger">
+                <span className="h-2 w-2 rounded-full bg-danger"></span>
+                <span>Cible Dépassée</span>
               </div>
             </div>
-            <div className="mt-6 mb-6">
-              <div className="flex items-baseline gap-4">
+            <div className="mt-4 mb-4">
+              <div className="flex items-baseline gap-3">
                 <div className="flex flex-col">
-                  <span className="text-6xl font-black text-red-400 tracking-tight">4.8%</span>
+                  <span className="text-5xl font-bold text-danger">4.8%</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-bold text-red-400 flex items-center gap-2 text-4xl">
-                    <span className="material-symbols-outlined text-3xl">
+                  <span className="font-bold text-danger flex items-center gap-1 text-3xl">
+                    <span className="material-symbols-outlined text-2xl">
                       arrow_downward
                     </span>
                     <span>-1.7%</span>
                   </span>
-                  <span className="text-sm text-gray-300 mt-2 font-medium">
+                  <span className="text-sm text-gray-300 mt-1">
                     vs Semaine Précédente
                   </span>
                 </div>
@@ -4464,7 +4444,7 @@ export function CategoryDashboard({
                 </text>
               </svg>
             </div>
-            <div className="mt-3 flex justify-around text-sm text-gray-300 font-medium">
+            <div className="mt-2 flex justify-around text-xs text-gray-300">
               <span>S-23</span>
               <span>S-24</span>
               <span>S-25</span>
@@ -4530,7 +4510,7 @@ export function CategoryDashboard({
                 ></path>
                 <g
                   className="text-xs font-semibold"
-                  fill="#FFFFFF"
+                  fill="#f1f5f9"
                   text-anchor="middle"
                 >
                   <text x="33" y="32">
@@ -4583,15 +4563,15 @@ export function CategoryDashboard({
       <div className="p-6 space-y-6">
         {/* Dashboard Title */}
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-slate-100">
+          <h1 className="text-3xl font-bold text-white">
             {getCategoryTitle()}
           </h1>
-          <p className="text-secondary">{getCategorySubtitle()}</p>
+          <p className="text-gray-300">{getCategorySubtitle()}</p>
         </div>
 
         {/* Weekly KPIs Section */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-slate-100">Weekly KPIs</h2>
+          <h2 className="text-xl font-semibold text-white">Weekly KPIs</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {getTopKPIs(4).map((kpi, index) => (
               <DashboardKPICard
@@ -4615,7 +4595,7 @@ export function CategoryDashboard({
         {/* Monthly KPIs Section */}
         {category.kpis.length > 4 && (
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-slate-100">
+            <h2 className="text-xl font-semibold text-white">
               Monthly KPIs
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -4644,7 +4624,7 @@ export function CategoryDashboard({
         {/* Additional KPIs Grid */}
         {category.kpis.length > 6 && (
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-slate-100">
+            <h2 className="text-xl font-semibold text-white">
               Additional Metrics
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

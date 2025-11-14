@@ -44,7 +44,7 @@ export default function DashboardLayout({
           </div>
         </header>
         <Separator />
-        <div className="overflow-auto bg-slate-800/90">
+        <div className="overflow-auto">
           <div className="flex-1 text-foreground">{children}</div>
         </div>
       </div>
