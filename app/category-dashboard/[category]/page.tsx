@@ -3,7 +3,7 @@
 import React from "react";
 import { useParams, useRouter } from "next/navigation";
 import { DashboardLayout } from "@/components/DashboardLayout";
-import { dashboardCategoriesMap } from "@/lib/kpi-data";
+import { getCategoryData } from "@/lib/kpi-data";
 
 export default function CategoryDashboardPage() {
   const params = useParams();
@@ -13,13 +13,8 @@ export default function CategoryDashboardPage() {
   console.log('CategoryDashboardPage - categoryId:', categoryId);
   console.log('CategoryDashboardPage - params:', params);
   
-  // Default to executive-horizon, but this could be dynamic based on user preferences
-  const dataset = "executive-horizon"; // You can make this dynamic later
-  const currentCategories = dashboardCategoriesMap[dataset];
-  
-  console.log('Available categories:', currentCategories.map(cat => cat.id));
-  
-  const category = currentCategories.find(cat => cat.id === categoryId);
+  // Get category data from navigationItems
+  const category = getCategoryData(categoryId);
   
   console.log('Found category:', category ? category.name : 'NOT FOUND');
   

@@ -5,6 +5,8 @@ import Image from "next/image";
 function Logo({
   fontSize = "text-2xl",
   logoType = "default",
+  width,
+  height,
   className,
 }: {
   fontSize?: string;
@@ -19,10 +21,13 @@ function Logo({
   const defaultStyke =
     logoType === "welcome"
       ? {
-          width: 200,
-          height: 90,
+          width: width || 200,
+          height: height || 90,
         }
-      : {};
+      : {
+          width: width || 140,
+          height: height || 60,
+        };
 
   return (
     <Link
@@ -41,8 +46,8 @@ function Logo({
           <Image
             src={logoSrc}
             alt="logo"
-            width={200}
-            height={90}
+            width={width || 200}
+            height={height || 90}
             className="object-contain w-full h-full"
             priority
             style={{

@@ -12,6 +12,7 @@ import {
   BadgeDollarSign,
   TrendingUpIcon,
   GlobeIcon,
+  UploadIcon,
 } from "lucide-react";
 import React, { useState } from "react";
 import Logo from "@/components/Logo";
@@ -42,6 +43,11 @@ const routes = [
     href: "global-ops",
     label: "GlobalOps",
     icon: GlobeIcon,
+  },
+  {
+    href: "importation",
+    label: "Importation",
+    icon: UploadIcon,
   },
   {
     href: "scrap-setting",

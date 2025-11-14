@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
+import { navigationItems } from "@/lib/kpi-data";
 
 interface DashboardHeaderProps {
   currentCategory?: string;
@@ -15,29 +16,18 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ currentCategory, onNavigate, onBack }: DashboardHeaderProps) {
   const router = useRouter();
-  
-  const navigationItems = [
-    { id: "overview", label: "Overview" },
-    { id: "finance", label: "Finance" },
-    { id: "operations", label: "Operations" },
-    { id: "programs", label: "Programs" },
-    { id: "quality", label: "Quality" },
-    { id: "rh", label: "RH" },
-    { id: "supplychain", label: "Supply Chain" }
-  ];
 
   // Finance and HR Dashboards have light theme, others have dark theme
-  const isLightTheme = currentCategory === "rh" || currentCategory === "finance";
+  const isLightTheme = currentCategory == "rh";
   const headerBg = isLightTheme ? "bg-white/95 border-b border-slate-200/50" : "bg-slate-900/95 dark:bg-slate-900/95 border-b border-slate-800/50";
 
   return (
-    <header className={`${headerBg} shadow-sm backdrop-blur-sm px-4`}>
-      <div>
-        <div className="flex items-center justify-between">
-          {/* Left side - Logo and Navigation */}
-          <div className="flex items-center space-x-8">
+    <header className={`${headerBg} shadow-sm backdrop-blur-sm px-4 py-2`}>
+      <div className="flex items-center justify-between">
+        {/* Left side - Logo and Navigation */}
+        <div className="flex items-center space-x-8">
             {/* Logo with improved styling */}
-            <Logo logoType="default" />
+            <Logo logoType="default" width={200} height={90} />
 
             {/* Navigation */}
             <nav className="hidden md:flex items-center space-x-2">
@@ -108,7 +98,6 @@ export function DashboardHeader({ currentCategory, onNavigate, onBack }: Dashboa
             </div>
           </div>
         </div>
-      </div>
     </header>
   );
 }
