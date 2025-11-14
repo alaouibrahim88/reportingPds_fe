@@ -118,7 +118,7 @@ export function WeeklyIndicators() {
 									</span>
 								</div>
 								<p className="text-[7px] sm:text-[8px] text-slate-400 dark:text-slate-400 font-medium transition-colors duration-300 group-hover:text-slate-300">
-									T: {formatValue(indicator.Target, indicator.Indicateur)}
+									S1: {formatValue(indicator.Target, indicator.Indicateur)}
 								</p>
 							</div>
 
@@ -135,7 +135,7 @@ export function WeeklyIndicators() {
 									</span>
 								</div>
 								<p className="text-[7px] sm:text-[8px] text-slate-400 dark:text-slate-400 font-medium transition-colors duration-300 group-hover:text-slate-300">
-									T: {formatValue(indicator.Target, indicator.Indicateur)}
+									S2: {formatValue(indicator.Target, indicator.Indicateur)}
 								</p>
 							</div>
 
@@ -152,7 +152,7 @@ export function WeeklyIndicators() {
 									</span>
 								</div>
 								<p className="text-[7px] sm:text-[8px] text-slate-400 dark:text-slate-400 font-medium transition-colors duration-300 group-hover:text-slate-300">
-									T: {formatValue(indicator.Target, indicator.Indicateur)}
+									S3: {formatValue(indicator.Target, indicator.Indicateur)}
 								</p>
 							</div>
 
@@ -169,7 +169,7 @@ export function WeeklyIndicators() {
 									</span>
 								</div>
 								<p className="text-[7px] sm:text-[8px] text-slate-400 dark:text-slate-400 font-medium transition-colors duration-300 group-hover:text-slate-300">
-									T: {formatValue(indicator.Target, indicator.Indicateur)}
+									S4: {formatValue(indicator.Target, indicator.Indicateur)}
 								</p>
 							</div>
 						</div>
