@@ -7,11 +7,11 @@ import type {
 
 // Navigation Items
 export const navigationItems: NavigationItem[] = [
-	{ id: 'finance', label: 'Finance' },
-	{ id: 'operations', label: 'Operations' },
-	{ id: 'programs', label: 'Programs' },
+  { id: 'operations', label: 'Operations' },
 	{ id: 'quality', label: 'Quality' },
+	{ id: 'programs', label: 'Programs' },
 	{ id: 'rh', label: 'RH' },
+	{ id: 'finance', label: 'Finance' },
 	{ id: 'supplychain', label: 'Supply Chain' }
 ]
 
