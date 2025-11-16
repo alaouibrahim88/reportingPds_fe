@@ -66,6 +66,7 @@ const config = {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        "dark-blue": "#1e3a8a",
       },
       borderRadius: {
         lg: "var(--radius)",

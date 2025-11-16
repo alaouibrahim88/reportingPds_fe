@@ -13,7 +13,7 @@ export function AppProviders({
   return (
     <QueryClientProvider client={queryClient}>
       <NextTopLoader color="hsl(var(--primary))" showSpinner={false} />
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+      <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
         {children}
       </ThemeProvider>
       {/* <ReactQueryDevtools /> */}
