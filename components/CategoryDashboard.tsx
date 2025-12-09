@@ -83,7 +83,7 @@ function DashboardKPICard({
   };
 
   return (
-    <Card className="bg-white dark:bg-white border-slate-700 hover:border-slate-600 transition-all duration-300 hover:scale-105 cursor-pointer">
+    <Card className="bg-white dark:bg-white border-slate-700 hover:border-slate-600 transition-all duration-300  cursor-pointer">
       <CardContent className={cardSizes[size]}>
         <div className="space-y-4">
           {/* Header */}
@@ -172,7 +172,7 @@ export function CategoryDashboard({
   category,
   className,
 }: CategoryDashboardProps) {
-  const [activeTab, setActiveTab] = useState<TabType>("monthly");
+  const [activeTab, setActiveTab] = useState<TabType>("weekly");
   const getTopKPIs = (count: number) => category.kpis.slice(0, count);
 
   const getCategoryTitle = () => {
@@ -210,17 +210,9 @@ export function CategoryDashboard({
     // Monthly KPI Dashboard Content (from mensuel.html)
     const MonthlyDashboard = () => (
       <main className="flex-1">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-white mb-2">
-            Tableau de bord des KPI Mensuels
-          </h1>
-          <p className="text-gray-400 text-base font-normal leading-normal">
-            Vue en direct des indicateurs de performance clés mensuels.
-          </p>
-        </div>
         <div className="flex flex-col flex-grow gap-6">
           <div className="flex flex-col gap-6">
-            <div className="flex flex-col gap-4 rounded-xl border border-gray-800 bg-gray-900/50 p-6 hover:scale-105 transition-transform duration-300 cursor-pointer">
+            <div className="flex flex-col gap-4 rounded-xl border border-gray-800 bg-gray-900/50 p-6  transition-transform duration-300 cursor-pointer">
               <div className="flex flex-col md:flex-row gap-4 items-center">
                 <div className="flex-1 md:pl-8">
                   <p className="text-white text-base font-medium leading-normal">
@@ -310,7 +302,7 @@ export function CategoryDashboard({
                 </div>
               </div>
             </div>
-            <div className="flex flex-col gap-4 rounded-xl border border-gray-800 bg-gray-900/50 p-6 hover:scale-105 transition-transform duration-300 cursor-pointer">
+            <div className="flex flex-col gap-4 rounded-xl border border-gray-800 bg-gray-900/50 p-6  transition-transform duration-300 cursor-pointer">
               <div className="flex flex-col md:flex-row gap-4 items-center">
                 <div className="flex-1 md:pl-8">
                   <p className="text-white text-base font-medium leading-normal">
@@ -401,7 +393,7 @@ export function CategoryDashboard({
                 </div>
               </div>
             </div>
-            <div className="flex flex-col gap-4 rounded-xl border border-gray-800 bg-gray-900/50 p-6 hover:scale-105 transition-transform duration-300 cursor-pointer">
+            <div className="flex flex-col gap-4 rounded-xl border border-gray-800 bg-gray-900/50 p-6  transition-transform duration-300 cursor-pointer">
               <div className="flex flex-col md:flex-row gap-4 items-center">
                 <div className="flex-1 md:pl-8">
                   <p className="text-white text-base font-medium leading-normal">
@@ -497,20 +489,11 @@ export function CategoryDashboard({
       </main>
     );
 
-    // Weekly KPI Dashboard Content (from hebodomadaire.html)
     const WeeklyDashboard = () => (
       <main className="flex-1">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-white mb-2">
-            Tableau de bord des KPI Hebdomadaires
-          </h1>
-          <p className="text-gray-400 text-base font-normal leading-normal">
-            Vue en direct des indicateurs de performance clés hebdomadaires.
-          </p>
-        </div>
         <div className="flex flex-col flex-grow gap-6">
           <div className="flex flex-col gap-6">
-            <div className="flex flex-col gap-4 rounded-xl border border-gray-800 bg-gray-900/50 p-6 hover:scale-105 transition-transform duration-300 cursor-pointer">
+            <div className="flex flex-col gap-4 rounded-xl border border-gray-800 bg-gray-900/50 p-6  transition-transform duration-300 cursor-pointer">
               <div className="flex flex-col md:flex-row gap-4 items-center">
                 <div className="flex-1 md:pl-8">
                   <p className="text-white text-base font-medium leading-normal">
@@ -600,7 +583,7 @@ export function CategoryDashboard({
                 </div>
               </div>
             </div>
-            <div className="flex flex-col gap-4 rounded-xl border border-gray-800 bg-gray-900/50 p-6 hover:scale-105 transition-transform duration-300 cursor-pointer">
+            <div className="flex flex-col gap-4 rounded-xl border border-gray-800 bg-gray-900/50 p-6  transition-transform duration-300 cursor-pointer">
               <div className="flex flex-col md:flex-row gap-4 items-center">
                 <div className="flex-1 md:pl-8">
                   <p className="text-white text-base font-medium leading-normal">
@@ -691,7 +674,7 @@ export function CategoryDashboard({
                 </div>
               </div>
             </div>
-            <div className="flex flex-col gap-4 rounded-xl border border-gray-800 bg-gray-900/50 p-6 hover:scale-105 transition-transform duration-300 cursor-pointer">
+            <div className="flex flex-col gap-4 rounded-xl border border-gray-800 bg-gray-900/50 p-6  transition-transform duration-300 cursor-pointer">
               <div className="flex flex-col md:flex-row gap-4 items-center">
                 <div className="flex-1 md:pl-8">
                   <p className="text-white text-base font-medium leading-normal">
@@ -794,10 +777,10 @@ export function CategoryDashboard({
           <div className="mb-6 flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-white mb-2">
-                Finance Dashboard
+                Indicateurs Hebdomadaires {activeTab === "monthly" ? "Mensuel" : "Hebdomadaires"}
               </h1>
               <p className="text-gray-300">
-                Monitoring key financial performance indicators
+                Vue en direct des indicateurs de performance clés {activeTab === "monthly" ? "mensuels" : "hebdomadaires"}.
               </p>
             </div>
             <TabSelector
@@ -831,12 +814,11 @@ export function CategoryDashboard({
                 ramp-up
               </p>
             </div>
-            <TabSelector activeTab={activeTab} onTabChange={setActiveTab} />
           </div>
 
           {/* Main Content Grid - 3 Column Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1">
-            <div className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer flex flex-col">
+            <div className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl  transition-all duration-300 cursor-pointer flex flex-col">
               <div className="flex flex-col gap-1">
                 <p className="text-white text-sm font-semibold leading-normal flex items-center">
                   On-Time Delivery (OTD)
@@ -955,7 +937,7 @@ export function CategoryDashboard({
               </div>
             </div>
 
-            <div className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer flex flex-col">
+            <div className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl  transition-all duration-300 cursor-pointer flex flex-col">
               <div className="flex flex-col gap-1">
                 <p className="text-white text-sm font-semibold leading-normal">
                   Equipment Availability
@@ -1080,7 +1062,7 @@ export function CategoryDashboard({
               </div>
             </div>
 
-            <div className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer flex flex-col">
+            <div className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl  transition-all duration-300 cursor-pointer flex flex-col">
               <div className="flex flex-col gap-1">
                 <p className="text-white text-sm font-semibold leading-normal">
                   Recruitment Progress
@@ -1205,7 +1187,7 @@ export function CategoryDashboard({
               </div>
             </div>
 
-            <div className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer flex flex-col">
+            <div className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl  transition-all duration-300 cursor-pointer flex flex-col">
               <p className="text-white text-sm font-semibold leading-normal">
                 Budget vs. Actual (CAPEX/OPEX)
                 <span className="text-green-400 ml-2">✓</span>
@@ -1422,7 +1404,7 @@ export function CategoryDashboard({
               </div>
             </div>
 
-            <div className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer flex flex-col">
+            <div className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl  transition-all duration-300 cursor-pointer flex flex-col">
               <div className="flex flex-col gap-1">
                 <p className="text-white text-sm font-semibold leading-normal">
                   Planning Progress (APQP)
@@ -1512,7 +1494,7 @@ export function CategoryDashboard({
               </div>
             </div>
 
-            <div className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer flex flex-col">
+            <div className="bg-slate-800/90 p-6 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm hover:shadow-2xl  transition-all duration-300 cursor-pointer flex flex-col">
               <p className="text-white text-sm font-semibold leading-normal">
                 Statut de la Documentation Projet
                 <span className="text-emerald-400 ml-2">✓</span>
@@ -1656,51 +1638,51 @@ export function CategoryDashboard({
     // Monthly Operations Component
     const MonthlyOperations = () => (
       <main className="flex-grow">
-        <div className="grid w-full grid-cols-1 gap-6">
+        <div className="grid w-full grid-cols-1 gap-2">
           {/* Écart de Production */}
-          <div className="rounded-lg border border-white/20 bg-slate-800/90 backdrop-blur-sm p-6 hover:scale-105 transition-transform duration-300 cursor-pointer">
-            <h2 className="mb-4 text-lg font-semibold text-gray-300">
+          <div className="rounded-lg border border-white/20 bg-slate-800/90 backdrop-blur-sm p-2 lg:p-4 transition-transform duration-300 cursor-pointer">
+            <h2 className="mb-1 lg:mb-3 text-sm lg:text-lg font-semibold text-gray-300">
               Écart de Production
             </h2>
-            <div className="grid grid-cols-1 items-center gap-6 md:grid-cols-2">
+            <div className="grid grid-cols-1 items-center gap-2 lg:gap-4 md:grid-cols-2">
               <div className="flex flex-col">
-                <div className="flex items-end gap-4">
-                  <p className="text-5xl font-bold text-white">-85</p>
+                <div className="flex items-end gap-1.5 lg:gap-3">
+                  <p className="text-2xl lg:text-4xl font-bold text-white">-85</p>
                   <div className="flex items-center text-green-500">
-                    <div className="flex items-baseline gap-1.5">
-                      <p className="text-3xl font-bold">+23</p>
-                      <p className="text-sm">vs mois précédent</p>
+                    <div className="flex items-baseline gap-1">
+                      <p className="text-lg lg:text-2xl font-bold">+23</p>
+                      <p className="text-[10px] lg:text-sm">vs mois précédent</p>
                     </div>
                   </div>
                 </div>
-                <div className="mt-6 grid grid-cols-4 gap-4">
+                <div className="mt-2 lg:mt-6 grid grid-cols-4 gap-1.5 lg:gap-3">
                   <div className="flex flex-col items-center justify-center">
-                    <div className="mb-2 flex h-16 w-16 items-center justify-center rounded-full border-2 border-yellow-500 bg-transparent">
-                      <p className="text-xl font-bold text-yellow-500">-180</p>
+                    <div className="mb-0.5 lg:mb-2 flex h-8 w-8 lg:h-16 lg:w-16 items-center justify-center rounded-full border-2 border-yellow-500 bg-transparent">
+                      <p className="text-[10px] lg:text-base font-bold text-yellow-500">-180</p>
                     </div>
-                    <p className="text-sm font-medium text-gray-400">Jan</p>
+                    <p className="text-[9px] lg:text-sm font-medium text-gray-400">Jan</p>
                   </div>
                   <div className="flex flex-col items-center justify-center">
-                    <div className="mb-2 flex h-16 w-16 items-center justify-center rounded-full border-2 border-green-500 bg-transparent">
-                      <p className="text-xl font-bold text-green-500">-20</p>
+                    <div className="mb-0.5 lg:mb-2 flex h-8 w-8 lg:h-16 lg:w-16 items-center justify-center rounded-full border-2 border-green-500 bg-transparent">
+                      <p className="text-[10px] lg:text-base font-bold text-green-500">-20</p>
                     </div>
-                    <p className="text-sm font-medium text-gray-400">Fév</p>
+                    <p className="text-[9px] lg:text-sm font-medium text-gray-400">Fév</p>
                   </div>
                   <div className="flex flex-col items-center justify-center">
-                    <div className="mb-2 flex h-16 w-16 items-center justify-center rounded-full border-2 border-red-500 bg-transparent">
-                      <p className="text-xl font-bold text-red-500">-200</p>
+                    <div className="mb-0.5 lg:mb-2 flex h-8 w-8 lg:h-16 lg:w-16 items-center justify-center rounded-full border-2 border-red-500 bg-transparent">
+                      <p className="text-[10px] lg:text-base font-bold text-red-500">-200</p>
                     </div>
-                    <p className="text-sm font-medium text-gray-400">Mar</p>
+                    <p className="text-[9px] lg:text-sm font-medium text-gray-400">Mar</p>
                   </div>
                   <div className="flex flex-col items-center justify-center">
-                    <div className="mb-2 flex h-16 w-16 items-center justify-center rounded-full border-2 border-green-500 bg-transparent">
-                      <p className="text-xl font-bold text-green-500">50</p>
+                    <div className="mb-0.5 lg:mb-2 flex h-8 w-8 lg:h-16 lg:w-16 items-center justify-center rounded-full border-2 border-green-500 bg-transparent">
+                      <p className="text-[10px] lg:text-base font-bold text-green-500">50</p>
                     </div>
-                    <p className="text-sm font-medium text-gray-400">Avr</p>
+                    <p className="text-[9px] lg:text-sm font-medium text-gray-400">Avr</p>
                   </div>
                 </div>
               </div>
-              <div className="flex h-48 w-full items-center justify-center">
+              <div className="flex h-20 lg:h-24 w-full items-center justify-center">
                 <svg
                   className="h-full w-full"
                   preserveAspectRatio="xMidYMid meet"
@@ -1740,50 +1722,50 @@ export function CategoryDashboard({
           </div>
 
           {/* Scrap valuation indicateur */}
-          <div className="rounded-lg border border-white/20 bg-slate-800/90 backdrop-blur-sm p-6 hover:scale-105 transition-transform duration-300 cursor-pointer">
-            <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-300">
+          <div className="rounded-lg border border-white/20 bg-slate-800/90 backdrop-blur-sm p-2 transition-transform duration-300 cursor-pointer">
+            <h2 className="mb-1 lg:mb-3 flex items-center gap-1.5 text-sm lg:text-lg font-semibold text-gray-300">
               Scrap valuation indicateur
-              <span className="text-2xl text-yellow-400">⚠️</span>
+              <span className="text-base lg:text-lg text-yellow-400">⚠️</span>
             </h2>
-            <div className="grid grid-cols-1 items-center gap-6 md:grid-cols-2">
+            <div className="grid grid-cols-1 items-center gap-2 lg:gap-3 md:grid-cols-2">
               <div className="flex flex-col">
-                <div className="flex items-end gap-4">
-                  <p className="text-5xl font-bold text-white">€1.1k</p>
+                <div className="flex items-end gap-1.5 lg:gap-2">
+                  <p className="text-2xl lg:text-3xl font-bold text-white">€1.1k</p>
                   <div className="flex items-center text-green-500">
-                    <div className="flex items-baseline gap-1.5">
-                      <p className="text-3xl font-bold">-€0.1k</p>
-                      <p className="text-sm">vs mois précédent</p>
+                    <div className="flex items-baseline gap-1">
+                      <p className="text-lg lg:text-xl font-bold">-€0.1k</p>
+                      <p className="text-[10px] lg:text-xs">vs mois précédent</p>
                     </div>
                   </div>
                 </div>
-                <div className="mt-6 grid grid-cols-4 gap-4">
+                <div className="mt-2 lg:mt-6 grid grid-cols-4 gap-1.5 lg:gap-3">
                   <div className="flex flex-col items-center justify-center">
-                    <div className="mb-2 flex h-16 w-16 items-center justify-center rounded-full border-2 border-green-500 bg-transparent">
-                      <p className="text-xl font-bold text-green-500">€0.8k</p>
+                    <div className="mb-0.5 lg:mb-2 flex h-8 w-8 lg:h-16 lg:w-16 items-center justify-center rounded-full border-2 border-green-500 bg-transparent">
+                      <p className="text-[9px] lg:text-sm font-bold text-green-500">€0.8k</p>
                     </div>
-                    <p className="text-sm font-medium text-gray-400">Jan</p>
+                    <p className="text-[9px] lg:text-sm font-medium text-gray-400">Jan</p>
                   </div>
                   <div className="flex flex-col items-center justify-center">
-                    <div className="mb-2 flex h-16 w-16 items-center justify-center rounded-full border-2 border-red-500 bg-transparent">
-                      <p className="text-xl font-bold text-red-500">€1.2k</p>
+                    <div className="mb-0.5 lg:mb-2 flex h-8 w-8 lg:h-16 lg:w-16 items-center justify-center rounded-full border-2 border-red-500 bg-transparent">
+                      <p className="text-[9px] lg:text-sm font-bold text-red-500">€1.2k</p>
                     </div>
-                    <p className="text-sm font-medium text-gray-400">Fév</p>
+                    <p className="text-[9px] lg:text-sm font-medium text-gray-400">Fév</p>
                   </div>
                   <div className="flex flex-col items-center justify-center">
-                    <div className="mb-2 flex h-16 w-16 items-center justify-center rounded-full border-2 border-green-500 bg-transparent">
-                      <p className="text-xl font-bold text-green-500">€1.4k</p>
+                    <div className="mb-0.5 lg:mb-2 flex h-8 w-8 lg:h-16 lg:w-16 items-center justify-center rounded-full border-2 border-green-500 bg-transparent">
+                      <p className="text-[9px] lg:text-sm font-bold text-green-500">€1.4k</p>
                     </div>
-                    <p className="text-sm font-medium text-gray-400">Mar</p>
+                    <p className="text-[9px] lg:text-sm font-medium text-gray-400">Mar</p>
                   </div>
                   <div className="flex flex-col items-center justify-center">
-                    <div className="mb-2 flex h-16 w-16 items-center justify-center rounded-full border-2 border-yellow-500 bg-transparent">
-                      <p className="text-xl font-bold text-yellow-500">€1.4k</p>
+                    <div className="mb-0.5 lg:mb-2 flex h-8 w-8 lg:h-16 lg:w-16 items-center justify-center rounded-full border-2 border-yellow-500 bg-transparent">
+                      <p className="text-[9px] lg:text-sm font-bold text-yellow-500">€1.4k</p>
                     </div>
-                    <p className="text-sm font-medium text-gray-400">Avr</p>
+                    <p className="text-[9px] lg:text-sm font-medium text-gray-400">Avr</p>
                   </div>
                 </div>
               </div>
-              <div className="flex h-48 w-full items-center justify-center">
+              <div className="flex h-20 lg:h-40 w-full items-center justify-center">
                 <svg
                   className="h-full w-full"
                   preserveAspectRatio="xMidYMid meet"
@@ -1823,49 +1805,49 @@ export function CategoryDashboard({
           </div>
 
           {/* Suivi de l'Efficience mensuelle */}
-          <div className="rounded-lg border border-white/20 bg-slate-800/90 backdrop-blur-sm p-6 hover:scale-105 transition-transform duration-300 cursor-pointer">
-            <h2 className="mb-4 text-lg font-semibold text-gray-300">
+          <div className="rounded-lg border border-white/20 bg-slate-800/90 backdrop-blur-sm p-2 transition-transform duration-300 cursor-pointer">
+            <h2 className="mb-1 lg:mb-2 text-sm lg:text-base font-semibold text-gray-300">
               Suivi de l&apos;Efficience mensuelle
             </h2>
-            <div className="grid grid-cols-1 items-center gap-6 md:grid-cols-2">
+            <div className="grid grid-cols-1 items-center gap-2 lg:gap-3 md:grid-cols-2">
               <div className="flex flex-col">
-                <div className="flex items-end gap-4">
-                  <p className="text-5xl font-bold text-white">91%</p>
+                <div className="flex items-end gap-1.5 lg:gap-2">
+                  <p className="text-2xl lg:text-3xl font-bold text-white">91%</p>
                   <div className="flex items-center text-green-500">
-                    <div className="flex items-baseline gap-1.5">
-                      <p className="text-3xl font-bold">+1%</p>
-                      <p className="text-sm">vs mois précédent</p>
+                    <div className="flex items-baseline gap-1">
+                      <p className="text-lg lg:text-xl font-bold">+1%</p>
+                      <p className="text-[10px] lg:text-xs">vs mois précédent</p>
                     </div>
                   </div>
                 </div>
-                <div className="mt-6 grid grid-cols-4 gap-4">
+                <div className="mt-2 lg:mt-6 grid grid-cols-4 gap-1.5 lg:gap-3">
                   <div className="flex flex-col items-center justify-center">
-                    <div className="mb-2 flex h-16 w-16 items-center justify-center rounded-full border-2 border-green-500 bg-transparent">
-                      <p className="text-xl font-bold text-green-500">93%</p>
+                    <div className="mb-0.5 lg:mb-2 flex h-8 w-8 lg:h-16 lg:w-16 items-center justify-center rounded-full border-2 border-green-500 bg-transparent">
+                      <p className="text-[10px] lg:text-base font-bold text-green-500">93%</p>
                     </div>
-                    <p className="text-sm font-medium text-gray-400">Jan</p>
+                    <p className="text-[9px] lg:text-sm font-medium text-gray-400">Jan</p>
                   </div>
                   <div className="flex flex-col items-center justify-center">
-                    <div className="mb-2 flex h-16 w-16 items-center justify-center rounded-full border-2 border-green-500 bg-transparent">
-                      <p className="text-xl font-bold text-green-500">94%</p>
+                    <div className="mb-0.5 lg:mb-2 flex h-8 w-8 lg:h-16 lg:w-16 items-center justify-center rounded-full border-2 border-green-500 bg-transparent">
+                      <p className="text-[10px] lg:text-base font-bold text-green-500">94%</p>
                     </div>
-                    <p className="text-sm font-medium text-gray-400">Fév</p>
+                    <p className="text-[9px] lg:text-sm font-medium text-gray-400">Fév</p>
                   </div>
                   <div className="flex flex-col items-center justify-center">
-                    <div className="mb-2 flex h-16 w-16 items-center justify-center rounded-full border-2 border-green-500 bg-transparent">
-                      <p className="text-xl font-bold text-green-500">89%</p>
+                    <div className="mb-0.5 lg:mb-2 flex h-8 w-8 lg:h-16 lg:w-16 items-center justify-center rounded-full border-2 border-green-500 bg-transparent">
+                      <p className="text-[10px] lg:text-base font-bold text-green-500">89%</p>
                     </div>
-                    <p className="text-sm font-medium text-gray-400">Mar</p>
+                    <p className="text-[9px] lg:text-sm font-medium text-gray-400">Mar</p>
                   </div>
                   <div className="flex flex-col items-center justify-center">
-                    <div className="mb-2 flex h-16 w-16 items-center justify-center rounded-full border-2 border-green-500 bg-transparent">
-                      <p className="text-xl font-bold text-green-500">92%</p>
+                    <div className="mb-0.5 lg:mb-2 flex h-8 w-8 lg:h-16 lg:w-16 items-center justify-center rounded-full border-2 border-green-500 bg-transparent">
+                      <p className="text-[10px] lg:text-base font-bold text-green-500">92%</p>
                     </div>
-                    <p className="text-sm font-medium text-gray-400">Avr</p>
+                    <p className="text-[9px] lg:text-sm font-medium text-gray-400">Avr</p>
                   </div>
                 </div>
               </div>
-              <div className="flex h-48 w-full items-center justify-center">
+              <div className="flex h-20 lg:h-40 w-full items-center justify-center">
                 <svg
                   className="h-full w-full"
                   preserveAspectRatio="xMidYMid meet"
@@ -1905,34 +1887,34 @@ export function CategoryDashboard({
           </div>
 
           {/* Bottom Grid - Coût Consommables and Taux de Panne Machine */}
-          <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
-            <div className="rounded-lg border border-white/20 bg-slate-800/90 backdrop-blur-sm p-6 hover:scale-105 transition-transform duration-300 cursor-pointer">
-              <h2 className="mb-4 text-lg font-semibold text-gray-300">
+          <div className="grid w-full grid-cols-1 gap-2 md:grid-cols-2">
+            <div className="rounded-lg border border-white/20 bg-slate-800/90 backdrop-blur-sm p-2 transition-transform duration-300 cursor-pointer">
+              <h2 className="mb-1 lg:mb-3 text-sm lg:text-lg font-semibold text-gray-300">
                 Coût Consommables
               </h2>
               <div className="flex items-center justify-between">
                 <div className="flex flex-col">
-                  <div className="flex items-baseline gap-4">
-                    <p className="text-5xl font-bold text-white">12 500 MAD</p>
+                  <div className="flex items-baseline gap-1.5 lg:gap-3">
+                    <p className="text-xl lg:text-3xl font-bold text-white">12 500 MAD</p>
                     <div className="flex items-center text-red-500">
-                      <div className="flex items-baseline gap-1.5">
-                        <span className="text-3xl font-bold">+5%</span>
-                        <span className="text-sm">vs mois dernier</span>
+                      <div className="flex items-baseline gap-0.5">
+                        <span className="text-base lg:text-xl font-bold">+5%</span>
+                        <span className="text-[10px] lg:text-sm">vs mois dernier</span>
                       </div>
                     </div>
                   </div>
-                  <p className="mt-1 text-sm text-gray-400">
+                  <p className="mt-0.5 lg:mt-1 text-[10px] lg:text-sm text-gray-400">
                     Dépensé ce mois-ci
                   </p>
                 </div>
               </div>
             </div>
-            <div className="rounded-lg border border-white/20 bg-slate-800/90 backdrop-blur-sm p-6 hover:scale-105 transition-transform duration-300 cursor-pointer">
-              <h2 className="mb-4 text-center text-lg font-semibold text-gray-300">
+            <div className="rounded-lg border border-white/20 bg-slate-800/90 backdrop-blur-sm p-2 transition-transform duration-300 cursor-pointer">
+              <h2 className="mb-1 lg:mb-3 text-center text-sm lg:text-lg font-semibold text-gray-300">
                 Taux de Panne Machine
               </h2>
               <div className="flex items-center justify-center">
-                <div className="relative h-32 w-32">
+                <div className="relative h-16 w-16 lg:h-32 lg:w-32">
                   <svg
                     className="h-full w-full -rotate-90 transform"
                     viewBox="0 0 120 120"
@@ -1960,13 +1942,13 @@ export function CategoryDashboard({
                     />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <p className="text-3xl font-bold text-white">4.8%</p>
+                    <p className="text-base lg:text-2xl font-bold text-white">4.8%</p>
                   </div>
                 </div>
-                <div className="ml-6 flex items-center text-red-500">
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl font-bold">+0.2%</span>
-                    <p className="text-sm text-gray-400">VS mois dernier</p>
+                <div className="ml-2 lg:ml-4 flex items-center text-red-500">
+                  <div className="flex items-baseline gap-0.5 lg:gap-1">
+                    <span className="text-base lg:text-xl font-bold">+0.2%</span>
+                    <p className="text-[10px] lg:text-sm text-gray-400">VS mois dernier</p>
                   </div>
                 </div>
               </div>
@@ -1979,28 +1961,28 @@ export function CategoryDashboard({
     // Weekly Operations Component
     const WeeklyOperations = () => (
       <main className="w-full flex-shrink-0">
-        <div className="flex flex-col gap-6">
-          <div className="relative grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div className="flex flex-col overflow-hidden rounded-lg bg-slate-800/90 backdrop-blur-sm p-6 min-h-[380px] hover:scale-105 transition-transform duration-300 cursor-pointer">
-              <h2 className="mb-2 text-lg font-semibold text-gray-300">
+        <div className="flex flex-col gap-2">
+          <div className="relative grid grid-cols-1 gap-2 md:grid-cols-2">
+            <div className="flex flex-col overflow-hidden rounded-lg bg-slate-800/90 backdrop-blur-sm p-2 lg:p-4 min-h-[200px] lg:min-h-[340px] transition-transform duration-300 cursor-pointer">
+              <h2 className="mb-1 lg:mb-2 text-sm lg:text-lg font-semibold text-gray-300">
                 Taux d&apos;Heures Supplémentaires
               </h2>
-              <div className="flex items-end gap-4 mb-4">
-                <p className="text-5xl font-bold text-white">2.5%</p>
-                <div className="flex flex-col items-start gap-1">
-                  <span className="text-xs text-gray-400">
+              <div className="flex items-end gap-1.5 lg:gap-3 mb-1.5 lg:mb-3">
+                <p className="text-2xl lg:text-4xl font-bold text-white">2.5%</p>
+                <div className="flex flex-col items-start gap-0">
+                  <span className="text-[9px] lg:text-xs text-gray-400">
                     Variation vs semaine précédente
                   </span>
-                  <div className="flex items-center text-sm text-green-500 gap-1">
-                    <span className="material-symbols-outlined text-base">
+                  <div className="flex items-center text-sm text-green-500 gap-0.5">
+                    <span className="material-symbols-outlined text-xs lg:text-base">
                       arrow_downward
                     </span>
-                    <p className="text-2xl font-semibold">-0.3%</p>
+                    <p className="text-base lg:text-lg font-semibold">-0.3%</p>
                   </div>
                 </div>
               </div>
-              <div className="mt-auto flex flex-col pt-6">
-                <div className="relative h-20 w-full mb-6">
+              <div className="mt-auto flex flex-col pt-1.5 lg:pt-3">
+                <div className="relative h-10 lg:h-20 w-full mb-2 lg:mb-4">
                   <svg
                     className="absolute inset-0 h-full w-full"
                     fill="none"
@@ -2042,66 +2024,66 @@ export function CategoryDashboard({
                       fill="url(#gradient1)"
                     />
                   </svg>
-                  <div className="absolute -top-1.5 left-0 text-xs text-gray-500">
+                  <div className="absolute -top-1.5 left-0 text-[9px] lg:text-[10px] text-gray-500">
                     Target
                   </div>
                 </div>
-                <div className="mt-2 flex justify-between gap-2">
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-blue-500 bg-slate-800 p-1">
-                      <span className="text-base font-bold text-white leading-none">
+                <div className="mt-0.5 lg:mt-2 flex justify-between gap-1 lg:gap-2">
+                  <div className="flex flex-col items-center gap-0.5 lg:gap-1">
+                    <div className="flex h-10 w-10 lg:h-14 lg:w-14 items-center justify-center rounded-full border-2 border-blue-500 bg-slate-800 p-1">
+                      <span className="text-[10px] lg:text-xs font-bold text-white leading-none">
                         2.2%
                       </span>
                     </div>
-                    <span className="font-bold text-gray-400 text-sm">S1</span>
+                    <span className="font-bold text-gray-400 text-[9px] lg:text-[10px]">S1</span>
                   </div>
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-yellow-400 bg-slate-800 p-1">
-                      <span className="text-base font-bold text-yellow-400 leading-none">
+                  <div className="flex flex-col items-center gap-0.5">
+                    <div className="flex h-10 w-10 lg:h-11 lg:w-11 items-center justify-center rounded-full border-2 border-yellow-400 bg-slate-800 p-1">
+                      <span className="text-[10px] lg:text-xs font-bold text-yellow-400 leading-none">
                         2.8%
                       </span>
                     </div>
-                    <span className="font-bold text-gray-400 text-sm">S2</span>
+                    <span className="font-bold text-gray-400 text-[9px] lg:text-[10px]">S2</span>
                   </div>
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-blue-500 bg-slate-800 p-1">
-                      <span className="text-base font-bold text-white leading-none">
+                  <div className="flex flex-col items-center gap-0.5">
+                    <div className="flex h-10 w-10 lg:h-11 lg:w-11 items-center justify-center rounded-full border-2 border-blue-500 bg-slate-800 p-1">
+                      <span className="text-[10px] lg:text-xs font-bold text-white leading-none">
                         2.3%
                       </span>
                     </div>
-                    <span className="font-bold text-gray-400 text-sm">S3</span>
+                    <span className="font-bold text-gray-400 text-[9px] lg:text-[10px]">S3</span>
                   </div>
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-blue-500 bg-slate-800 p-1">
-                      <span className="text-base font-bold text-white leading-none">
+                  <div className="flex flex-col items-center gap-0.5">
+                    <div className="flex h-10 w-10 lg:h-11 lg:w-11 items-center justify-center rounded-full border-2 border-blue-500 bg-slate-800 p-1">
+                      <span className="text-[10px] lg:text-xs font-bold text-white leading-none">
                         2.5%
                       </span>
                     </div>
-                    <span className="font-bold text-gray-400 text-sm">S4</span>
+                    <span className="font-bold text-gray-400 text-[9px] lg:text-[10px]">S4</span>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="flex flex-col overflow-hidden rounded-lg bg-slate-800/90 backdrop-blur-sm p-6 min-h-[380px] hover:scale-105 transition-transform duration-300 cursor-pointer">
-              <h2 className="mb-2 flex items-center gap-2 text-lg font-semibold text-gray-300">
+            <div className="flex flex-col overflow-hidden rounded-lg bg-slate-800/90 backdrop-blur-sm p-2 lg:p-4 min-h-[200px] lg:min-h-[340px] transition-transform duration-300 cursor-pointer">
+              <h2 className="mb-1 lg:mb-2 flex items-center gap-1.5 text-sm lg:text-lg font-semibold text-gray-300">
                 Taux de Chômage technique
-                <span className="text-2xl text-yellow-400">⚠️</span>
+                <span className="text-base lg:text-lg text-yellow-400">⚠️</span>
               </h2>
-              <div className="flex items-end gap-4 mb-4">
-                <p className="flex items-center text-5xl font-bold text-red-500">
+              <div className="flex items-end gap-1.5 lg:gap-3 mb-1.5 lg:mb-3">
+                <p className="flex items-center text-2xl lg:text-3xl font-bold text-red-500">
                   1.68%
                 </p>
-                <div className="flex flex-col items-start gap-1">
-                  <span className="text-xs text-gray-400">
+                <div className="flex flex-col items-start gap-0">
+                  <span className="text-[9px] lg:text-[10px] text-gray-400">
                     Variation vs semaine précédente
                   </span>
-                  <div className="flex items-center text-sm text-red-500 gap-1">
-                    <p className="text-2xl font-semibold">+0.2%</p>
+                  <div className="flex items-center text-sm text-red-500 gap-0.5">
+                    <p className="text-base lg:text-lg font-semibold">+0.2%</p>
                   </div>
                 </div>
               </div>
-              <div className="mt-auto flex flex-col pt-6">
-                <div className="relative h-20 w-full mb-6">
+              <div className="mt-auto flex flex-col pt-1.5 lg:pt-3">
+                <div className="relative h-10 lg:h-20 w-full mb-2 lg:mb-4">
                   <svg
                     className="absolute inset-0 h-full w-full"
                     fill="none"
@@ -2143,56 +2125,56 @@ export function CategoryDashboard({
                       fill="url(#gradient2)"
                     />
                   </svg>
-                  <div className="absolute -top-1.5 left-0 text-xs text-gray-500">
+                  <div className="absolute -top-1.5 left-0 text-[9px] lg:text-[10px] text-gray-500">
                     Target
                   </div>
                 </div>
-                <div className="mt-2 flex justify-between gap-2">
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-yellow-400 bg-slate-800 p-1">
-                      <span className="text-base font-bold text-yellow-400 leading-none">
+                <div className="mt-0.5 flex justify-between gap-1">
+                  <div className="flex flex-col items-center gap-0.5">
+                    <div className="flex h-10 w-10 lg:h-11 lg:w-11 items-center justify-center rounded-full border-2 border-yellow-400 bg-slate-800 p-1">
+                      <span className="text-[10px] lg:text-xs font-bold text-yellow-400 leading-none">
                         1.75%
                       </span>
                     </div>
-                    <span className="font-bold text-gray-400 text-sm">S1</span>
+                    <span className="font-bold text-gray-400 text-[9px] lg:text-[10px]">S1</span>
                   </div>
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-blue-500 bg-slate-800 p-1">
-                      <span className="text-base font-bold text-white leading-none">
+                  <div className="flex flex-col items-center gap-0.5">
+                    <div className="flex h-10 w-10 lg:h-11 lg:w-11 items-center justify-center rounded-full border-2 border-blue-500 bg-slate-800 p-1">
+                      <span className="text-[10px] lg:text-xs font-bold text-white leading-none">
                         1.48%
                       </span>
                     </div>
-                    <span className="font-bold text-gray-400 text-sm">S2</span>
+                    <span className="font-bold text-gray-400 text-[9px] lg:text-[10px]">S2</span>
                   </div>
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-yellow-400 bg-slate-800 p-1">
-                      <span className="text-base font-bold text-yellow-400 leading-none">
+                  <div className="flex flex-col items-center gap-0.5">
+                    <div className="flex h-10 w-10 lg:h-11 lg:w-11 items-center justify-center rounded-full border-2 border-yellow-400 bg-slate-800 p-1">
+                      <span className="text-[10px] lg:text-xs font-bold text-yellow-400 leading-none">
                         1.62%
                       </span>
                     </div>
-                    <span className="font-bold text-gray-400 text-sm">S3</span>
+                    <span className="font-bold text-gray-400 text-[9px] lg:text-[10px]">S3</span>
                   </div>
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-yellow-400 bg-slate-800 p-1">
-                      <span className="text-base font-bold text-yellow-400 leading-none">
+                  <div className="flex flex-col items-center gap-0.5">
+                    <div className="flex h-10 w-10 lg:h-11 lg:w-11 items-center justify-center rounded-full border-2 border-yellow-400 bg-slate-800 p-1">
+                      <span className="text-[10px] lg:text-xs font-bold text-yellow-400 leading-none">
                         1.68%
                       </span>
                     </div>
-                    <span className="font-bold text-gray-400 text-sm">S4</span>
+                    <span className="font-bold text-gray-400 text-[9px] lg:text-[10px]">S4</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="rounded-lg bg-gray-900/50 p-6">
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div className="flex flex-col overflow-hidden rounded-lg bg-slate-800/90 backdrop-blur-sm p-6 min-h-[380px] hover:scale-105 transition-transform duration-300 cursor-pointer">
-                <h2 className="mb-2 flex items-center gap-2 text-lg font-semibold text-gray-300">
+          <div className="rounded-lg bg-gray-900/50">
+            <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+              <div className="flex flex-col overflow-hidden rounded-lg bg-slate-800/90 backdrop-blur-sm p-2 lg:p-4 min-h-[200px] lg:min-h-[340px] transition-transform duration-300 cursor-pointer">
+                <h2 className="mb-1 lg:mb-2 flex items-center gap-1.5 text-sm lg:text-lg font-semibold text-gray-300">
                   Taux de Scrap{" "}
-                  <span className="text-2xl text-yellow-400">⚠️</span>
+                  <span className="text-base lg:text-lg text-yellow-400">⚠️</span>
                 </h2>
-                <div className="flex items-center gap-4">
-                  <div className="relative flex h-32 w-32 flex-shrink-0 items-center justify-center">
+                <div className="flex items-center gap-1.5 lg:gap-3">
+                  <div className="relative flex h-16 w-16 lg:h-28 lg:w-28 flex-shrink-0 items-center justify-center">
                     <svg
                       className="h-full w-full -rotate-90"
                       viewBox="0 0 100 100"
@@ -2218,22 +2200,22 @@ export function CategoryDashboard({
                       />
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-4xl font-bold text-white">
+                      <span className="text-xl lg:text-3xl font-bold text-white">
                         1.5%
                       </span>
                     </div>
                   </div>
-                  <div className="flex flex-col items-start gap-1">
-                    <span className="text-xs text-gray-400">
+                  <div className="flex flex-col items-start gap-0">
+                    <span className="text-[9px] lg:text-[10px] text-gray-400">
                       Variation vs semaine précédente
                     </span>
-                    <div className="flex items-center text-red-500 gap-1">
-                      <span className="text-2xl font-semibold">+0.1%</span>
+                    <div className="flex items-center text-red-500 gap-0.5">
+                      <span className="text-base lg:text-lg font-semibold">+0.1%</span>
                     </div>
                   </div>
                 </div>
-                <div className="mt-auto flex flex-col pt-6">
-                  <div className="relative h-20 w-full mb-6">
+                <div className="mt-auto flex flex-col pt-1.5 lg:pt-3">
+                  <div className="relative h-10 lg:h-20 w-full mb-2 lg:mb-4">
                     <svg
                       className="absolute inset-0 h-full w-full"
                       fill="none"
@@ -2275,60 +2257,60 @@ export function CategoryDashboard({
                         fill="url(#gradient3)"
                       />
                     </svg>
-                    <div className="absolute -top-1.5 left-0 text-xs text-gray-500">
+                    <div className="absolute -top-1.5 left-0 text-[9px] lg:text-[10px] text-gray-500">
                       Target
                     </div>
                   </div>
-                  <div className="mt-2 flex justify-between gap-2">
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-yellow-400 bg-slate-800 p-1">
-                        <span className="text-base font-bold text-yellow-400 leading-none">
+                  <div className="mt-0.5 flex justify-between gap-1">
+                    <div className="flex flex-col items-center gap-0.5">
+                      <div className="flex h-10 w-10 lg:h-11 lg:w-11 items-center justify-center rounded-full border-2 border-yellow-400 bg-slate-800 p-1">
+                        <span className="text-[10px] lg:text-xs font-bold text-yellow-400 leading-none">
                           1.25%
                         </span>
                       </div>
-                      <span className="font-bold text-gray-400 text-sm">
+                      <span className="font-bold text-gray-400 text-[9px] lg:text-[10px]">
                         S1
                       </span>
                     </div>
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-blue-500 bg-slate-800 p-1">
-                        <span className="text-base font-bold text-white leading-none">
+                    <div className="flex flex-col items-center gap-0.5">
+                      <div className="flex h-10 w-10 lg:h-11 lg:w-11 items-center justify-center rounded-full border-2 border-blue-500 bg-slate-800 p-1">
+                        <span className="text-[10px] lg:text-xs font-bold text-white leading-none">
                           0.97%
                         </span>
                       </div>
-                      <span className="font-bold text-gray-400 text-sm">
+                      <span className="font-bold text-gray-400 text-[9px] lg:text-[10px]">
                         S2
                       </span>
                     </div>
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-yellow-400 bg-slate-800 p-1">
-                        <span className="text-base font-bold text-yellow-400 leading-none">
+                    <div className="flex flex-col items-center gap-0.5">
+                      <div className="flex h-10 w-10 lg:h-11 lg:w-11 items-center justify-center rounded-full border-2 border-yellow-400 bg-slate-800 p-1">
+                        <span className="text-[10px] lg:text-xs font-bold text-yellow-400 leading-none">
                           1.15%
                         </span>
                       </div>
-                      <span className="font-bold text-gray-400 text-sm">
+                      <span className="font-bold text-gray-400 text-[9px] lg:text-[10px]">
                         S3
                       </span>
                     </div>
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-yellow-400 bg-slate-800 p-1">
-                        <span className="text-base font-bold text-yellow-400 leading-none">
+                    <div className="flex flex-col items-center gap-0.5">
+                      <div className="flex h-10 w-10 lg:h-11 lg:w-11 items-center justify-center rounded-full border-2 border-yellow-400 bg-slate-800 p-1">
+                        <span className="text-[10px] lg:text-xs font-bold text-yellow-400 leading-none">
                           1.12%
                         </span>
                       </div>
-                      <span className="font-bold text-gray-400 text-sm">
+                      <span className="font-bold text-gray-400 text-[9px] lg:text-[10px]">
                         S4
                       </span>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col overflow-hidden rounded-lg bg-slate-800/90 backdrop-blur-sm p-6 min-h-[380px] hover:scale-105 transition-transform duration-300 cursor-pointer">
-                <h2 className="mb-2 text-lg font-semibold text-gray-300">
+              <div className="flex flex-col overflow-hidden rounded-lg bg-slate-800/90 backdrop-blur-sm p-2 lg:p-4 min-h-[200px] lg:min-h-[340px] transition-transform duration-300 cursor-pointer">
+                <h2 className="mb-1 lg:mb-2 text-sm lg:text-lg font-semibold text-gray-300">
                   Suivi de l&apos;Efficience par semaine
                 </h2>
-                <div className="flex items-center gap-4">
-                  <div className="relative flex h-32 w-32 flex-shrink-0 items-center justify-center rounded-full bg-gray-700">
+                <div className="flex items-center gap-1.5 lg:gap-3">
+                  <div className="relative flex h-16 w-16 lg:h-28 lg:w-28 flex-shrink-0 items-center justify-center rounded-full bg-gray-700">
                     <svg
                       className="h-full w-full -rotate-90"
                       viewBox="0 0 100 100"
@@ -2354,23 +2336,23 @@ export function CategoryDashboard({
                       />
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-4xl font-bold text-white">90%</span>
+                      <span className="text-xl lg:text-3xl font-bold text-white">90%</span>
                     </div>
                   </div>
-                  <div className="flex flex-col items-start gap-1">
-                    <span className="text-xs text-gray-400">
+                  <div className="flex flex-col items-start gap-0">
+                    <span className="text-[9px] lg:text-[10px] text-gray-400">
                       Variation vs semaine précédente
                     </span>
-                    <div className="flex items-center text-green-500 gap-1">
-                      <span className="material-symbols-outlined text-xl">
+                    <div className="flex items-center text-green-500 gap-0.5">
+                      <span className="material-symbols-outlined text-sm lg:text-base">
                         arrow_upward
                       </span>
-                      <span className="text-2xl font-semibold">+2%</span>
+                      <span className="text-base lg:text-lg font-semibold">+2%</span>
                     </div>
                   </div>
                 </div>
-                <div className="mt-auto flex flex-col pt-6">
-                  <div className="relative h-20 w-full mb-6">
+                <div className="mt-auto flex flex-col pt-1.5 lg:pt-3">
+                  <div className="relative h-10 lg:h-20 w-full mb-2 lg:mb-4">
                     <svg
                       className="absolute inset-0 h-full w-full"
                       fill="none"
@@ -2412,48 +2394,48 @@ export function CategoryDashboard({
                         fill="url(#gradient4)"
                       />
                     </svg>
-                    <div className="absolute -top-1.5 left-0 text-xs text-gray-500">
+                    <div className="absolute -top-1.5 left-0 text-[9px] lg:text-[10px] text-gray-500">
                       Target
                     </div>
                   </div>
-                  <div className="mt-2 flex justify-between gap-2">
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-yellow-400 bg-slate-800 p-1">
-                        <span className="text-base font-bold text-yellow-400 leading-none">
+                  <div className="mt-0.5 flex justify-between gap-1">
+                    <div className="flex flex-col items-center gap-0.5">
+                      <div className="flex h-10 w-10 lg:h-11 lg:w-11 items-center justify-center rounded-full border-2 border-yellow-400 bg-slate-800 p-1">
+                        <span className="text-[10px] lg:text-xs font-bold text-yellow-400 leading-none">
                           88%
                         </span>
                       </div>
-                      <span className="font-bold text-gray-400 text-sm">
+                      <span className="font-bold text-gray-400 text-[9px] lg:text-[10px]">
                         S1
                       </span>
                     </div>
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-blue-500 bg-slate-800 p-1">
-                        <span className="text-base font-bold text-white leading-none">
+                    <div className="flex flex-col items-center gap-0.5">
+                      <div className="flex h-10 w-10 lg:h-11 lg:w-11 items-center justify-center rounded-full border-2 border-blue-500 bg-slate-800 p-1">
+                        <span className="text-[10px] lg:text-xs font-bold text-white leading-none">
                           92%
                         </span>
                       </div>
-                      <span className="font-bold text-gray-400 text-sm">
+                      <span className="font-bold text-gray-400 text-[9px] lg:text-[10px]">
                         S2
                       </span>
                     </div>
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-yellow-400 bg-slate-800 p-1">
-                        <span className="text-base font-bold text-yellow-400 leading-none">
+                    <div className="flex flex-col items-center gap-0.5">
+                      <div className="flex h-10 w-10 lg:h-11 lg:w-11 items-center justify-center rounded-full border-2 border-yellow-400 bg-slate-800 p-1">
+                        <span className="text-[10px] lg:text-xs font-bold text-yellow-400 leading-none">
                           89%
                         </span>
                       </div>
-                      <span className="font-bold text-gray-400 text-sm">
+                      <span className="font-bold text-gray-400 text-[9px] lg:text-[10px]">
                         S3
                       </span>
                     </div>
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-yellow-400 bg-slate-800 p-1">
-                        <span className="text-base font-bold text-yellow-400 leading-none">
+                    <div className="flex flex-col items-center gap-0.5">
+                      <div className="flex h-10 w-10 lg:h-11 lg:w-11 items-center justify-center rounded-full border-2 border-yellow-400 bg-slate-800 p-1">
+                        <span className="text-[10px] lg:text-xs font-bold text-yellow-400 leading-none">
                           90%
                         </span>
                       </div>
-                      <span className="font-bold text-gray-400 text-sm">
+                      <span className="font-bold text-gray-400 text-[9px] lg:text-[10px]">
                         S4
                       </span>
                     </div>
@@ -2467,25 +2449,22 @@ export function CategoryDashboard({
     );
     return (
       <main className="flex-1 overflow-hidden">
-        <div className="p-4 sm:p-6 lg:p-8">
+        <div className="p-3 sm:p-4 lg:p-6">
           {/* Header with tabs */}
-          <div className="mb-6 flex justify-between items-start">
+          <div className="mb-3 lg:mb-5 flex justify-between items-start">
             <div>
-              <h1 className="text-3xl font-bold text-white mb-2">
+              <h1 className="text-2xl lg:text-3xl font-bold text-white mb-1 lg:mb-2">
                 Opérations -{" "}
                 {activeTab === "monthly" ? "Mensuel" : "Hebdomadaire"}
               </h1>
-              <p className="text-gray-300 mb-4">
-                Key Performance Indicators for the current period
-              </p>
-              <div className="flex flex-wrap items-center justify-start gap-4 sm:gap-6">
+              <div className="flex flex-wrap items-center justify-start gap-2 lg:gap-4">
                 {activeTab === "weekly" && (
-                  <div className="rounded-lg bg-slate-800/90 border border-slate-700/50 px-4 py-2 text-sm font-medium text-gray-300">
+                  <div className="rounded-lg bg-slate-800/90 border border-slate-700/50 px-3 py-1.5 text-xs lg:text-sm font-medium text-gray-300">
                     <span className="font-normal">Semaine actuelle :</span>
                     <span className="font-semibold text-white ml-1">S10</span>
                   </div>
                 )}
-                <div className="rounded-lg bg-slate-800/90 border border-slate-700/50 px-4 py-2 text-sm font-medium text-gray-300">
+                <div className="rounded-lg bg-slate-800/90 border border-slate-700/50 px-3 py-1.5 text-xs lg:text-sm font-medium text-gray-300">
                   <span className="font-normal">Mois en cours :</span>
                   <span className="font-semibold text-white ml-1">M12</span>
                 </div>
@@ -2495,10 +2474,10 @@ export function CategoryDashboard({
           </div>
 
           {/* Conditional Content Rendering */}
-          {activeTab === "monthly" ? (
-            <MonthlyOperations />
-          ) : (
+          {activeTab === "weekly" ? (
             <WeeklyOperations />
+          ) : (
+            <MonthlyOperations />
           )}
         </div>
       </main>
@@ -2506,1103 +2485,261 @@ export function CategoryDashboard({
   }
 
   if (category.id === "quality") {
-    const MonthlyQuality = () => {
-      return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 grid-rows-2 gap-6 h-full">
-          {/* PPM & Scrap Client */}
-          <div className="lg:col-span-2 flex flex-col gap-6 rounded-xl border border-slate-700/50 bg-slate-800/90 p-8 shadow-xl backdrop-blur-sm hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
-            <div className="flex-1 flex flex-col">
-              <p className="text-white text-lg font-semibold leading-normal">
-                PPM & Scrap Client
-              </p>
-              <div className="flex items-baseline gap-4 mt-2">
-                <p className="text-cyan-400 tracking-light text-5xl font-bold leading-tight truncate">
-                  2,345€
-                </p>
-                <div className="flex flex-col">
-                  <span className="inline-block rounded-full bg-red-500/10 px-2 py-0.5 text-base font-medium text-red-400">
-                    +250€
-                  </span>
-                  <span className="text-gray-300 text-xs">vs Mois Préc.</span>
-                </div>
-              </div>
-              <div className="flex gap-1 items-center mt-1">
-                <p className="text-gray-300 text-sm font-normal leading-normal">
-                  Scrap Client
-                </p>
-                <p className="text-red-500 text-sm font-medium leading-normal flex items-center gap-1">
-                  <ArrowUp className="w-4 h-4" />
-                  <span>+12% vs M-1</span>
-                </p>
-              </div>
-              <div className="flex flex-1 flex-col justify-center pt-4">
-                <div className="relative h-[120px] w-full">
-                  <div className="grid h-full grid-cols-4 items-end gap-x-4 px-2">
-                    <div className="flex h-full flex-col items-center justify-end">
-                      <p className="text-sm font-semibold text-white">65</p>
-                      <div
-                        className="mt-1 w-full rounded-t-sm bg-blue-500"
-                        style={{ height: "65%" }}
-                      />
-                    </div>
-                    <div className="flex h-full flex-col items-center justify-end">
-                      <p className="text-sm font-semibold text-white">52</p>
-                      <div
-                        className="mt-1 w-full rounded-t-sm bg-blue-500"
-                        style={{ height: "52%" }}
-                      />
-                    </div>
-                    <div className="flex h-full flex-col items-center justify-end">
-                      <p className="text-sm font-semibold text-white">48</p>
-                      <div
-                        className="mt-1 w-full rounded-t-sm bg-blue-500"
-                        style={{ height: "48%" }}
-                      />
-                    </div>
-                    <div className="flex h-full flex-col items-center justify-end">
-                      <p className="text-sm font-semibold text-white">45</p>
-                      <div
-                        className="mt-1 w-full rounded-t-sm bg-blue-500"
-                        style={{ height: "45%" }}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-2 flex justify-around">
-                  <p className="text-xs font-bold text-gray-300">M-4</p>
-                  <p className="text-xs font-bold text-gray-300">M-3</p>
-                  <p className="text-xs font-bold text-gray-300">M-2</p>
-                  <p className="text-xs font-bold text-gray-300">M-1</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Taux de Conformité aux Audits */}
-          <div className="lg:col-span-2 flex flex-col gap-4 rounded-xl border border-slate-700/50 bg-slate-800/90 p-8 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-            <div className="flex-1 flex flex-col">
-              <p className="text-white text-lg font-semibold leading-normal">
-                Taux de Conformité aux Audits
-              </p>
-              <div className="flex-1 grid grid-cols-2 gap-4 items-center justify-center">
-                <div className="flex flex-col items-center gap-2">
-                  <svg className="w-28 h-28" viewBox="0 0 120 120">
-                    <circle
-                      className="stroke-slate-600"
-                      cx="60"
-                      cy="60"
-                      fill="transparent"
-                      r="54"
-                      strokeWidth="12"
-                    />
-                    <circle
-                      className="stroke-emerald-400"
-                      cx="60"
-                      cy="60"
-                      fill="transparent"
-                      r="54"
-                      strokeDasharray="339.29"
-                      strokeDashoffset="33.929"
-                      strokeLinecap="round"
-                      strokeWidth="12"
-                      transform="rotate(-90 60 60)"
-                    />
-                    <text
-                      className="fill-gray-100 text-lg font-bold"
-                      dominantBaseline="middle"
-                      textAnchor="middle"
-                      x="50%"
-                      y="50%"
-                    >
-                      90%
-                    </text>
-                  </svg>
-                  <p className="text-gray-300 text-center text-sm">
-                    Completion
-                  </p>
-                  <div className="flex flex-col text-center mt-1">
-                    <span className="inline-block rounded-full bg-green-500/10 px-2 py-0.5 text-base font-medium text-emerald-400">
-                      +5%
-                    </span>
-                    <span className="text-gray-300 text-xs">vs Mois Préc.</span>
-                  </div>
-                </div>
-                <div className="flex flex-col items-center gap-2">
-                  <svg className="w-28 h-28" viewBox="0 0 120 120">
-                    <circle
-                      className="stroke-slate-600"
-                      cx="60"
-                      cy="60"
-                      fill="transparent"
-                      r="54"
-                      strokeWidth="12"
-                    />
-                    <circle
-                      className="stroke-orange-400"
-                      cx="60"
-                      cy="60"
-                      fill="transparent"
-                      r="54"
-                      strokeDasharray="339.29"
-                      strokeDashoffset="50.89"
-                      strokeLinecap="round"
-                      strokeWidth="12"
-                      transform="rotate(-90 60 60)"
-                    />
-                    <text
-                      className="fill-gray-100 text-lg font-bold"
-                      dominantBaseline="middle"
-                      textAnchor="middle"
-                      x="50%"
-                      y="50%"
-                    >
-                      85%
-                    </text>
-                  </svg>
-                  <p className="text-gray-300 text-center text-sm">
-                    Compliance
-                  </p>
-                  <div className="flex flex-col text-center mt-1">
-                    <span className="inline-block rounded-full bg-red-500/10 px-2 py-0.5 text-base font-medium text-red-400">
-                      -2%
-                    </span>
-                    <span className="text-gray-300 text-xs">vs Mois Préc.</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Score Cards Clients */}
-          <div className="lg:col-span-2 flex flex-col gap-4 rounded-xl border border-slate-700/50 bg-slate-800/90 p-8 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-            <div className="flex-1 flex flex-col">
-              <p className="text-white text-lg font-semibold leading-normal">
-                Score Cards Clients
-              </p>
-              <div className="flex items-baseline gap-4 mt-2">
-                <p className="text-cyan-400 tracking-light text-5xl font-bold leading-tight truncate">
-                  84.2%
-                </p>
-                <div className="flex flex-col">
-                  <span className="inline-block rounded-full bg-green-500/10 px-2 py-0.5 text-base font-medium text-emerald-400">
-                    +1.2%
-                  </span>
-                  <span className="text-gray-300 text-xs">vs Mois Préc.</span>
-                </div>
-              </div>
-              <div className="flex-1 flex flex-col justify-center space-y-3 pt-2">
-                <div className="grid grid-cols-[120px_1fr_auto] items-center gap-4">
-                  <span className="text-gray-300 text-sm font-medium truncate">
-                    Client Alpha
-                  </span>
-                  <div className="w-full bg-slate-600 rounded-full h-2.5 relative">
-                    <div
-                      className="bg-blue-500 h-2.5 rounded-full"
-                      style={{ width: "95%" }}
-                    />
-                  </div>
-                  <span className="text-white font-semibold text-sm">95%</span>
-                </div>
-                <div className="grid grid-cols-[120px_1fr_auto] items-center gap-4">
-                  <span className="text-gray-300 text-sm font-medium truncate">
-                    Client Beta
-                  </span>
-                  <div className="w-full bg-slate-600 rounded-full h-2.5 relative">
-                    <div
-                      className="bg-blue-500 h-2.5 rounded-full"
-                      style={{ width: "82%" }}
-                    />
-                  </div>
-                  <span className="text-white font-semibold text-sm">82%</span>
-                </div>
-                <div className="grid grid-cols-[120px_1fr_auto] items-center gap-4">
-                  <span className="text-gray-300 text-sm font-medium truncate">
-                    Client Gamma
-                  </span>
-                  <div className="w-full bg-slate-600 rounded-full h-2.5 relative">
-                    <div
-                      className="bg-blue-500 h-2.5 rounded-full"
-                      style={{ width: "88%" }}
-                    />
-                  </div>
-                  <span className="text-white font-semibold text-sm">88%</span>
-                </div>
-                <div className="grid grid-cols-[120px_1fr_auto] items-center gap-4">
-                  <span className="text-gray-300 text-sm font-medium truncate">
-                    Client Delta
-                  </span>
-                  <div className="w-full bg-slate-600 rounded-full h-2.5 relative">
-                    <div
-                      className="bg-blue-500 h-2.5 rounded-full"
-                      style={{ width: "91%" }}
-                    />
-                  </div>
-                  <span className="text-white font-semibold text-sm">91%</span>
-                </div>
-                <div className="grid grid-cols-[120px_1fr_auto] items-center gap-4">
-                  <span className="text-gray-300 text-sm font-medium truncate">
-                    Client Epsilon
-                  </span>
-                  <div className="w-full bg-slate-600 rounded-full h-2.5 relative">
-                    <div
-                      className="bg-red-500 h-2.5 rounded-full"
-                      style={{ width: "65%" }}
-                    />
-                  </div>
-                  <span className="text-red-400 font-semibold text-sm">
-                    65%
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Incidents / Accidents de Travail */}
-          <div className="lg:col-span-3 row-start-2 flex flex-col gap-4 rounded-xl border border-slate-700/50 bg-slate-800/90 p-8 shadow-xl backdrop-blur-sm hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
-            <div className="flex-1 flex flex-col">
-              <p className="text-white text-lg font-semibold leading-normal">
-                Incidents / Accidents de Travail
-              </p>
-              <div className="flex items-baseline gap-4 mt-2">
-                <p className="text-cyan-400 tracking-light text-5xl font-bold leading-tight truncate">
-                  1
-                </p>
-                <div className="flex flex-col">
-                  <span className="inline-block rounded-full bg-green-500/10 px-2 py-0.5 text-base font-medium text-emerald-400">
-                    -4
-                  </span>
-                  <span className="text-gray-300 text-xs">vs Mois Préc.</span>
-                </div>
-              </div>
-              <div className="flex-1 flex flex-col justify-around pt-2">
-                <div className="mb-2">
-                  <div className="relative h-20 w-full mb-1">
-                    <div className="grid h-full grid-cols-4 items-end gap-x-6 px-4">
-                      <div
-                        className="relative flex h-full items-center justify-center rounded-t-sm bg-blue-200"
-                        style={{ height: "60%" }}
-                      >
-                        <span className="text-sm font-semibold text-white">
-                          6
-                        </span>
-                      </div>
-                      <div
-                        className="relative flex h-full items-center justify-center rounded-t-sm bg-blue-200"
-                        style={{ height: "50%" }}
-                      >
-                        <span className="text-sm font-semibold text-white">
-                          5
-                        </span>
-                      </div>
-                      <div
-                        className="relative flex h-full items-center justify-center rounded-t-sm bg-blue-200"
-                        style={{ height: "20%" }}
-                      >
-                        <span className="text-sm font-semibold text-white">
-                          2
-                        </span>
-                      </div>
-                      <div
-                        className="relative flex h-full items-center justify-center rounded-t-sm bg-blue-200"
-                        style={{ height: "10%" }}
-                      >
-                        <span className="text-sm font-semibold text-white">
-                          1
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex justify-around">
-                    <p className="text-xs font-bold text-gray-300">Jan</p>
-                    <p className="text-xs font-bold text-gray-300">Fév</p>
-                    <p className="text-xs font-bold text-gray-300">Mar</p>
-                    <p className="text-xs font-bold text-gray-300">Avr</p>
-                  </div>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-300 mb-2">
-                    Jours Perdus
-                  </p>
-                  <div className="h-20 w-full relative mb-1">
-                    <svg
-                      className="absolute inset-0 w-full h-full"
-                      fill="none"
-                      preserveAspectRatio="none"
-                      viewBox="0 0 400 100"
-                    >
-                      <g>
-                        <path
-                          d="M50 40 L 150 20 L 250 80 L 350 50"
-                          stroke="#f59e0b"
-                          strokeWidth="3"
-                        />
-                        <circle
-                          cx="50"
-                          cy="40"
-                          fill="#f59e0b"
-                          r="5"
-                          stroke="#ffffff"
-                          strokeWidth="2"
-                        />
-                        <text
-                          fill="#f8fafc"
-                          fontSize="12"
-                          fontWeight="bold"
-                          textAnchor="middle"
-                          x="50"
-                          y="32"
-                        >
-                          12
-                        </text>
-                        <circle
-                          cx="150"
-                          cy="20"
-                          fill="#f59e0b"
-                          r="5"
-                          stroke="#ffffff"
-                          strokeWidth="2"
-                        />
-                        <text
-                          fill="#f8fafc"
-                          fontSize="12"
-                          fontWeight="bold"
-                          textAnchor="middle"
-                          x="150"
-                          y="12"
-                        >
-                          15
-                        </text>
-                        <circle
-                          cx="250"
-                          cy="80"
-                          fill="#f59e0b"
-                          r="5"
-                          stroke="#ffffff"
-                          strokeWidth="2"
-                        />
-                        <text
-                          fill="#f8fafc"
-                          fontSize="12"
-                          fontWeight="bold"
-                          textAnchor="middle"
-                          x="250"
-                          y="72"
-                        >
-                          8
-                        </text>
-                        <circle
-                          cx="350"
-                          cy="50"
-                          fill="#f59e0b"
-                          r="5"
-                          stroke="#ffffff"
-                          strokeWidth="2"
-                        />
-                        <text
-                          fill="#f8fafc"
-                          fontSize="12"
-                          fontWeight="bold"
-                          textAnchor="middle"
-                          x="350"
-                          y="42"
-                        >
-                          5
-                        </text>
-                      </g>
-                    </svg>
-                  </div>
-                  <div className="flex justify-around border-t border-border-color pt-2">
-                    <p className="text-xs font-bold text-gray-300">Jan</p>
-                    <p className="text-xs font-bold text-gray-300">Fév</p>
-                    <p className="text-xs font-bold text-gray-300">Mar</p>
-                    <p className="text-xs font-bold text-gray-300">Avr</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Suivi de l'Efficience */}
-          <div className="lg:col-span-3 row-start-2 flex flex-col gap-4 rounded-xl border border-slate-700/50 bg-slate-800/90 p-8 shadow-xl backdrop-blur-sm hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
-            <div className="flex-1 flex flex-col">
-              <p className="text-white text-lg font-semibold leading-normal">
-                Suivi de l&apos;Efficience
-              </p>
-              <div className="flex items-baseline gap-4 mt-2">
-                <p className="text-cyan-400 tracking-light text-5xl font-bold leading-tight truncate">
-                  92%
-                </p>
-                <div className="flex flex-col">
-                  <span className="inline-block rounded-full bg-green-500/10 px-2 py-0.5 text-base font-medium text-emerald-400">
-                    -5%
-                  </span>
-                  <span className="text-gray-300 text-xs">vs Sem. Préc.</span>
-                </div>
-              </div>
-              <div className="flex gap-1 items-center mt-1">
-                <p className="text-gray-300 text-sm font-normal leading-normal">
-                  vs Target (90%)
-                </p>
-                <p className="text-green-500 text-sm font-medium leading-normal flex items-center gap-1">
-                  <ArrowUp className="w-4 h-4" />
-                  <span>+1.5%</span>
-                </p>
-              </div>
-              <div className="flex flex-1 flex-col justify-center pt-4">
-                <div className="h-[120px] relative">
-                  <svg
-                    className="absolute inset-0 w-full h-full"
-                    fill="none"
-                    preserveAspectRatio="none"
-                    viewBox="0 0 400 140"
-                  >
-                    <g>
-                      <path
-                        d="M50 112 L 150 42 L 250 84 L 350 28"
-                        stroke="#2563eb"
-                        strokeWidth="4"
-                      />
-                      <circle
-                        cx="50"
-                        cy="112"
-                        fill="#2563eb"
-                        r="8"
-                        stroke="#ffffff"
-                        strokeWidth="3"
-                      />
-                      <text
-                        fill="#f8fafc"
-                        fontSize="14"
-                        fontWeight="bold"
-                        textAnchor="middle"
-                        x="50"
-                        y="104"
-                      >
-                        88%
-                      </text>
-                      <circle
-                        cx="150"
-                        cy="42"
-                        fill="#2563eb"
-                        r="8"
-                        stroke="#ffffff"
-                        strokeWidth="3"
-                      />
-                      <text
-                        fill="#f8fafc"
-                        fontSize="14"
-                        fontWeight="bold"
-                        textAnchor="middle"
-                        x="150"
-                        y="34"
-                      >
-                        95%
-                      </text>
-                      <circle
-                        cx="250"
-                        cy="84"
-                        fill="#2563eb"
-                        r="8"
-                        stroke="#ffffff"
-                        strokeWidth="3"
-                      />
-                      <text
-                        fill="#f8fafc"
-                        fontSize="14"
-                        fontWeight="bold"
-                        textAnchor="middle"
-                        x="250"
-                        y="76"
-                      >
-                        90%
-                      </text>
-                      <circle
-                        cx="350"
-                        cy="28"
-                        fill="#2563eb"
-                        r="8"
-                        stroke="#ffffff"
-                        strokeWidth="3"
-                      />
-                      <text
-                        fill="#f8fafc"
-                        fontSize="14"
-                        fontWeight="bold"
-                        textAnchor="middle"
-                        x="350"
-                        y="20"
-                      >
-                        97%
-                      </text>
-                    </g>
-                  </svg>
-                </div>
-                <div className="flex justify-around pt-2">
-                  <p className="text-gray-300 text-xs font-bold leading-normal tracking-[0.015em]">
-                    S-4
-                  </p>
-                  <p className="text-gray-300 text-xs font-bold leading-normal tracking-[0.015em]">
-                    S-3
-                  </p>
-                  <p className="text-gray-300 text-xs font-bold leading-normal tracking-[0.015em]">
-                    S-2
-                  </p>
-                  <p className="text-gray-300 text-xs font-bold leading-normal tracking-[0.015em]">
-                    S-1
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    };
-
+    // Weekly Quality Component - Based on weekly.html design
     const WeeklyQuality = () => {
       return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 grid-rows-2 gap-6 h-full">
-          {/* PPM & Scrap Client */}
-          <div className="lg:col-span-2 flex flex-col gap-6 rounded-xl border border-slate-700/50 bg-slate-800/90 p-8 shadow-xl backdrop-blur-sm hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
-            <div className="flex-1 flex flex-col">
-              <p className="text-white text-lg font-semibold leading-normal">
-                PPM & Scrap Client
-              </p>
-              <div className="flex items-baseline gap-4 mt-2">
-                <p className="text-cyan-400 tracking-light text-5xl font-bold leading-tight truncate">
-                  2,345€
-                </p>
-                <div className="flex flex-col">
-                  <span className="inline-block rounded-full bg-red-500/10 px-2 py-0.5 text-base font-medium text-red-400">
-                    +250€
-                  </span>
-                  <span className="text-gray-300 text-xs">vs Mois Préc.</span>
-                </div>
-              </div>
-              <div className="flex gap-1 items-center mt-1">
-                <p className="text-gray-300 text-sm font-normal leading-normal">
-                  Scrap Client
-                </p>
-                <p className="text-red-500 text-sm font-medium leading-normal flex items-center gap-1">
-                  <ArrowUp className="w-4 h-4" />
-                  <span>+12% vs M-1</span>
-                </p>
-              </div>
-              <div className="flex flex-1 flex-col justify-center pt-4">
-                <div className="relative h-[120px] w-full">
-                  <div className="grid h-full grid-cols-4 items-end gap-x-4 px-2">
-                    <div className="flex h-full flex-col items-center justify-end">
-                      <p className="text-sm font-semibold text-white">65</p>
-                      <div
-                        className="mt-1 w-full rounded-t-sm bg-blue-500"
-                        style={{ height: "65%" }}
-                      />
-                    </div>
-                    <div className="flex h-full flex-col items-center justify-end">
-                      <p className="text-sm font-semibold text-white">52</p>
-                      <div
-                        className="mt-1 w-full rounded-t-sm bg-blue-500"
-                        style={{ height: "52%" }}
-                      />
-                    </div>
-                    <div className="flex h-full flex-col items-center justify-end">
-                      <p className="text-sm font-semibold text-white">48</p>
-                      <div
-                        className="mt-1 w-full rounded-t-sm bg-blue-500"
-                        style={{ height: "48%" }}
-                      />
-                    </div>
-                    <div className="flex h-full flex-col items-center justify-end">
-                      <p className="text-sm font-semibold text-white">45</p>
-                      <div
-                        className="mt-1 w-full rounded-t-sm bg-blue-500"
-                        style={{ height: "45%" }}
-                      />
-                    </div>
+        <div className="max-w-[1400px] mx-auto">
+          {/* Réclamations Clients Section */}
+          <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6 mb-6 transition-transform duration-300 cursor-pointer">
+            <h2 className="text-base font-medium text-white mb-5 pb-3 border-b border-gray-700">
+              Réclamations Clients
+            </h2>
+            
+            <div className="grid grid-cols-2 gap-8">
+              {/* Left Column: Main Metric and Weekly Circles in same row */}
+              <div className="flex items-center gap-8">
+                {/* Main Metric */}
+                <div className="p-4 text-center">
+                  <div className="text-6xl md:text-7xl font-bold text-white mb-2 leading-none">12</div>
+                  <div className="text-sm text-red-400 font-medium mb-1">+2 vs Sem. Préc.</div>
+                  <div className="text-sm text-gray-300">
+                    vs Target (8) <span className="text-emerald-400 font-semibold">↑ +50%</span>
                   </div>
                 </div>
-                <div className="mt-2 flex justify-around">
-                  <p className="text-xs font-bold text-gray-300">M-4</p>
-                  <p className="text-xs font-bold text-gray-300">M-3</p>
-                  <p className="text-xs font-bold text-gray-300">M-2</p>
-                  <p className="text-xs font-bold text-gray-300">M-1</p>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          {/* Taux de Conformité aux Audits */}
-          <div className="lg:col-span-2 flex flex-col gap-4 rounded-xl border border-slate-700/50 bg-slate-800/90 p-8 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-            <div className="flex-1 flex flex-col">
-              <p className="text-white text-lg font-semibold leading-normal">
-                Taux de Conformité aux Audits
-              </p>
-              <div className="flex-1 grid grid-cols-2 gap-4 items-center justify-center">
-                <div className="flex flex-col items-center gap-2">
-                  <svg className="w-28 h-28" viewBox="0 0 120 120">
-                    <circle
-                      className="stroke-slate-600"
-                      cx="60"
-                      cy="60"
-                      fill="transparent"
-                      r="54"
-                      strokeWidth="12"
-                    />
-                    <circle
-                      className="stroke-emerald-400"
-                      cx="60"
-                      cy="60"
-                      fill="transparent"
-                      r="54"
-                      strokeDasharray="339.29"
-                      strokeDashoffset="33.929"
-                      strokeLinecap="round"
-                      strokeWidth="12"
-                      transform="rotate(-90 60 60)"
-                    />
-                    <text
-                      className="fill-gray-100 text-lg font-bold"
-                      dominantBaseline="middle"
-                      textAnchor="middle"
-                      x="50%"
-                      y="50%"
-                    >
-                      90%
-                    </text>
-                  </svg>
-                  <p className="text-gray-300 text-center text-sm">
-                    Completion
-                  </p>
-                  <div className="flex flex-col text-center mt-1">
-                    <span className="inline-block rounded-full bg-green-500/10 px-2 py-0.5 text-base font-medium text-emerald-400">
-                      +5%
-                    </span>
-                    <span className="text-gray-300 text-xs">vs Mois Préc.</span>
-                  </div>
-                </div>
-                <div className="flex flex-col items-center gap-2">
-                  <svg className="w-28 h-28" viewBox="0 0 120 120">
-                    <circle
-                      className="stroke-slate-600"
-                      cx="60"
-                      cy="60"
-                      fill="transparent"
-                      r="54"
-                      strokeWidth="12"
-                    />
-                    <circle
-                      className="stroke-orange-400"
-                      cx="60"
-                      cy="60"
-                      fill="transparent"
-                      r="54"
-                      strokeDasharray="339.29"
-                      strokeDashoffset="50.89"
-                      strokeLinecap="round"
-                      strokeWidth="12"
-                      transform="rotate(-90 60 60)"
-                    />
-                    <text
-                      className="fill-gray-100 text-lg font-bold"
-                      dominantBaseline="middle"
-                      textAnchor="middle"
-                      x="50%"
-                      y="50%"
-                    >
-                      85%
-                    </text>
-                  </svg>
-                  <p className="text-gray-300 text-center text-sm">
-                    Compliance
-                  </p>
-                  <div className="flex flex-col text-center mt-1">
-                    <span className="inline-block rounded-full bg-red-500/10 px-2 py-0.5 text-base font-medium text-red-400">
-                      -2%
-                    </span>
-                    <span className="text-gray-300 text-xs">vs Mois Préc.</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Score Cards Clients */}
-          <div className="lg:col-span-2 flex flex-col gap-4 rounded-xl border border-slate-700/50 bg-slate-800/90 p-8 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-            <div className="flex-1 flex flex-col">
-              <p className="text-white text-lg font-semibold leading-normal">
-                Score Cards Clients
-              </p>
-              <div className="flex items-baseline gap-4 mt-2">
-                <p className="text-cyan-400 tracking-light text-5xl font-bold leading-tight truncate">
-                  84.2%
-                </p>
-                <div className="flex flex-col">
-                  <span className="inline-block rounded-full bg-green-500/10 px-2 py-0.5 text-base font-medium text-emerald-400">
-                    +1.2%
-                  </span>
-                  <span className="text-gray-300 text-xs">vs Mois Préc.</span>
-                </div>
-              </div>
-              <div className="flex-1 flex flex-col justify-center space-y-3 pt-2">
-                <div className="grid grid-cols-[120px_1fr_auto] items-center gap-4">
-                  <span className="text-gray-300 text-sm font-medium truncate">
-                    Client Alpha
-                  </span>
-                  <div className="w-full bg-slate-600 rounded-full h-2.5 relative">
-                    <div
-                      className="bg-blue-500 h-2.5 rounded-full"
-                      style={{ width: "95%" }}
-                    />
-                  </div>
-                  <span className="text-white font-semibold text-sm">95%</span>
-                </div>
-                <div className="grid grid-cols-[120px_1fr_auto] items-center gap-4">
-                  <span className="text-gray-300 text-sm font-medium truncate">
-                    Client Beta
-                  </span>
-                  <div className="w-full bg-slate-600 rounded-full h-2.5 relative">
-                    <div
-                      className="bg-blue-500 h-2.5 rounded-full"
-                      style={{ width: "82%" }}
-                    />
-                  </div>
-                  <span className="text-white font-semibold text-sm">82%</span>
-                </div>
-                <div className="grid grid-cols-[120px_1fr_auto] items-center gap-4">
-                  <span className="text-gray-300 text-sm font-medium truncate">
-                    Client Gamma
-                  </span>
-                  <div className="w-full bg-slate-600 rounded-full h-2.5 relative">
-                    <div
-                      className="bg-blue-500 h-2.5 rounded-full"
-                      style={{ width: "88%" }}
-                    />
-                  </div>
-                  <span className="text-white font-semibold text-sm">88%</span>
-                </div>
-                <div className="grid grid-cols-[120px_1fr_auto] items-center gap-4">
-                  <span className="text-gray-300 text-sm font-medium truncate">
-                    Client Delta
-                  </span>
-                  <div className="w-full bg-slate-600 rounded-full h-2.5 relative">
-                    <div
-                      className="bg-blue-500 h-2.5 rounded-full"
-                      style={{ width: "91%" }}
-                    />
-                  </div>
-                  <span className="text-white font-semibold text-sm">91%</span>
-                </div>
-                <div className="grid grid-cols-[120px_1fr_auto] items-center gap-4">
-                  <span className="text-gray-300 text-sm font-medium truncate">
-                    Client Epsilon
-                  </span>
-                  <div className="w-full bg-slate-600 rounded-full h-2.5 relative">
-                    <div
-                      className="bg-red-500 h-2.5 rounded-full"
-                      style={{ width: "65%" }}
-                    />
-                  </div>
-                  <span className="text-red-400 font-semibold text-sm">
-                    65%
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Incidents / Accidents de Travail */}
-          <div className="lg:col-span-3 row-start-2 flex flex-col gap-4 rounded-xl border border-slate-700/50 bg-slate-800/90 p-8 shadow-xl backdrop-blur-sm hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
-            <div className="flex-1 flex flex-col">
-              <p className="text-white text-lg font-semibold leading-normal">
-                Incidents / Accidents de Travail
-              </p>
-              <div className="flex items-baseline gap-4 mt-2">
-                <p className="text-cyan-400 tracking-light text-5xl font-bold leading-tight truncate">
-                  1
-                </p>
-                <div className="flex flex-col">
-                  <span className="inline-block rounded-full bg-green-500/10 px-2 py-0.5 text-base font-medium text-emerald-400">
-                    -4
-                  </span>
-                  <span className="text-gray-300 text-xs">vs Mois Préc.</span>
-                </div>
-              </div>
-              <div className="flex-1 flex flex-col justify-around pt-2">
-                <div className="mb-2">
-                  <div className="relative h-20 w-full mb-1">
-                    <div className="grid h-full grid-cols-4 items-end gap-x-6 px-4">
-                      <div
-                        className="relative flex h-full items-center justify-center rounded-t-sm bg-blue-200"
-                        style={{ height: "60%" }}
-                      >
-                        <span className="text-sm font-semibold text-white">
-                          6
-                        </span>
-                      </div>
-                      <div
-                        className="relative flex h-full items-center justify-center rounded-t-sm bg-blue-200"
-                        style={{ height: "50%" }}
-                      >
-                        <span className="text-sm font-semibold text-white">
-                          5
-                        </span>
-                      </div>
-                      <div
-                        className="relative flex h-full items-center justify-center rounded-t-sm bg-blue-200"
-                        style={{ height: "20%" }}
-                      >
-                        <span className="text-sm font-semibold text-white">
-                          2
-                        </span>
-                      </div>
-                      <div
-                        className="relative flex h-full items-center justify-center rounded-t-sm bg-blue-200"
-                        style={{ height: "10%" }}
-                      >
-                        <span className="text-sm font-semibold text-white">
-                          1
-                        </span>
-                      </div>
+                {/* Weekly Circles - All in one row */}
+                <div className="grid grid-cols-2 gap-4">
+                  {/* S-1 */}
+                  <div className="flex flex-col items-center">
+                    <span className="text-sm text-gray-200 font-semibold mb-2">S-1</span>
+                    <div className="w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center shadow-lg" style={{background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)"}}>
+                      <span className="text-2xl md:text-3xl font-bold text-white">12</span>
                     </div>
                   </div>
-                  <div className="flex justify-around">
-                    <p className="text-xs font-bold text-gray-300">Jan</p>
-                    <p className="text-xs font-bold text-gray-300">Fév</p>
-                    <p className="text-xs font-bold text-gray-300">Mar</p>
-                    <p className="text-xs font-bold text-gray-300">Avr</p>
+
+                  {/* S-2 */}
+                  <div className="flex flex-col items-center">
+                    <span className="text-sm text-gray-200 font-semibold mb-2">S-2</span>
+                    <div className="w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center shadow-lg" style={{background: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)"}}>
+                      <span className="text-2xl md:text-3xl font-bold text-white">8</span>
+                    </div>
+                  </div>
+
+                  {/* S-3 */}
+                  <div className="flex flex-col items-center">
+                    <span className="text-sm text-gray-200 font-semibold mb-2">S-3</span>
+                    <div className="w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center shadow-lg" style={{background: "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)"}}>
+                      <span className="text-2xl md:text-3xl font-bold text-white">15</span>
+                    </div>
+                  </div>
+
+                  {/* S-4 */}
+                  <div className="flex flex-col items-center">
+                    <span className="text-sm text-gray-200 font-semibold mb-2">S-4</span>
+                    <div className="w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center shadow-lg" style={{background: "linear-gradient(135deg, #10b981 0%, #059669 100%)"}}>
+                      <span className="text-2xl md:text-3xl font-bold text-white">10</span>
+                    </div>
                   </div>
                 </div>
+              </div>
+
+              {/* Right Column: Charts */}
+              <div className="flex flex-col gap-4 border-l border-gray-700 pl-8">
+                {/* Line Chart: Suivi des Réclamations */}
                 <div>
-                  <p className="text-sm font-medium text-gray-300 mb-2">
-                    Jours Perdus
-                  </p>
-                  <div className="h-20 w-full relative mb-1">
-                    <svg
-                      className="absolute inset-0 w-full h-full"
+                  <h3 className="text-sm font-semibold text-white mb-3">Suivi des Réclamations</h3>
+                  <svg viewBox="0 0 450 120" className="w-full max-w-md h-auto">
+                    {/* Horizontal grid lines */}
+                    <line x1="50" y1="95" x2="420" y2="95" stroke="#4b5563" strokeWidth="1"/>
+                    
+                    {/* X-axis labels */}
+                    <text x="100" y="112" textAnchor="middle" fontSize="11" className="fill-gray-300">S-4</text>
+                    <text x="200" y="112" textAnchor="middle" fontSize="11" className="fill-gray-300">S-3</text>
+                    <text x="300" y="112" textAnchor="middle" fontSize="11" className="fill-gray-300">S-2</text>
+                    <text x="400" y="112" textAnchor="middle" fontSize="11" className="fill-gray-300">S-1</text>
+                    
+                    {/* Line path */}
+                    <polyline
+                      points="100,25 200,50 300,15 400,35"
                       fill="none"
-                      preserveAspectRatio="none"
-                      viewBox="0 0 400 100"
-                    >
-                      <g>
-                        <path
-                          d="M50 40 L 150 20 L 250 80 L 350 50"
-                          stroke="#f59e0b"
-                          strokeWidth="3"
-                        />
-                        <circle
-                          cx="50"
-                          cy="40"
-                          fill="#f59e0b"
-                          r="5"
-                          stroke="#ffffff"
-                          strokeWidth="2"
-                        />
-                        <text
-                          fill="#f8fafc"
-                          fontSize="12"
-                          fontWeight="bold"
-                          textAnchor="middle"
-                          x="50"
-                          y="32"
-                        >
-                          12
-                        </text>
-                        <circle
-                          cx="150"
-                          cy="20"
-                          fill="#f59e0b"
-                          r="5"
-                          stroke="#ffffff"
-                          strokeWidth="2"
-                        />
-                        <text
-                          fill="#f8fafc"
-                          fontSize="12"
-                          fontWeight="bold"
-                          textAnchor="middle"
-                          x="150"
-                          y="12"
-                        >
-                          15
-                        </text>
-                        <circle
-                          cx="250"
-                          cy="80"
-                          fill="#f59e0b"
-                          r="5"
-                          stroke="#ffffff"
-                          strokeWidth="2"
-                        />
-                        <text
-                          fill="#f8fafc"
-                          fontSize="12"
-                          fontWeight="bold"
-                          textAnchor="middle"
-                          x="250"
-                          y="72"
-                        >
-                          8
-                        </text>
-                        <circle
-                          cx="350"
-                          cy="50"
-                          fill="#f59e0b"
-                          r="5"
-                          stroke="#ffffff"
-                          strokeWidth="2"
-                        />
-                        <text
-                          fill="#f8fafc"
-                          fontSize="12"
-                          fontWeight="bold"
-                          textAnchor="middle"
-                          x="350"
-                          y="42"
-                        >
-                          5
-                        </text>
-                      </g>
+                      stroke="#06b6d4"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    
+                    {/* Data points */}
+                    <circle cx="100" cy="25" r="5" fill="#06b6d4"/>
+                    <circle cx="200" cy="50" r="5" fill="#06b6d4"/>
+                    <circle cx="300" cy="15" r="5" fill="#06b6d4"/>
+                    <circle cx="400" cy="35" r="5" fill="#06b6d4"/>
+                  </svg>
+                </div>
+
+                {/* Bar Chart: Incidents par Zone */}
+                <div>
+                  <h3 className="text-sm font-semibold text-white mb-3">Incidents par Zone</h3>
+                  <svg viewBox="0 0 450 130" className="w-full max-w-md h-auto">
+                    {/* Bars */}
+                    <rect x="60" y="20" width="60" height="80" fill="#8b5cf6" rx="2"/>
+                    <rect x="160" y="40" width="60" height="60" fill="#3b82f6" rx="2"/>
+                    <rect x="260" y="40" width="60" height="60" fill="#06b6d4" rx="2"/>
+                    <rect x="360" y="60" width="60" height="40" fill="#10b981" rx="2"/>
+                    
+                    {/* Values on top of bars */}
+                    <text x="90" y="14" textAnchor="middle" fontSize="12" fontWeight="700" className="fill-white">4</text>
+                    <text x="190" y="34" textAnchor="middle" fontSize="12" fontWeight="700" className="fill-white">3</text>
+                    <text x="290" y="34" textAnchor="middle" fontSize="12" fontWeight="700" className="fill-white">3</text>
+                    <text x="390" y="54" textAnchor="middle" fontSize="12" fontWeight="700" className="fill-white">2</text>
+                    
+                    {/* Base line */}
+                    <line x1="40" y1="100" x2="440" y2="100" stroke="#4b5563" strokeWidth="1.5"/>
+                    
+                    {/* Labels */}
+                    <text x="90" y="118" textAnchor="middle" fontSize="11" className="fill-gray-200">Zone A</text>
+                    <text x="190" y="118" textAnchor="middle" fontSize="11" className="fill-gray-200">Zone B</text>
+                    <text x="290" y="118" textAnchor="middle" fontSize="11" className="fill-gray-200">Zone C</text>
+                    <text x="390" y="118" textAnchor="middle" fontSize="11" className="fill-gray-200">Zone D</text>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Suivi de l'Efficience Section */}
+          <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6 transition-transform duration-300 cursor-pointer">
+            <h2 className="text-base font-medium text-white mb-5 pb-3 border-b border-gray-700">
+              Suivi de l&apos;Efficience (par semaine)
+            </h2>
+            
+            <div className="grid grid-cols-2 gap-8">
+              {/* Left Column: Main Metric and Weekly Circles in same row */}
+              <div className="flex items-center gap-8">
+                {/* Main Metric */}
+                <div className="p-4 text-center">
+                  <div className="text-6xl md:text-7xl font-bold text-white mb-2 leading-none">92%</div>
+                  <div className="text-sm text-red-400 font-medium mb-1">-5% vs Sem. Préc.</div>
+                  <div className="text-sm text-gray-300">
+                    vs Target (90%) <span className="text-emerald-400 font-semibold">↑ +1.5%</span>
+                  </div>
+                </div>
+
+                {/* Weekly Progress Circles - All in one row */}
+                <div className="grid grid-cols-2 gap-4">
+                  {/* S-1: 97% */}
+                  <div className="flex flex-col items-center">
+                    <span className="text-sm text-gray-200 font-semibold mb-2">S-1</span>
+                    <svg className="w-20 h-20 md:w-24 md:h-24" viewBox="0 0 120 120">
+                      <circle cx="60" cy="60" r="45" fill="none" stroke="#374151" strokeWidth="11"/>
+                      <circle
+                        cx="60"
+                        cy="60"
+                        r="45"
+                        fill="none"
+                        stroke="#3b82f6"
+                        strokeWidth="11"
+                        strokeDasharray="283"
+                        strokeDashoffset="8.49"
+                        strokeLinecap="round"
+                        transform="rotate(-90 60 60)"
+                      />
+                      <text x="60" y="68" textAnchor="middle" fontSize="24" fontWeight="bold" className="fill-white">97%</text>
                     </svg>
                   </div>
-                  <div className="flex justify-around border-t border-border-color pt-2">
-                    <p className="text-xs font-bold text-gray-300">Jan</p>
-                    <p className="text-xs font-bold text-gray-300">Fév</p>
-                    <p className="text-xs font-bold text-gray-300">Mar</p>
-                    <p className="text-xs font-bold text-gray-300">Avr</p>
+
+                  {/* S-2: 90% */}
+                  <div className="flex flex-col items-center">
+                    <span className="text-sm text-gray-200 font-semibold mb-2">S-2</span>
+                    <svg className="w-20 h-20 md:w-24 md:h-24" viewBox="0 0 120 120">
+                      <circle cx="60" cy="60" r="45" fill="none" stroke="#374151" strokeWidth="11"/>
+                      <circle
+                        cx="60"
+                        cy="60"
+                        r="45"
+                        fill="none"
+                        stroke="#8b5cf6"
+                        strokeWidth="11"
+                        strokeDasharray="283"
+                        strokeDashoffset="28.3"
+                        strokeLinecap="round"
+                        transform="rotate(-90 60 60)"
+                      />
+                      <text x="60" y="68" textAnchor="middle" fontSize="24" fontWeight="bold" className="fill-white">90%</text>
+                    </svg>
+                  </div>
+
+                  {/* S-3: 95% */}
+                  <div className="flex flex-col items-center">
+                    <span className="text-sm text-gray-200 font-semibold mb-2">S-3</span>
+                    <svg className="w-20 h-20 md:w-24 md:h-24" viewBox="0 0 120 120">
+                      <circle cx="60" cy="60" r="45" fill="none" stroke="#374151" strokeWidth="11"/>
+                      <circle
+                        cx="60"
+                        cy="60"
+                        r="45"
+                        fill="none"
+                        stroke="#06b6d4"
+                        strokeWidth="11"
+                        strokeDasharray="283"
+                        strokeDashoffset="14.15"
+                        strokeLinecap="round"
+                        transform="rotate(-90 60 60)"
+                      />
+                      <text x="60" y="68" textAnchor="middle" fontSize="24" fontWeight="bold" className="fill-white">95%</text>
+                    </svg>
+                  </div>
+
+                  {/* S-4: 88% */}
+                  <div className="flex flex-col items-center">
+                    <span className="text-sm text-gray-200 font-semibold mb-2">S-4</span>
+                    <svg className="w-20 h-20 md:w-24 md:h-24" viewBox="0 0 120 120">
+                      <circle cx="60" cy="60" r="45" fill="none" stroke="#374151" strokeWidth="11"/>
+                      <circle
+                        cx="60"
+                        cy="60"
+                        r="45"
+                        fill="none"
+                        stroke="#10b981"
+                        strokeWidth="11"
+                        strokeDasharray="283"
+                        strokeDashoffset="33.96"
+                        strokeLinecap="round"
+                        transform="rotate(-90 60 60)"
+                      />
+                      <text x="60" y="68" textAnchor="middle" fontSize="24" fontWeight="bold" className="fill-white">88%</text>
+                    </svg>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* Suivi de l'Efficience */}
-          <div className="lg:col-span-3 row-start-2 flex flex-col gap-4 rounded-xl border border-slate-700/50 bg-slate-800/90 p-8 shadow-xl backdrop-blur-sm hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
-            <div className="flex-1 flex flex-col">
-              <p className="text-white text-lg font-semibold leading-normal">
-                Suivi de l&apos;Efficience
-              </p>
-              <div className="flex items-baseline gap-4 mt-2">
-                <p className="text-cyan-400 tracking-light text-5xl font-bold leading-tight truncate">
-                  92%
-                </p>
-                <div className="flex flex-col">
-                  <span className="inline-block rounded-full bg-green-500/10 px-2 py-0.5 text-base font-medium text-emerald-400">
-                    -5%
-                  </span>
-                  <span className="text-gray-300 text-xs">vs Sem. Préc.</span>
-                </div>
-              </div>
-              <div className="flex gap-1 items-center mt-1">
-                <p className="text-gray-300 text-sm font-normal leading-normal">
-                  vs Target (90%)
-                </p>
-                <p className="text-green-500 text-sm font-medium leading-normal flex items-center gap-1">
-                  <ArrowUp className="w-4 h-4" />
-                  <span>+1.5%</span>
-                </p>
-              </div>
-              <div className="flex flex-1 flex-col justify-center pt-4">
-                <div className="h-[120px] relative">
-                  <svg
-                    className="absolute inset-0 w-full h-full"
+              {/* Right Column: Line Chart */}
+              <div className="border-l border-gray-700 pl-8 flex items-center">
+                <svg viewBox="0 0 450 240" className="w-full h-auto">
+                  {/* Horizontal grid line */}
+                  <line x1="50" y1="200" x2="420" y2="200" stroke="#4b5563" strokeWidth="1"/>
+                  
+                  {/* X-axis labels */}
+                  <text x="100" y="225" textAnchor="middle" fontSize="12" className="fill-gray-300">S-4</text>
+                  <text x="200" y="225" textAnchor="middle" fontSize="12" className="fill-gray-300">S-3</text>
+                  <text x="300" y="225" textAnchor="middle" fontSize="12" className="fill-gray-300">S-2</text>
+                  <text x="400" y="225" textAnchor="middle" fontSize="12" className="fill-gray-300">S-1</text>
+                  
+                  {/* Line path */}
+                  <polyline
+                    points="100,60 200,130 300,80 400,110"
                     fill="none"
-                    preserveAspectRatio="none"
-                    viewBox="0 0 400 140"
-                  >
-                    <g>
-                      <path
-                        d="M50 112 L 150 42 L 250 84 L 350 28"
-                        stroke="#2563eb"
-                        strokeWidth="4"
-                      />
-                      <circle
-                        cx="50"
-                        cy="112"
-                        fill="#2563eb"
-                        r="8"
-                        stroke="#ffffff"
-                        strokeWidth="3"
-                      />
-                      <text
-                        fill="#f8fafc"
-                        fontSize="14"
-                        fontWeight="bold"
-                        textAnchor="middle"
-                        x="50"
-                        y="104"
-                      >
-                        88%
-                      </text>
-                      <circle
-                        cx="150"
-                        cy="42"
-                        fill="#2563eb"
-                        r="8"
-                        stroke="#ffffff"
-                        strokeWidth="3"
-                      />
-                      <text
-                        fill="#f8fafc"
-                        fontSize="14"
-                        fontWeight="bold"
-                        textAnchor="middle"
-                        x="150"
-                        y="34"
-                      >
-                        95%
-                      </text>
-                      <circle
-                        cx="250"
-                        cy="84"
-                        fill="#2563eb"
-                        r="8"
-                        stroke="#ffffff"
-                        strokeWidth="3"
-                      />
-                      <text
-                        fill="#f8fafc"
-                        fontSize="14"
-                        fontWeight="bold"
-                        textAnchor="middle"
-                        x="250"
-                        y="76"
-                      >
-                        90%
-                      </text>
-                      <circle
-                        cx="350"
-                        cy="28"
-                        fill="#2563eb"
-                        r="8"
-                        stroke="#ffffff"
-                        strokeWidth="3"
-                      />
-                      <text
-                        fill="#f8fafc"
-                        fontSize="14"
-                        fontWeight="bold"
-                        textAnchor="middle"
-                        x="350"
-                        y="20"
-                      >
-                        97%
-                      </text>
-                    </g>
-                  </svg>
-                </div>
-                <div className="flex justify-around pt-2">
-                  <p className="text-gray-300 text-xs font-bold leading-normal tracking-[0.015em]">
-                    S-4
-                  </p>
-                  <p className="text-gray-300 text-xs font-bold leading-normal tracking-[0.015em]">
-                    S-3
-                  </p>
-                  <p className="text-gray-300 text-xs font-bold leading-normal tracking-[0.015em]">
-                    S-2
-                  </p>
-                  <p className="text-gray-300 text-xs font-bold leading-normal tracking-[0.015em]">
-                    S-1
-                  </p>
-                </div>
+                    stroke="#10b981"
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  
+                  {/* Data points */}
+                  <circle cx="100" cy="60" r="6" fill="#10b981"/>
+                  <circle cx="200" cy="130" r="6" fill="#10b981"/>
+                  <circle cx="300" cy="80" r="6" fill="#10b981"/>
+                  <circle cx="400" cy="110" r="6" fill="#10b981"/>
+                </svg>
               </div>
             </div>
           </div>
@@ -3610,25 +2747,346 @@ export function CategoryDashboard({
       );
     };
 
+    // Monthly Quality Component - Based on monthly.html design
+    const MonthlyQuality = () => {
+      return (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          
+          {/* PPM & Scrap Client Card */}
+          <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6 transition-transform duration-300 cursor-pointer">
+            <h2 className="text-sm font-semibold text-white mb-4">PPM & Scrap Client</h2>
+            
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <div className="text-4xl font-bold text-white">2,34...</div>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-sm text-gray-400">Scrap Client</span>
+                  <span className="text-red-400 text-sm">↑</span>
+                  <span className="text-red-400 text-sm font-medium">+12% vs M-1</span>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-green-400 font-semibold text-lg">+250€</div>
+                <div className="text-xs text-gray-400">vs Mois<br/>Préc.</div>
+              </div>
+            </div>
+            
+            {/* Charts Container */}
+            <div className="flex items-end gap-4 mt-6">
+              {/* Line Chart */}
+              <div className="flex-1">
+                <svg viewBox="0 0 160 80" className="w-full h-20">
+                  {/* Grid lines */}
+                  <line x1="0" y1="70" x2="160" y2="70" stroke="#4b5563" strokeWidth="1"/>
+                  
+                  {/* Line path */}
+                  <polyline 
+                    points="10,35 50,45 90,20 130,45" 
+                    fill="none" 
+                    stroke="#2563eb" 
+                    strokeWidth="2"
+                  />
+                  
+                  {/* Data points */}
+                  <circle cx="10" cy="35" r="4" fill="#2563eb"/>
+                  <circle cx="50" cy="45" r="4" fill="#2563eb"/>
+                  <circle cx="90" cy="20" r="4" fill="#2563eb"/>
+                  <circle cx="130" cy="45" r="4" fill="#2563eb"/>
+                  
+                  {/* Values */}
+                  <text x="10" y="28" textAnchor="middle" fill="#ffffff" fontSize="10">10</text>
+                  <text x="50" y="38" textAnchor="middle" fill="#ffffff" fontSize="10">8</text>
+                  <text x="90" y="13" textAnchor="middle" fill="#ffffff" fontSize="10">15</text>
+                  <text x="130" y="38" textAnchor="middle" fill="#ffffff" fontSize="10">8</text>
+                  
+                  {/* Labels */}
+                  <text x="10" y="78" textAnchor="middle" fill="#9ca3af" fontSize="9">S-4</text>
+                  <text x="50" y="78" textAnchor="middle" fill="#9ca3af" fontSize="9">S-3</text>
+                  <text x="90" y="78" textAnchor="middle" fill="#9ca3af" fontSize="9">S-2</text>
+                  <text x="130" y="78" textAnchor="middle" fill="#9ca3af" fontSize="9">S-1</text>
+                </svg>
+              </div>
+              
+              {/* Bar Chart */}
+              <div className="flex items-end gap-2 h-20">
+                <div className="flex flex-col items-center">
+                  <span className="text-xs text-gray-300 mb-1">65</span>
+                  <div className="w-8 bg-blue-500 rounded-t" style={{height: "60px"}}></div>
+                  <span className="text-xs text-gray-400 mt-1">M-4</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <span className="text-xs text-gray-300 mb-1">52</span>
+                  <div className="w-8 bg-blue-500 rounded-t" style={{height: "48px"}}></div>
+                  <span className="text-xs text-gray-400 mt-1">M-3</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <span className="text-xs text-gray-300 mb-1">48</span>
+                  <div className="w-8 bg-blue-500 rounded-t" style={{height: "44px"}}></div>
+                  <span className="text-xs text-gray-400 mt-1">M-2</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <span className="text-xs text-gray-300 mb-1">45</span>
+                  <div className="w-8 bg-blue-500 rounded-t" style={{height: "42px"}}></div>
+                  <span className="text-xs text-gray-400 mt-1">M-1</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Taux de Conformité aux Audits Card */}
+          <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6 transition-transform duration-300 cursor-pointer">
+            <h2 className="text-sm font-semibold text-white mb-6">Taux de Conformité aux Audits</h2>
+            
+            <div className="flex justify-center gap-8">
+              {/* Completion Donut */}
+              <div className="flex flex-col items-center">
+                <div className="relative w-24 h-24">
+                  <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#e5e7eb" strokeWidth="10"/>
+                    <circle 
+                      cx="50" cy="50" r="40" 
+                      fill="none" 
+                      stroke="#10b981" 
+                      strokeWidth="10"
+                      strokeDasharray="251.33"
+                      strokeDashoffset="25.13"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-xl font-bold text-white">90%</span>
+                  </div>
+                </div>
+                <span className="text-sm text-gray-300 mt-3">Completion</span>
+                <span className="text-green-400 text-sm font-medium mt-1">+5%</span>
+                <span className="text-xs text-gray-400">vs Mois Préc.</span>
+              </div>
+              
+              {/* Compliance Donut */}
+              <div className="flex flex-col items-center">
+                <div className="relative w-24 h-24">
+                  <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#e5e7eb" strokeWidth="10"/>
+                    <circle 
+                      cx="50" cy="50" r="40" 
+                      fill="none" 
+                      stroke="#f97316" 
+                      strokeWidth="10"
+                      strokeDasharray="251.33"
+                      strokeDashoffset="37.7"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-xl font-bold text-white">85%</span>
+                  </div>
+                </div>
+                <span className="text-sm text-gray-300 mt-3">Compliance</span>
+                <span className="text-red-400 text-sm font-medium mt-1">-2%</span>
+                <span className="text-xs text-gray-400">vs Mois Préc.</span>
+              </div>
+            </div>
+          </div>
+          
+          {/* Score Cards Clients Card */}
+          <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6 transition-transform duration-300 cursor-pointer">
+            <h2 className="text-sm font-semibold text-white mb-2">Score Cards Clients</h2>
+            
+            <div className="flex items-baseline gap-3 mb-4">
+              <span className="text-4xl font-bold text-white">84.2%</span>
+              <span className="bg-green-500/20 text-green-400 text-sm px-2 py-0.5 rounded">+1.2%</span>
+              <span className="text-xs text-gray-400">vs Mois Préc.</span>
+            </div>
+            
+            {/* Client Bars */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-gray-300 w-24">Client Alpha</span>
+                <div className="flex-1 h-3 bg-gray-700 rounded-full overflow-hidden">
+                  <div className="h-full bg-blue-500 rounded-full" style={{width: "95%"}}></div>
+                </div>
+                <span className="text-sm font-medium text-white w-10 text-right">95%</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-gray-300 w-24">Client Beta</span>
+                <div className="flex-1 h-3 bg-gray-700 rounded-full overflow-hidden">
+                  <div className="h-full bg-blue-500 rounded-full" style={{width: "82%"}}></div>
+                </div>
+                <span className="text-sm font-medium text-white w-10 text-right">82%</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-gray-300 w-24">Client Gamma</span>
+                <div className="flex-1 h-3 bg-gray-700 rounded-full overflow-hidden">
+                  <div className="h-full bg-blue-500 rounded-full" style={{width: "88%"}}></div>
+                </div>
+                <span className="text-sm font-medium text-white w-10 text-right">88%</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-gray-300 w-24">Client Delta</span>
+                <div className="flex-1 h-3 bg-gray-700 rounded-full overflow-hidden">
+                  <div className="h-full bg-blue-500 rounded-full" style={{width: "91%"}}></div>
+                </div>
+                <span className="text-sm font-medium text-white w-10 text-right">91%</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-gray-300 w-24">Client Epsilon</span>
+                <div className="flex-1 h-3 bg-gray-700 rounded-full overflow-hidden">
+                  <div className="h-full bg-red-500 rounded-full" style={{width: "65%"}}></div>
+                </div>
+                <span className="text-sm font-medium text-white w-10 text-right">65%</span>
+              </div>
+            </div>
+          </div>
+          
+          {/* Incidents / Accidents de Travail Card */}
+          <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6 transition-transform duration-300 cursor-pointer lg:col-span-1">
+            <h2 className="text-sm font-semibold text-white mb-4">Incidents / Accidents de Travail</h2>
+            
+            <div className="flex items-start gap-4 mb-4">
+              <span className="text-5xl font-bold text-white">1</span>
+              <div>
+                <span className="bg-green-500/20 text-green-400 text-sm px-2 py-0.5 rounded">-4</span>
+                <div className="text-xs text-gray-400 mt-1">vs Mois Préc.</div>
+              </div>
+            </div>
+            
+            {/* Incidents Bar Chart */}
+            <div className="flex items-end justify-between gap-4 mb-6 px-2">
+              <div className="flex flex-col items-center">
+                <div className="relative">
+                  <div className="w-14 bg-blue-500 rounded-t flex items-center justify-center text-white font-semibold py-2" style={{height: "70px"}}>6</div>
+                </div>
+                <span className="text-xs text-gray-500 mt-2">Jan</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="relative">
+                  <div className="w-14 bg-blue-500 rounded-t flex items-center justify-center text-white font-semibold py-2" style={{height: "58px"}}>5</div>
+                </div>
+                <span className="text-xs text-gray-500 mt-2">Fév</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="relative">
+                  <div className="w-14 bg-blue-400 rounded-t flex items-center justify-center text-white font-semibold py-2" style={{height: "35px"}}>2</div>
+                </div>
+                <span className="text-xs text-gray-500 mt-2">Mar</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="relative">
+                  <div className="w-14 bg-blue-300 rounded-t flex items-center justify-center text-gray-700 font-semibold py-2" style={{height: "22px"}}>1</div>
+                </div>
+                <span className="text-xs text-gray-500 mt-2">Avr</span>
+              </div>
+            </div>
+            
+            {/* Jours Perdus Line Chart */}
+            <div className="mt-4">
+              <span className="text-sm text-gray-300 mb-2 block">Jours Perdus</span>
+              <svg viewBox="0 0 200 70" className="w-full h-16">
+                {/* Line path */}
+                <polyline 
+                  points="20,35 70,20 120,45 170,55" 
+                  fill="none" 
+                  stroke="#f59e0b" 
+                  strokeWidth="2"
+                />
+                
+                {/* Data points */}
+                <circle cx="20" cy="35" r="4" fill="#f59e0b"/>
+                <circle cx="70" cy="20" r="4" fill="#f59e0b"/>
+                <circle cx="120" cy="45" r="4" fill="#f59e0b"/>
+                <circle cx="170" cy="55" r="4" fill="#f59e0b"/>
+                
+                {/* Values */}
+                <text x="20" y="28" textAnchor="middle" fill="#f59e0b" fontSize="11" fontWeight="600">12</text>
+                <text x="70" y="13" textAnchor="middle" fill="#f59e0b" fontSize="11" fontWeight="600">15</text>
+                <text x="120" y="38" textAnchor="middle" fill="#f59e0b" fontSize="11" fontWeight="600">8</text>
+                <text x="170" y="48" textAnchor="middle" fill="#f59e0b" fontSize="11" fontWeight="600">5</text>
+              </svg>
+            </div>
+          </div>
+          
+          {/* Suivi de l'Efficience Card */}
+          <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6 transition-transform duration-300 cursor-pointer lg:col-span-2">
+            <h2 className="text-sm font-semibold text-white mb-4">Suivi de l&apos;Efficience (mensuelle)</h2>
+            
+            <div className="flex flex-wrap items-start gap-4 mb-2">
+              <span className="text-5xl font-bold text-white">92%</span>
+              <div className="flex flex-wrap gap-3 mt-2">
+                <div className="flex items-center gap-1">
+                  <span className="bg-green-500/20 text-green-400 text-sm px-2 py-0.5 rounded">+1.5%</span>
+                  <span className="text-xs text-gray-400">vs Sem. Préc.</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="bg-red-500/20 text-red-400 text-sm px-2 py-0.5 rounded">-5%</span>
+                  <span className="text-xs text-gray-400">vs Prev Month.</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2 mb-6">
+              <span className="text-sm text-gray-400">vs Target (90%)</span>
+              <span className="text-green-400">↑</span>
+              <span className="text-green-400 font-medium">+1.5%</span>
+            </div>
+            
+            {/* Efficiency Line Chart */}
+            <svg viewBox="0 0 400 120" className="w-full h-28">
+              {/* Grid lines */}
+              <line x1="40" y1="100" x2="380" y2="100" stroke="#4b5563" strokeWidth="1"/>
+              <line x1="40" y1="60" x2="380" y2="60" stroke="#4b5563" strokeWidth="1" strokeDasharray="4"/>
+              <line x1="40" y1="20" x2="380" y2="20" stroke="#4b5563" strokeWidth="1" strokeDasharray="4"/>
+              
+              {/* Line path */}
+              <polyline 
+                points="60,70 150,30 250,50 340,20" 
+                fill="none" 
+                stroke="#2563eb" 
+                strokeWidth="2.5"
+              />
+              
+              {/* Data points */}
+              <circle cx="60" cy="70" r="5" fill="#2563eb"/>
+              <circle cx="150" cy="30" r="5" fill="#2563eb"/>
+              <circle cx="250" cy="50" r="5" fill="#2563eb"/>
+              <circle cx="340" cy="20" r="5" fill="#2563eb"/>
+              
+              {/* Values */}
+              <text x="60" y="60" textAnchor="middle" fill="#ffffff" fontSize="11">88%</text>
+              <text x="150" y="20" textAnchor="middle" fill="#ffffff" fontSize="11">95%</text>
+              <text x="250" y="40" textAnchor="middle" fill="#ffffff" fontSize="11">90%</text>
+              <text x="340" y="10" textAnchor="middle" fill="#ffffff" fontSize="11">97%</text>
+              
+              {/* X-axis labels */}
+              <text x="60" y="115" textAnchor="middle" fill="#9ca3af" fontSize="11">M-4</text>
+              <text x="150" y="115" textAnchor="middle" fill="#9ca3af" fontSize="11">M-3</text>
+              <text x="250" y="115" textAnchor="middle" fill="#9ca3af" fontSize="11">M-2</text>
+              <text x="340" y="115" textAnchor="middle" fill="#9ca3af" fontSize="11">M-1</text>
+            </svg>
+          </div>
+          
+        </div>
+      );
+    };
 
     return (
-      <main className="flex-1 overflow-hidden bg-slate-900 p-8">
+      <main className="flex-1 overflow-hidden p-4 md:p-6">
         {/* Header with tabs */}
-        <div className="mb-6 flex justify-between items-center">
+        <div className="max-w-[1400px] mx-auto mb-6 flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2">
-              Quality & Safety Dashboard
+            <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
+              Qualité - {activeTab === "weekly" ? "Hebdomadaire" : "Mensuel"}
             </h1>
-            <p className="text-gray-300">
-              Key Performance Indicators for Quality and Safety
+            <p className="text-gray-100">
+              {activeTab === "weekly" ? "Réclamations Client Affinées" : "Indicateurs de performance qualité"}
             </p>
           </div>
           <TabSelector activeTab={activeTab} onTabChange={setActiveTab} />
         </div>
-        { activeTab === "monthly" ? <MonthlyQuality /> : <WeeklyQuality /> }
+        {activeTab === "weekly" ? <WeeklyQuality /> : <MonthlyQuality />}
       </main>
     );
   }
+
 
   if (category.id === "supplychain") {
     return (
@@ -3637,10 +3095,10 @@ export function CategoryDashboard({
           <div className="flex w-full flex-col gap-6">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="flex flex-col gap-1">
-                <h1 className="text-3xl font-bold text-white mb-2">
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tighter text-white dark:text-white">
                   Supply Chain - {activeTab === "monthly" ? "Mensuel" : "Hebdomadaire"}
                 </h1>
-                <p className="text-gray-200">
+                <p className="text-sm md:text-base lg:text-lg font-normal text-gray-400 dark:text-gray-400">
                   {activeTab === "monthly" ? "Mois en cours: Mai" : "Semaine actuelle: 20-26 May"}
                 </p>
               </div>
@@ -3651,17 +3109,15 @@ export function CategoryDashboard({
             </div>
               {activeTab === "monthly" ? (
                 <div className="flex flex-col gap-6">
-                  <div
-                    className="flex h-full flex-col gap-6 rounded-lg border border-white/20 bg-slate-800/90 backdrop-blur-sm p-6 hover:scale-105 transition-transform duration-300 cursor-pointer"
-                  >
+                  <div className="flex h-full flex-col gap-4 md:gap-6 lg:gap-8 rounded-lg border border-gray-200 bg-white p-4 md:p-6 lg:p-8 dark:border-gray-700 dark:bg-gray-900">
                     <div className="flex items-start justify-between">
                       <p
-                        className="text-lg font-semibold text-white"
+                        className="text-base md:text-lg lg:text-xl font-bold text-gray-900 dark:text-white"
                       >
                         Rotation des Stocks
                       </p>
                       <span
-                        className="material-symbols-outlined text-gray-300"
+                        className="material-symbols-outlined text-gray-500 dark:text-gray-400"
                       >
                         inventory
                       </span>
@@ -3672,76 +3128,76 @@ export function CategoryDashboard({
                       >
                         <div>
                           <p
-                            className="text-7xl font-extrabold tracking-tighter text-white"
+                            className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tighter text-gray-900 dark:text-white"
                           >
-                            22 <span className="text-5xl font-bold">jours</span>
+                            22 <span className="text-3xl md:text-4xl lg:text-5xl font-bold">jours</span>
                           </p>
                           <div className="flex items-baseline gap-2">
                             <p
-                              className="text-xl font-medium text-gray-300"
+                              className="text-base md:text-lg lg:text-xl font-medium text-gray-600 dark:text-gray-400"
                             >
                               Target:
                             </p>
-                            <p className="text-3xl font-bold text-primary">20 jours</p>
+                            <p className="text-xl md:text-2xl lg:text-3xl font-bold text-primary">20 jours</p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-4">
-                          <div className="flex flex-col items-center gap-2">
+                        <div className="flex items-center gap-2 md:gap-3 lg:gap-4">
+                          <div className="flex flex-col items-center gap-1 md:gap-2">
                             <div
-                              className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary"
+                              className="flex h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 items-center justify-center rounded-full bg-primary/10 text-primary"
                             >
-                              <span className="text-4xl font-bold">21</span>
+                              <span className="text-2xl md:text-3xl lg:text-4xl font-bold">21</span>
                             </div>
                             <p
-                              className="text-sm font-medium text-gray-200"
+                              className="text-xs md:text-sm lg:text-base text-gray-600 dark:text-gray-400"
                             >
                               Avril
                             </p>
                           </div>
-                          <div className="flex flex-col items-center gap-2">
+                          <div className="flex flex-col items-center gap-1 md:gap-2">
                             <div
-                              className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary"
+                              className="flex h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 items-center justify-center rounded-full bg-primary/10 text-primary"
                             >
-                              <span className="text-4xl font-bold">19</span>
+                              <span className="text-2xl md:text-3xl lg:text-4xl font-bold">19</span>
                             </div>
                             <p
-                              className="text-sm font-medium text-gray-200"
+                              className="text-xs md:text-sm lg:text-base text-gray-600 dark:text-gray-400"
                             >
                               Mars
                             </p>
                           </div>
-                          <div className="flex flex-col items-center gap-2">
+                          <div className="flex flex-col items-center gap-1 md:gap-2">
                             <div
-                              className="flex h-20 w-20 items-center justify-center rounded-full bg-yellow-500/10 text-yellow-500"
+                              className="flex h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 items-center justify-center rounded-full bg-warning/10 text-warning"
                             >
-                              <span className="text-4xl font-bold">24</span>
+                              <span className="text-2xl md:text-3xl lg:text-4xl font-bold">24</span>
                             </div>
                             <p
-                              className="text-sm font-medium text-gray-200"
+                              className="text-xs md:text-sm lg:text-base text-gray-600 dark:text-gray-400"
                             >
                               Fév
                             </p>
                           </div>
-                          <div className="flex flex-col items-center gap-2">
+                          <div className="flex flex-col items-center gap-1 md:gap-2">
                             <div
-                              className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary"
+                              className="flex h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 items-center justify-center rounded-full bg-primary/10 text-primary"
                             >
-                              <span className="text-4xl font-bold">20</span>
+                              <span className="text-2xl md:text-3xl lg:text-4xl font-bold">20</span>
                             </div>
                             <p
-                              className="text-sm font-medium text-gray-200"
+                              className="text-xs md:text-sm lg:text-base text-gray-600 dark:text-gray-400"
                             >
                               Jan
                             </p>
                           </div>
-                          <div className="flex flex-col items-center gap-2">
+                          <div className="flex flex-col items-center gap-1 md:gap-2">
                             <div
-                              className="flex h-20 w-20 items-center justify-center rounded-full bg-yellow-500/10 text-yellow-500"
+                              className="flex h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 items-center justify-center rounded-full bg-warning/10 text-warning"
                             >
-                              <span className="text-4xl font-bold">23</span>
+                              <span className="text-2xl md:text-3xl lg:text-4xl font-bold">23</span>
                             </div>
                             <p
-                              className="text-sm font-medium text-gray-200"
+                              className="text-xs md:text-sm lg:text-base text-gray-600 dark:text-gray-400"
                             >
                               Déc
                             </p>
@@ -3794,16 +3250,16 @@ export function CategoryDashboard({
                     </div>
                   </div>
                   <div
-                    className="flex h-full flex-col gap-6 rounded-lg border border-white/20 bg-slate-800/90 backdrop-blur-sm p-6 hover:scale-105 transition-transform duration-300 cursor-pointer"
+                    className="flex h-full flex-col gap-4 md:gap-6 lg:gap-8 rounded-lg border border-gray-200 bg-white p-4 md:p-6 lg:p-8 dark:border-gray-700 dark:bg-gray-900"
                   >
                     <div className="flex items-start justify-between">
                       <p
-                        className="text-lg font-semibold text-white"
+                        className="text-base md:text-lg lg:text-xl font-bold text-gray-900 dark:text-white"
                       >
                         Taux de Fiabilité des Stocks
                       </p>
                       <span
-                        className="material-symbols-outlined text-gray-300"
+                        className="material-symbols-outlined text-gray-500 dark:text-gray-400"
                       >
                         published_with_changes
                       </span>
@@ -3814,7 +3270,7 @@ export function CategoryDashboard({
                       >
                         <div className="flex flex-col items-center">
                           <p
-                            className="text-8xl font-extrabold tracking-tighter text-yellow-500"
+                            className="text-6xl md:text-7xl lg:text-8xl font-extrabold tracking-tighter text-warning"
                           >
                             94%
                           </p>
@@ -3826,21 +3282,21 @@ export function CategoryDashboard({
                             </span>
                             <p className="text-2xl font-extrabold text-primary">+1%</p>
                             <p
-                              className="text-base font-normal text-gray-300"
+                              className="text-base font-normal text-gray-600 dark:text-gray-400"
                             >
                               vs dernier mois
                             </p>
                           </div>
                         </div>
-                        <div className="flex w-full max-w-md flex-col gap-4">
-                          <div className="flex items-center gap-4">
+                        <div className="flex w-full max-w-md flex-col gap-3 md:gap-4">
+                          <div className="flex items-center gap-3 md:gap-4">
                             <p
-                              className="w-28 shrink-0 text-sm font-semibold text-gray-200"
+                              className="w-24 md:w-28 lg:w-32 shrink-0 text-xs md:text-sm lg:text-base font-semibold text-gray-600 dark:text-gray-400"
                             >
                               Warehouse A
                             </p>
                             <div
-                              className="h-6 w-full rounded bg-gray-700"
+                              className="h-6 w-full rounded bg-gray-200 dark:bg-gray-700"
                             >
                               <div
                                 className="h-full items-center justify-end rounded bg-primary pr-2 text-right text-sm font-bold text-white"
@@ -3850,31 +3306,31 @@ export function CategoryDashboard({
                               </div>
                             </div>
                           </div>
-                          <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-3 md:gap-4">
                             <p
-                              className="w-28 shrink-0 text-sm font-semibold text-gray-200"
+                              className="w-24 md:w-28 lg:w-32 shrink-0 text-xs md:text-sm lg:text-base font-semibold text-gray-600 dark:text-gray-400"
                             >
                               Warehouse B
                             </p>
                             <div
-                              className="h-6 w-full rounded bg-gray-700"
+                              className="h-6 w-full rounded bg-gray-200 dark:bg-gray-700"
                             >
                               <div
-                                className="h-full items-center justify-end rounded bg-yellow-500 pr-2 text-right text-sm font-bold text-white"
+                                className="h-full items-center justify-end rounded bg-warning pr-2 text-right text-sm font-bold text-white"
                                 style={{ width: "91%" }}
                               >
                                 91%
                               </div>
                             </div>
                           </div>
-                          <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-3 md:gap-4">
                             <p
-                              className="w-28 shrink-0 text-sm font-semibold text-gray-200"
+                              className="w-24 md:w-28 lg:w-32 shrink-0 text-xs md:text-sm lg:text-base font-semibold text-gray-600 dark:text-gray-400"
                             >
                               Warehouse C
                             </p>
                             <div
-                              className="h-6 w-full rounded bg-gray-700"
+                              className="h-6 w-full rounded bg-gray-200 dark:bg-gray-700"
                             >
                               <div
                                 className="h-full items-center justify-end rounded bg-primary pr-2 text-right text-sm font-bold text-white"
@@ -3932,16 +3388,16 @@ export function CategoryDashboard({
                     </div>
                   </div>
                   <div
-                    className="flex h-full flex-col gap-6 rounded-lg border border-white/20 bg-slate-800/90 backdrop-blur-sm p-6 hover:scale-105 transition-transform duration-300 cursor-pointer"
+                    className="flex h-full flex-col gap-4 md:gap-6 lg:gap-8 rounded-lg border border-gray-200 bg-white p-4 md:p-6 lg:p-8 dark:border-gray-700 dark:bg-gray-900"
                   >
                     <div className="flex items-start justify-between">
                       <p
-                        className="text-lg font-semibold text-white"
+                        className="text-base md:text-lg lg:text-xl font-bold text-gray-900 dark:text-white"
                       >
                         Coût Logistique Total
                       </p>
                       <span
-                        className="material-symbols-outlined text-gray-300"
+                        className="material-symbols-outlined text-gray-500 dark:text-gray-400"
                       >
                         local_shipping
                       </span>
@@ -3952,7 +3408,7 @@ export function CategoryDashboard({
                       >
                         <div>
                           <p
-                            className="text-7xl font-extrabold tracking-tighter text-white"
+                            className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tighter text-gray-900 dark:text-white"
                           >
                             €1.2M
                           </p>
@@ -3964,69 +3420,69 @@ export function CategoryDashboard({
                             </span>
                             <p className="text-2xl font-extrabold text-primary">-5%</p>
                             <p
-                              className="text-base font-normal text-gray-300"
+                              className="text-base font-normal text-gray-600 dark:text-gray-400"
                             >
                               vs last month
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-4">
-                          <div className="flex flex-col items-center gap-2">
+                        <div className="flex items-center gap-2 md:gap-3 lg:gap-4">
+                          <div className="flex flex-col items-center gap-1 md:gap-2">
                             <div
-                              className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary"
+                              className="flex h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 items-center justify-center rounded-full bg-primary/10 text-primary"
                             >
-                              <span className="text-3xl font-bold">1.26</span>
+                              <span className="text-xl md:text-2xl lg:text-3xl font-bold">1.26</span>
                             </div>
                             <p
-                              className="text-sm font-medium text-gray-200"
+                              className="text-xs md:text-sm lg:text-base text-gray-600 dark:text-gray-400"
                             >
                               Avril
                             </p>
                           </div>
-                          <div className="flex flex-col items-center gap-2">
+                          <div className="flex flex-col items-center gap-1 md:gap-2">
                             <div
-                              className="flex h-20 w-20 items-center justify-center rounded-full bg-red-500/10 text-red-500"
+                              className="flex h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 items-center justify-center rounded-full bg-danger/10 text-danger"
                             >
-                              <span className="text-3xl font-bold">1.31</span>
+                              <span className="text-xl md:text-2xl lg:text-3xl font-bold">1.31</span>
                             </div>
                             <p
-                              className="text-sm font-medium text-gray-200"
+                              className="text-xs md:text-sm lg:text-base text-gray-600 dark:text-gray-400"
                             >
                               Mars
                             </p>
                           </div>
-                          <div className="flex flex-col items-center gap-2">
+                          <div className="flex flex-col items-center gap-1 md:gap-2">
                             <div
-                              className="flex h-20 w-20 items-center justify-center rounded-full bg-red-500/10 text-red-500"
+                              className="flex h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 items-center justify-center rounded-full bg-danger/10 text-danger"
                             >
-                              <span className="text-3xl font-bold">1.29</span>
+                              <span className="text-xl md:text-2xl lg:text-3xl font-bold">1.29</span>
                             </div>
                             <p
-                              className="text-sm font-medium text-gray-200"
+                              className="text-xs md:text-sm lg:text-base text-gray-600 dark:text-gray-400"
                             >
                               Fév
                             </p>
                           </div>
-                          <div className="flex flex-col items-center gap-2">
+                          <div className="flex flex-col items-center gap-1 md:gap-2">
                             <div
-                              className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary"
+                              className="flex h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 items-center justify-center rounded-full bg-primary/10 text-primary"
                             >
-                              <span className="text-3xl font-bold">1.18</span>
+                              <span className="text-xl md:text-2xl lg:text-3xl font-bold">1.18</span>
                             </div>
                             <p
-                              className="text-sm font-medium text-gray-200"
+                              className="text-xs md:text-sm lg:text-base text-gray-600 dark:text-gray-400"
                             >
                               Jan
                             </p>
                           </div>
-                          <div className="flex flex-col items-center gap-2">
+                          <div className="flex flex-col items-center gap-1 md:gap-2">
                             <div
-                              className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary"
+                              className="flex h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 items-center justify-center rounded-full bg-primary/10 text-primary"
                             >
-                              <span className="text-3xl font-bold">1.15</span>
+                              <span className="text-xl md:text-2xl lg:text-3xl font-bold">1.15</span>
                             </div>
                             <p
-                              className="text-sm font-medium text-gray-200"
+                              className="text-xs md:text-sm lg:text-base text-gray-600 dark:text-gray-400"
                             >
                               Déc
                             </p>
@@ -4082,23 +3538,23 @@ export function CategoryDashboard({
               ) : (
                 <div className="grid h-full flex-1 grid-cols-1 gap-6 lg:grid-cols-2">
                   <div
-                    className="flex flex-col gap-6 rounded-lg border border-white/20 bg-slate-800/90 backdrop-blur-sm p-6 hover:scale-105 transition-transform duration-300 cursor-pointer"
+                    className="flex flex-col gap-4 md:gap-6 lg:gap-8 rounded-lg border border-gray-200 bg-white p-4 md:p-6 lg:p-8 dark:border-gray-700 dark:bg-gray-900"
                   >
                     <div className="flex items-start justify-between">
                       <p
-                        className="text-base font-medium text-white"
+                        className="text-sm md:text-base lg:text-lg font-medium text-gray-900 dark:text-white"
                       >
                         Taux de Service Client / OTIF
                       </p>
                       <span
-                        className="material-symbols-outlined text-gray-300"
+                        className="material-symbols-outlined text-gray-500 dark:text-gray-400"
                       >
                         trending_up
                       </span>
                     </div>
-                    <div className="flex flex-wrap items-end gap-4">
+                    <div className="flex flex-wrap items-end gap-3 md:gap-4">
                       <p
-                        className="text-6xl font-extrabold tracking-tighter text-white"
+                        className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tighter text-gray-900 dark:text-white"
                       >
                         96%
                       </p>
@@ -4108,7 +3564,7 @@ export function CategoryDashboard({
                         </span>
                         <p className="text-2xl font-extrabold text-primary">+1.0%</p>
                         <p
-                          className="text-base font-normal text-gray-300"
+                          className="text-base font-normal text-gray-600 dark:text-gray-400"
                         >
                           vs last week
                         </p>
@@ -4158,11 +3614,11 @@ export function CategoryDashboard({
                             position: "absolute",
                           }}
                         >
-                          <span className="text-3xl font-extrabold text-white">
+                          <span className="text-3xl font-extrabold text-gray-900 dark:text-white">
                             95%
                           </span>
-                          <div className="h-3 w-3 rounded-full border-2 border-[#2c5282] bg-slate-800" />
-                          <p className="text-sm font-bold text-gray-200">
+                          <div className="h-3 w-3 rounded-full border-2 border-[#2c5282] bg-white dark:bg-gray-900" />
+                          <p className="text-sm font-bold text-gray-600 dark:text-gray-400">
                             W1
                           </p>
                         </div>
@@ -4175,11 +3631,11 @@ export function CategoryDashboard({
                             position: "absolute",
                           }}
                         >
-                          <span className="text-3xl font-extrabold text-white">
+                          <span className="text-3xl font-extrabold text-gray-900 dark:text-white">
                             97%
                           </span>
-                          <div className="h-3 w-3 rounded-full border-2 border-[#2c5282] bg-slate-800" />
-                          <p className="text-sm font-bold text-gray-200">
+                          <div className="h-3 w-3 rounded-full border-2 border-[#2c5282] bg-white dark:bg-gray-900" />
+                          <p className="text-sm font-bold text-gray-600 dark:text-gray-400">
                             W2
                           </p>
                         </div>
@@ -4192,11 +3648,11 @@ export function CategoryDashboard({
                             position: "absolute",
                           }}
                         >
-                          <span className="text-3xl font-extrabold text-white">
+                          <span className="text-3xl font-extrabold text-gray-900 dark:text-white">
                             96%
                           </span>
-                          <div className="h-3 w-3 rounded-full border-2 border-[#2c5282] bg-slate-800" />
-                          <p className="text-sm font-bold text-gray-200">
+                          <div className="h-3 w-3 rounded-full border-2 border-[#2c5282] bg-white dark:bg-gray-900" />
+                          <p className="text-sm font-bold text-gray-600 dark:text-gray-400">
                             W3
                           </p>
                         </div>
@@ -4209,11 +3665,11 @@ export function CategoryDashboard({
                             position: "absolute",
                           }}
                         >
-                          <span className="text-3xl font-extrabold text-white">
+                          <span className="text-3xl font-extrabold text-gray-900 dark:text-white">
                             98%
                           </span>
-                          <div className="h-3 w-3 rounded-full border-2 border-[#2c5282] bg-slate-800" />
-                          <p className="text-sm font-bold text-gray-200">
+                          <div className="h-3 w-3 rounded-full border-2 border-[#2c5282] bg-white dark:bg-gray-900" />
+                          <p className="text-sm font-bold text-gray-600 dark:text-gray-400">
                             W4
                           </p>
                         </div>
@@ -4226,11 +3682,11 @@ export function CategoryDashboard({
                             position: "absolute",
                           }}
                         >
-                          <span className="text-3xl font-extrabold text-white">
+                          <span className="text-3xl font-extrabold text-gray-900 dark:text-white">
                             97%
                           </span>
-                          <div className="h-3 w-3 rounded-full border-2 border-[#2c5282] bg-slate-800" />
-                          <p className="text-sm font-bold text-gray-200">
+                          <div className="h-3 w-3 rounded-full border-2 border-[#2c5282] bg-white dark:bg-gray-900" />
+                          <p className="text-sm font-bold text-gray-600 dark:text-gray-400">
                             W5
                           </p>
                         </div>
@@ -4238,33 +3694,33 @@ export function CategoryDashboard({
                     </div>
                   </div>
                   <div
-                    className="flex flex-col gap-6 rounded-lg border border-white/20 bg-slate-800/90 backdrop-blur-sm p-6 hover:scale-105 transition-transform duration-300 cursor-pointer"
+                    className="flex flex-col gap-4 md:gap-6 lg:gap-8 rounded-lg border border-gray-200 bg-white p-4 md:p-6 lg:p-8 dark:border-gray-700 dark:bg-gray-900"
                   >
                     <div className="flex items-start justify-between">
                       <p
-                        className="text-base font-medium text-white"
+                        className="text-sm md:text-base lg:text-lg font-medium text-gray-900 dark:text-white"
                       >
                         Taux de Service Fournisseurs OTIF
                       </p>
                       <span
-                        className="material-symbols-outlined text-gray-300"
+                        className="material-symbols-outlined text-gray-500 dark:text-gray-400"
                       >
                         local_shipping
                       </span>
                     </div>
-                    <div className="flex flex-wrap items-end gap-4">
+                    <div className="flex flex-wrap items-end gap-3 md:gap-4">
                       <p
-                        className="text-5xl font-extrabold tracking-tighter text-white"
+                        className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tighter text-gray-900 dark:text-white"
                       >
                         96%
                       </p>
                       <div className="flex items-center gap-1 pb-1">
-                        <span className="material-symbols-outlined text-sm text-red-500">
+                        <span className="material-symbols-outlined text-sm text-danger">
                           arrow_downward
                         </span>
-                        <p className="text-2xl font-extrabold text-red-500">-0.5%</p>
+                        <p className="text-2xl font-extrabold text-danger">-0.5%</p>
                         <p
-                          className="text-base font-normal text-gray-300"
+                          className="text-base font-normal text-gray-600 dark:text-gray-400"
                         >
                           vs last week
                         </p>
@@ -4273,117 +3729,117 @@ export function CategoryDashboard({
                     <div className="flex h-full w-full flex-col items-center justify-center pt-4">
                       <div className="flex w-full items-start justify-around">
                         <div className="flex flex-col items-center gap-2">
-                          <p className="mb-1 text-xs font-semibold text-primary">
+                          <p className="mb-1 text-xs font-semibold text-info">
                             Target: 95%
                           </p>
-                          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-yellow-500/20 text-yellow-500">
+                          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-warning/20 text-warning dark:bg-warning/30">
                             <span className="text-2xl font-bold">94%</span>
                           </div>
-                          <p className="mt-2 text-sm font-medium text-gray-200">
+                          <p className="mt-2 text-sm font-medium text-gray-600 dark:text-gray-400">
                             W1
                           </p>
                         </div>
                         <div className="flex flex-col items-center gap-2">
-                          <p className="mb-1 text-xs font-semibold text-primary">
+                          <p className="mb-1 text-xs font-semibold text-info">
                             Target: 95%
                           </p>
                           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/20 text-primary">
                             <span className="text-2xl font-bold">95%</span>
                           </div>
-                          <p className="mt-2 text-sm font-medium text-gray-200">
+                          <p className="mt-2 text-sm font-medium text-gray-600 dark:text-gray-400">
                             W2
                           </p>
                         </div>
                         <div className="flex flex-col items-center gap-2">
-                          <p className="mb-1 text-xs font-semibold text-primary">
+                          <p className="mb-1 text-xs font-semibold text-info">
                             Target: 95%
                           </p>
-                          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-yellow-500/20 text-yellow-500">
+                          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-warning/20 text-warning dark:bg-warning/30">
                             <span className="text-2xl font-bold">93%</span>
                           </div>
-                          <p className="mt-2 text-sm font-medium text-gray-200">
+                          <p className="mt-2 text-sm font-medium text-gray-600 dark:text-gray-400">
                             W3
                           </p>
                         </div>
                         <div className="flex flex-col items-center gap-2">
-                          <p className="mb-1 text-xs font-semibold text-primary">
+                          <p className="mb-1 text-xs font-semibold text-info">
                             Target: 95%
                           </p>
                           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/20 text-primary">
                             <span className="text-2xl font-bold">97%</span>
                           </div>
-                          <p className="mt-2 text-sm font-medium text-gray-200">
+                          <p className="mt-2 text-sm font-medium text-gray-600 dark:text-gray-400">
                             W4
                           </p>
                         </div>
                         <div className="flex flex-col items-center gap-2">
-                          <p className="mb-1 text-xs font-semibold text-primary">
+                          <p className="mb-1 text-xs font-semibold text-info">
                             Target: 95%
                           </p>
                           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/20 text-primary">
                             <span className="text-2xl font-bold">96%</span>
                           </div>
-                          <p className="mt-2 text-sm font-medium text-gray-200">
+                          <p className="mt-2 text-sm font-medium text-gray-600 dark:text-gray-400">
                             W5
                           </p>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div className="col-span-full flex flex-col gap-4 rounded-lg border border-white/20 bg-slate-800/90 backdrop-blur-sm p-6">
+                  <div className="col-span-full flex flex-col gap-3 md:gap-4 lg:gap-6 rounded-lg border border-gray-200 bg-white p-4 md:p-6 lg:p-8 dark:border-gray-700 dark:bg-gray-900">
                     <div className="flex items-start justify-between">
-                      <p className="text-base font-medium text-white">
+                      <p className="text-sm md:text-base lg:text-lg font-medium text-gray-900 dark:text-white">
                         Fiabilité Client
                       </p>
-                      <span className="material-symbols-outlined text-gray-300">
+                      <span className="material-symbols-outlined text-gray-500 dark:text-gray-400">
                         shield
                       </span>
                     </div>
-                    <div className="flex h-full flex-grow items-center justify-center gap-12">
-                      <div className="flex flex-col items-center gap-3">
-                        <div className="flex h-40 w-40 items-center justify-center rounded-full border-[10px] border-primary/20 bg-primary/10 text-primary">
-                          <span className="text-6xl font-extrabold tracking-tighter">
+                    <div className="flex h-full flex-grow items-center justify-center gap-6 md:gap-8 lg:gap-12">
+                      <div className="flex flex-col items-center gap-2 md:gap-3">
+                        <div className="flex h-32 w-32 md:h-40 md:w-40 lg:h-48 lg:w-48 items-center justify-center rounded-full border-[8px] md:border-[10px] lg:border-[12px] border-primary/20 bg-primary/10 text-primary dark:border-primary/30 dark:bg-primary/20">
+                          <span className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tighter">
                             94%
                           </span>
                         </div>
-                        <p className="text-lg font-semibold text-white">
+                        <p className="text-base md:text-lg lg:text-xl font-semibold text-gray-900 dark:text-white">
                           Actuel
                         </p>
                       </div>
-                      <div className="flex flex-col items-start gap-4">
-                        <p className="text-sm font-medium text-gray-200">
+                      <div className="flex flex-col items-start gap-3 md:gap-4">
+                        <p className="text-xs md:text-sm lg:text-base font-medium text-gray-600 dark:text-gray-400">
                           Historique Hebdomadaire
                         </p>
-                        <div className="flex items-center gap-6">
-                          <div className="flex flex-col items-center gap-2">
-                            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/20 text-primary">
-                              <span className="text-2xl font-bold">92%</span>
+                        <div className="flex items-center gap-3 md:gap-4 lg:gap-6">
+                          <div className="flex flex-col items-center gap-1 md:gap-2">
+                            <div className="flex h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 items-center justify-center rounded-full bg-primary/20 text-primary dark:bg-primary/30">
+                              <span className="text-lg md:text-xl lg:text-2xl font-bold">92%</span>
                             </div>
-                            <p className="text-sm font-medium text-gray-200">
+                            <p className="text-xs md:text-sm lg:text-base font-medium text-gray-600 dark:text-gray-400">
                               W1
                             </p>
                           </div>
-                          <div className="flex flex-col items-center gap-2">
-                            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/20 text-primary">
-                              <span className="text-2xl font-bold">95%</span>
+                          <div className="flex flex-col items-center gap-1 md:gap-2">
+                            <div className="flex h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 items-center justify-center rounded-full bg-primary/20 text-primary dark:bg-primary/30">
+                              <span className="text-lg md:text-xl lg:text-2xl font-bold">95%</span>
                             </div>
-                            <p className="text-sm font-medium text-gray-200">
+                            <p className="text-xs md:text-sm lg:text-base font-medium text-gray-600 dark:text-gray-400">
                               W2
                             </p>
                           </div>
-                          <div className="flex flex-col items-center gap-2">
-                            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-yellow-500/20 text-yellow-500">
-                              <span className="text-2xl font-bold">88%</span>
+                          <div className="flex flex-col items-center gap-1 md:gap-2">
+                            <div className="flex h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 items-center justify-center rounded-full bg-warning/20 text-warning dark:bg-warning/30">
+                              <span className="text-lg md:text-xl lg:text-2xl font-bold">88%</span>
                             </div>
-                            <p className="text-sm font-medium text-gray-200">
+                            <p className="text-xs md:text-sm lg:text-base font-medium text-gray-600 dark:text-gray-400">
                               W3
                             </p>
                           </div>
-                          <div className="flex flex-col items-center gap-2">
-                            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/20 text-primary">
-                              <span className="text-2xl font-bold">94%</span>
+                          <div className="flex flex-col items-center gap-1 md:gap-2">
+                            <div className="flex h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 items-center justify-center rounded-full bg-primary/20 text-primary dark:bg-primary/30">
+                              <span className="text-lg md:text-xl lg:text-2xl font-bold">94%</span>
                             </div>
-                            <p className="text-sm font-medium text-gray-200">
+                            <p className="text-xs md:text-sm lg:text-base font-medium text-gray-600 dark:text-gray-400">
                               W4
                             </p>
                           </div>
@@ -4408,7 +3864,7 @@ export function CategoryDashboard({
           </p>
         </header>
         <main className="grid flex-1 grid-cols-3 grid-rows-2 gap-4 px-6">
-          <div className="bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-8 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm h-[450px] hover:scale-105 transition-transform duration-300 cursor-pointer">
+          <div className="bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-8 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm h-[450px]  transition-transform duration-300 cursor-pointer">
             <div className="flex items-start justify-between">
               <h2 className="text-xl font-bold text-white tracking-wide">
                 Taux de Départ (Mensuel)
@@ -4601,7 +4057,7 @@ export function CategoryDashboard({
               </div>
             </div>
           </div>
-          <div className="bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm p-6 flex flex-col h-[450px] hover:scale-105 transition-transform duration-300 cursor-pointer">
+          <div className="bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm p-6 flex flex-col h-[450px]  transition-transform duration-300 cursor-pointer">
             <div className="flex items-start justify-between">
               <h2 className="text-xl font-bold text-white tracking-wide">
                 Taux de Remplissage du Transport
@@ -4750,7 +4206,7 @@ export function CategoryDashboard({
               </div>
             </div>
           </div>
-          <div className="bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-8 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm h-[450px] hover:scale-105 transition-transform duration-300 cursor-pointer">
+          <div className="bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-8 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm h-[450px]  transition-transform duration-300 cursor-pointer">
             <h2 className="text-xl font-bold text-white tracking-wide">
               Effectif Global et Coûts
             </h2>
@@ -4982,7 +4438,7 @@ export function CategoryDashboard({
               </div>
             </div>
           </div>
-          <div className="bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-8 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm h-[450px] hover:scale-105 transition-transform duration-300 cursor-pointer">
+          <div className="bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-8 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm h-[450px]  transition-transform duration-300 cursor-pointer">
             <h2 className="text-xl font-bold text-white tracking-wide">
               Délai Moyen de Recrutement
             </h2>
@@ -5054,7 +4510,7 @@ export function CategoryDashboard({
               <span>RH</span>
             </div>
           </div>
-          <div className="bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-4 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm h-[450px] hover:scale-105 transition-transform duration-300 cursor-pointer">
+          <div className="bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-4 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm h-[450px]  transition-transform duration-300 cursor-pointer">
             <div className="flex items-start justify-between">
               <h2 className="text-xl font-bold text-white tracking-wide">
                 Taux d’absentéisme Hebdo
@@ -5272,7 +4728,7 @@ export function CategoryDashboard({
               <span>S-28</span>
             </div>
           </div>
-          <div className="bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-8 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm h-[450px] hover:scale-105 transition-transform duration-300 cursor-pointer">
+          <div className="bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-8 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm h-[450px]  transition-transform duration-300 cursor-pointer">
             <h2 className="text-xl font-bold text-white tracking-wide">
               Indice de Climat Social
             </h2>

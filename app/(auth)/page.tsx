@@ -101,13 +101,13 @@ export default function WelcomePage() {
                 <Button
                   variant="ghost"
                   onClick={() => router.push("/login")}
-                  className="text-white/90 hover:text-white hover:bg-white/20 text-sm font-medium px-5 py-2.5 h-10 rounded-xl border border-white/30 hover:border-white/50 transition-all duration-300 backdrop-blur-sm hover:shadow-lg hover:scale-105"
+                  className="text-white/90 hover:text-white hover:bg-white/20 text-sm font-medium px-5 py-2.5 h-10 rounded-xl border border-white/30 hover:border-white/50 transition-all duration-300 backdrop-blur-sm hover:shadow-lg "
                 >
                   Login
                 </Button>
                 <Button
                   onClick={() => router.push("/register")}
-                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-sm font-semibold px-5 py-2.5 h-10 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-0 hover:scale-105"
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-sm font-semibold px-5 py-2.5 h-10 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-0 "
                 >
                   Register
                 </Button>
@@ -118,7 +118,7 @@ export default function WelcomePage() {
                   <button
                     key={item.name}
                     onClick={() => router.push(item.href)}
-                    className={`text-white/90 hover:text-white text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-white/20 transition-all duration-300 backdrop-blur-sm border border-transparent hover:border-white/30 hover:shadow-lg hover:scale-105 ${
+                    className={`text-white/90 hover:text-white text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-white/20 transition-all duration-300 backdrop-blur-sm border border-transparent hover:border-white/30 hover:shadow-lg  ${
                       isLoaded
                         ? "translate-y-0 opacity-100"
                         : "-translate-y-2 opacity-0"
@@ -186,7 +186,7 @@ export default function WelcomePage() {
               <button
                 key={item.name}
                 onClick={() => router.push(item.href)}
-                className="text-white/90 hover:text-white text-xs font-medium p-2.5 rounded-lg hover:bg-white/20 transition-all duration-300 backdrop-blur-sm border border-transparent hover:border-white/30 hover:shadow-lg hover:scale-105"
+                className="text-white/90 hover:text-white text-xs font-medium p-2.5 rounded-lg hover:bg-white/20 transition-all duration-300 backdrop-blur-sm border border-transparent hover:border-white/30 hover:shadow-lg "
                 style={{ transitionDelay: `${index * 50}ms` }}
               >
                 {item.name}
@@ -199,13 +199,13 @@ export default function WelcomePage() {
             <Button
               variant="ghost"
               onClick={() => router.push("/login")}
-              className="flex-1 text-white/90 hover:text-white hover:bg-white/20 text-sm font-medium h-9 rounded-lg border border-white/30 hover:border-white/50 backdrop-blur-sm hover:shadow-lg hover:scale-105 transition-all duration-300"
+              className="flex-1 text-white/90 hover:text-white hover:bg-white/20 text-sm font-medium h-9 rounded-lg border border-white/30 hover:border-white/50 backdrop-blur-sm hover:shadow-lg  transition-all duration-300"
             >
               Login
             </Button>
             <Button
               onClick={() => router.push("/register")}
-              className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-sm font-semibold h-9 rounded-lg shadow-lg border-0 hover:scale-105 transition-all duration-300"
+              className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-sm font-semibold h-9 rounded-lg shadow-lg border-0  transition-all duration-300"
             >
               Register
             </Button>

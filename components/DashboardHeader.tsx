@@ -60,7 +60,7 @@ export function DashboardHeader({ currentCategory, onNavigate, onBack }: Dashboa
               <Button
                 variant="ghost"
                 size="sm"
-                className={`relative p-3 rounded-xl transition-all duration-300 hover:scale-105 ${
+                className={`relative p-3 rounded-xl transition-all duration-300  ${
                    "text-slate-300 hover:text-white hover:bg-gradient-to-br hover:from-slate-800 hover:to-slate-700 border border-transparent hover:border-slate-600"
                 }`}
               >
