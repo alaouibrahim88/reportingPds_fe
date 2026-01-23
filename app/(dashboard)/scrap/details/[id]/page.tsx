@@ -15,7 +15,7 @@ import { GetZoneDetails } from "@/actions/scrap/details";
 export default function DetailsPage({ params }: { params: { id: string } }) {
   const [selectedCell, setSelectedCell] = useState("");
   const [viewMode, setViewMode] = useState<"price" | "Qty">("price");
-  const [selectedYear, setSelectedYear] = useState(2025);
+  const [selectedYear, setSelectedYear] = useState(2026);
   const [selectedMonth, setSelectedMonth] = useState("1");
   const [allZones, setAllZones] = useState<Zone[]>([]);
   const [selectedZone, setSelectedZone] = useState("");

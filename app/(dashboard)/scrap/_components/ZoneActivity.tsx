@@ -26,7 +26,7 @@ export function ZoneActivity({ week, data, onChange }: ZoneActivityProps) {
       color: zoneBarChartColors[item.libelle]
     }));
 
-  const metrics = data?.currWeekData.slice(0).map((item: weekData) => ({
+  const metrics = (data?.currWeekData ?? []).slice(0).map((item: weekData) => ({
     totalProcess: item.process,
     totalMatiere: item.matiere,
     totalProjet: item.projetEuro,
