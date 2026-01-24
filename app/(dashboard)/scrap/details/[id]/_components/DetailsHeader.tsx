@@ -92,6 +92,12 @@ const Controls: React.FC<ControlsProps> = ({
           <SelectItem value="2025" className="text-xs">
             2025
           </SelectItem>
+          <SelectItem value="2026" className="text-xs">
+            2026
+          </SelectItem>
+          <SelectItem value="2027" className="text-xs">
+            2027
+          </SelectItem>
         </SelectContent>
       </Select>
 

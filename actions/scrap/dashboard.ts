@@ -37,7 +37,8 @@ export const fetchGlobalScrap = async ({
         Authorization: `Bearer ${token}`,
       }
     });
-    return response?.json();
+    if (!response || response.status === 204) return null;
+     return response.json();
   } catch (error) {
     console.error(error);
   }
