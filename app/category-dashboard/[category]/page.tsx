@@ -1,50 +1,40 @@
-"use client";
+"use client"
 
-import React from "react";
-import { useParams, useRouter } from "next/navigation";
-import { DashboardLayout } from "@/components/DashboardLayout";
-import { getCategoryData } from "@/lib/kpi-data";
+import { useEffect } from "react"
+import { useParams, useRouter } from "next/navigation"
+
+// Valid category IDs that have dedicated pages in (dashboard)
+const VALID_CATEGORIES = [
+	"operations",
+	"finance",
+	"rh",
+	"programs",
+	"quality",
+	"supplychain",
+]
 
 export default function CategoryDashboardPage() {
-  const params = useParams();
-  const router = useRouter();
-  const categoryId = params.category as string;
+	const params = useParams()
+	const router = useRouter()
+	const categoryId = params.category as string
 
-  
-  // Get category data from navigationItems
-  const category = getCategoryData(categoryId);
-    
-  if (!category) {
-    // Show error message instead of redirect to avoid infinite loops
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-900">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">Category Not Found</h1>
-          <p className="text-slate-400 mb-6">The category &quot;{categoryId}&quot; does not exist.</p>
-          <button
-            onClick={() => router.push('/')}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Back to Dashboard
-          </button>
-        </div>
-      </div>
-    );
-  }
+	useEffect(() => {
+		// Redirect to the corresponding page in (dashboard)
+		if (VALID_CATEGORIES.includes(categoryId)) {
+			router.replace(`/${categoryId}`)
+		} else {
+			// Redirect to home if category doesn't exist
+			router.replace("/")
+		}
+	}, [categoryId, router])
 
-  const handleBackClick = () => {
-    router.push('/');
-  };
-
-  const handleNavigate = (newCategoryId: string) => {
-    router.push(`/category-dashboard/${newCategoryId}`);
-  };
-
-  return (
-    <DashboardLayout 
-      category={category}
-      onBackClick={handleBackClick}
-      onNavigate={handleNavigate}
-    />
-  );
+	// Show loading state while redirecting
+	return (
+		<div className="min-h-screen flex items-center justify-center bg-slate-900">
+			<div className="text-center">
+				<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
+				<p className="text-slate-400">Redirecting...</p>
+			</div>
+		</div>
+	)
 }

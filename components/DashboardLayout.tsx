@@ -1,34 +1,35 @@
-"use client";
+"use client"
 
-import React from "react";
-import { CategoryData } from "@/lib/kpi-data";
-import { DashboardHeader } from "@/components/DashboardHeader";
-import { CategoryDashboard } from "@/components/CategoryDashboard";
+import React from "react"
+import { CategoryData } from "@/types"
+import { DashboardHeader } from "@/components/DashboardHeader"
 
 interface DashboardLayoutProps {
-  category: CategoryData;
-  onBackClick: () => void;
-  onNavigate?: (categoryId: string) => void;
-  className?: string;
+	category: CategoryData
+	onBackClick: () => void
+	onNavigate?: (categoryId: string) => void
+	className?: string
+	children?: React.ReactNode
 }
 
-export function DashboardLayout({ 
-  category, 
-  onBackClick, 
-  onNavigate,
-  className 
+export function DashboardLayout({
+	category,
+	onBackClick,
+	onNavigate,
+	className,
+	children,
 }: DashboardLayoutProps) {
-  return (
-    <div className={`min-h-screen bg-slate-900 dark:bg-slate-900 ${className}`}>
-      {/* Dashboard Header */}
-      <DashboardHeader 
-        currentCategory={category.id}
-        onNavigate={onNavigate}
-        onBack={onBackClick}
-      />
-      
-      {/* Category Dashboard Content */}
-      <CategoryDashboard category={category} />
-    </div>
-  );
+	return (
+		<div className={`min-h-screen bg-slate-900 dark:bg-slate-900 ${className}`}>
+			{/* Dashboard Header */}
+			<DashboardHeader
+				currentCategory={category.id}
+				onNavigate={onNavigate}
+				onBack={onBackClick}
+			/>
+
+			{/* Dashboard Content */}
+			{children}
+		</div>
+	)
 }
