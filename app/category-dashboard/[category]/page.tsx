@@ -9,15 +9,11 @@ export default function CategoryDashboardPage() {
   const params = useParams();
   const router = useRouter();
   const categoryId = params.category as string;
-  
-  console.log('CategoryDashboardPage - categoryId:', categoryId);
-  console.log('CategoryDashboardPage - params:', params);
+
   
   // Get category data from navigationItems
   const category = getCategoryData(categoryId);
-  
-  console.log('Found category:', category ? category.name : 'NOT FOUND');
-  
+    
   if (!category) {
     // Show error message instead of redirect to avoid infinite loops
     return (
