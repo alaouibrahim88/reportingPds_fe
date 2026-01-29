@@ -2,516 +2,973 @@
   "operations": {
     "weekly": {
       "Taux_Heures_Supplementaires": {
-        "Semaine_Actuelle": 10,
-        "Annee": 2026,
-        "Valeur_Actuelle": 2.5,
-        "Target_Actuelle": 2.4,
-        "Valeur_Semaine_Precedente": 2.3,
-        "Variation_Vs_Semaine_Precedente": 0.2,
+        "Semaine_Actuelle": "10",
+        "Annee": "2026",
+        "Valeur_Actuelle": "2.5",
+        "Target_Actuelle": "2.4",
+        "Valeur_Semaine_Precedente": "2.3",
+        "Variation_Vs_Semaine_Precedente": "0.2",
         "Historique_4_Semaines": [
-          { "Semaine": 9, "Annee": 2026, "Valeur": 2.3, "Target": 2.4 },
-          { "Semaine": 8, "Annee": 2026, "Valeur": 2.8, "Target": 2.4 },
-          { "Semaine": 7, "Annee": 2026, "Valeur": 2.2, "Target": 2.4 },
-          { "Semaine": 6, "Annee": 2026, "Valeur": 2.4, "Target": 2.4 }
+          {
+            "Semaine": "9",
+            "Annee": "2026",
+            "Valeur": "2.3",
+            "Target": "2.4"
+          },
+          {
+            "Semaine": "8",
+            "Annee": "2026",
+            "Valeur": "2.8",
+            "Target": "2.4"
+          },
+          {
+            "Semaine": "7",
+            "Annee": "2026",
+            "Valeur": "2.2",
+            "Target": "2.4"
+          },
+          {
+            "Semaine": "6",
+            "Annee": "2026",
+            "Valeur": "2.4",
+            "Target": "2.4"
+          }
         ]
       },
-
       "Taux_Chomage_Technique": {
-        "Semaine_Actuelle": 10,
-        "Annee": 2026,
-        "Valeur_Actuelle": 1.68,
-        "Target_Actuelle": 1.6,
-        "Valeur_Semaine_Precedente": 1.62,
-        "Variation_Vs_Semaine_Precedente": 0.06,
+        "Semaine_Actuelle": "10",
+        "Annee": "2026",
+        "Valeur_Actuelle": "1.68",
+        "Target_Actuelle": "1.6",
+        "Valeur_Semaine_Precedente": "1.62",
+        "Variation_Vs_Semaine_Precedente": "0.06",
         "Historique_4_Semaines": [
-          { "Semaine": 9, "Annee": 2026, "Valeur": 1.62, "Target": 1.6 },
-          { "Semaine": 8, "Annee": 2026, "Valeur": 1.48, "Target": 1.6 },
-          { "Semaine": 7, "Annee": 2026, "Valeur": 1.75, "Target": 1.6 },
-          { "Semaine": 6, "Annee": 2026, "Valeur": 1.6, "Target": 1.6 }
+          {
+            "Semaine": "9",
+            "Annee": "2026",
+            "Valeur": "1.62",
+            "Target": "1.6"
+          },
+          {
+            "Semaine": "8",
+            "Annee": "2026",
+            "Valeur": "1.48",
+            "Target": "1.6"
+          },
+          {
+            "Semaine": "7",
+            "Annee": "2026",
+            "Valeur": "1.75",
+            "Target": "1.6"
+          },
+          {
+            "Semaine": "6",
+            "Annee": "2026",
+            "Valeur": "1.6",
+            "Target": "1.6"
+          }
         ]
       },
-
       "Taux_Scrap": {
-        "Semaine_Actuelle": 10,
-        "Annee": 2026,
-        "Valeur_Actuelle": 1.5,
-        "Target_Actuelle": 1.2,
-        "Valeur_Semaine_Precedente": 1.15,
-        "Variation_Vs_Semaine_Precedente": 0.35,
+        "Semaine_Actuelle": "10",
+        "Annee": "2026",
+        "Valeur_Actuelle": "1.5",
+        "Target_Actuelle": "1.2",
+        "Valeur_Semaine_Precedente": "1.15",
+        "Variation_Vs_Semaine_Precedente": "0.35",
         "Historique_4_Semaines": [
-          { "Semaine": 9, "Annee": 2026, "Valeur": 1.15, "Target": 1.2 },
-          { "Semaine": 8, "Annee": 2026, "Valeur": 0.97, "Target": 1.2 },
-          { "Semaine": 7, "Annee": 2026, "Valeur": 1.25, "Target": 1.2 },
-          { "Semaine": 6, "Annee": 2026, "Valeur": 1.3, "Target": 1.2 }
+          {
+            "Semaine": "9",
+            "Annee": "2026",
+            "Valeur": "1.15",
+            "Target": "1.2"
+          },
+          {
+            "Semaine": "8",
+            "Annee": "2026",
+            "Valeur": "0.97",
+            "Target": "1.2"
+          },
+          {
+            "Semaine": "7",
+            "Annee": "2026",
+            "Valeur": "1.25",
+            "Target": "1.2"
+          },
+          {
+            "Semaine": "6",
+            "Annee": "2026",
+            "Valeur": "1.3",
+            "Target": "1.2"
+          }
         ]
       },
-
       "Suivi_Efficience": {
-        "Semaine_Actuelle": 10,
-        "Annee": 2026,
-        "Valeur_Actuelle": 90,
-        "Target_Actuelle": 90,
-        "Valeur_Semaine_Precedente": 89,
-        "Variation_Vs_Semaine_Precedente": 1,
+        "Semaine_Actuelle": "10",
+        "Annee": "2026",
+        "Valeur_Actuelle": "90",
+        "Target_Actuelle": "90",
+        "Valeur_Semaine_Precedente": "89",
+        "Variation_Vs_Semaine_Precedente": "1",
         "Historique_4_Semaines": [
-          { "Semaine": 9, "Annee": 2026, "Valeur": 89, "Target": 90 },
-          { "Semaine": 8, "Annee": 2026, "Valeur": 92, "Target": 90 },
-          { "Semaine": 7, "Annee": 2026, "Valeur": 88, "Target": 90 },
-          { "Semaine": 6, "Annee": 2026, "Valeur": 89.5, "Target": 90 }
+          {
+            "Semaine": "9",
+            "Annee": "2026",
+            "Valeur": "89",
+            "Target": "90"
+          },
+          {
+            "Semaine": "8",
+            "Annee": "2026",
+            "Valeur": "92",
+            "Target": "90"
+          },
+          {
+            "Semaine": "7",
+            "Annee": "2026",
+            "Valeur": "88",
+            "Target": "90"
+          },
+          {
+            "Semaine": "6",
+            "Annee": "2026",
+            "Valeur": "89.5",
+            "Target": "90"
+          }
         ]
       }
     },
     "monthly": {
       "Taux_Heures_Supplementaires": {
-        "Mois_Courant": 4,
-        "Annee_Courante": 2025,
-        "Mois_Precedent": 3,
-        "Annee_Mois_Precedent": 2025,
-        "Valeur_Mois_Courant": 46.5,
-        "Target_Mois_Courant": 40,
-        "Valeur_Mois_Precedent": 48.48,
-        "Variation_Vs_Mois_Precedent": -1.98,
+        "Mois_Courant": "5",
+        "Annee_Courante": "2025",
+        "Mois_Precedent": "4",
+        "Annee_Mois_Precedent": "2025",
+        "Valeur_Mois_Courant": "47.4",
+        "Target_Mois_Courant": "40",
+        "Valeur_Mois_Precedent": "46.5",
+        "Variation_Vs_Mois_Precedent": "0.9",
         "Historique_4_Mois": [
-          { "Mois": 3, "Annee": 2025, "Valeur": 48.48, "Target": 40 },
-          { "Mois": 2, "Annee": 2025, "Valeur": 46.05, "Target": 40 },
-          { "Mois": 1, "Annee": 2025, "Valeur": 48.3, "Target": 40 },
-          { "Mois": 12, "Annee": 2024, "Valeur": 43.8, "Target": 40 }
+          {
+            "Mois": "4",
+            "Annee": "2025",
+            "Valeur": "46.5",
+            "Target": "40"
+          },
+          {
+            "Mois": "3",
+            "Annee": "2025",
+            "Valeur": "48.48",
+            "Target": "40"
+          },
+          {
+            "Mois": "2",
+            "Annee": "2025",
+            "Valeur": "46.05",
+            "Target": "40"
+          },
+          {
+            "Mois": "1",
+            "Annee": "2025",
+            "Valeur": "48.3",
+            "Target": "40"
+          }
         ]
       },
-
       "Taux_Chomage_Technique": {
-        "Mois_Courant": 4,
-        "Annee_Courante": 2025,
-        "Mois_Precedent": 3,
-        "Annee_Mois_Precedent": 2025,
-        "Valeur_Mois_Courant": 13.65,
-        "Target_Mois_Courant": 12,
-        "Valeur_Mois_Precedent": 14.2,
-        "Variation_Vs_Mois_Precedent": -0.55,
+        "Mois_Courant": "5",
+        "Annee_Courante": "2025",
+        "Mois_Precedent": "4",
+        "Annee_Mois_Precedent": "2025",
+        "Valeur_Mois_Courant": "13.93",
+        "Target_Mois_Courant": "12",
+        "Valeur_Mois_Precedent": "13.65",
+        "Variation_Vs_Mois_Precedent": "0.28",
         "Historique_4_Mois": [
-          { "Mois": 3, "Annee": 2025, "Valeur": 14.2, "Target": 12 },
-          { "Mois": 2, "Annee": 2025, "Valeur": 14.75, "Target": 12 },
-          { "Mois": 1, "Annee": 2025, "Valeur": 14.48, "Target": 12 },
-          { "Mois": 12, "Annee": 2024, "Valeur": 13.1, "Target": 12 }
+          {
+            "Mois": "4",
+            "Annee": "2025",
+            "Valeur": "13.65",
+            "Target": "12"
+          },
+          {
+            "Mois": "3",
+            "Annee": "2025",
+            "Valeur": "14.2",
+            "Target": "12"
+          },
+          {
+            "Mois": "2",
+            "Annee": "2025",
+            "Valeur": "14.75",
+            "Target": "12"
+          },
+          {
+            "Mois": "1",
+            "Annee": "2025",
+            "Valeur": "14.48",
+            "Target": "12"
+          }
         ]
       },
-
       "Taux_Scrap": {
-        "Mois_Courant": 4,
-        "Annee_Courante": 2025,
-        "Mois_Precedent": 3,
-        "Annee_Mois_Precedent": 2025,
-        "Valeur_Mois_Courant": 2.8,
-        "Target_Mois_Courant": 2.5,
-        "Valeur_Mois_Precedent": 2.84,
-        "Variation_Vs_Mois_Precedent": -0.04,
+        "Mois_Courant": "5",
+        "Annee_Courante": "2025",
+        "Mois_Precedent": "4",
+        "Annee_Mois_Precedent": "2025",
+        "Valeur_Mois_Courant": "2.8",
+        "Target_Mois_Courant": "2.5",
+        "Valeur_Mois_Precedent": "2.8",
+        "Variation_Vs_Mois_Precedent": "0",
         "Historique_4_Mois": [
-          { "Mois": 3, "Annee": 2025, "Valeur": 2.84, "Target": 2.5 },
-          { "Mois": 2, "Annee": 2025, "Valeur": 2.8, "Target": 2.5 },
-          { "Mois": 1, "Annee": 2025, "Valeur": 2.8, "Target": 2.5 },
-          { "Mois": 12, "Annee": 2024, "Valeur": 2.6, "Target": 2.5 }
+          {
+            "Mois": "4",
+            "Annee": "2025",
+            "Valeur": "2.8",
+            "Target": "2.5"
+          },
+          {
+            "Mois": "3",
+            "Annee": "2025",
+            "Valeur": "2.84",
+            "Target": "2.5"
+          },
+          {
+            "Mois": "2",
+            "Annee": "2025",
+            "Valeur": "2.8",
+            "Target": "2.5"
+          },
+          {
+            "Mois": "1",
+            "Annee": "2025",
+            "Valeur": "2.8",
+            "Target": "2.5"
+          }
         ]
       },
-
       "Suivi_Efficience": {
-        "Mois_Courant": 4,
-        "Annee_Courante": 2025,
-        "Mois_Precedent": 3,
-        "Annee_Mois_Precedent": 2025,
-        "Valeur_Mois_Courant": 88.1,
-        "Target_Mois_Courant": 90,
-        "Valeur_Mois_Precedent": 88.88,
-        "Variation_Vs_Mois_Precedent": -0.78,
+        "Mois_Courant": "5",
+        "Annee_Courante": "2025",
+        "Mois_Precedent": "4",
+        "Annee_Mois_Precedent": "2025",
+        "Valeur_Mois_Courant": "88.75",
+        "Target_Mois_Courant": "90",
+        "Valeur_Mois_Precedent": "88.1",
+        "Variation_Vs_Mois_Precedent": "0.65",
         "Historique_4_Mois": [
-          { "Mois": 3, "Annee": 2025, "Valeur": 88.88, "Target": 90 },
-          { "Mois": 2, "Annee": 2025, "Valeur": 90.05, "Target": 90 },
-          { "Mois": 1, "Annee": 2025, "Valeur": 87.45, "Target": 90 },
-          { "Mois": 12, "Annee": 2024, "Valeur": 90.7, "Target": 90 }
+          {
+            "Mois": "4",
+            "Annee": "2025",
+            "Valeur": "88.1",
+            "Target": "90"
+          },
+          {
+            "Mois": "3",
+            "Annee": "2025",
+            "Valeur": "88.88",
+            "Target": "90"
+          },
+          {
+            "Mois": "2",
+            "Annee": "2025",
+            "Valeur": "90.05",
+            "Target": "90"
+          },
+          {
+            "Mois": "1",
+            "Annee": "2025",
+            "Valeur": "87.45",
+            "Target": "90"
+          }
         ]
       }
     }
   },
   "quality-indicateurs-monthly": {
-    "PPM": {
-      "Mois_Courante": 4,
-      "Annee_Courante": 2025,
-      "Mois_Precedent": 3,
-      "Annee_Mois_Precedent": 2025,
-      "Valeur_Mois_Courant": 8.85,
-      "Target_Mois_Courant": 2.2,
-      "Valeur_Mois_Precedent": 11.98,
-      "Variation_Vs_Mois_Precedent": -3.13,
-      "Historique_4_Mois": [
+    "PPM_Scrap_Client": {
+      "PPM_Mois_Courant": "10",
+      "Target_PPM_Mois_Courant": "2.2",
+      "Variation_PPM_Vs_Mois_Precedent": "-2.19",
+      "Scrap_Mois_Courant": "1020",
+      "Target_Scrap_Mois_Courant": "220",
+      "Variation_Scrap_Vs_Mois_Precedent": "-499",
+      "Suivi_PPM_4_Mois": [
         {
-          "Mois": 4,
-          "Annee": 2025,
-          "Valeur": 8.85,
-          "Target": 2.2
+          "Label": "M-4",
+          "Mois": "9",
+          "Annee": "2025",
+          "Valeur": "11.61",
+          "Target": "2.2"
         },
         {
-          "Mois": 3,
-          "Annee": 2025,
-          "Valeur": 11.98,
-          "Target": 2.2
+          "Label": "M-3",
+          "Mois": "10",
+          "Annee": "2025",
+          "Valeur": "7.5",
+          "Target": "2.2"
         },
         {
-          "Mois": 2,
-          "Annee": 2025,
-          "Valeur": 8.66,
-          "Target": 2.2
+          "Label": "M-2",
+          "Mois": "11",
+          "Annee": "2025",
+          "Valeur": "9.81",
+          "Target": "2.2"
         },
         {
-          "Mois": 1,
-          "Annee": 2025,
-          "Valeur": 9.62,
-          "Target": 2.2
-        },
-        {
-          "Mois": 12,
-          "Annee": 2024,
-          "Valeur": 2.13,
-          "Target": 2.2
+          "Label": "M-1",
+          "Mois": "12",
+          "Annee": "2025",
+          "Valeur": "12.19",
+          "Target": "2.2"
         }
-      ]
-    },
-    "Scrap_Client": {
-      "Valeur_Mois_Courant": 965,
-      "Target_Mois_Courant": 220,
-      "Serie_5_Mois": [
+      ],
+      "Suivi_Scrap_4_Mois": [
         {
-          "Mois": 4,
-          "Annee": 2025,
-          "Valeur": 965,
-          "Target": 220
+          "Label": "M-4",
+          "Mois": "9",
+          "Annee": "2025",
+          "Valeur": "1261",
+          "Target": "220"
         },
         {
-          "Mois": 3,
-          "Annee": 2025,
-          "Valeur": 1178,
-          "Target": 220
+          "Label": "M-3",
+          "Mois": "10",
+          "Annee": "2025",
+          "Valeur": "950",
+          "Target": "220"
         },
         {
-          "Mois": 2,
-          "Annee": 2025,
-          "Valeur": 886,
-          "Target": 220
+          "Label": "M-2",
+          "Mois": "11",
+          "Annee": "2025",
+          "Valeur": "941",
+          "Target": "220"
         },
         {
-          "Mois": 1,
-          "Annee": 2025,
-          "Valeur": 892,
-          "Target": 220
-        },
-        {
-          "Mois": 12,
-          "Annee": 2024,
-          "Valeur": 233,
-          "Target": 220
+          "Label": "M-1",
+          "Mois": "12",
+          "Annee": "2025",
+          "Valeur": "1519",
+          "Target": "220"
         }
       ]
     },
     "Taux_Conformite_Audits": {
       "Completion": {
-        "Valeur_Mois_Courant": 93.75,
-        "Target_Mois_Courant": 90,
-        "Serie_5_Mois": [
-          {
-            "Mois": 4,
-            "Annee": 2025,
-            "Valeur": 93.75,
-            "Target": 90
-          },
-          {
-            "Mois": 3,
-            "Annee": 2025,
-            "Valeur": 91.6,
-            "Target": 90
-          },
-          {
-            "Mois": 2,
-            "Annee": 2025,
-            "Valeur": 90.75,
-            "Target": 90
-          },
-          {
-            "Mois": 1,
-            "Annee": 2025,
-            "Valeur": 92,
-            "Target": 90
-          },
-          {
-            "Mois": 12,
-            "Annee": 2024,
-            "Valeur": 93,
-            "Target": 90
-          }
-        ]
+        "Valeur_Mois_Courant": "89.25",
+        "Valeur_Mois_Precedent": "89.5",
+        "Variation_Vs_Mois_Precedent": "-0.25"
       },
       "Compliance": {
-        "Valeur_Mois_Courant": 88.75,
-        "Target_Mois_Courant": 85,
-        "Serie_5_Mois": [
-          {
-            "Mois": 4,
-            "Annee": 2025,
-            "Valeur": 88.75,
-            "Target": 85
-          },
-          {
-            "Mois": 3,
-            "Annee": 2025,
-            "Valeur": 89.8,
-            "Target": 85
-          },
-          {
-            "Mois": 2,
-            "Annee": 2025,
-            "Valeur": 92.5,
-            "Target": 85
-          },
-          {
-            "Mois": 1,
-            "Annee": 2025,
-            "Valeur": 86.75,
-            "Target": 85
-          },
-          {
-            "Mois": 12,
-            "Annee": 2024,
-            "Valeur": 97,
-            "Target": 85
-          }
-        ]
+        "Valeur_Mois_Courant": "91.5",
+        "Valeur_Mois_Precedent": "85",
+        "Variation_Vs_Mois_Precedent": "6.5"
       }
     },
+    "Scorecards_Clients": {
+      "Score_Global": "78.75",
+      "Clients": [
+        {
+          "Client": "MEDCOM",
+          "Valeur": "78.75",
+          "Target": "85"
+        }
+      ]
+    },
     "Incidents_Accidents_Travail": {
-      "Valeur_Mois_Courant": 5,
-      "Target_Mois_Courant": 1,
-      "Serie_5_Mois": [
+      "Valeur_Mois_Courant": "3",
+      "Target_Mois_Courant": "1",
+      "Variation_Vs_Mois_Precedent": "-4",
+      "Serie_4_Mois": [
         {
-          "Mois": 4,
-          "Annee": 2025,
-          "Valeur": 5,
-          "Target": 1
+          "Mois": "10",
+          "Annee": "2025",
+          "Label": "Oct",
+          "Valeur": "2",
+          "Target": "1",
+          "Jours_Perdus": null
         },
         {
-          "Mois": 3,
-          "Annee": 2025,
-          "Valeur": 8,
-          "Target": 1
+          "Mois": "11",
+          "Annee": "2025",
+          "Label": "Nov",
+          "Valeur": "5",
+          "Target": "1",
+          "Jours_Perdus": null
         },
         {
-          "Mois": 2,
-          "Annee": 2025,
-          "Valeur": 4,
-          "Target": 1
+          "Mois": "12",
+          "Annee": "2025",
+          "Label": "Déc",
+          "Valeur": "7",
+          "Target": "1",
+          "Jours_Perdus": null
         },
         {
-          "Mois": 1,
-          "Annee": 2025,
-          "Valeur": 4,
-          "Target": 1
-        },
-        {
-          "Mois": 12,
-          "Annee": 2024,
-          "Valeur": 2,
-          "Target": 1
+          "Mois": "1",
+          "Annee": "2026",
+          "Label": "Jan",
+          "Valeur": "3",
+          "Target": "1",
+          "Jours_Perdus": null
         }
       ]
     },
     "Efficience_Mensuelle": {
-      "Valeur_Mois_Courant": 91.75,
-      "Target_Mois_Courant": 90,
-      "Serie_5_Mois": [
+      "Valeur_Mois_Courant": "93",
+      "Target_Mois_Courant": "90",
+      "Variation_Vs_Mois_Precedent": "1.8333",
+      "Variation_Vs_Target": "3",
+      "Suivi_4_Mois": [
         {
-          "Mois": 4,
-          "Annee": 2025,
-          "Valeur": 91.75,
-          "Target": 90
+          "Label": "M-4",
+          "Mois": "9",
+          "Annee": "2025",
+          "Valeur": "92.2",
+          "Target": "90"
         },
         {
-          "Mois": 3,
-          "Annee": 2025,
-          "Valeur": 93.6,
-          "Target": 90
+          "Label": "M-3",
+          "Mois": "10",
+          "Annee": "2025",
+          "Valeur": "93",
+          "Target": "90"
         },
         {
-          "Mois": 2,
-          "Annee": 2025,
-          "Valeur": 94.5,
-          "Target": 90
+          "Label": "M-2",
+          "Mois": "11",
+          "Annee": "2025",
+          "Valeur": "95.75",
+          "Target": "90"
         },
         {
-          "Mois": 1,
-          "Annee": 2025,
-          "Valeur": 93.5,
-          "Target": 90
-        },
-        {
-          "Mois": 12,
-          "Annee": 2024,
-          "Valeur": 91,
-          "Target": 90
+          "Label": "M-1",
+          "Mois": "12",
+          "Annee": "2025",
+          "Valeur": "91.1667",
+          "Target": "90"
         }
       ]
-    },
-    "Efficience_Par_Zone": {
-      "Zones": {
-        "Boot": 92.25,
-        "HeadRest": 89.25,
-        "Gainage": 91.75,
-        "Volant": 89.25,
-        "Net": 91.75,
-        "Target_Boot": 90,
-        "Target_HeadRest": 90,
-        "Target_Gainage": 90,
-        "Target_Volant": 90,
-        "Target_Net": 90
-      }
-    },
-    "Scorecards_Clients": {
-      "Alpha": {
-        "Client": "Client Alpha",
-        "Valeur": 90.75,
-        "Target": 90
-      },
-      "Beta": {
-        "Client": "Client Beta",
-        "Valeur": 88,
-        "Target": 85
-      },
-      "Gamma": {
-        "Client": "Client Gamma",
-        "Valeur": 89.75,
-        "Target": 88
-      },
-      "Delta": {
-        "Client": "Client Delta",
-        "Valeur": 90.75,
-        "Target": 90
-      },
-      "Epsilon": {
-        "Client": "Client Epsilon",
-        "Valeur": 79.75,
-        "Target": 80
-      }
     }
   },
-  "quality-indicateurs-weekly":{
+  "quality-indicateurs-weekly": {
     "Reclamations_Clients": {
-      "Semaine_Actuelle": 10,
-      "Annee": 2026,
-      "Valeur_Actuelle": 14,
-      "Target_Actuelle": 10,
-      "Valeur_Semaine_Precedente": 9,
-      "Variation_Vs_Semaine_Precedente": 5,
-      "Serie_5_Semaines": [
+      "Semaine_Actuelle": "5",
+      "Annee": "2025",
+      "Valeur_Actuelle": "11",
+      "Target_Actuelle": "10",
+      "Valeur_Semaine_Precedente": "11",
+      "Variation_Vs_Semaine_Precedente": "0",
+      "Serie_4_Semaines": [
         {
-          "Semaine": 10,
-          "Annee": 2026,
-          "Valeur": 14,
-          "Target": 10
+          "Label": "S-1",
+          "Semaine": "5",
+          "Annee": "2025",
+          "Valeur": "11",
+          "Target": "10"
         },
         {
-          "Semaine": 9,
-          "Annee": 2026,
-          "Valeur": 9,
-          "Target": 10
+          "Label": "S-2",
+          "Semaine": "4",
+          "Annee": "2025",
+          "Valeur": "11",
+          "Target": "10"
         },
         {
-          "Semaine": 8,
-          "Annee": 2026,
-          "Valeur": 15,
-          "Target": 10
+          "Label": "S-3",
+          "Semaine": "3",
+          "Annee": "2025",
+          "Valeur": "15",
+          "Target": "10"
         },
         {
-          "Semaine": 7,
-          "Annee": 2026,
-          "Valeur": 15,
-          "Target": 10
+          "Label": "S-4",
+          "Semaine": "2",
+          "Annee": "2025",
+          "Valeur": "17",
+          "Target": "10"
+        }
+      ],
+      "Suivi_Reclamations": [
+        {
+          "Label": "S-4",
+          "Valeur": "17",
+          "Target": "10"
         },
         {
-          "Semaine": 6,
-          "Annee": 2026,
-          "Valeur": 15,
-          "Target": 10
+          "Label": "S-3",
+          "Valeur": "15",
+          "Target": "10"
+        },
+        {
+          "Label": "S-2",
+          "Valeur": "11",
+          "Target": "10"
+        },
+        {
+          "Label": "S-1",
+          "Valeur": "11",
+          "Target": "10"
         }
       ]
     },
     "Incidents": {
-      "Semaine_Actuelle": 10,
-      "Annee": 2026,
-      "Valeur_Actuelle": 14,
-      "Target_Actuelle": 15,
+      "Semaine_Actuelle": "5",
+      "Annee": "2025",
+      "Valeur_Actuelle": "11",
+      "Target_Actuelle": "15",
       "Par_Zone": {
-        "Boot": 2,
-        "HeadRest": 2,
-        "Gainage": 4,
-        "Volant": 3,
-        "Net": 3,
-        "Target_Boot": 3,
-        "Target_HeadRest": 3,
-        "Target_Gainage": 3,
-        "Target_Volant": 3,
-        "Target_Net": 3
-      }
+        "Boot": "3",
+        "HeadRest": "1",
+        "Gainage": "3",
+        "Volant": "1",
+        "Net": "2",
+        "Target_Boot": "3",
+        "Target_HeadRest": "3",
+        "Target_Gainage": "3",
+        "Target_Volant": "3",
+        "Target_Net": "3"
+      },
+      "Incidents_Par_Zone": [
+        {
+          "Zone": "Boot",
+          "Valeur": "3",
+          "Target": "3"
+        },
+        {
+          "Zone": "HeadRest",
+          "Valeur": "1",
+          "Target": "3"
+        },
+        {
+          "Zone": "Gainage",
+          "Valeur": "3",
+          "Target": "3"
+        },
+        {
+          "Zone": "Volant",
+          "Valeur": "1",
+          "Target": "3"
+        },
+        {
+          "Zone": "Net",
+          "Valeur": "2",
+          "Target": "3"
+        }
+      ]
     },
     "Efficience_Globale": {
-      "Semaine_Actuelle": 10,
-      "Annee": 2026,
-      "Valeur_Actuelle": 94,
-      "Target_Actuelle": 90,
-      "Valeur_Semaine_Precedente": 89,
-      "Variation_Vs_Semaine_Precedente": 5,
-      "Serie_5_Semaines": [
+      "Semaine_Actuelle": "5",
+      "Annee": "2025",
+      "Valeur_Actuelle": "91",
+      "Target_Actuelle": "90",
+      "Valeur_Semaine_Precedente": "91",
+      "Variation_Vs_Semaine_Precedente": "0",
+      "Serie_4_Semaines": [
         {
-          "Semaine": 10,
-          "Annee": 2026,
-          "Valeur": 94,
-          "Target": 90
+          "Label": "S-1",
+          "Semaine": "5",
+          "Annee": "2025",
+          "Valeur": "91",
+          "Target": "90"
         },
         {
-          "Semaine": 9,
-          "Annee": 2026,
-          "Valeur": 89,
-          "Target": 90
+          "Label": "S-2",
+          "Semaine": "4",
+          "Annee": "2025",
+          "Valeur": "91",
+          "Target": "90"
         },
         {
-          "Semaine": 8,
-          "Annee": 2026,
-          "Valeur": 95,
-          "Target": 90
+          "Label": "S-3",
+          "Semaine": "3",
+          "Annee": "2025",
+          "Valeur": "95",
+          "Target": "90"
         },
         {
-          "Semaine": 7,
-          "Annee": 2026,
-          "Valeur": 95,
-          "Target": 90
-        },
-        {
-          "Semaine": 6,
-          "Annee": 2026,
-          "Valeur": 95,
-          "Target": 90
+          "Label": "S-4",
+          "Semaine": "2",
+          "Annee": "2025",
+          "Valeur": "97",
+          "Target": "90"
         }
       ]
     },
     "Efficience_Par_Zone": {
-      "Semaine_Actuelle": 10,
-      "Annee": 2026,
+      "Semaine_Actuelle": "5",
+      "Annee": "2025",
       "Zones": {
-        "Boot": 94,
-        "HeadRest": 97,
-        "Gainage": 88,
-        "Volant": 87,
-        "Net": 96,
-        "Target_Boot": 90,
-        "Target_HeadRest": 90,
-        "Target_Gainage": 90,
-        "Target_Volant": 90,
-        "Target_Net": 90
+        "Boot": "92",
+        "HeadRest": "91",
+        "Gainage": "85",
+        "Volant": "96",
+        "Net": "92",
+        "Target_Boot": "90",
+        "Target_HeadRest": "90",
+        "Target_Gainage": "90",
+        "Target_Volant": "90",
+        "Target_Net": "90"
       }
+    }
+  },
+  "rh-Indicateurs": {
+    "Taux_Depart": {
+      "Mois_Courant": "3",
+      "Annee_Mois": "2025",
+      "Global_Mois_Courant": "3.6",
+      "Target_Global": "3",
+      "Global_Mois_Precedent": "3.75",
+      "Variation_Global_Vs_Mois_Precedent": "-0.15",
+      "Managers_Mois_Courant": "3.4",
+      "Target_Managers": "2.8",
+      "Employes_Mois_Courant": "3.75",
+      "Target_Employes": "3.15",
+      "Serie_6_Mois": [
+        {
+          "Mois": "3",
+          "Annee": "2025",
+          "Global": "3.6",
+          "Target_Global": "3",
+          "Managers": "3.4",
+          "Target_Managers": "2.8",
+          "Employes": "3.75",
+          "Target_Employes": "3.15"
+        },
+        {
+          "Mois": "2",
+          "Annee": "2025",
+          "Global": "3.75",
+          "Target_Global": "3",
+          "Managers": "3.55",
+          "Target_Managers": "2.8",
+          "Employes": "3.9",
+          "Target_Employes": "3.15"
+        },
+        {
+          "Mois": "1",
+          "Annee": "2025",
+          "Global": "3.675",
+          "Target_Global": "3",
+          "Managers": "3.475",
+          "Target_Managers": "2.8",
+          "Employes": "3.825",
+          "Target_Employes": "3.15"
+        },
+        {
+          "Mois": "12",
+          "Annee": "2024",
+          "Global": "3.3",
+          "Target_Global": "3",
+          "Managers": "3.1",
+          "Target_Managers": "2.8",
+          "Employes": "3.45",
+          "Target_Employes": "3.15"
+        },
+        {
+          "Mois": "11",
+          "Annee": "2024",
+          "Global": null,
+          "Target_Global": null,
+          "Managers": null,
+          "Target_Managers": null,
+          "Employes": null,
+          "Target_Employes": null
+        },
+        {
+          "Mois": "10",
+          "Annee": "2024",
+          "Global": null,
+          "Target_Global": null,
+          "Managers": null,
+          "Target_Managers": null,
+          "Employes": null,
+          "Target_Employes": null
+        }
+      ]
+    },
+    "Taux_Remplissage_Transport": {
+      "Valeur_Mois_Courant": "90.4",
+      "Target_Mois_Courant": "90",
+      "Valeur_Mois_Precedent": "89.5",
+      "Variation_Vs_Mois_Precedent": "0.9",
+      "Serie_5_Mois": [
+        {
+          "Mois": "3",
+          "Annee": "2025",
+          "Valeur": "90.4",
+          "Target": "90"
+        },
+        {
+          "Mois": "2",
+          "Annee": "2025",
+          "Valeur": "89.5",
+          "Target": "90"
+        },
+        {
+          "Mois": "1",
+          "Annee": "2025",
+          "Valeur": "91.5",
+          "Target": "90"
+        },
+        {
+          "Mois": "12",
+          "Annee": "2024",
+          "Valeur": "89",
+          "Target": "90"
+        },
+        {
+          "Mois": "11",
+          "Annee": "2024",
+          "Valeur": null,
+          "Target": null
+        }
+      ]
+    },
+    "Effectif_Et_Couts": {
+      "Effectif_Mois_Courant": "1204",
+      "Target_Effectif": "1250",
+      "Effectif_Mois_Precedent": "1195",
+      "Variation_Effectif_Vs_Mois_Precedent": "9",
+      "Couts_Mois_Courant": "2896000",
+      "Target_Couts": "3000000",
+      "Couts_Mois_Precedent": "2860000",
+      "Variation_Couts_Vs_Mois_Precedent": "36000",
+      "Serie_6_Mois": [
+        {
+          "Mois": "3",
+          "Annee": "2025",
+          "Effectif": "1204",
+          "Target_Effectif": "1250",
+          "Couts": "2896000",
+          "Target_Couts": "3000000"
+        },
+        {
+          "Mois": "2",
+          "Annee": "2025",
+          "Effectif": "1195",
+          "Target_Effectif": "1250",
+          "Couts": "2860000",
+          "Target_Couts": "3000000"
+        },
+        {
+          "Mois": "1",
+          "Annee": "2025",
+          "Effectif": "1187",
+          "Target_Effectif": "1250",
+          "Couts": "2828000",
+          "Target_Couts": "3000000"
+        },
+        {
+          "Mois": "12",
+          "Annee": "2024",
+          "Effectif": "1182",
+          "Target_Effectif": "1250",
+          "Couts": "2808000",
+          "Target_Couts": "3000000"
+        },
+        {
+          "Mois": "11",
+          "Annee": "2024",
+          "Effectif": null,
+          "Target_Effectif": null,
+          "Couts": null,
+          "Target_Couts": null
+        },
+        {
+          "Mois": "10",
+          "Annee": "2024",
+          "Effectif": null,
+          "Target_Effectif": null,
+          "Couts": null,
+          "Target_Couts": null
+        }
+      ]
+    },
+    "Delai_Moyen_Recrutement": {
+      "Delai_Moyen_Global": "32",
+      "Target_Global": "30",
+      "Global_Mois_Precedent": "31.5",
+      "Variation_Vs_Mois_Precedent": "0.5",
+      "Par_Departement": {
+        "Ventes": "28",
+        "Marketing": "33",
+        "IT": "26",
+        "Operations": "34",
+        "RH": "26",
+        "Target_Ventes": "28",
+        "Target_Marketing": "30",
+        "Target_IT": "25",
+        "Target_Operations": "30",
+        "Target_RH": "25"
+      },
+      "Serie_6_Mois": [
+        {
+          "Mois": "3",
+          "Annee": "2025",
+          "Ventes": "28",
+          "Marketing": "33",
+          "IT": "26",
+          "Operations": "34",
+          "RH": "26",
+          "Target_Global": "30"
+        },
+        {
+          "Mois": "2",
+          "Annee": "2025",
+          "Ventes": "27",
+          "Marketing": "32",
+          "IT": "26",
+          "Operations": "33",
+          "RH": "26",
+          "Target_Global": "30"
+        },
+        {
+          "Mois": "1",
+          "Annee": "2025",
+          "Ventes": "29",
+          "Marketing": "33",
+          "IT": "26",
+          "Operations": "35",
+          "RH": "26",
+          "Target_Global": "30"
+        },
+        {
+          "Mois": "12",
+          "Annee": "2024",
+          "Ventes": "27",
+          "Marketing": "31",
+          "IT": "25",
+          "Operations": "33",
+          "RH": "26",
+          "Target_Global": "30"
+        },
+        {
+          "Mois": "11",
+          "Annee": "2024",
+          "Ventes": null,
+          "Marketing": null,
+          "IT": null,
+          "Operations": null,
+          "RH": null,
+          "Target_Global": null
+        },
+        {
+          "Mois": "10",
+          "Annee": "2024",
+          "Ventes": null,
+          "Marketing": null,
+          "IT": null,
+          "Operations": null,
+          "RH": null,
+          "Target_Global": null
+        }
+      ]
+    },
+    "Taux_Absentisme": {
+      "Semaine_Actuelle": "11",
+      "Annee": "2025",
+      "Valeur_Actuelle": "5",
+      "Target_Actuelle": "4",
+      "Valeur_Semaine_Precedente": "4.6",
+      "Variation_Vs_Semaine_Precedente": "0.4",
+      "Serie_6_Semaines": [
+        {
+          "Semaine": "11",
+          "Annee": "2025",
+          "Valeur": "5",
+          "Target": "4"
+        },
+        {
+          "Semaine": "10",
+          "Annee": "2025",
+          "Valeur": "4.6",
+          "Target": "4"
+        },
+        {
+          "Semaine": "9",
+          "Annee": "2025",
+          "Valeur": "4.2",
+          "Target": "4"
+        },
+        {
+          "Semaine": "8",
+          "Annee": "2025",
+          "Valeur": "3.8",
+          "Target": "4"
+        },
+        {
+          "Semaine": "7",
+          "Annee": "2025",
+          "Valeur": "3.4",
+          "Target": "4"
+        },
+        {
+          "Semaine": "6",
+          "Annee": "2025",
+          "Valeur": "3",
+          "Target": "4"
+        }
+      ]
+    },
+    "Indice_Climat_Social": {
+      "Indice_Satisfaction_Mois_Courant": "7.54",
+      "Target_Indice_Satisfaction_Mois_Courant": "8",
+      "Indice_Satisfaction_Mois_Precedent": "7.9",
+      "Variation_Vs_Mois_Precedent": "-0.36",
+      "Incidents_Mois_Courant": "3",
+      "Target_Incidents_Mois_Courant": "2",
+      "Serie_6_Mois": [
+        {
+          "Mois": "3",
+          "Annee": "2025",
+          "Indice_Satisfaction": "7.54",
+          "Target_Indice_Satisfaction": "8",
+          "Incidents": "3",
+          "Target_Incidents": "2"
+        },
+        {
+          "Mois": "2",
+          "Annee": "2025",
+          "Indice_Satisfaction": "7.9",
+          "Target_Indice_Satisfaction": "8",
+          "Incidents": "3.5",
+          "Target_Incidents": "2"
+        },
+        {
+          "Mois": "1",
+          "Annee": "2025",
+          "Indice_Satisfaction": "7.1",
+          "Target_Indice_Satisfaction": "8",
+          "Incidents": "3.25",
+          "Target_Incidents": "2"
+        },
+        {
+          "Mois": "12",
+          "Annee": "2024",
+          "Indice_Satisfaction": "8.1",
+          "Target_Indice_Satisfaction": "8",
+          "Incidents": "2",
+          "Target_Incidents": "2"
+        },
+        {
+          "Mois": "11",
+          "Annee": "2024",
+          "Indice_Satisfaction": null,
+          "Target_Indice_Satisfaction": null,
+          "Incidents": null,
+          "Target_Incidents": null
+        },
+        {
+          "Mois": "10",
+          "Annee": "2024",
+          "Indice_Satisfaction": null,
+          "Target_Indice_Satisfaction": null,
+          "Incidents": null,
+          "Target_Incidents": null
+        }
+      ]
     }
   }
 }

@@ -19,19 +19,28 @@ const mapValueToY = (value: number, minVal: number, maxVal: number, minY: number
 export default function QualityPage() {
   const [activeTab, setActiveTab] = useState<TabType>("weekly");
   const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   /* ---------------- FETCH LOGIC ---------------- */
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-
-      const res = await fetch(`/api/quality?type=${activeTab}`, {
-        cache: "no-store",
-      });
-      const json = await res.json();
-      setData(json.data);
-      setLoading(false);
+      setError(null);
+      try {
+        const res = await fetch(`/api/quality?type=${activeTab}`, {
+          cache: "no-store",
+        });
+        const json = await res.json();
+        if (!res.ok) {
+          throw new Error(json.message || "Erreur lors du chargement");
+        }
+        setData(json.data ?? json);
+        setLoading(false);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Erreur inconnue");
+        setLoading(false);
+      }
     };
     fetchData();
   }, [activeTab]);
@@ -45,9 +54,9 @@ export default function QualityPage() {
     const efficienceGlobale = data.Efficience_Globale;
     const efficienceParZone = data.Efficience_Par_Zone;
 
-    // Get last 4 weeks for circles (excluding current week)
-    const reclamationsSeries = reclamations?.Serie_5_Semaines?.slice(1, 5) || [];
-    const efficienceSeries = efficienceGlobale?.Serie_5_Semaines?.slice(1, 5) || [];
+    // Serie_4_Semaines from API (S-1 = current, S-2 to S-4 = history)
+    const reclamationsSeries = reclamations?.Serie_4_Semaines || [];
+    const efficienceSeries = efficienceGlobale?.Serie_4_Semaines || [];
 
     // Circle gradients for weekly display
     const circleGradients = [
@@ -59,17 +68,22 @@ export default function QualityPage() {
 
     const progressColors = ["#3b82f6", "#8b5cf6", "#06b6d4", "#10b981"];
 
-    // Zone data for incidents bar chart
+    // Zone data for incidents bar chart - Par_Zone values may be strings
     const zoneKeys = ["Boot", "HeadRest", "Gainage", "Volant", "Net"];
     const zoneColors = ["#8b5cf6", "#3b82f6", "#06b6d4", "#10b981", "#f59e0b"];
     const incidentsParZone = incidents?.Par_Zone || {};
+    const getZoneValue = (zone: string) =>
+      Number(incidentsParZone[zone]) || 0;
 
-    // Calculate chart points for reclamations line chart
+    // Calculate chart points for reclamations line chart (S-4 to S-1, oldest to newest)
     const reclamationsChartValues = [...reclamationsSeries].reverse();
-    const maxReclamation = Math.max(...reclamationsChartValues.map((s: any) => s.Valeur), 1);
+    const maxReclamation = Math.max(
+      ...reclamationsChartValues.map((s: any) => Number(s.Valeur)),
+      1
+    );
     const reclamationsPoints = reclamationsChartValues.map((s: any, i: number) => {
       const x = 100 + i * 100;
-      const y = mapValueToY(s.Valeur, 0, maxReclamation, 15, 85);
+      const y = mapValueToY(Number(s.Valeur), 0, maxReclamation, 15, 85);
       return `${x},${y}`;
     }).join(' ');
 
@@ -77,30 +91,32 @@ export default function QualityPage() {
     const efficienceChartValues = [...efficienceSeries].reverse();
     const efficiencePoints = efficienceChartValues.map((s: any, i: number) => {
       const x = 100 + i * 100;
-      const y = mapValueToY(s.Valeur, 80, 100, 20, 180);
+      const y = mapValueToY(Number(s.Valeur), 80, 100, 20, 180);
       return `${x},${y}`;
     }).join(' ');
 
-    // Calculate variation text and color for reclamations
-    const variationReclamation = reclamations?.Variation_Vs_Semaine_Precedente || 0;
+    // Calculate variation text and color for reclamations (API may return string)
+    const variationReclamation =
+      Number(reclamations?.Variation_Vs_Semaine_Precedente) || 0;
     const variationReclamationText = variationReclamation >= 0 ? `+${variationReclamation}` : `${variationReclamation}`;
     const variationReclamationColor = variationReclamation > 0 ? "text-red-400" : "text-emerald-400";
 
-    // Calculate variation text and color for efficience
-    const variationEfficience = efficienceGlobale?.Variation_Vs_Semaine_Precedente || 0;
+    // Calculate variation text and color for efficience (API may return string)
+    const variationEfficience =
+      Number(efficienceGlobale?.Variation_Vs_Semaine_Precedente) || 0;
     const variationEfficienceText = variationEfficience >= 0 ? `+${variationEfficience}%` : `${variationEfficience}%`;
     const variationEfficienceColor = variationEfficience >= 0 ? "text-emerald-400" : "text-red-400";
 
-    // Calculate target comparison for efficience
-    const efficienceValue = efficienceGlobale?.Valeur_Actuelle || 0;
-    const efficienceTarget = efficienceGlobale?.Target_Actuelle || 90;
+    // Calculate target comparison for efficience (API may return strings)
+    const efficienceValue = Number(efficienceGlobale?.Valeur_Actuelle) || 0;
+    const efficienceTarget = Number(efficienceGlobale?.Target_Actuelle) || 90;
     const efficienceVsTarget = efficienceValue - efficienceTarget;
     const efficienceVsTargetText = efficienceVsTarget >= 0 ? `+${efficienceVsTarget.toFixed(1)}%` : `${efficienceVsTarget.toFixed(1)}%`;
     const efficienceVsTargetColor = efficienceVsTarget >= 0 ? "text-emerald-400" : "text-red-400";
 
-    // Calculate target comparison for reclamations
-    const reclamationValue = reclamations?.Valeur_Actuelle || 0;
-    const reclamationTarget = reclamations?.Target_Actuelle || 10;
+    // Calculate target comparison for reclamations (API may return strings)
+    const reclamationValue = Number(reclamations?.Valeur_Actuelle) || 0;
+    const reclamationTarget = Number(reclamations?.Target_Actuelle) || 10;
     const reclamationVsTarget = ((reclamationValue - reclamationTarget) / reclamationTarget * 100).toFixed(0);
     const reclamationVsTargetText = reclamationValue > reclamationTarget
       ? `↑ +${reclamationVsTarget}%`
@@ -108,7 +124,7 @@ export default function QualityPage() {
     const reclamationVsTargetColor = reclamationValue <= reclamationTarget ? "text-emerald-400" : "text-red-400";
 
     return (
-      <div className="max-w-[1400px] mx-auto">
+      <div className="mx-auto">
         {/* Réclamations Clients Section */}
         <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6 mb-6 transition-transform duration-300 cursor-pointer">
           <h2 className="text-base font-medium text-white mb-5 pb-3 border-b border-gray-700">
@@ -137,7 +153,7 @@ export default function QualityPage() {
                 {reclamationsSeries.map((week: any, index: number) => (
                   <div key={index} className="flex flex-col items-center">
                     <span className="text-sm text-gray-200 font-semibold mb-2">
-                      S-{index + 1}
+                      {week.Label || `S-${index + 1}`}
                     </span>
                     <div
                       className="w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center shadow-lg"
@@ -146,7 +162,7 @@ export default function QualityPage() {
                       }}
                     >
                       <span className="text-2xl md:text-3xl font-bold text-white">
-                        {week.Valeur}
+                        {Number(week.Valeur)}
                       </span>
                     </div>
                   </div>
@@ -170,7 +186,7 @@ export default function QualityPage() {
                     stroke="#4b5563"
                     strokeWidth="1"
                   />
-                  {reclamationsChartValues.map((_: any, i: number) => (
+                  {reclamationsChartValues.map((s: any, i: number) => (
                     <text
                       key={i}
                       x={100 + i * 100}
@@ -179,7 +195,7 @@ export default function QualityPage() {
                       fontSize="11"
                       className="fill-gray-300"
                     >
-                      S-{4 - i}
+                      {s.Label || `S-${4 - i}`}
                     </text>
                   ))}
                   <polyline
@@ -192,7 +208,13 @@ export default function QualityPage() {
                   />
                   {reclamationsChartValues.map((s: any, i: number) => {
                     const x = 100 + i * 100;
-                    const y = mapValueToY(s.Valeur, 0, maxReclamation, 15, 85);
+                    const y = mapValueToY(
+                      Number(s.Valeur),
+                      0,
+                      maxReclamation,
+                      15,
+                      85
+                    );
                     return <circle key={i} cx={x} cy={y} r="5" fill="#06b6d4" />;
                   })}
                 </svg>
@@ -205,8 +227,11 @@ export default function QualityPage() {
                 </h3>
                 <svg viewBox="0 0 450 130" className="w-full max-w-md h-auto">
                   {zoneKeys.slice(0, 4).map((zone, i) => {
-                    const value = incidentsParZone[zone] || 0;
-                    const maxZoneVal = Math.max(...zoneKeys.map(z => incidentsParZone[z] || 0), 1);
+                    const value = getZoneValue(zone);
+                    const maxZoneVal = Math.max(
+                      ...zoneKeys.map(z => getZoneValue(z)),
+                      1
+                    );
                     const height = (value / maxZoneVal) * 80;
                     const y = 100 - height;
                     const x = 60 + i * 100;
@@ -287,11 +312,12 @@ export default function QualityPage() {
               {/* Weekly Progress Circles */}
               <div className="grid grid-cols-2 gap-4">
                 {efficienceSeries.map((week: any, index: number) => {
-                  const strokeDashOffset = calculateStrokeDashOffset(week.Valeur);
+                  const val = Number(week.Valeur);
+                  const strokeDashOffset = calculateStrokeDashOffset(val);
                   return (
                     <div key={index} className="flex flex-col items-center">
                       <span className="text-sm text-gray-200 font-semibold mb-2">
-                        S-{index + 1}
+                        {week.Label || `S-${index + 1}`}
                       </span>
                       <svg
                         className="w-20 h-20 md:w-24 md:h-24"
@@ -325,7 +351,7 @@ export default function QualityPage() {
                           fontWeight="bold"
                           className="fill-white"
                         >
-                          {week.Valeur}%
+                          {val}%
                         </text>
                       </svg>
                     </div>
@@ -345,18 +371,18 @@ export default function QualityPage() {
                   stroke="#4b5563"
                   strokeWidth="1"
                 />
-                {efficienceChartValues.map((_: any, i: number) => (
-                  <text
-                    key={i}
-                    x={100 + i * 100}
-                    y="225"
-                    textAnchor="middle"
-                    fontSize="12"
-                    className="fill-gray-300"
-                  >
-                    S-{4 - i}
-                  </text>
-                ))}
+                  {efficienceChartValues.map((s: any, i: number) => (
+                    <text
+                      key={i}
+                      x={100 + i * 100}
+                      y="225"
+                      textAnchor="middle"
+                      fontSize="12"
+                      className="fill-gray-300"
+                    >
+                      {s.Label || `S-${4 - i}`}
+                    </text>
+                  ))}
                 <polyline
                   points={efficiencePoints}
                   fill="none"
@@ -367,7 +393,13 @@ export default function QualityPage() {
                 />
                 {efficienceChartValues.map((s: any, i: number) => {
                   const x = 100 + i * 100;
-                  const y = mapValueToY(s.Valeur, 80, 100, 20, 180);
+                  const y = mapValueToY(
+                    Number(s.Valeur),
+                    80,
+                    100,
+                    20,
+                    180
+                  );
                   return <circle key={i} cx={x} cy={y} r="6" fill="#10b981" />;
                 })}
               </svg>
@@ -382,98 +414,125 @@ export default function QualityPage() {
   const MonthlyQuality = () => {
     if (!data) return <div className="text-white">Chargement...</div>;
 
-    const ppm = data.PPM;
-    const scrapClient = data.Scrap_Client;
+    const ppmScrapClient = data.PPM_Scrap_Client;
     const tauxConformite = data.Taux_Conformite_Audits;
     const incidents = data.Incidents_Accidents_Travail;
     const efficienceMensuelle = data.Efficience_Mensuelle;
     const scorecards = data.Scorecards_Clients;
 
-    // PPM data
-    const ppmValue = ppm?.Valeur_Mois_Courant || 0;
-    const ppmVariation = ppm?.Variation_Vs_Mois_Precedent || 0;
-    const ppmVariationText = ppmVariation >= 0 ? `+${ppmVariation}` : `${ppmVariation}`;
-    const ppmVariationColor = ppmVariation <= 0 ? "text-green-400" : "text-red-400";
+    // PPM & Scrap data from PPM_Scrap_Client
+    const ppmValue = Number(ppmScrapClient?.PPM_Mois_Courant) || 0;
+    const ppmVariation =
+      Number(ppmScrapClient?.Variation_PPM_Vs_Mois_Precedent) || 0;
+    const ppmVariationText =
+      ppmVariation >= 0 ? `+${ppmVariation}` : `${ppmVariation}`;
+    const ppmVariationColor =
+      ppmVariation <= 0 ? "text-green-400" : "text-red-400";
 
-    // Scrap Client data
-    const scrapValue = scrapClient?.Valeur_Mois_Courant || 0;
-    const scrapSeries = scrapClient?.Serie_5_Mois?.slice(1, 5) || [];
-    const scrapPrevValue = scrapSeries[0]?.Valeur || 0;
-    const scrapVariation = scrapPrevValue ? ((scrapValue - scrapPrevValue) / scrapPrevValue * 100).toFixed(0) : 0;
-    const scrapVariationText = Number(scrapVariation) >= 0 ? `+${scrapVariation}%` : `${scrapVariation}%`;
-    const scrapVariationColor = Number(scrapVariation) <= 0 ? "text-green-400" : "text-red-400";
+    const scrapValue = Number(ppmScrapClient?.Scrap_Mois_Courant) || 0;
+    const scrapSeries = ppmScrapClient?.Suivi_Scrap_4_Mois || [];
+    const scrapPrevValue = Number(scrapSeries[0]?.Valeur) || 0;
+    const scrapVariation = scrapPrevValue
+      ? ((scrapValue - scrapPrevValue) / scrapPrevValue * 100).toFixed(0)
+      : 0;
+    const scrapVariationText =
+      Number(scrapVariation) >= 0 ? `+${scrapVariation}%` : `${scrapVariation}%`;
+    const scrapVariationColor =
+      Number(scrapVariation) <= 0 ? "text-green-400" : "text-red-400";
 
-    // PPM line chart points
-    const ppmSeries = ppm?.Historique_4_Mois?.slice(1, 5) || [];
+    // PPM line chart from Suivi_PPM_4_Mois
+    const ppmSeries = ppmScrapClient?.Suivi_PPM_4_Mois || [];
     const ppmChartValues = [...ppmSeries].reverse();
-    const maxPpm = Math.max(...ppmChartValues.map((s: any) => s.Valeur), 1);
+    const maxPpm = Math.max(
+      ...ppmChartValues.map((s: any) => Number(s.Valeur)),
+      1
+    );
     const ppmPoints = ppmChartValues.map((s: any, i: number) => {
       const x = 10 + i * 40;
-      const y = mapValueToY(s.Valeur, 0, maxPpm, 15, 60);
+      const y = mapValueToY(Number(s.Valeur), 0, maxPpm, 15, 60);
       return `${x},${y}`;
     }).join(' ');
 
-    // Scrap bar chart
+    // Scrap bar chart from Suivi_Scrap_4_Mois
     const scrapChartValues = [...scrapSeries].reverse();
-    const maxScrap = Math.max(...scrapChartValues.map((s: any) => s.Valeur), 1);
+    const maxScrap = Math.max(
+      ...scrapChartValues.map((s: any) => Number(s.Valeur)),
+      1
+    );
 
-    // Taux de conformité data
+    // Taux de conformité - Completion/Compliance with Valeur_Mois_Courant, Variation_Vs_Mois_Precedent
     const completion = tauxConformite?.Completion;
     const compliance = tauxConformite?.Compliance;
-    const completionValue = completion?.Valeur_Mois_Courant || 0;
-    const complianceValue = compliance?.Valeur_Mois_Courant || 0;
-    const completionPrev = completion?.Serie_5_Mois?.[1]?.Valeur || 0;
-    const compliancePrev = compliance?.Serie_5_Mois?.[1]?.Valeur || 0;
-    const completionVariation = (completionValue - completionPrev).toFixed(1);
-    const complianceVariation = (complianceValue - compliancePrev).toFixed(1);
+    const completionValue = Number(completion?.Valeur_Mois_Courant) || 0;
+    const complianceValue = Number(compliance?.Valeur_Mois_Courant) || 0;
+    const completionVariation =
+      Number(completion?.Variation_Vs_Mois_Precedent)?.toFixed(1) || "0";
+    const complianceVariation =
+      Number(compliance?.Variation_Vs_Mois_Precedent)?.toFixed(1) || "0";
 
     // Circular progress calculation (circumference = 2 * PI * 40 = 251.33)
     const circumference = 251.33;
-    const completionOffset = circumference - (completionValue / 100) * circumference;
-    const complianceOffset = circumference - (complianceValue / 100) * circumference;
+    const completionOffset =
+      circumference - (completionValue / 100) * circumference;
+    const complianceOffset =
+      circumference - (complianceValue / 100) * circumference;
 
-    // Scorecards data
-    const clientKeys = Object.keys(scorecards || {});
-    const clientValues = clientKeys.map(key => ({
-      name: scorecards[key].Client,
-      value: scorecards[key].Valeur,
-      target: scorecards[key].Target
-    }));
-    const avgScore = clientValues.length > 0
-      ? (clientValues.reduce((sum, c) => sum + c.value, 0) / clientValues.length).toFixed(1)
-      : 0;
+    // Scorecards - Clients is array [{Client, Valeur, Target}]
+    const clientValues = scorecards?.Clients || [];
+    const avgScore =
+      clientValues.length > 0
+        ? (
+            clientValues.reduce(
+              (sum: number, c: any) => sum + Number(c.Valeur),
+              0
+            ) / clientValues.length
+          ).toFixed(1)
+        : scorecards?.Score_Global || "0";
 
-    // Incidents data
-    const incidentsValue = incidents?.Valeur_Mois_Courant || 0;
-    const incidentsSeries = incidents?.Serie_5_Mois || [];
-    const incidentsPrevValue = incidentsSeries[1]?.Valeur || 0;
+    // Incidents - Serie_4_Mois
+    const incidentsValue = Number(incidents?.Valeur_Mois_Courant) || 0;
+    const incidentsSeries = incidents?.Serie_4_Mois || [];
+    const incidentsPrevValue =
+      Number(incidentsSeries[incidentsSeries.length - 2]?.Valeur) || 0;
     const incidentsVariation = incidentsValue - incidentsPrevValue;
     const incidentsVariationText = incidentsVariation >= 0 ? `+${incidentsVariation}` : `${incidentsVariation}`;
     const incidentsVariationColor = incidentsVariation <= 0 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400";
 
-    // Incidents bar chart
-    const incidentsChartValues = [...incidentsSeries.slice(1, 5)].reverse();
-    const maxIncidents = Math.max(...incidentsChartValues.map((s: any) => s.Valeur), 1);
-    const monthNames = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"];
+    // Incidents bar chart from Serie_4_Mois
+    const incidentsChartValues = [...incidentsSeries];
+    const maxIncidents = Math.max(
+      ...incidentsChartValues.map((s: any) => Number(s.Valeur)),
+      1
+    );
     const barColors = ["bg-blue-500", "bg-blue-500", "bg-blue-400", "bg-blue-300"];
     const textColors = ["text-white", "text-white", "text-white", "text-gray-700"];
 
-    // Efficience mensuelle data
-    const efficienceValue = efficienceMensuelle?.Valeur_Mois_Courant || 0;
-    const efficienceTarget = efficienceMensuelle?.Target_Mois_Courant || 90;
-    const efficienceSeries = efficienceMensuelle?.Serie_5_Mois || [];
-    const efficiencePrevValue = efficienceSeries[1]?.Valeur || 0;
-    const efficienceVariation = (efficienceValue - efficiencePrevValue).toFixed(1);
-    const efficienceVsTarget = (efficienceValue - efficienceTarget).toFixed(1);
+    // Efficience mensuelle - Suivi_4_Mois
+    const efficienceValue =
+      Number(efficienceMensuelle?.Valeur_Mois_Courant) || 0;
+    const efficienceTarget =
+      Number(efficienceMensuelle?.Target_Mois_Courant) || 90;
+    const efficienceSeries = efficienceMensuelle?.Suivi_4_Mois || [];
+    const efficiencePrevValue =
+      Number(
+        efficienceSeries[efficienceSeries.length - 2]?.Valeur
+      ) || efficienceValue;
+    const efficienceVariation = (
+      efficienceValue - efficiencePrevValue
+    ).toFixed(1);
+    const efficienceVsTarget = (
+      efficienceValue - efficienceTarget
+    ).toFixed(1);
 
-    // Efficience chart
-    const efficienceChartValues = [...efficienceSeries.slice(1, 5)].reverse();
+    // Efficience chart from Suivi_4_Mois
+    const efficienceChartValues = [...efficienceSeries];
     const minEff = 85;
     const maxEff = 100;
     const efficiencePoints = efficienceChartValues.map((s: any, i: number) => {
       const x = 60 + i * 93.33;
-      const y = mapValueToY(s.Valeur, minEff, maxEff, 10, 90);
-      return { x, y, value: s.Valeur };
+      const val = Number(s.Valeur);
+      const y = mapValueToY(val, minEff, maxEff, 10, 90);
+      return { x, y, value: val, label: s.Label || `M-${4 - i}` };
     });
 
     return (
@@ -522,22 +581,31 @@ export default function QualityPage() {
                 />
                 {ppmChartValues.map((s: any, i: number) => {
                   const x = 10 + i * 40;
-                  const y = mapValueToY(s.Valeur, 0, maxPpm, 15, 60);
+                  const y = mapValueToY(
+                    Number(s.Valeur),
+                    0,
+                    maxPpm,
+                    15,
+                    60
+                  );
                   return <circle key={i} cx={x} cy={y} r="4" fill="#2563eb" />;
                 })}
               </svg>
             </div>
             <div className="flex items-end gap-2 h-20">
               {scrapChartValues.map((s: any, i: number) => {
-                const height = Math.max((s.Valeur / maxScrap) * 60, 20);
+                const val = Number(s.Valeur);
+                const height = Math.max((val / maxScrap) * 60, 20);
                 return (
                   <div key={i} className="flex flex-col items-center">
-                    <span className="text-xs text-gray-300 mb-1">{s.Valeur}</span>
+                    <span className="text-xs text-gray-300 mb-1">{val}</span>
                     <div
                       className="w-8 bg-blue-500 rounded-t"
                       style={{ height: `${height}px` }}
                     ></div>
-                    <span className="text-xs text-gray-400 mt-1">M-{4 - i}</span>
+                    <span className="text-xs text-gray-400 mt-1">
+                      {s.Label || `M-${4 - i}`}
+                    </span>
                   </div>
                 );
               })}
@@ -632,19 +700,23 @@ export default function QualityPage() {
             </span>
           </div>
           <div className="space-y-3">
-            {clientValues.map((client, index) => {
-              const isAboveTarget = client.value >= client.target;
+            {clientValues.map((client: any, index: number) => {
+              const value = Number(client.Valeur);
+              const target = Number(client.Target);
+              const isAboveTarget = value >= target;
               return (
                 <div key={index} className="flex items-center gap-3">
-                  <span className="text-sm text-gray-300 w-24">{client.name}</span>
+                  <span className="text-sm text-gray-300 w-24">
+                    {client.Client}
+                  </span>
                   <div className="flex-1 h-3 bg-gray-700 rounded-full overflow-hidden">
                     <div
                       className={`h-full ${isAboveTarget ? "bg-blue-500" : "bg-red-500"} rounded-full`}
-                      style={{ width: `${client.value}%` }}
+                      style={{ width: `${value}%` }}
                     ></div>
                   </div>
                   <span className="text-sm font-medium text-white w-10 text-right">
-                    {client.value}%
+                    {value}%
                   </span>
                 </div>
               );
@@ -668,78 +740,84 @@ export default function QualityPage() {
           </div>
           <div className="flex items-end justify-between gap-4 mb-6 px-2">
             {incidentsChartValues.map((s: any, i: number) => {
-              const height = Math.max((s.Valeur / maxIncidents) * 70, 20);
-              const monthIndex = (s.Mois - 1) % 12;
+              const val = Number(s.Valeur);
+              const height = Math.max((val / maxIncidents) * 70, 20);
               return (
                 <div key={i} className="flex flex-col items-center">
                   <div
                     className={`w-14 ${barColors[i]} rounded-t flex items-center justify-center ${textColors[i]} font-semibold py-2`}
                     style={{ height: `${height}px` }}
                   >
-                    {s.Valeur}
+                    {val}
                   </div>
-                  <span className="text-xs text-gray-500 mt-2">{monthNames[monthIndex]}</span>
+                  <span className="text-xs text-gray-500 mt-2">
+                    {s.Label || s.Mois}
+                  </span>
                 </div>
               );
             })}
           </div>
-          <div className="mt-4">
-            <span className="text-sm text-gray-300 mb-2 block">
-              Jours Perdus
-            </span>
-            <svg viewBox="0 0 200 70" className="w-full h-16">
-              <polyline
-                points="20,35 70,20 120,45 170,55"
-                fill="none"
-                stroke="#f59e0b"
-                strokeWidth="2"
-              />
-              <circle cx="20" cy="35" r="4" fill="#f59e0b" />
-              <circle cx="70" cy="20" r="4" fill="#f59e0b" />
-              <circle cx="120" cy="45" r="4" fill="#f59e0b" />
-              <circle cx="170" cy="55" r="4" fill="#f59e0b" />
-              <text
-                x="20"
-                y="28"
-                textAnchor="middle"
-                fill="#f59e0b"
-                fontSize="11"
-                fontWeight="600"
-              >
-                12
-              </text>
-              <text
-                x="70"
-                y="13"
-                textAnchor="middle"
-                fill="#f59e0b"
-                fontSize="11"
-                fontWeight="600"
-              >
-                15
-              </text>
-              <text
-                x="120"
-                y="38"
-                textAnchor="middle"
-                fill="#f59e0b"
-                fontSize="11"
-                fontWeight="600"
-              >
-                8
-              </text>
-              <text
-                x="170"
-                y="48"
-                textAnchor="middle"
-                fill="#f59e0b"
-                fontSize="11"
-                fontWeight="600"
-              >
-                5
-              </text>
-            </svg>
-          </div>
+          {incidentsChartValues.some(
+            (s: any) => s.Jours_Perdus != null && s.Jours_Perdus !== ""
+          ) && (
+            <div className="mt-4">
+              <span className="text-sm text-gray-300 mb-2 block">
+                Jours Perdus
+              </span>
+              <svg viewBox="0 0 200 70" className="w-full h-16">
+                {(() => {
+                  const joursData = incidentsChartValues
+                    .filter(
+                      (s: any) => s.Jours_Perdus != null && s.Jours_Perdus !== ""
+                    )
+                    .map((s: any) => Number(s.Jours_Perdus));
+                  if (joursData.length < 2) return null;
+                  const maxJours = Math.max(...joursData, 1);
+                  const points = joursData
+                    .map((val, i) => {
+                      const x = 20 + (i / (joursData.length - 1)) * 150;
+                      const y = 55 - (val / maxJours) * 45;
+                      return `${x},${y}`;
+                    })
+                    .join(" ");
+                  return (
+                    <>
+                      <polyline
+                        points={points}
+                        fill="none"
+                        stroke="#f59e0b"
+                        strokeWidth="2"
+                      />
+                      {joursData.map((val, i) => {
+                        const x = 20 + (i / (joursData.length - 1)) * 150;
+                        const y = 55 - (val / maxJours) * 45;
+                        return (
+                          <React.Fragment key={i}>
+                            <circle
+                              cx={x}
+                              cy={y}
+                              r="4"
+                              fill="#f59e0b"
+                            />
+                            <text
+                              x={x}
+                              y={y - 7}
+                              textAnchor="middle"
+                              fill="#f59e0b"
+                              fontSize="11"
+                              fontWeight="600"
+                            >
+                              {val}
+                            </text>
+                          </React.Fragment>
+                        );
+                      })}
+                    </>
+                  );
+                })()}
+              </svg>
+            </div>
+          )}
         </div>
 
         {/* Suivi de l'Efficience Card */}
@@ -819,7 +897,7 @@ export default function QualityPage() {
                   fill="#9ca3af"
                   fontSize="11"
                 >
-                  M-{4 - i}
+                  {p.label}
                 </text>
               </React.Fragment>
             ))}
@@ -832,7 +910,7 @@ export default function QualityPage() {
   return (
     <main className="flex-1 overflow-hidden p-4 md:p-6">
       {/* Header with tabs */}
-      <div className="max-w-[1400px] mx-auto mb-6 flex justify-between items-center">
+      <div className="mx-auto mb-6 flex justify-between items-center">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
             Qualité - {activeTab === "weekly" ? "Hebdomadaire" : "Mensuel"}
@@ -845,7 +923,17 @@ export default function QualityPage() {
         </div>
         <TabSelector activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
-      {activeTab === "weekly" ? <WeeklyQuality /> : <MonthlyQuality />}
+      {error && (
+        <div className="rounded-xl border border-red-800 bg-red-900/20 p-6 text-red-400">
+          {error}
+        </div>
+      )}
+      {loading && (
+        <div className="flex items-center justify-center py-20 text-gray-400">
+          Chargement...
+        </div>
+      )}
+      {!loading && !error && (activeTab === "weekly" ? <WeeklyQuality /> : <MonthlyQuality />)}
     </main>
   );
 }
