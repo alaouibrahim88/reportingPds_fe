@@ -116,7 +116,6 @@ export default function OperationsPage() {
 			</main>
 		)
 	}
-  console.log("data ----",data)
 	const weeklyData = data?.weekly
 	const monthlyData = data?.monthly
 

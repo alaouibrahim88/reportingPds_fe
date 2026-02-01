@@ -30,6 +30,7 @@ export default function DashboardLayout({
 
 	// Check if current page is a category page
 	const isCategoryPage = CATEGORY_PAGES.some((page) => pathname === page)
+	const isProgramsPage = pathname === "/programs"
 
 	useEffect(() => {
 		const checkAuthentication = async () => {
@@ -45,13 +46,22 @@ export default function DashboardLayout({
 		checkAuthentication()
 	}, [])
 
-	// Category pages layout (no sidebar, category navigation header, dark background)
+	// Category pages layout (no sidebar, category navigation header)
+	// Programs page uses light theme; other category pages use dark theme
 	if (isCategoryPage) {
 		return (
-			<div className="flex flex-col min-h-screen bg-slate-900">
-				<CategoryNavigationHeader />
+			<div
+				className={`flex flex-col min-h-screen ${
+					isProgramsPage ? "bg-slate-50" : "bg-slate-900"
+				}`}
+			>
+				<CategoryNavigationHeader variant={isProgramsPage ? "light" : "dark"} />
 				<div className="flex-1 overflow-auto">
-					<div className="text-white">{children}</div>
+					<div
+						className={isProgramsPage ? "text-slate-900" : "text-white"}
+					>
+						{children}
+					</div>
 				</div>
 			</div>
 		)
