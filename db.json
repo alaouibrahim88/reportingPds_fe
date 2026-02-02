@@ -970,5 +970,199 @@
         }
       ]
     }
+  },
+  "finance": {
+    "weekly": {
+      "Finance_Semaine": {
+        "Chiffre_Affaires": {
+          "Valeur_Mois_Cumulee_MEUR": 0.7,
+          "Target_Mois_MEUR": 3.5,
+          "Annee_Reference": 2025,
+          "Semaine_Reference": 10,
+          "Dernieres_4_Semaines": [
+            {
+              "Label": "S-1",
+              "Valeur_MEUR": 0.7
+            },
+            {
+              "Label": "S-2",
+              "Valeur_MEUR": 0.7
+            },
+            {
+              "Label": "S-3",
+              "Valeur_MEUR": 0.7
+            },
+            {
+              "Label": "S-4",
+              "Valeur_MEUR": 0.7
+            }
+          ],
+          "Semaine_Du_Mois": [
+            {
+              "Label": "S1",
+              "Reel_MEUR": 0.7,
+              "Cumul_MEUR": 0.7
+            },
+            {
+              "Label": "S2",
+              "Prevision_MEUR": 0.9,
+              "Cumul_MEUR": 0.7
+            },
+            {
+              "Label": "S3",
+              "Prevision_MEUR": 0.9,
+              "Cumul_MEUR": 0.7
+            },
+            {
+              "Label": "S4",
+              "Prevision_MEUR": 0.9,
+              "Cumul_MEUR": 0.7
+            }
+          ]
+        },
+        "Taux_Facturation_Livraison": {
+          "Valeur_S_1": 88,
+          "Variation_Pts_Vs_S_1": -9,
+          "Target": 95,
+          "Dernieres_4_Semaines": [
+            {
+              "Label": "S-1",
+              "Valeur": 95,
+              "Target": 95
+            },
+            {
+              "Label": "S-2",
+              "Valeur": 96,
+              "Target": 95
+            },
+            {
+              "Label": "S-3",
+              "Valeur": 97,
+              "Target": 95
+            },
+            {
+              "Label": "S-4",
+              "Valeur": 88,
+              "Target": 95
+            }
+          ]
+        }
+      }
+    },
+    "monthly": {
+      "Finance_Mois": {
+        "Efficience_Financiere": {
+          "Valeur_Actuelle": 88,
+          "Delta_Unite": "pts",
+          "VsLabel": "vs M-1",
+          "Delta_Valeur": -2,
+          "Target": 90,
+          "Suivi_4_Mois": [
+            {
+              "Label": "M-3",
+              "Mois": 1,
+              "Annee": 2025,
+              "Valeur": 82,
+              "Target": 90
+            },
+            {
+              "Label": "M-2",
+              "Mois": 2,
+              "Annee": 2025,
+              "Valeur": 89,
+              "Target": 90
+            },
+            {
+              "Label": "M-1",
+              "Mois": 3,
+              "Annee": 2025,
+              "Valeur": 92,
+              "Target": 90
+            },
+            {
+              "Label": "M",
+              "Mois": 4,
+              "Annee": 2025,
+              "Valeur": 88,
+              "Target": 90
+            }
+          ]
+        },
+        "Execution_Budgetaire": {
+          "Valeur_Actuelle": 78,
+          "Delta_Unite": "pts",
+          "VsLabel": "vs M-1",
+          "Delta_Valeur": 3,
+          "Target": 80,
+          "Suivi_4_Mois": [
+            {
+              "Label": "M-3",
+              "Mois": 1,
+              "Annee": 2025,
+              "Valeur": 75,
+              "Target": 80
+            },
+            {
+              "Label": "M-2",
+              "Mois": 2,
+              "Annee": 2025,
+              "Valeur": 78,
+              "Target": 80
+            },
+            {
+              "Label": "M-1",
+              "Mois": 3,
+              "Annee": 2025,
+              "Valeur": 77,
+              "Target": 80
+            },
+            {
+              "Label": "M",
+              "Mois": 4,
+              "Annee": 2025,
+              "Valeur": 78,
+              "Target": 80
+            }
+          ]
+        },
+        "Paiements_Retard": {
+          "Valeur_Affichee_MEUR": 1.5,
+          "Delta_Affiche_MEUR": -0.1,
+          "Delta_Unite": "M€",
+          "VsLabel": "vs M-1",
+          "Target": 1000000,
+          "Suivi_4_Mois": [
+            {
+              "Label": "M-3",
+              "Mois": 1,
+              "Annee": 2025,
+              "Valeur_MEUR": 1.7,
+              "Target_MEUR": 1
+            },
+            {
+              "Label": "M-2",
+              "Mois": 2,
+              "Annee": 2025,
+              "Valeur_MEUR": 1.7,
+              "Target_MEUR": 1
+            },
+            {
+              "Label": "M-1",
+              "Mois": 3,
+              "Annee": 2025,
+              "Valeur_MEUR": 1.6,
+              "Target_MEUR": 1
+            },
+            {
+              "Label": "M",
+              "Mois": 4,
+              "Annee": 2025,
+              "Valeur_MEUR": 1.5,
+              "Target_MEUR": 1
+            }
+          ]
+        }
+      }
+    }
   }
 }
