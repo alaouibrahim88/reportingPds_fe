@@ -1164,5 +1164,410 @@
         }
       }
     }
+  },
+  "program": {
+    "Program_Semaine": {
+      "On_Time_Delivery": {
+        "Annee": 2025,
+        "Semaine_Actuelle": 40,
+        "Valeur_Actuelle": 92,
+        "Target_Actuelle": 95,
+        "Valeur_Semaine_Precedente": 91,
+        "Variation_Vs_Semaine_Precedente": 1,
+        "Historique_4_Semaines": [
+          {
+            "Label": "WEEK 37",
+            "Annee": 2025,
+            "Semaine": 37,
+            "Valeur": 89,
+            "Target": 95
+          },
+          {
+            "Label": "WEEK 38",
+            "Annee": 2025,
+            "Semaine": 38,
+            "Valeur": 90,
+            "Target": 95
+          },
+          {
+            "Label": "WEEK 39",
+            "Annee": 2025,
+            "Semaine": 39,
+            "Valeur": 91,
+            "Target": 95
+          },
+          {
+            "Label": "WEEK 40",
+            "Annee": 2025,
+            "Semaine": 40,
+            "Valeur": 92,
+            "Target": 95
+          }
+        ]
+      },
+      "Critical_Equipment_Availability": {
+        "Annee": 2025,
+        "Semaine_Actuelle": 40,
+        "Valeur_Actuelle": 90,
+        "Target_Actuelle": 94,
+        "Valeur_Semaine_Precedente": 94,
+        "Variation_Vs_Semaine_Precedente": -4,
+        "Historique_4_Semaines": [
+          {
+            "Label": "WEEK 37",
+            "Annee": 2025,
+            "Semaine": 37,
+            "Valeur": 92,
+            "Target": 94
+          },
+          {
+            "Label": "WEEK 38",
+            "Annee": 2025,
+            "Semaine": 38,
+            "Valeur": 93,
+            "Target": 94
+          },
+          {
+            "Label": "WEEK 39",
+            "Annee": 2025,
+            "Semaine": 39,
+            "Valeur": 94,
+            "Target": 94
+          },
+          {
+            "Label": "WEEK 40",
+            "Annee": 2025,
+            "Semaine": 40,
+            "Valeur": 90,
+            "Target": 94
+          }
+        ]
+      },
+      "Recruitment_Progress": {
+        "Annee": 2025,
+        "Semaine_Actuelle": 40,
+        "Valeur_Actuelle_Reel": 1,
+        "Valeur_Actuelle_Forecast": 4,
+        "Valeur_Actuelle_Pct": 25,
+        "Variation_Pct_Vs_Semaine_Precedente": -75,
+        "Variation_Reel_Vs_Semaine_Precedente": -3,
+        "Total_Hires_MTD": 11,
+        "Total_Forecast_MTD": 20,
+        "Target_Hebdo_Forecast": 4,
+        "Historique_4_Semaines": [
+          {
+            "Label": "WEEK 37",
+            "Annee": 2025,
+            "Semaine": 37,
+            "Reel": 2,
+            "Forecast": 4,
+            "Pct": 50
+          },
+          {
+            "Label": "WEEK 38",
+            "Annee": 2025,
+            "Semaine": 38,
+            "Reel": 3,
+            "Forecast": 4,
+            "Pct": 75
+          },
+          {
+            "Label": "WEEK 39",
+            "Annee": 2025,
+            "Semaine": 39,
+            "Reel": 4,
+            "Forecast": 4,
+            "Pct": 100
+          },
+          {
+            "Label": "WEEK 40",
+            "Annee": 2025,
+            "Semaine": 40,
+            "Reel": 1,
+            "Forecast": 4,
+            "Pct": 25
+          }
+        ]
+      }
+    },
+    "Program_Mois": {
+      "Budget_Vs_Actual": {
+        "Variance_Mois_Courant": -2500,
+        "Delta_Variance_Vs_M_1": -140,
+        "Target_Variance": 0,
+        "Current_Health": "On Track",
+        "Historique_4_Mois": [
+          {
+            "Label": "mar",
+            "Mois": 3,
+            "Annee": 2025,
+            "Variance": -3800,
+            "Budget": 96800,
+            "Actual": 93000
+          },
+          {
+            "Label": "avr",
+            "Mois": 4,
+            "Annee": 2025,
+            "Variance": -2680,
+            "Budget": 82480,
+            "Actual": 79800
+          },
+          {
+            "Label": "mai",
+            "Mois": 5,
+            "Annee": 2025,
+            "Variance": -2360,
+            "Budget": 86960,
+            "Actual": 84600
+          },
+          {
+            "Label": "jui",
+            "Mois": 6,
+            "Annee": 2025,
+            "Variance": -2500,
+            "Budget": 115000,
+            "Actual": 112500
+          }
+        ]
+      },
+      "APQP_Milestones": {
+        "Valeur_Mois_Courant": 75,
+        "Delta_Pts_Vs_M_1": -0.5,
+        "Target": 85,
+        "Current_Health": "At Risk",
+        "Historique_4_Mois": [
+          {
+            "Label": "mar",
+            "Mois": 3,
+            "Annee": 2025,
+            "Valeur": 82,
+            "Target": 85
+          },
+          {
+            "Label": "avr",
+            "Mois": 4,
+            "Annee": 2025,
+            "Valeur": 86.5,
+            "Target": 85
+          },
+          {
+            "Label": "mai",
+            "Mois": 5,
+            "Annee": 2025,
+            "Valeur": 75.5,
+            "Target": 85
+          },
+          {
+            "Label": "jui",
+            "Mois": 6,
+            "Annee": 2025,
+            "Valeur": 75,
+            "Target": 85
+          }
+        ]
+      },
+      "Documentation_Progress": {
+        "Readiness_Mois_Courant": 70,
+        "Delta_Pts_Vs_M_1": -10.5,
+        "Target": 80,
+        "Current_Health": "At Risk",
+        "Plans": 90,
+        "Procedures": 80,
+        "Work_Inst": 70,
+        "Historique_4_Mois": [
+          {
+            "Label": "mar",
+            "Mois": 3,
+            "Annee": 2025,
+            "Valeur": 72,
+            "Target": 80
+          },
+          {
+            "Label": "avr",
+            "Mois": 4,
+            "Annee": 2025,
+            "Valeur": 76.5,
+            "Target": 80
+          },
+          {
+            "Label": "mai",
+            "Mois": 5,
+            "Annee": 2025,
+            "Valeur": 80.5,
+            "Target": 80
+          },
+          {
+            "Label": "jui",
+            "Mois": 6,
+            "Annee": 2025,
+            "Valeur": 70,
+            "Target": 80
+          }
+        ],
+        "Trend_Hebdo_Mois": [
+          {
+            "Label": "WEEK 23",
+            "Annee": 2025,
+            "Semaine": 23,
+            "Valeur": 83
+          },
+          {
+            "Label": "WEEK 24",
+            "Annee": 2025,
+            "Semaine": 24,
+            "Valeur": 84
+          },
+          {
+            "Label": "WEEK 25",
+            "Annee": 2025,
+            "Semaine": 25,
+            "Valeur": 60
+          },
+          {
+            "Label": "WEEK 26",
+            "Annee": 2025,
+            "Semaine": 26,
+            "Valeur": 61
+          },
+          {
+            "Label": "WEEK 27",
+            "Annee": 2025,
+            "Semaine": 27,
+            "Valeur": 62
+          }
+        ],
+        "Average_Hebdo_Mois": 70
+      }
+    }
+  },
+  "dashbaord": {
+    "Annee": 2026,
+    "Semaine": 6,
+    "Cards": [
+      {
+        "Code": "FIN_CA_REEL",
+        "Label": "Chiffre d'affaires réalisé",
+        "Value": 822000,
+        "Unit": "MAD",
+        "PreviousValue": 810000,
+        "Trend": "UP",
+        "IsLowerBetter": false,
+        "History": [
+          { "Annee": 2026, "Semaine": 3, "Value": 786000 },
+          { "Annee": 2026, "Semaine": 4, "Value": 798000 },
+          { "Annee": 2026, "Semaine": 5, "Value": 810000 },
+          { "Annee": 2026, "Semaine": 6, "Value": 822000 }
+        ]
+      },
+      {
+        "Code": "FIN_CA_PREV",
+        "Label": "Chiffre d'affaires prévisionnel",
+        "Unit": "MAD",
+        "Trend": "UP",
+        "IsLowerBetter": false,
+        "History": [
+          { "Annee": 2026, "Semaine": 3 },
+          { "Annee": 2026, "Semaine": 4 },
+          { "Annee": 2026, "Semaine": 5 },
+          { "Annee": 2026, "Semaine": 6 }
+        ]
+      },
+      {
+        "Code": "OPS_SCRAP",
+        "Label": "Taux de scrap",
+        "Value": 1.3,
+        "Unit": "%",
+        "PreviousValue": 3.2,
+        "Trend": "UP",
+        "Target": 1.2,
+        "IsLowerBetter": true,
+        "History": [
+          { "Annee": 2026, "Semaine": 3, "Value": 3.5, "Target": 2.5 },
+          { "Annee": 2026, "Semaine": 4, "Value": 3.0, "Target": 2.5 },
+          { "Annee": 2026, "Semaine": 5, "Value": 3.2, "Target": 2.5 },
+          { "Annee": 2026, "Semaine": 6, "Value": 1.3, "Target": 1.2 }
+        ]
+      },
+      {
+        "Code": "OPS_EFF",
+        "Label": "Suivi de l'efficience",
+        "Value": 89.5,
+        "Unit": "",
+        "PreviousValue": 85.5,
+        "Trend": "UP",
+        "Target": 90,
+        "IsLowerBetter": false,
+        "History": [
+          { "Annee": 2026, "Semaine": 3, "Value": 84.8, "Target": 90 },
+          { "Annee": 2026, "Semaine": 4, "Value": 87.2, "Target": 90 },
+          { "Annee": 2026, "Semaine": 5, "Value": 85.5, "Target": 90 },
+          { "Annee": 2026, "Semaine": 6, "Value": 89.5, "Target": 90 }
+        ]
+      },
+      {
+        "Code": "QLT_RECLAM",
+        "Label": "Réclamations clients",
+        "Value": 15,
+        "Unit": "",
+        "PreviousValue": 13,
+        "Trend": "DOWN",
+        "Target": 10,
+        "IsLowerBetter": true,
+        "History": [
+          { "Annee": 2026, "Semaine": 3, "Value": 17, "Target": 10 },
+          { "Annee": 2026, "Semaine": 4, "Value": 13, "Target": 10 },
+          { "Annee": 2026, "Semaine": 5, "Value": 13, "Target": 10 },
+          { "Annee": 2026, "Semaine": 6, "Value": 15, "Target": 10 }
+        ]
+      },
+      {
+        "Code": "PROG_OTD",
+        "Label": "Taux de service client",
+        "Value": 92,
+        "Unit": "%",
+        "PreviousValue": 91,
+        "Trend": "UP",
+        "IsLowerBetter": false,
+        "History": [
+          { "Annee": 2026, "Semaine": 3, "Value": 93 },
+          { "Annee": 2026, "Semaine": 4, "Value": 90 },
+          { "Annee": 2026, "Semaine": 5, "Value": 91 },
+          { "Annee": 2026, "Semaine": 6, "Value": 92 }
+        ]
+      },
+      {
+        "Code": "OPS_HSUP",
+        "Label": "Taux d'heures sup.",
+        "Value": 2.4,
+        "Unit": "%",
+        "PreviousValue": 50,
+        "Trend": "UP",
+        "Target": 2.4,
+        "IsLowerBetter": true,
+        "History": [
+          { "Annee": 2026, "Semaine": 3, "Value": 52, "Target": 40 },
+          { "Annee": 2026, "Semaine": 4, "Value": 48, "Target": 40 },
+          { "Annee": 2026, "Semaine": 5, "Value": 50, "Target": 40 },
+          { "Annee": 2026, "Semaine": 6, "Value": 2.4, "Target": 2.4 }
+        ]
+      },
+      {
+        "Code": "OPS_CHOM",
+        "Label": "Taux de chômage tech.",
+        "Value": 1.6,
+        "Unit": "%",
+        "PreviousValue": 15.5,
+        "Trend": "UP",
+        "Target": 1.6,
+        "IsLowerBetter": true,
+        "History": [
+          { "Annee": 2026, "Semaine": 3, "Value": 16.2, "Target": 12 },
+          { "Annee": 2026, "Semaine": 4, "Value": 14.8, "Target": 12 },
+          { "Annee": 2026, "Semaine": 5, "Value": 15.5, "Target": 12 },
+          { "Annee": 2026, "Semaine": 6, "Value": 1.6, "Target": 1.6 }
+        ]
+      }
+    ]
   }
 }

@@ -526,7 +526,6 @@ export function getCategoryData(categoryId: string): CategoryData | undefined {
 		kpis: [] // KPI data should be fetched from API
 	}
 }
-
 // Weekly Indicators Data
 export const weeklyIndicatorsData: IndicateursData = {
   Indicateurs: [
@@ -612,4 +611,5 @@ export const weeklyIndicatorsData: IndicateursData = {
     },
   ]
 };
+
 

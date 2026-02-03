@@ -294,8 +294,152 @@ export interface WeeklyIndicator {
 	Semaine_M3: number
 	Semaine_M4: number
 	LowerIsBetter?: boolean
+	/** Optional week labels from API (e.g. from History[].Semaine) */
+	Semaine_M1_Label?: string
+	Semaine_M2_Label?: string
+	Semaine_M3_Label?: string
+	Semaine_M4_Label?: string
+	/** Optional unit from API (e.g. Cards[].Unit) */
+	Unit?: string
 }
 
 export interface IndicateursData {
 	Indicateurs: WeeklyIndicator[]
+}
+
+/** API response shape from GetExecutiveHorizonIndicateursWeekly (db.json "dashbaord" format) */
+export interface DashboardKpiCardHistoryItem {
+	Annee: number
+	Semaine: number
+	Value?: number
+	Target?: number
+}
+
+export interface DashboardKpiCard {
+	Code: string
+	Label: string
+	Value?: number
+	Unit?: string
+	PreviousValue?: number
+	Trend?: string
+	Target?: number
+	IsLowerBetter?: boolean
+	History?: DashboardKpiCardHistoryItem[]
+}
+
+export interface DashboardKpiCategoryResponse {
+	Annee?: number
+	Semaine?: number
+	Cards?: DashboardKpiCard[]
+	Indicateurs?: WeeklyIndicator[]
+}
+
+// Program API types (Program_Semaine = weekly, Program_Mois = monthly)
+export interface ProgramHistoriqueSemaine {
+	Label: string
+	Annee: number
+	Semaine: number
+	Valeur?: number
+	Target?: number
+	Reel?: number
+	Forecast?: number
+	Pct?: number
+}
+
+export interface OnTimeDelivery {
+	Annee: number
+	Semaine_Actuelle: number
+	Valeur_Actuelle: number
+	Target_Actuelle: number
+	Valeur_Semaine_Precedente: number
+	Variation_Vs_Semaine_Precedente: number
+	Historique_4_Semaines: ProgramHistoriqueSemaine[]
+}
+
+export interface CriticalEquipmentAvailability {
+	Annee: number
+	Semaine_Actuelle: number
+	Valeur_Actuelle: number
+	Target_Actuelle: number
+	Valeur_Semaine_Precedente: number
+	Variation_Vs_Semaine_Precedente: number
+	Historique_4_Semaines: ProgramHistoriqueSemaine[]
+}
+
+export interface RecruitmentProgress {
+	Annee: number
+	Semaine_Actuelle: number
+	Valeur_Actuelle_Reel: number
+	Valeur_Actuelle_Forecast: number
+	Valeur_Actuelle_Pct: number
+	Variation_Pct_Vs_Semaine_Precedente: number
+	Variation_Reel_Vs_Semaine_Precedente: number
+	Total_Hires_MTD: number
+	Total_Forecast_MTD: number
+	Target_Hebdo_Forecast: number
+	Historique_4_Semaines: ProgramHistoriqueSemaine[]
+}
+
+export interface ProgramSemaine {
+	On_Time_Delivery: OnTimeDelivery
+	Critical_Equipment_Availability: CriticalEquipmentAvailability
+	Recruitment_Progress: RecruitmentProgress
+}
+
+export interface ProgramHistoriqueMois {
+	Label: string
+	Mois: number
+	Annee: number
+	Variance?: number
+	Budget?: number
+	Actual?: number
+	Valeur?: number
+	Target?: number
+}
+
+export interface BudgetVsActual {
+	Variance_Mois_Courant: number
+	Delta_Variance_Vs_M_1: number
+	Target_Variance: number
+	Current_Health: string
+	Historique_4_Mois: ProgramHistoriqueMois[]
+}
+
+export interface APQPMilestones {
+	Valeur_Mois_Courant: number
+	Delta_Pts_Vs_M_1: number
+	Target: number
+	Current_Health: string
+	Historique_4_Mois: ProgramHistoriqueMois[]
+}
+
+export interface TrendHebdoMois {
+	Label: string
+	Annee: number
+	Semaine: number
+	Valeur: number
+}
+
+export interface DocumentationProgress {
+	Readiness_Mois_Courant: number
+	Delta_Pts_Vs_M_1: number
+	Target: number
+	Current_Health: string
+	Plans: number
+	Procedures: number
+	Work_Inst: number
+	Historique_4_Mois: ProgramHistoriqueMois[]
+	Trend_Hebdo_Mois: TrendHebdoMois[]
+	Average_Hebdo_Mois: number
+}
+
+export interface ProgramMois {
+	Budget_Vs_Actual: BudgetVsActual
+	APQP_Milestones: APQPMilestones
+	Documentation_Progress: DocumentationProgress
+}
+
+export interface ProgramApiResponse {
+	Program_Semaine: ProgramSemaine
+	Program_Mois: ProgramMois
 }

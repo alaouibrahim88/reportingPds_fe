@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-
-const BASE_URL = 'http://127.0.0.1:5001'
+import { fetchInternalApi } from '@/lib/internal-api-fetcher'
+import { INTERNAL_API_ENDPOINTS } from '@/constants/api'
 
 export async function GET(request: Request) {
 	const { searchParams } = new URL(request.url)
@@ -10,30 +10,16 @@ export async function GET(request: Request) {
 	const annee = searchParams.get('AnneeCourante')
 	const semaine = searchParams.get('SemaineCourante')
 
-	let endpoint = ''
+	const endpoint =
+		type === 'monthly'
+			? INTERNAL_API_ENDPOINTS.quality.monthly
+			: INTERNAL_API_ENDPOINTS.quality.weekly
 
-	if (type === 'monthly') {
-		endpoint = '/quality-indicateurs-monthly'
-	} else if (type === 'weekly') {
-		endpoint = '/quality-indicateurs-weekly'
-	}
-
-	const res = await fetch(`${BASE_URL}${endpoint}`, {
-		cache: 'no-store',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-	})
-
+	const res = await fetchInternalApi(endpoint)
 	const data = await res.json()
 
 	return NextResponse.json({
-		meta: {
-			type,
-			mois,
-			semaine,
-			annee,
-		},
+		meta: { type, mois, semaine, annee },
 		data,
 	})
 }

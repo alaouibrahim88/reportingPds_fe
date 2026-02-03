@@ -1,19 +1,18 @@
-"use client";
+'use client'
 
-import React from "react";
-import {  navigationItems } from "@/lib/kpi-data";
-import { useRouter } from "next/navigation";
-import { WeeklyIndicators } from "@/components/WeeklyIndicators";
+import React from 'react'
+import { navigationItems } from '@/lib/kpi-data'
+import { useRouter } from 'next/navigation'
+import { WeeklyIndicators } from '@/components/WeeklyIndicators'
+import type { IndicateursData } from '@/types'
 
 interface KPIDashboardProps {
-  className?: string;
-  dataset?: "executive-horizon" | "global-ops";
+	className?: string
+	weeklyData?: IndicateursData
 }
 
-export function KPIDashboard({ className, dataset = "executive-horizon" }: KPIDashboardProps) {
-  const router = useRouter();
-
-  // Get the appropriate categories based on dataset
+export function KPIDashboard({ className, weeklyData }: KPIDashboardProps) {
+	const router = useRouter()
 
   const handleNavigationClick = (itemId: string) => {
     if (itemId === 'overview') {
@@ -69,7 +68,7 @@ export function KPIDashboard({ className, dataset = "executive-horizon" }: KPIDa
       </div>
 
       {/* Main Categories Grid - Enhanced with animations */}
-      <WeeklyIndicators />
+      <WeeklyIndicators data={weeklyData} />
     </div>
   );
 }

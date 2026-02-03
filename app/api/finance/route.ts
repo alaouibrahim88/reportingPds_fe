@@ -1,24 +1,6 @@
-import { NextResponse } from 'next/server'
-import { readFile } from 'fs/promises'
-import path from 'path'
-
-const BASE_URL = 'http://127.0.0.1:5001'
+import { fetchInternalApi } from '@/lib/internal-api-fetcher'
+import { INTERNAL_API_ENDPOINTS } from '@/constants/api'
 
 export async function GET() {
-	try {
-		const res = await fetch(`${BASE_URL}/finance`, {
-			cache: 'no-store',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		})
-		if (!res.ok) throw new Error('Backend unavailable')
-		const data = await res.json()
-		return NextResponse.json(data)
-	} catch {
-		const filePath = path.join(process.cwd(), 'db.json')
-		const fileContent = await readFile(filePath, 'utf-8')
-		const db = JSON.parse(fileContent)
-		return NextResponse.json(db.finance)
-	}
+	return fetchInternalApi(INTERNAL_API_ENDPOINTS.finance, { throwOnError: true })
 }
