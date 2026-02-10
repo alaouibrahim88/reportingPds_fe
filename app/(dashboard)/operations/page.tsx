@@ -90,22 +90,32 @@ function getColorClasses(color: string): { border: string; text: string } {
 
 // Operations Dashboard Page - Can fetch data here
 export default function OperationsPage() {
-	const [activeTab, setActiveTab] = useState<TabType>("weekly")
+	const [activeTab, setActiveTab] = useState<TabType>('weekly')
+	const [weeklyData, setWeeklyData] = useState<WeeklyData | null>(null)
+	const [monthlyData, setMonthlyData] = useState<MonthlyData | null>(null)
 	const [data, setData] = useState<OperationsData | null>(null)
 	const [loading, setLoading] = useState(true)
 
 	useEffect(() => {
 		async function fetchData() {
-      setLoading(true)
-      const res = await fetch('/api/operations')    
-      const operationsData = await res.json()
-      setData(operationsData)
-      setLoading(false)
+			setLoading(true)
+
+			const res = await fetch(`/api/operations?type=${activeTab}`, {
+				cache: 'no-store',
+			})
+			const json = await res.json()
+
+			if (activeTab === 'weekly') {
+				setData(json.data)
+			} else {
+				setData(json.data)
+			}
+
+			setLoading(false)
 		}
 
 		fetchData()
-	
-    }, [])
+	}, [activeTab])
 
 	if (loading) {
 		return (
@@ -116,17 +126,14 @@ export default function OperationsPage() {
 			</main>
 		)
 	}
-	const weeklyData = data?.weekly
-	const monthlyData = data?.monthly
-
 	// Monthly Operations Component
 	const MonthlyOperations = () => {
-		if (!monthlyData) return null
+		if (!data) return null
 
-		const { Taux_Heures_Supplementaires, Taux_Chomage_Technique, Taux_Scrap, Suivi_Efficience } = monthlyData
+		const { Taux_Heures_Supplementaires, Taux_Chomage_Technique, Taux_Scrap, Suivi_Efficience } = data.monthly
 
 		return (
-			<main className="flex-grow">sfdsfdsfdsfs
+			<main className="flex-grow">
 				<div className="grid w-full grid-cols-1 gap-2">
 					{/* Écart de Production / Taux Heures Supplémentaires */}
 					<div className="rounded-lg border border-white/20 bg-slate-800/90 backdrop-blur-sm p-2 lg:p-4 transition-transform duration-300 cursor-pointer">
@@ -343,9 +350,9 @@ export default function OperationsPage() {
 
 	// Weekly Operations Component
 	const WeeklyOperations = () => {
-		if (!weeklyData) return null
+		if (!data) return null
 
-		const { Taux_Heures_Supplementaires, Taux_Chomage_Technique, Taux_Scrap, Suivi_Efficience } = weeklyData
+		const { Taux_Heures_Supplementaires, Taux_Chomage_Technique, Taux_Scrap, Suivi_Efficience } = data.weekly
 
 		return (
 			<main className="w-full flex-shrink-0">

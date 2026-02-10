@@ -28,15 +28,31 @@ export const Endpoints = {
 
 
 
-/** Internal API endpoint paths */
+/** Internal API endpoint paths grouped by period (weekly/monthly) */
 export const INTERNAL_API_ENDPOINTS = {
-	rh: '/rh-Indicateurs',
-	finance: '/finance',
-	program: '/program',
-	quality: {
-		monthly: '/quality-indicateurs-monthly',
-		weekly: '/quality-indicateurs-weekly',
+	rh: {
+		weekly: '/GetRHIndicateurs?SemaineCourante=11&AnneeCourante=2025',
 	},
-	operations: '/operations',
-	dashboardKpiCategory: '/dashbaord-kpi-category',
+	finance: {
+		weekly: '/GetFinanceIndicateurs?SemaineCourante=10&AnneeCourante=2025',
+		monthly:
+			'/GetFinanceIndicateurs_Mensuel?MoisCourante=4&AnneeCourante=2025',
+	},
+	program: {
+		weekly: '/GetProgramIndicateurs?SemaineCourante=40&AnneeCourante=2025',
+		monthly:
+			'/GetProgramIndicateurs_Mensuel?MoisCourante=6&AnneeCourante=2025',
+	},
+	quality: {
+		weekly: '/GetQualityIndicateurs?SemaineCourante=5&AnneeCourante=2026',
+		monthly: '/GetQualityIndicateurs?SemaineCourante=5&AnneeCourante=2025',
+	},
+	operations: {
+		weekly: '/GetOperationsIndicateurs?SemaineCourante=10&AnneeCourante=2026',
+		monthly:
+			'/GetOperationsIndicateurs_Mensuel?MoisCourante=5&AnneeCourante=2025',
+	},
+	dashboardKpiCategory: {
+		weekly: '/GetExecutiveHorizonIndicateursWeekly',
+	},
 } as const

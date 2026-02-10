@@ -36,7 +36,7 @@ export default function ProgramsPage() {
 			setLoading(true);
 			setError(null);
 			try {
-				const res = await fetch("/api/program", { cache: "no-store" });
+				const res = await fetch(`/api/program?type=${activeTab}`, { cache: "no-store" });
 				if (!res.ok) throw new Error("Failed to fetch program data");
 				const data: ProgramApiResponse = await res.json();
 				setProgramData(data);

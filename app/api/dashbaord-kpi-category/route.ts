@@ -1,15 +1,6 @@
-import { NextResponse } from 'next/server'
-
-const BASE_URL = 'http://127.0.0.1:5001'
+import { fetchInternalApi } from '@/lib/internal-api-fetcher'
+import { INTERNAL_API_ENDPOINTS } from '@/constants/api'
 
 export async function GET() {
-	const res = await fetch(`${BASE_URL}/dashbaord`, {
-		cache: 'no-store',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-	})
-	if (!res.ok) throw new Error('Backend unavailable')
-	const data = await res.json()
-	return NextResponse.json(data)
+	return fetchInternalApi(INTERNAL_API_ENDPOINTS.dashboardKpiCategory.weekly)
 }

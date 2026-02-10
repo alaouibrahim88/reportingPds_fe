@@ -6,9 +6,6 @@ export async function GET(request: Request) {
 	const { searchParams } = new URL(request.url)
 
 	const type = searchParams.get('type') // monthly | weekly
-	const mois = searchParams.get('MoisCourante')
-	const annee = searchParams.get('AnneeCourante')
-	const semaine = searchParams.get('SemaineCourante')
 
 	const endpoint =
 		type === 'monthly'
@@ -19,7 +16,7 @@ export async function GET(request: Request) {
 	const data = await res.json()
 
 	return NextResponse.json({
-		meta: { type, mois, semaine, annee },
+		meta: { type },
 		data,
 	})
 }

@@ -99,7 +99,7 @@ export default function FinancePage() {
 		async function fetchData() {
 			setLoading(true)
 			try {
-				const res = await fetch('/api/finance')
+				const res = await fetch(`/api/finance?type=${activeTab}`, { cache: "no-store" })
 				const financeData = await res.json()
 				setData(financeData)
 			} catch {

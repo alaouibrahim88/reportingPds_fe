@@ -1,27 +1,21 @@
 import { NextResponse } from 'next/server'
-import path from 'path'
-import fs from 'fs'
 import { fetchInternalApi } from '@/lib/internal-api-fetcher'
-import {
-	INTERNAL_API_ENDPOINTS,
-} from '@/constants/api'
+import { INTERNAL_API_ENDPOINTS } from '@/constants/api'
 
-export async function GET() {
-	try {
-		return fetchInternalApi(INTERNAL_API_ENDPOINTS.program)
-	} catch {
-		try {
-			const dbPath = path.join(process.cwd(), 'db.json')
-			const raw = fs.readFileSync(dbPath, 'utf-8')
-			const db = JSON.parse(raw)
-			if (db.program) {
-				return NextResponse.json(db.program)
-			}
-		} catch {
-			return NextResponse.json(
-				{ error: 'Program data unavailable' },
-				{ status: 503 }
-			)
-		}
-	}
+export async function GET(request: Request) {
+	const { searchParams } = new URL(request.url)
+	const type = searchParams.get('type') // monthly | weekly
+
+	const endpoint =
+		type === 'monthly'
+			? INTERNAL_API_ENDPOINTS.program.monthly
+			: INTERNAL_API_ENDPOINTS.program.weekly
+
+	const res = await fetchInternalApi(endpoint)
+	const data = await res.json()
+
+	return NextResponse.json({
+		meta: { type },
+		data,
+	})
 }
