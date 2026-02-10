@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { INTERNAL_API_BASE_URL } from '@/constants/api'
 
 const DEFAULT_HEADERS: HeadersInit = {
 	'Content-Type': 'application/json',
@@ -23,17 +22,9 @@ interface FetchInternalApiOptions {
  */
 export async function fetchInternalApi<T = unknown>(
 	endpoint: string,
-	options: FetchInternalApiOptions = {}
 ): Promise<NextResponse<T>> {
-	const baseUrl = options.baseUrl ?? INTERNAL_API_BASE_URL
-	const url = `${baseUrl}${endpoint}`
-
+	const url = `${process.env.BASE_URL_CATEGORY_KPI}${endpoint}`
 	const res = await fetch(url, FETCH_OPTIONS)
-
-	if (options.throwOnError && !res.ok) {
-		throw new Error('Backend unavailable')
-	}
-
 	const data = (await res.json()) as T
 	return NextResponse.json(data)
 }

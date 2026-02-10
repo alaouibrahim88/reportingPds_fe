@@ -4,17 +4,11 @@ import fs from 'fs'
 import { fetchInternalApi } from '@/lib/internal-api-fetcher'
 import {
 	INTERNAL_API_ENDPOINTS,
-	INTERNAL_API_BASE_URL,
 } from '@/constants/api'
 
 export async function GET() {
 	try {
-		const baseUrl =
-			process.env.PROGRAM_API_URL || INTERNAL_API_BASE_URL
-		return fetchInternalApi(INTERNAL_API_ENDPOINTS.program, {
-			baseUrl,
-			throwOnError: true,
-		})
+		return fetchInternalApi(INTERNAL_API_ENDPOINTS.program)
 	} catch {
 		try {
 			const dbPath = path.join(process.cwd(), 'db.json')
@@ -24,11 +18,10 @@ export async function GET() {
 				return NextResponse.json(db.program)
 			}
 		} catch {
-			// ignore
+			return NextResponse.json(
+				{ error: 'Program data unavailable' },
+				{ status: 503 }
+			)
 		}
-		return NextResponse.json(
-			{ error: 'Program data unavailable' },
-			{ status: 503 }
-		)
 	}
 }

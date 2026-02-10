@@ -26,14 +26,9 @@ export const Endpoints = {
 };
 
 
-/** Base URL for internal Python backend (RH, Finance, Program, Quality, Operations, Dashboard KPI) */
-export const INTERNAL_API_BASE_URL =
-	process.env.INTERNAL_API_BASE_URL || 'http://127.0.0.1:5001'
 
-/** @deprecated Use INTERNAL_API_BASE_URL instead */
-export const BASE_URL_CATEGORY_KPI = INTERNAL_API_BASE_URL
 
-/** Internal API endpoint paths (relative to INTERNAL_API_BASE_URL) */
+/** Internal API endpoint paths */
 export const INTERNAL_API_ENDPOINTS = {
 	rh: '/rh-Indicateurs',
 	finance: '/finance',
