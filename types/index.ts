@@ -324,7 +324,7 @@ export interface DashboardKpiCard {
 	Trend?: string
 	Target?: number
 	IsLowerBetter?: boolean
-	History?: DashboardKpiCardHistoryItem[]
+	History?: DashboardKpiCardHistoryItem[] | string
 }
 
 export interface DashboardKpiCategoryResponse {

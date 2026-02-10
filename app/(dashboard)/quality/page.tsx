@@ -35,9 +35,14 @@ export default function QualityPage() {
         if (!res.ok) {
           throw new Error(json.message || "Erreur lors du chargement");
         }
-        setData(json.data ?? json);
+        // Handle nested data structure: API returns { data: { data: ... } }
+        const finalData = json?.data?.data ?? json?.data ?? json;
+        
+        console.log(`Quality ${activeTab} data:`, finalData);
+        setData(finalData);
         setLoading(false);
       } catch (err) {
+        console.error(`Error fetching quality ${activeTab} data:`, err);
         setError(err instanceof Error ? err.message : "Erreur inconnue");
         setLoading(false);
       }
@@ -68,12 +73,25 @@ export default function QualityPage() {
 
     const progressColors = ["#3b82f6", "#8b5cf6", "#06b6d4", "#10b981"];
 
-    // Zone data for incidents bar chart - Par_Zone values may be strings
+    // Zone data for incidents bar chart - Use Incidents_Par_Zone array if available, fallback to Par_Zone object
     const zoneKeys = ["Boot", "HeadRest", "Gainage", "Volant", "Net"];
     const zoneColors = ["#8b5cf6", "#3b82f6", "#06b6d4", "#10b981", "#f59e0b"];
+    const incidentsParZoneArray = incidents?.Incidents_Par_Zone || [];
     const incidentsParZone = incidents?.Par_Zone || {};
-    const getZoneValue = (zone: string) =>
-      Number(incidentsParZone[zone]) || 0;
+    
+    // Helper to get zone value - prefer array format
+    const getZoneValue = (zone: string) => {
+      const fromArray = incidentsParZoneArray.find((item: any) => item.Zone === zone);
+      if (fromArray) return Number(fromArray.Valeur) || 0;
+      return Number(incidentsParZone[zone]) || 0;
+    };
+    
+    // Get zone target value
+    const getZoneTarget = (zone: string) => {
+      const fromArray = incidentsParZoneArray.find((item: any) => item.Zone === zone);
+      if (fromArray) return Number(fromArray.Target) || 0;
+      return Number(incidentsParZone[`Target_${zone}`]) || 0;
+    };
 
     // Calculate chart points for reclamations line chart (S-4 to S-1, oldest to newest)
     const reclamationsChartValues = [...reclamationsSeries].reverse();
@@ -170,8 +188,8 @@ export default function QualityPage() {
               </div>
             </div>
 
-            {/* Right Column: Charts */}
-            <div className="flex flex-col gap-4 border-l border-gray-700 pl-8">
+            {/* Right Column: Chart */}
+            <div className="border-l border-gray-700 pl-8">
               {/* Line Chart: Suivi des Réclamations */}
               <div>
                 <h3 className="text-sm font-semibold text-white mb-3">
@@ -219,60 +237,118 @@ export default function QualityPage() {
                   })}
                 </svg>
               </div>
+            </div>
+          </div>
+        </div>
 
-              {/* Bar Chart: Incidents par Zone */}
-              <div>
+        {/* Incidents Section */}
+        {incidents && (
+          <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6 mb-6 transition-transform duration-300 cursor-pointer">
+            <h2 className="text-base font-medium text-white mb-5 pb-3 border-b border-gray-700">
+              Incidents
+            </h2>
+            <div className="grid grid-cols-2 gap-8">
+              {/* Left Column: Main Metric */}
+              <div className="flex items-center gap-8">
+                <div className="p-4 text-center">
+                  <div className="text-6xl md:text-7xl font-bold text-white mb-2 leading-none">
+                    {Number(incidents?.Valeur_Actuelle) || 0}
+                  </div>
+                  <div className="text-sm text-gray-300">
+                    vs Target ({Number(incidents?.Target_Actuelle) || 0}){" "}
+                    <span className={`${Number(incidents?.Valeur_Actuelle || 0) <= Number(incidents?.Target_Actuelle || 0) ? "text-emerald-400" : "text-red-400"} font-semibold`}>
+                      {Number(incidents?.Valeur_Actuelle || 0) <= Number(incidents?.Target_Actuelle || 0) ? "✓" : "✗"}
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-400 mt-2">
+                    Semaine {incidents?.Semaine_Actuelle || "N/A"} - {incidents?.Annee || "N/A"}
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Incidents par Zone Chart */}
+              <div className="border-l border-gray-700 pl-8">
                 <h3 className="text-sm font-semibold text-white mb-3">
                   Incidents par Zone
                 </h3>
-                <svg viewBox="0 0 450 130" className="w-full max-w-md h-auto">
-                  {zoneKeys.slice(0, 4).map((zone, i) => {
+                <svg viewBox="0 0 550 150" className="w-full max-w-lg h-auto">
+                  {zoneKeys.map((zone, i) => {
                     const value = getZoneValue(zone);
+                    const target = getZoneTarget(zone);
                     const maxZoneVal = Math.max(
                       ...zoneKeys.map(z => getZoneValue(z)),
+                      ...zoneKeys.map(z => getZoneTarget(z)),
                       1
                     );
-                    const height = (value / maxZoneVal) * 80;
-                    const y = 100 - height;
-                    const x = 60 + i * 100;
+                    const valueHeight = (value / maxZoneVal) * 80;
+                    const targetHeight = (target / maxZoneVal) * 80;
+                    const y = 120 - valueHeight;
+                    const targetY = 120 - targetHeight;
+                    const x = 50 + i * 100;
+                    const isAboveTarget = value > target;
                     return (
                       <React.Fragment key={zone}>
+                        {/* Target line */}
+                        <line
+                          x1={x}
+                          y1={targetY}
+                          x2={x + 50}
+                          y2={targetY}
+                          stroke="#f59e0b"
+                          strokeWidth="2"
+                          strokeDasharray="4"
+                          opacity="0.7"
+                        />
+                        {/* Value bar */}
                         <rect
                           x={x}
                           y={y}
-                          width="60"
-                          height={height}
+                          width="50"
+                          height={valueHeight}
                           fill={zoneColors[i]}
                           rx="2"
+                          opacity={isAboveTarget ? 1 : 0.8}
                         />
                         <text
-                          x={x + 30}
+                          x={x + 25}
                           y={y - 6}
                           textAnchor="middle"
-                          fontSize="12"
+                          fontSize="11"
                           fontWeight="700"
                           className="fill-white"
                         >
                           {value}
                         </text>
+                        {/* Target value text */}
+                        {target > 0 && (
+                          <text
+                            x={x + 25}
+                            y={targetY - 8}
+                            textAnchor="middle"
+                            fontSize="9"
+                            className="fill-yellow-400"
+                          >
+                            T: {target}
+                          </text>
+                        )}
                       </React.Fragment>
                     );
                   })}
                   <line
                     x1="40"
-                    y1="100"
-                    x2="440"
-                    y2="100"
+                    y1="120"
+                    x2="540"
+                    y2="120"
                     stroke="#4b5563"
                     strokeWidth="1.5"
                   />
-                  {zoneKeys.slice(0, 4).map((zone, i) => (
+                  {zoneKeys.map((zone, i) => (
                     <text
                       key={zone}
-                      x={90 + i * 100}
-                      y="118"
+                      x={75 + i * 100}
+                      y="138"
                       textAnchor="middle"
-                      fontSize="11"
+                      fontSize="10"
                       className="fill-gray-200"
                     >
                       {zone}
@@ -282,7 +358,7 @@ export default function QualityPage() {
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Suivi de l'Efficience Section */}
         <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6 transition-transform duration-300 cursor-pointer">
@@ -406,19 +482,126 @@ export default function QualityPage() {
             </div>
           </div>
         </div>
+
+        {/* Efficience Par Zone Section */}
+        {efficienceParZone && efficienceParZone.Zones && (
+          <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6 mt-6 transition-transform duration-300 cursor-pointer">
+            <h2 className="text-base font-medium text-white mb-5 pb-3 border-b border-gray-700">
+              Efficience par Zone
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+              {zoneKeys.map((zone, index) => {
+                const efficienceValue = Number(efficienceParZone.Zones[zone]) || 0;
+                const efficienceTarget = Number(efficienceParZone.Zones[`Target_${zone}`]) || 95;
+                const efficienceVsTarget = efficienceValue - efficienceTarget;
+                const efficienceVsTargetColor = efficienceVsTarget >= 0 ? "text-emerald-400" : "text-red-400";
+                const strokeDashOffset = calculateStrokeDashOffset(efficienceValue);
+                
+                return (
+                  <div key={zone} className="flex flex-col items-center">
+                    <span className="text-sm text-gray-200 font-semibold mb-3">
+                      {zone}
+                    </span>
+                    <svg
+                      className="w-24 h-24"
+                      viewBox="0 0 120 120"
+                    >
+                      <circle
+                        cx="60"
+                        cy="60"
+                        r="45"
+                        fill="none"
+                        stroke="#374151"
+                        strokeWidth="11"
+                      />
+                      <circle
+                        cx="60"
+                        cy="60"
+                        r="45"
+                        fill="none"
+                        stroke={progressColors[index % progressColors.length]}
+                        strokeWidth="11"
+                        strokeDasharray="283"
+                        strokeDashoffset={strokeDashOffset}
+                        strokeLinecap="round"
+                        transform="rotate(-90 60 60)"
+                      />
+                      <text
+                        x="60"
+                        y="68"
+                        textAnchor="middle"
+                        fontSize="20"
+                        fontWeight="bold"
+                        className="fill-white"
+                      >
+                        {efficienceValue.toFixed(1)}%
+                      </text>
+                    </svg>
+                    <div className="mt-2 text-center">
+                      <div className={`text-xs ${efficienceVsTargetColor} font-medium`}>
+                        {efficienceVsTarget >= 0 ? "↑" : "↓"} {Math.abs(efficienceVsTarget).toFixed(1)}% vs Target
+                      </div>
+                      <div className="text-xs text-gray-400 mt-1">
+                        Target: {efficienceTarget}%
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     );
   };
 
   // Monthly Quality Component
   const MonthlyQuality = () => {
-    if (!data) return <div className="text-white">Chargement...</div>;
+    if (!data) {
+      return (
+        <div className="text-white p-4">
+          <div>Aucune donnée disponible</div>
+          <div className="text-sm text-gray-400 mt-2">
+            Vérifiez que l&apos;endpoint API mensuel est correctement configuré
+          </div>
+        </div>
+      );
+    }
+
+    // Debug: Log data structure
+    console.log('Monthly Quality Data Structure:', {
+      hasPPM_Scrap_Client: !!data.PPM_Scrap_Client,
+      hasTaux_Conformite_Audits: !!data.Taux_Conformite_Audits,
+      hasIncidents_Accidents_Travail: !!data.Incidents_Accidents_Travail,
+      hasEfficience_Mensuelle: !!data.Efficience_Mensuelle,
+      hasScorecards_Clients: !!data.Scorecards_Clients,
+      dataKeys: Object.keys(data),
+    });
 
     const ppmScrapClient = data.PPM_Scrap_Client;
     const tauxConformite = data.Taux_Conformite_Audits;
     const incidents = data.Incidents_Accidents_Travail;
     const efficienceMensuelle = data.Efficience_Mensuelle;
     const scorecards = data.Scorecards_Clients;
+
+    // Show error if critical data is missing
+    if (!ppmScrapClient && !tauxConformite && !incidents && !efficienceMensuelle && !scorecards) {
+      return (
+        <div className="rounded-xl border border-yellow-800 bg-yellow-900/20 p-6">
+          <div className="text-yellow-400 font-semibold mb-2">
+            Structure de données inattendue
+          </div>
+          <div className="text-sm text-gray-300 mb-4">
+            Les données reçues ne correspondent pas à la structure attendue pour les données mensuelles.
+          </div>
+          <div className="text-xs text-gray-400 font-mono bg-gray-900 p-3 rounded overflow-auto">
+            <div>Clés disponibles: {Object.keys(data).join(', ') || 'Aucune'}</div>
+            <div className="mt-2">Données reçues:</div>
+            <pre>{JSON.stringify(data, null, 2).substring(0, 500)}...</pre>
+          </div>
+        </div>
+      );
+    }
 
     // PPM & Scrap data from PPM_Scrap_Client
     const ppmValue = Number(ppmScrapClient?.PPM_Mois_Courant) || 0;
@@ -431,14 +614,18 @@ export default function QualityPage() {
 
     const scrapValue = Number(ppmScrapClient?.Scrap_Mois_Courant) || 0;
     const scrapSeries = ppmScrapClient?.Suivi_Scrap_4_Mois || [];
-    const scrapPrevValue = Number(scrapSeries[0]?.Valeur) || 0;
-    const scrapVariation = scrapPrevValue
-      ? ((scrapValue - scrapPrevValue) / scrapPrevValue * 100).toFixed(0)
-      : 0;
+    // Use provided variation from API if available, otherwise calculate
+    const scrapVariationProvided = ppmScrapClient?.Variation_Scrap_Vs_Mois_Precedent;
+    const scrapVariation = scrapVariationProvided !== undefined
+      ? Number(scrapVariationProvided)
+      : (() => {
+          const scrapPrevValue = Number(scrapSeries[scrapSeries.length - 2]?.Valeur) || 0;
+          return scrapPrevValue ? scrapValue - scrapPrevValue : 0;
+        })();
     const scrapVariationText =
-      Number(scrapVariation) >= 0 ? `+${scrapVariation}%` : `${scrapVariation}%`;
+      scrapVariation >= 0 ? `+${scrapVariation}` : `${scrapVariation}`;
     const scrapVariationColor =
-      Number(scrapVariation) <= 0 ? "text-green-400" : "text-red-400";
+      scrapVariation <= 0 ? "text-green-400" : "text-red-400";
 
     // PPM line chart from Suivi_PPM_4_Mois
     const ppmSeries = ppmScrapClient?.Suivi_PPM_4_Mois || [];
@@ -544,12 +731,27 @@ export default function QualityPage() {
           </h2>
           <div className="flex items-start justify-between mb-4">
             <div>
-              <div className="text-4xl font-bold text-white">{ppmValue.toFixed(2)}</div>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-sm text-gray-400">Scrap Client</span>
+              <div className="flex items-baseline gap-2">
+                <div className="text-4xl font-bold text-white">{ppmValue.toFixed(2)}</div>
+                <div className="text-sm text-gray-400">PPM</div>
+              </div>
+              <div className="text-xs text-gray-400 mt-1">
+                Target: {Number(ppmScrapClient?.Target_PPM_Mois_Courant) || 0}
+                <span className={`ml-2 ${ppmValue <= Number(ppmScrapClient?.Target_PPM_Mois_Courant || 0) ? "text-green-400" : "text-red-400"}`}>
+                  {ppmValue <= Number(ppmScrapClient?.Target_PPM_Mois_Courant || 0) ? "✓" : "✗"}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 mt-2">
+                <span className="text-sm text-gray-400">Scrap: {scrapValue.toLocaleString()}</span>
                 <span className={`${scrapVariationColor} text-sm`}>{Number(scrapVariation) > 0 ? "↑" : "↓"}</span>
                 <span className={`${scrapVariationColor} text-sm font-medium`}>
                   {scrapVariationText} vs M-1
+                </span>
+              </div>
+              <div className="text-xs text-gray-400 mt-1">
+                Target: {Number(ppmScrapClient?.Target_Scrap_Mois_Courant) || 0}
+                <span className={`ml-2 ${scrapValue <= Number(ppmScrapClient?.Target_Scrap_Mois_Courant || 0) ? "text-green-400" : "text-red-400"}`}>
+                  {scrapValue <= Number(ppmScrapClient?.Target_Scrap_Mois_Courant || 0) ? "✓" : "✗"}
                 </span>
               </div>
             </div>

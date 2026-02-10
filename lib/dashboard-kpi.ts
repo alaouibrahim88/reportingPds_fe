@@ -1,5 +1,6 @@
 import type {
 	DashboardKpiCategoryResponse,
+	DashboardKpiCardHistoryItem,
 	IndicateursData,
 	WeeklyIndicator
 } from '@/types'
@@ -24,9 +25,21 @@ export function normalizeDashboardKpiResponse(
 			}))
 		}
 	}
-		if (response.Cards && Array.isArray(response.Cards)) {
+	if (response.Cards && Array.isArray(response.Cards)) {
 		const indicateurs: WeeklyIndicator[] = response.Cards.map((card) => {
-			const history = card.History ?? []
+			// Parse History if it's a JSON string, otherwise use as array
+			let history: DashboardKpiCardHistoryItem[] = []
+			if (card.History) {
+				if (typeof card.History === 'string') {
+					try {
+						history = JSON.parse(card.History) as DashboardKpiCardHistoryItem[]
+					} catch {
+						history = []
+					}
+				} else if (Array.isArray(card.History)) {
+					history = card.History
+				}
+			}
 			const len = history.length
 			const current = len > 0 ? history[len - 1] : null
 			const v = (idx: number) =>

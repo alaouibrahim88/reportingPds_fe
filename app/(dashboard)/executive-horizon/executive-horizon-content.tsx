@@ -15,16 +15,22 @@ export function ExecutiveHorizonContent() {
 		async function fetchData() {
 			try {
 				setError(null)
+				setIsLoading(true)
 				const res = await fetch('/api/dashbaord-kpi-category', {
 					cache: 'no-store',
 					headers: { 'Content-Type': 'application/json' }
 				})
-				if (!res.ok) throw new Error('Failed to load dashboard data')
-				const raw: DashboardKpiCategoryResponse = await res.json()
+				if (!res.ok) {
+					throw new Error(`HTTP error! status: ${res.status}`)
+				}
+				const json = await res.json()
+				// Handle nested data structure: API returns { data: { ... } }
+				const raw: DashboardKpiCategoryResponse = json?.data ?? json
 				if (cancelled) return
 				setWeeklyData(normalizeDashboardKpiResponse(raw))
 			} catch (err) {
 				if (!cancelled) {
+					console.error('Error fetching executive horizon data:', err)
 					setError(err instanceof Error ? err.message : 'Unknown error')
 				}
 			} finally {

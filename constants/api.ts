@@ -30,9 +30,7 @@ export const Endpoints = {
 
 /** Internal API endpoint paths grouped by period (weekly/monthly) */
 export const INTERNAL_API_ENDPOINTS = {
-	rh: {
-		weekly: '/GetRHIndicateurs?SemaineCourante=11&AnneeCourante=2025',
-	},
+	rh: "/GetRHIndicateurs?SemaineCourante=11&AnneeCourante=2025",
 	finance: {
 		weekly: '/GetFinanceIndicateurs?SemaineCourante=10&AnneeCourante=2025',
 		monthly:
@@ -45,14 +43,12 @@ export const INTERNAL_API_ENDPOINTS = {
 	},
 	quality: {
 		weekly: '/GetQualityIndicateurs?SemaineCourante=5&AnneeCourante=2026',
-		monthly: '/GetQualityIndicateurs?SemaineCourante=5&AnneeCourante=2025',
+		monthly: '/GetQualityIndicateurs_Mensuel?MoisCourante=1&AnneeCourante=2026',
 	},
 	operations: {
 		weekly: '/GetOperationsIndicateurs?SemaineCourante=10&AnneeCourante=2026',
 		monthly:
 			'/GetOperationsIndicateurs_Mensuel?MoisCourante=5&AnneeCourante=2025',
 	},
-	dashboardKpiCategory: {
-		weekly: '/GetExecutiveHorizonIndicateursWeekly',
-	},
+	dashboardKpiCategory:"/GetExecutiveHorizonIndicateursWeekly",
 } as const

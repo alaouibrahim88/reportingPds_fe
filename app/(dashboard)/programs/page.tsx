@@ -24,7 +24,7 @@ function getPercentStatusColor(value: number, target: number): string {
 
 // Programs Dashboard Page - Fetches from /api/program
 export default function ProgramsPage() {
-	const [activeTab, setActiveTab] = useState<TabType>("monthly");
+	const [activeTab, setActiveTab] = useState<TabType>("weekly");
 	const [programData, setProgramData] = useState<ProgramApiResponse | null>(
 		null
 	);
@@ -38,9 +38,13 @@ export default function ProgramsPage() {
 			try {
 				const res = await fetch(`/api/program?type=${activeTab}`, { cache: "no-store" });
 				if (!res.ok) throw new Error("Failed to fetch program data");
-				const data: ProgramApiResponse = await res.json();
-				setProgramData(data);
+				const json = await res.json();
+				// Handle nested data structure: API returns { data: { data: ... } }
+				const finalData = json?.data?.data ?? json?.data ?? json;
+				console.log(`Program ${activeTab} data:`, finalData);
+				setProgramData(finalData);
 			} catch (err) {
+				console.error(`Error fetching program ${activeTab} data:`, err);
 				setError(
 					err instanceof Error ? err.message : "Failed to load program data"
 				);
@@ -49,14 +53,435 @@ export default function ProgramsPage() {
 			}
 		}
 		fetchProgram();
-	}, []);
+	}, [activeTab]);
 
-	const weeklyData = programData?.Program_Mois ?? null;
-	const monthlyData = programData?.Program_Semaine ?? null;
+	// Fix: Weekly data comes from Program_Semaine, Monthly from Program_Mois
+	const weeklyData = programData?.Program_Semaine ?? null;
+	const monthlyData = programData?.Program_Mois ?? null;
 
 	const WeeklyProgram = useCallback(() => {
 		const data = weeklyData;
+		const otd = data?.On_Time_Delivery;
+		const equipment = data?.Critical_Equipment_Availability;
+		const recruitment = data?.Recruitment_Progress;
+
+		if (!data) {
+			return (
+				<div className="text-slate-600 p-4">
+					<div>Aucune donnée disponible pour la vue hebdomadaire</div>
+				</div>
+			);
+		}
+
+		return (
+			<div>
+				{/* On Time Delivery Section */}
+				<section className="bg-white rounded-xl border border-slate-200 p-8 mb-6 shadow-sm">
+					<div className="flex items-center justify-between mb-8">
+						<h2 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
+							<span className="material-symbols-outlined text-primary text-3xl">
+								local_shipping
+							</span>
+							On Time Delivery (OTD)
+						</h2>
+						<div className="text-right">
+							<p className="text-4xl font-black text-slate-900">
+								{otd?.Valeur_Actuelle ?? "—"}%
+							</p>
+							<p
+								className={`text-sm font-medium flex items-center justify-end gap-1 ${(otd?.Variation_Vs_Semaine_Precedente ?? 0) >= 0 ? "text-emerald-600" : "text-rose-600"}`}
+							>
+								<span className="material-symbols-outlined text-sm">
+									{(otd?.Variation_Vs_Semaine_Precedente ?? 0) >= 0 ? "trending_up" : "trending_down"}
+								</span>
+								{(otd?.Variation_Vs_Semaine_Precedente ?? 0) >= 0 ? "+" : ""}
+								{otd?.Variation_Vs_Semaine_Precedente ?? 0}% vs prev week
+							</p>
+						</div>
+					</div>
+					<div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+						<div className="lg:col-span-4 flex justify-between px-2">
+							{(otd?.Historique_4_Semaines ?? []).length
+								? (otd?.Historique_4_Semaines ?? []).map(
+										(h: ProgramHistoriqueSemaine, i: number) => {
+											const isLast = i === (otd?.Historique_4_Semaines?.length ?? 1) - 1;
+											const valeur = h.Valeur ?? 0;
+											const target = 90; // Default target
+											const status = getPercentStatusColor(valeur, target);
+											const statusClass =
+												status === "green"
+													? "status-green"
+													: status === "orange"
+														? "status-amber"
+														: "status-red";
+											return (
+												<div
+													key={`otd-${h.Semaine}-${h.Annee}`}
+													className="flex flex-col items-center gap-3"
+												>
+													<div
+														className={`kpi-circle ${isLast ? "kpi-circle-active status-primary" : statusClass}`}
+													>
+														<span
+															className={isLast ? "kpi-value-active text-slate-900" : "kpi-value"}
+														>
+															{valeur}%
+														</span>
+													</div>
+													<span
+														className={`text-xs font-bold uppercase tracking-widest ${isLast ? "text-primary" : "text-slate-500"}`}
+													>
+														{h.Label ?? `Week ${h.Semaine}`}
+													</span>
+												</div>
+											);
+										}
+									)
+								: [37, 38, 39, 40].map((w) => (
+										<div key={w} className="flex flex-col items-center gap-3">
+											<div className="kpi-circle status-green">
+												<span className="kpi-value">—</span>
+											</div>
+											<span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+												Week {w}
+											</span>
+										</div>
+									))}
+						</div>
+						<div className="lg:col-span-8 h-40 relative">
+							<svg
+								className="w-full h-full"
+								preserveAspectRatio="none"
+								viewBox="0 0 500 100"
+							>
+								<defs>
+									<linearGradient
+										id="otd-gradient"
+										x1="0"
+										x2="0"
+										y1="0"
+										y2="1"
+									>
+										<stop
+											offset="0%"
+											stopColor="#0d7ff2"
+											stopOpacity="0.2"
+										/>
+										<stop
+											offset="100%"
+											stopColor="#0d7ff2"
+											stopOpacity="0"
+										/>
+									</linearGradient>
+								</defs>
+								{(() => {
+									const history = otd?.Historique_4_Semaines ?? [];
+									if (history.length < 2) return null;
+									const maxVal = Math.max(...history.map(h => h.Valeur ?? 0), 100);
+									const minVal = Math.min(...history.map(h => h.Valeur ?? 0), 0);
+									const range = maxVal - minVal || 1;
+									const points = history.map((h, i) => {
+										const x = (i / (history.length - 1)) * 450 + 25;
+										const y = 90 - ((h.Valeur ?? 0) - minVal) / range * 70;
+										return `${x},${y}`;
+									}).join(' ');
+									return (
+										<>
+											<path
+												d={`M${points.split(' ').map((p, i) => {
+													const [x, y] = p.split(',').map(Number);
+													return i === 0 ? `M${x},${y}` : `L${x},${y}`;
+												}).join(' ')} L${points.split(' ').slice(-1)[0].split(',')[0]},100 L25,100 Z`}
+												fill="url(#otd-gradient)"
+											/>
+											<path
+												d={`M${points}`}
+												fill="none"
+												stroke="#0d7ff2"
+												strokeWidth="3"
+												strokeLinecap="round"
+											/>
+											{history.map((h, i) => {
+												const x = (i / (history.length - 1)) * 450 + 25;
+												const y = 90 - ((h.Valeur ?? 0) - minVal) / range * 70;
+												return (
+													<circle key={i} cx={x} cy={y} fill="#0d7ff2" r="5" />
+												);
+											})}
+										</>
+									);
+								})()}
+							</svg>
+						</div>
+					</div>
+				</section>
+
+				{/* Critical Equipment Availability Section */}
+				<section className="bg-white rounded-xl border border-slate-200 p-8 mb-6 shadow-sm">
+					<div className="flex items-center justify-between mb-8">
+						<h2 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
+							<span className="material-symbols-outlined text-primary text-3xl">
+								engineering
+							</span>
+							Critical Equipment Availability
+						</h2>
+						<div className="text-right">
+							<p className="text-4xl font-black text-slate-900">
+								{equipment?.Valeur_Actuelle ?? "—"}%
+							</p>
+							<p
+								className={`text-sm font-medium flex items-center justify-end gap-1 ${(equipment?.Variation_Vs_Semaine_Precedente ?? 0) >= 0 ? "text-emerald-600" : "text-rose-600"}`}
+							>
+								<span className="material-symbols-outlined text-sm">
+									{(equipment?.Variation_Vs_Semaine_Precedente ?? 0) >= 0 ? "trending_up" : "trending_down"}
+								</span>
+								{(equipment?.Variation_Vs_Semaine_Precedente ?? 0) >= 0 ? "+" : ""}
+								{equipment?.Variation_Vs_Semaine_Precedente ?? 0}% vs prev week
+							</p>
+						</div>
+					</div>
+					<div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+						<div className="lg:col-span-4 flex justify-between px-2">
+							{(equipment?.Historique_4_Semaines ?? []).length
+								? (equipment?.Historique_4_Semaines ?? []).map(
+										(h: ProgramHistoriqueSemaine, i: number) => {
+											const isLast = i === (equipment?.Historique_4_Semaines?.length ?? 1) - 1;
+											const valeur = h.Valeur ?? 0;
+											const target = 90;
+											const status = getPercentStatusColor(valeur, target);
+											const statusClass =
+												status === "green"
+													? "status-green"
+													: status === "orange"
+														? "status-amber"
+														: "status-red";
+											return (
+												<div
+													key={`equip-${h.Semaine}-${h.Annee}`}
+													className="flex flex-col items-center gap-3"
+												>
+													<div
+														className={`kpi-circle ${isLast ? "kpi-circle-active status-primary" : statusClass}`}
+													>
+														<span
+															className={isLast ? "kpi-value-active text-slate-900" : "kpi-value"}
+														>
+															{valeur}%
+														</span>
+													</div>
+													<span
+														className={`text-xs font-bold uppercase tracking-widest ${isLast ? "text-primary" : "text-slate-500"}`}
+													>
+														{h.Label ?? `Week ${h.Semaine}`}
+													</span>
+												</div>
+											);
+										}
+									)
+								: [37, 38, 39, 40].map((w) => (
+										<div key={w} className="flex flex-col items-center gap-3">
+											<div className="kpi-circle status-green">
+												<span className="kpi-value">—</span>
+											</div>
+											<span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+												Week {w}
+											</span>
+										</div>
+									))}
+						</div>
+						<div className="lg:col-span-8 h-40 relative">
+							<svg
+								className="w-full h-full"
+								preserveAspectRatio="none"
+								viewBox="0 0 500 100"
+							>
+								{(() => {
+									const history = equipment?.Historique_4_Semaines ?? [];
+									if (history.length < 2) return null;
+									const maxVal = Math.max(...history.map(h => h.Valeur ?? 0), 100);
+									const minVal = Math.min(...history.map(h => h.Valeur ?? 0), 0);
+									const range = maxVal - minVal || 1;
+									const points = history.map((h, i) => {
+										const x = (i / (history.length - 1)) * 450 + 25;
+										const y = 90 - ((h.Valeur ?? 0) - minVal) / range * 70;
+										return `${x},${y}`;
+									}).join(' ');
+									return (
+										<>
+											<path
+												d={`M${points.split(' ').map((p, i) => {
+													const [x, y] = p.split(',').map(Number);
+													return i === 0 ? `M${x},${y}` : `L${x},${y}`;
+												}).join(' ')} L${points.split(' ').slice(-1)[0].split(',')[0]},100 L25,100 Z`}
+												fill="url(#otd-gradient)"
+											/>
+											<path
+												d={`M${points}`}
+												fill="none"
+												stroke="#0d7ff2"
+												strokeWidth="3"
+												strokeLinecap="round"
+											/>
+											{history.map((h, i) => {
+												const x = (i / (history.length - 1)) * 450 + 25;
+												const y = 90 - ((h.Valeur ?? 0) - minVal) / range * 70;
+												return (
+													<circle key={i} cx={x} cy={y} fill="#0d7ff2" r="5" />
+												);
+											})}
+										</>
+									);
+								})()}
+							</svg>
+						</div>
+					</div>
+				</section>
+
+				{/* Recruitment Progress Section */}
+				<section className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm">
+					<div className="flex items-center justify-between mb-8">
+						<h2 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
+							<span className="material-symbols-outlined text-primary text-3xl">
+								person_add
+							</span>
+							Recruitment Progress vs Forecast
+						</h2>
+						<div className="text-right">
+							<p className="text-4xl font-black text-slate-900">
+								{recruitment?.Valeur_Actuelle_Reel ?? "—"} /{" "}
+								{recruitment?.Valeur_Actuelle_Forecast ?? "—"}
+							</p>
+							<p className="text-sm font-medium text-slate-500">
+								{recruitment?.Valeur_Actuelle_Pct ?? "—"}% ({recruitment?.Total_Hires_MTD ?? "—"} / {recruitment?.Total_Forecast_MTD ?? "—"} MTD)
+							</p>
+						</div>
+					</div>
+					<div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+						<div className="lg:col-span-4 flex justify-between px-2">
+							{(recruitment?.Historique_4_Semaines ?? []).length
+								? (recruitment?.Historique_4_Semaines ?? []).map(
+										(h: any, i: number) => {
+											const isLast = i === (recruitment?.Historique_4_Semaines?.length ?? 1) - 1;
+											const reel = h.Reel ?? 0;
+											const forecast = h.Forecast ?? 0;
+											const pct = h.Pct ?? 0;
+											const status = pct >= 90 ? "green" : pct >= 70 ? "amber" : "red";
+											const statusClass =
+												status === "green"
+													? "status-green"
+													: status === "amber"
+														? "status-amber"
+														: "status-red";
+											return (
+												<div
+													key={`recruit-${h.Semaine}-${h.Annee}`}
+													className="flex flex-col items-center gap-3"
+												>
+													<div
+														className={`kpi-circle ${isLast ? "kpi-circle-active status-primary" : statusClass}`}
+													>
+														<span
+															className={isLast ? "kpi-value-active text-slate-900" : "kpi-value"}
+														>
+															{reel}/{forecast}
+														</span>
+													</div>
+													<span
+														className={`text-xs font-bold uppercase tracking-widest ${isLast ? "text-primary" : "text-slate-500"}`}
+													>
+														{h.Label ?? `Week ${h.Semaine}`}
+													</span>
+												</div>
+											);
+										}
+									)
+								: [37, 38, 39, 40].map((w) => (
+										<div key={w} className="flex flex-col items-center gap-3">
+											<div className="kpi-circle status-green">
+												<span className="kpi-value">—</span>
+											</div>
+											<span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+												Week {w}
+											</span>
+										</div>
+									))}
+						</div>
+						<div className="lg:col-span-8 h-40 relative">
+							<svg
+								className="w-full h-full"
+								preserveAspectRatio="none"
+								viewBox="0 0 500 100"
+							>
+								{(() => {
+									const history = recruitment?.Historique_4_Semaines ?? [];
+									if (history.length < 2) return null;
+									const maxVal = Math.max(...history.map(h => Math.max(h.Reel ?? 0, h.Forecast ?? 0)), 10);
+									const pointsReel = history.map((h, i) => {
+										const x = (i / (history.length - 1)) * 450 + 25;
+										const y = 90 - ((h.Reel ?? 0) / maxVal) * 70;
+										return `${x},${y}`;
+									}).join(' ');
+									const pointsForecast = history.map((h, i) => {
+										const x = (i / (history.length - 1)) * 450 + 25;
+										const y = 90 - ((h.Forecast ?? 0) / maxVal) * 70;
+										return `${x},${y}`;
+									}).join(' ');
+									return (
+										<>
+											<path
+												d={`M${pointsForecast}`}
+												fill="none"
+												stroke="#cbd5e1"
+												strokeDasharray="4"
+												strokeWidth="2"
+											/>
+											<path
+												d={`M${pointsReel}`}
+												fill="none"
+												stroke="#0d7ff2"
+												strokeLinecap="round"
+												strokeWidth="3"
+											/>
+											{history.map((h, i) => {
+												const x = (i / (history.length - 1)) * 450 + 25;
+												const yReel = 90 - ((h.Reel ?? 0) / maxVal) * 70;
+												return (
+													<circle key={i} cx={x} cy={yReel} fill="#0d7ff2" r="5" />
+												);
+											})}
+										</>
+									);
+								})()}
+							</svg>
+							<div className="absolute bottom-0 right-0">
+								<span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
+									Dashed: Forecast | Solid: Actual
+								</span>
+							</div>
+						</div>
+					</div>
+				</section>
+			</div>
+		);
+	}, [weeklyData]);
+
+	const MonthlyProgram = useCallback(() => {
+		const data = monthlyData;
 		const budget = data?.Budget_Vs_Actual;
+		const apqp = data?.APQP_Milestones;
+		const documentation = data?.Documentation_Progress;
+		
+		const varianceToK = (v: number) =>
+			v >= 0 ? `+$${Math.round(Math.abs(v) / 1000)}k` : `-$${Math.round(Math.abs(v) / 1000)}k`;
+		
+		if (!data) {
+			return (
+				<div className="text-slate-600 p-4">
+					<div>Aucune donnée disponible pour la vue mensuelle</div>
+				</div>
+			);
+		}
+
 		const historiqueBudget = budget?.Historique_4_Mois ?? [];
 		const budgetHealth = budget?.Current_Health ?? "—";
 		const budgetHealthClass =
@@ -65,8 +490,6 @@ export default function ProgramsPage() {
 				: budgetHealth === "At Risk"
 					? "text-orange-600"
 					: "text-slate-600";
-		const varianceToK = (v: number) =>
-			v >= 0 ? `+$${Math.round(Math.abs(v) / 1000)}k` : `-$${Math.round(Math.abs(v) / 1000)}k`;
 
 		return (
 			<div>
@@ -141,7 +564,7 @@ export default function ProgramsPage() {
 								</p>
 								<p className="text-xs text-slate-500 mt-1">
 									{budget
-										? `Variance ${varianceToK(budget.Variance_Mois_Courant)} vs target.`
+										? `Variance ${varianceToK(budget.Variance_Mois_Courant ?? 0)} vs target ${varianceToK(budget.Target_Variance ?? 0)}. Delta: ${varianceToK(budget.Delta_Variance_Vs_M_1 ?? 0)} vs M-1.`
 										: "No data available."}
 								</p>
 							</div>
@@ -168,21 +591,43 @@ export default function ProgramsPage() {
 									preserveAspectRatio="none"
 									viewBox="0 0 400 100"
 								>
-									<path
-										d="M0,80 L100,70 L200,60 L300,45 L400,30"
-										fill="none"
-										stroke="#cbd5e1"
-										strokeDasharray="4"
-										strokeWidth="2"
-									/>
-									<path
-										d="M0,85 L100,75 L200,62 L300,50 L400,35"
-										fill="none"
-										stroke="#0d7ff2"
-										strokeLinecap="round"
-										strokeWidth="3"
-									/>
-									<circle cx="400" cy="35" fill="#0d7ff2" r="4" />
+									{(() => {
+										if (!historiqueBudget.length) return null;
+										const maxVal = Math.max(...historiqueBudget.map(h => Math.max(h.Budget ?? 0, h.Actual ?? 0)), 1);
+										const budgetPoints = historiqueBudget.map((h, i) => {
+											const x = (i / (historiqueBudget.length - 1)) * 350 + 25;
+											const y = 90 - ((h.Budget ?? 0) / maxVal) * 70;
+											return `${x},${y}`;
+										}).join(' ');
+										const actualPoints = historiqueBudget.map((h, i) => {
+											const x = (i / (historiqueBudget.length - 1)) * 350 + 25;
+											const y = 90 - ((h.Actual ?? 0) / maxVal) * 70;
+											return `${x},${y}`;
+										}).join(' ');
+										return (
+											<>
+												<path
+													d={`M${budgetPoints}`}
+													fill="none"
+													stroke="#cbd5e1"
+													strokeDasharray="4"
+													strokeWidth="2"
+												/>
+												<path
+													d={`M${actualPoints}`}
+													fill="none"
+													stroke="#0d7ff2"
+													strokeLinecap="round"
+													strokeWidth="3"
+												/>
+												{historiqueBudget.map((h, i) => {
+													const x = (i / (historiqueBudget.length - 1)) * 350 + 25;
+													const y = 90 - ((h.Actual ?? 0) / maxVal) * 70;
+													return <circle key={i} cx={x} cy={y} fill="#0d7ff2" r="4" />;
+												})}
+											</>
+										);
+									})()}
 								</svg>
 								<div className="flex justify-between mt-2 text-[10px] font-bold text-slate-400">
 									{historiqueBudget.length
@@ -214,13 +659,13 @@ export default function ProgramsPage() {
 								Milestone Adherence
 							</h3>
 							<div className="flex justify-between items-center gap-2 px-2">
-								{(data?.APQP_Milestones?.Historique_4_Mois ?? []).length
-									? (data?.APQP_Milestones?.Historique_4_Mois ?? []).map(
+								{(apqp?.Historique_4_Mois ?? []).length
+									? (apqp?.Historique_4_Mois ?? []).map(
 											(h: ProgramHistoriqueMois, i: number) => {
 												const isLast =
-													i === (data?.APQP_Milestones?.Historique_4_Mois?.length ?? 1) - 1;
+													i === (apqp?.Historique_4_Mois?.length ?? 1) - 1;
 												const valeur = h.Valeur ?? 0;
-												const target = data?.APQP_Milestones?.Target ?? 100;
+												const target = 100; // Default target
 												const status = getPercentStatusColor(valeur, target);
 												const borderClass =
 													status === "green"
@@ -269,19 +714,19 @@ export default function ProgramsPage() {
 									Current Health:
 									<span
 										className={
-											(data?.APQP_Milestones?.Current_Health ?? "") === "On Track"
+											(apqp?.Current_Health ?? "") === "On Track"
 												? "text-green-600 font-bold"
-												: (data?.APQP_Milestones?.Current_Health ?? "") === "At Risk"
+												: (apqp?.Current_Health ?? "") === "At Risk"
 													? "text-orange-600 font-bold"
 													: "text-slate-600 font-bold"
 										}
 									>
-										{data?.APQP_Milestones?.Current_Health ?? "—"}
+										{apqp?.Current_Health ?? "—"}
 									</span>
 								</p>
 								<p className="text-xs text-slate-500 mt-1">
-									{data?.APQP_Milestones
-										? `Current: ${data.APQP_Milestones.Valeur_Mois_Courant}% vs target ${data.APQP_Milestones.Target}%.`
+									{apqp
+										? `Current: ${apqp.Valeur_Mois_Courant ?? "—"}%. Delta: ${(apqp.Delta_Pts_Vs_M_1 ?? 0) >= 0 ? "+" : ""}${apqp.Delta_Pts_Vs_M_1 ?? 0} pts vs M-1.`
 										: "No data available."}
 								</p>
 							</div>
@@ -308,24 +753,48 @@ export default function ProgramsPage() {
 									preserveAspectRatio="none"
 									viewBox="0 0 400 100"
 								>
-									<path
-										d="M0,90 L100,70 L200,50 L300,30 L400,10"
-										fill="none"
-										stroke="#cbd5e1"
-										strokeWidth="2"
-									/>
-									<path
-										d="M0,90 L100,75 L200,65 L300,55 L400,45"
-										fill="none"
-										stroke="#ef4444"
-										strokeLinecap="round"
-										strokeWidth="3"
-									/>
-									<circle cx="400" cy="45" fill="#ef4444" r="4" />
+									{(() => {
+										const history = apqp?.Historique_4_Mois ?? [];
+										if (!history.length) return null;
+										const maxVal = Math.max(...history.map(h => h.Valeur ?? 0), 100);
+										const minVal = Math.min(...history.map(h => h.Valeur ?? 0), 0);
+										const range = maxVal - minVal || 1;
+										const targetY = 90 - ((100 - minVal) / range) * 70;
+										const points = history.map((h, i) => {
+											const x = (i / (history.length - 1)) * 350 + 25;
+											const y = 90 - ((h.Valeur ?? 0) - minVal) / range * 70;
+											return `${x},${y}`;
+										}).join(' ');
+										return (
+											<>
+												<line
+													x1="25"
+													y1={targetY}
+													x2="375"
+													y2={targetY}
+													stroke="#cbd5e1"
+													strokeWidth="2"
+													strokeDasharray="4"
+												/>
+												<path
+													d={`M${points}`}
+													fill="none"
+													stroke="#ef4444"
+													strokeLinecap="round"
+													strokeWidth="3"
+												/>
+												{history.map((h, i) => {
+													const x = (i / (history.length - 1)) * 350 + 25;
+													const y = 90 - ((h.Valeur ?? 0) - minVal) / range * 70;
+													return <circle key={i} cx={x} cy={y} fill="#ef4444" r="4" />;
+												})}
+											</>
+										);
+									})()}
 								</svg>
 								<div className="flex justify-between mt-2 text-[10px] font-bold text-slate-400">
-									{(data?.APQP_Milestones?.Historique_4_Mois ?? []).length
-										? (data?.APQP_Milestones?.Historique_4_Mois ?? []).map((h) => (
+									{(apqp?.Historique_4_Mois ?? []).length
+										? (apqp?.Historique_4_Mois ?? []).map((h) => (
 												<span key={`apqp-lbl-${h.Mois}-${h.Annee}`}>
 													{(h.Label ?? "").toUpperCase()}
 												</span>
@@ -353,14 +822,14 @@ export default function ProgramsPage() {
 								Historical Readiness
 							</h3>
 							<div className="flex justify-between items-center gap-2 px-2">
-								{(data?.Documentation_Progress?.Historique_4_Mois ?? []).length
-									? (data?.Documentation_Progress?.Historique_4_Mois ?? []).map(
+								{(documentation?.Historique_4_Mois ?? []).length
+									? (documentation?.Historique_4_Mois ?? []).map(
 											(h: ProgramHistoriqueMois, i: number) => {
 												const isLast =
 													i ===
-													(data?.Documentation_Progress?.Historique_4_Mois?.length ?? 1) - 1;
+													(documentation?.Historique_4_Mois?.length ?? 1) - 1;
 												const valeur = h.Valeur ?? 0;
-												const target = data?.Documentation_Progress?.Target ?? 100;
+												const target = 100; // Default target
 												const status = getPercentStatusColor(valeur, target);
 												const borderClass =
 													status === "green"
@@ -410,7 +879,7 @@ export default function ProgramsPage() {
 										Plans
 									</p>
 									<p className="text-xl font-black text-slate-900 mt-1">
-										{data?.Documentation_Progress?.Plans ?? "—"}%
+										{documentation?.Plans ?? "—"}%
 									</p>
 								</div>
 								<div className="p-3 border border-slate-100 rounded-lg bg-slate-50">
@@ -418,7 +887,7 @@ export default function ProgramsPage() {
 										Procedures
 									</p>
 									<p className="text-xl font-black text-slate-900 mt-1">
-										{data?.Documentation_Progress?.Procedures ?? "—"}%
+										{documentation?.Procedures ?? "—"}%
 									</p>
 								</div>
 								<div className="p-3 border border-slate-100 rounded-lg bg-slate-50">
@@ -426,7 +895,7 @@ export default function ProgramsPage() {
 										Work Inst.
 									</p>
 									<p className="text-xl font-black text-slate-900 mt-1">
-										{data?.Documentation_Progress?.Work_Inst ?? "—"}%
+										{documentation?.Work_Inst ?? "—"}%
 									</p>
 								</div>
 							</div>
@@ -437,45 +906,69 @@ export default function ProgramsPage() {
 							</h3>
 							<div className="h-40 w-full relative chart-placeholder rounded-lg flex items-center justify-center border border-dashed border-slate-200">
 								<svg className="w-full h-full px-4" viewBox="0 0 400 100">
-									<path
-										d="M0,100 Q100,80 200,60 T400,20"
-										fill="none"
-										stroke="#0d7ff2"
-										strokeLinecap="round"
-										strokeWidth="4"
-									/>
-									<path
-										d="M0,100 Q100,80 200,60 T400,20 V100 H0 Z"
-										fill="url(#grad1)"
-										opacity="0.1"
-									/>
-									<defs>
-										<linearGradient
-											id="grad1"
-											x1="0%"
-											x2="0%"
-											y1="0%"
-											y2="100%"
-										>
-											<stop
-												offset="0%"
-												style={{ stopColor: "#0d7ff2", stopOpacity: 1 }}
-											/>
-											<stop
-												offset="100%"
-												style={{ stopColor: "#0d7ff2", stopOpacity: 0 }}
-											/>
-										</linearGradient>
-									</defs>
+									{(() => {
+										const trend = documentation?.Trend_Hebdo_Mois ?? [];
+										if (trend.length < 2) return null;
+										const maxVal = Math.max(...trend.map(t => t.Valeur ?? 0), 100);
+										const minVal = Math.min(...trend.map(t => t.Valeur ?? 0), 0);
+										const range = maxVal - minVal || 1;
+										const points = trend.map((t, i) => {
+											const x = (i / (trend.length - 1)) * 350 + 25;
+											const y = 90 - ((t.Valeur ?? 0) - minVal) / range * 70;
+											return `${x},${y}`;
+										}).join(' ');
+										return (
+											<>
+												<path
+													d={`M${points.split(' ').map((p, i) => {
+														const [x, y] = p.split(',').map(Number);
+														return i === 0 ? `M${x},${y}` : `L${x},${y}`;
+													}).join(' ')} L${points.split(' ').slice(-1)[0].split(',')[0]},100 L25,100 Z`}
+													fill="url(#grad1)"
+													opacity="0.1"
+												/>
+												<path
+													d={`M${points}`}
+													fill="none"
+													stroke="#0d7ff2"
+													strokeLinecap="round"
+													strokeWidth="4"
+												/>
+												{trend.map((t, i) => {
+													const x = (i / (trend.length - 1)) * 350 + 25;
+													const y = 90 - ((t.Valeur ?? 0) - minVal) / range * 70;
+													return <circle key={i} cx={x} cy={y} fill="#0d7ff2" r="4" />;
+												})}
+												<defs>
+													<linearGradient
+														id="grad1"
+														x1="0%"
+														x2="0%"
+														y1="0%"
+														y2="100%"
+													>
+														<stop
+															offset="0%"
+															style={{ stopColor: "#0d7ff2", stopOpacity: 1 }}
+														/>
+														<stop
+															offset="100%"
+															style={{ stopColor: "#0d7ff2", stopOpacity: 0 }}
+														/>
+													</linearGradient>
+												</defs>
+											</>
+										);
+									})()}
 								</svg>
 								<span className="absolute right-4 top-4 text-xs font-bold text-primary">
-									{data?.Documentation_Progress?.Average_Hebdo_Mois ?? "—"}% Average
+									{documentation?.Average_Hebdo_Mois ?? "—"}% Average
 								</span>
 							</div>
 							<div className="flex justify-between mt-4 text-[10px] font-bold text-slate-400">
-								{(data?.Documentation_Progress?.Trend_Hebdo_Mois ?? []).length
-									? (data?.Documentation_Progress?.Trend_Hebdo_Mois ?? []).map(
-											(t) => (
+								{(documentation?.Trend_Hebdo_Mois ?? []).length
+									? (documentation?.Trend_Hebdo_Mois ?? []).map(
+											(t: any) => (
 												<span key={t.Label}>{t.Label?.toUpperCase() ?? ""}</span>
 											)
 										)
@@ -488,351 +981,6 @@ export default function ProgramsPage() {
 						</div>
 					</div>
 				</section>
-			</div>
-		);
-	}, [weeklyData]);
-
-	const MonthlyProgram = useCallback(() => {
-		const data = monthlyData;
-		const otd = data?.On_Time_Delivery;
-		const otdHist = otd?.Historique_4_Semaines ?? [];
-		const otdVariation = otd?.Variation_Vs_Semaine_Precedente ?? 0;
-		const otdTrendUp = otdVariation >= 0;
-
-		return (
-			<div>
-				<div className="space-y-4">
-					<section className="bg-white rounded-xl border border-slate-200 p-8 mb-6 shadow-sm">
-						<div className="flex items-center justify-between mb-8">
-							<h2 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
-								<span className="material-symbols-outlined text-primary text-3xl">
-									local_shipping
-								</span>
-								On Time Delivery (OTD)
-							</h2>
-							<div className="text-right">
-								<p className="text-4xl font-black text-slate-900">
-									{otd?.Valeur_Actuelle ?? "—"}%
-								</p>
-								<p
-									className={`text-sm font-medium flex items-center justify-end gap-1 ${otdTrendUp ? "text-emerald-600" : "text-rose-600"}`}
-								>
-									<span className="material-symbols-outlined text-sm">
-										{otdTrendUp ? "trending_up" : "trending_down"}
-									</span>
-									{otdVariation >= 0 ? "+" : ""}
-									{otdVariation}% vs prev week
-								</p>
-							</div>
-						</div>
-						<div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-							<div className="lg:col-span-4 flex justify-between px-2">
-								{otdHist.length
-									? otdHist.map((h: ProgramHistoriqueSemaine, i: number) => {
-											const isLast = i === otdHist.length - 1;
-											const valeur = h.Valeur ?? 0;
-											const target = otd?.Target_Actuelle ?? 100;
-											const status = getPercentStatusColor(valeur, target);
-											const statusClass =
-												status === "green"
-													? "status-green"
-													: status === "orange"
-														? "status-amber"
-														: "status-red";
-											return (
-												<div
-													key={`otd-${h.Semaine}-${h.Annee}`}
-													className="flex flex-col items-center gap-3"
-												>
-													<div
-														className={`kpi-circle ${isLast ? "kpi-circle-active status-primary" : statusClass}`}
-													>
-														<span
-															className={isLast ? "kpi-value-active text-slate-900" : "kpi-value"}
-														>
-															{valeur}%
-														</span>
-													</div>
-													<span
-														className={`text-xs font-bold uppercase tracking-widest ${isLast ? "text-primary" : "text-slate-500"}`}
-													>
-														Week {h.Semaine}
-													</span>
-												</div>
-											);
-										})
-									: [40, 41, 42, 43].map((w) => (
-											<div key={w} className="flex flex-col items-center gap-3">
-												<div className="kpi-circle status-green">
-													<span className="kpi-value">—</span>
-												</div>
-												<span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-													Week {w}
-												</span>
-											</div>
-										))}
-							</div>
-							<div className="lg:col-span-8 h-40 relative">
-								<svg
-									className="w-full h-full"
-									preserveAspectRatio="none"
-									viewBox="0 0 500 100"
-								>
-									<defs>
-										<linearGradient
-											id="otd-gradient"
-											x1="0"
-											x2="0"
-											y1="0"
-											y2="1"
-										>
-											<stop
-												offset="0%"
-												stopColor="#0d7ff2"
-												stopOpacity="0.2"
-											/>
-											<stop
-												offset="100%"
-												stopColor="#0d7ff2"
-												stopOpacity="0"
-											/>
-										</linearGradient>
-									</defs>
-									<path
-										d="M0,80 Q125,90 250,50 T500,20 L500,100 L0,100 Z"
-										fill="url(#otd-gradient)"
-									/>
-									<path
-										d="M0,80 Q125,90 250,50 T500,20"
-										fill="none"
-										stroke="#0d7ff2"
-										strokeWidth="3"
-									/>
-									<circle cx="500" cy="20" fill="#0d7ff2" r="5" />
-								</svg>
-							</div>
-						</div>
-					</section>
-					<section className="bg-white rounded-xl border border-slate-200 p-8 mb-6 shadow-sm">
-						<div className="flex items-center justify-between mb-8">
-							<h2 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
-								<span className="material-symbols-outlined text-primary text-3xl">
-									engineering
-								</span>
-								Critical Equipment Availability
-							</h2>
-							<div className="text-right">
-								<p className="text-4xl font-black text-slate-900">
-									{data?.Critical_Equipment_Availability?.Valeur_Actuelle ?? "—"}%
-								</p>
-								<p
-									className={`text-sm font-medium flex items-center justify-end gap-1 ${(data?.Critical_Equipment_Availability?.Variation_Vs_Semaine_Precedente ?? 0) >= 0 ? "text-emerald-600" : "text-rose-600"}`}
-								>
-									<span className="material-symbols-outlined text-sm">
-										{(data?.Critical_Equipment_Availability?.Variation_Vs_Semaine_Precedente ?? 0) >= 0 ? "trending_up" : "trending_down"}
-									</span>
-									{(data?.Critical_Equipment_Availability?.Variation_Vs_Semaine_Precedente ?? 0) >= 0 ? "+" : ""}
-									{data?.Critical_Equipment_Availability?.Variation_Vs_Semaine_Precedente ?? 0}% vs prev week
-								</p>
-							</div>
-						</div>
-						<div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-							<div className="lg:col-span-4 flex justify-between px-2">
-								{(data?.Critical_Equipment_Availability?.Historique_4_Semaines ?? []).length
-									? (data?.Critical_Equipment_Availability?.Historique_4_Semaines ?? []).map(
-											(h: ProgramHistoriqueSemaine, i: number) => {
-												const isLast =
-													i ===
-													(data?.Critical_Equipment_Availability?.Historique_4_Semaines?.length ?? 1) - 1;
-												const valeur = h.Valeur ?? 0;
-												const target = data?.Critical_Equipment_Availability?.Target_Actuelle ?? 100;
-												const status = getPercentStatusColor(valeur, target);
-												const statusClass =
-													status === "green"
-														? "status-green"
-														: status === "orange"
-															? "status-amber"
-															: "status-red";
-												return (
-													<div
-														key={`equip-${h.Semaine}-${h.Annee}`}
-														className="flex flex-col items-center gap-3"
-													>
-														<div
-															className={`kpi-circle ${isLast ? "kpi-circle-active status-primary" : statusClass}`}
-														>
-															<span
-																className={isLast ? "kpi-value-active text-slate-900" : "kpi-value"}
-															>
-																{valeur}%
-															</span>
-														</div>
-														<span
-															className={`text-xs font-bold uppercase tracking-widest ${isLast ? "text-primary" : "text-slate-500"}`}
-														>
-															Week {h.Semaine}
-														</span>
-													</div>
-												);
-											}
-										)
-									: [40, 41, 42, 43].map((w) => (
-											<div key={w} className="flex flex-col items-center gap-3">
-												<div className="kpi-circle status-green">
-													<span className="kpi-value">—</span>
-												</div>
-												<span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-													Week {w}
-												</span>
-											</div>
-										))}
-							</div>
-							<div className="lg:col-span-8 h-40 relative">
-								<svg
-									className="w-full h-full"
-									preserveAspectRatio="none"
-									viewBox="0 0 500 100"
-								>
-									<defs>
-										<linearGradient
-											id="equip-gradient"
-											x1="0"
-											x2="0"
-											y1="0"
-											y2="1"
-										>
-											<stop
-												offset="0%"
-												stopColor="#0d7ff2"
-												stopOpacity="0.2"
-											/>
-											<stop
-												offset="100%"
-												stopColor="#0d7ff2"
-												stopOpacity="0"
-											/>
-										</linearGradient>
-									</defs>
-									<path
-										d="M0,20 L166,25 L332,15 L500,75 L500,100 L0,100 Z"
-										fill="url(#equip-gradient)"
-									/>
-									<path
-										d="M0,20 L166,25 L332,15 L500,75"
-										fill="none"
-										stroke="#0d7ff2"
-										strokeLinejoin="round"
-										strokeWidth="3"
-									/>
-									<circle cx="500" cy="75" fill="#0d7ff2" r="5" />
-								</svg>
-							</div>
-						</div>
-					</section>
-					<section className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm">
-						<div className="flex items-center justify-between mb-8">
-							<h2 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
-								<span className="material-symbols-outlined text-primary text-3xl">
-									person_add
-								</span>
-								Recruitment Progress vs Forecast
-							</h2>
-							<div className="text-right">
-								<p className="text-4xl font-black text-slate-900">
-									{data?.Recruitment_Progress?.Total_Hires_MTD ?? "—"} /{" "}
-									{data?.Recruitment_Progress?.Total_Forecast_MTD ?? "—"}
-								</p>
-								<p className="text-sm font-medium text-slate-500">
-									Total Hires (MTD)
-								</p>
-							</div>
-						</div>
-						<div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-							<div className="lg:col-span-4 flex justify-between px-2">
-								{(data?.Recruitment_Progress?.Historique_4_Semaines ?? []).length
-									? (data?.Recruitment_Progress?.Historique_4_Semaines ?? []).map(
-											(h: ProgramHistoriqueSemaine, i: number) => {
-												const isLast =
-													i ===
-													(data?.Recruitment_Progress?.Historique_4_Semaines?.length ?? 1) - 1;
-												const reel = h.Reel ?? 0;
-												const forecast = h.Forecast ?? 0;
-												const pct = h.Pct ?? 0;
-												const status =
-													pct >= 90 ? "green" : pct >= 70 ? "amber" : "red";
-												const statusClass =
-													status === "green"
-														? "status-green"
-														: status === "amber"
-															? "status-amber"
-															: "status-red";
-												return (
-													<div
-														key={`recruit-${h.Semaine}-${h.Annee}`}
-														className="flex flex-col items-center gap-3"
-													>
-														<div
-															className={`kpi-circle ${isLast ? "kpi-circle-active status-primary" : statusClass}`}
-														>
-															<span
-																className={isLast ? "kpi-value-active text-slate-900" : "kpi-value"}
-															>
-																{reel}/{forecast}
-															</span>
-														</div>
-														<span
-															className={`text-xs font-bold uppercase tracking-widest ${isLast ? "text-primary" : "text-slate-500"}`}
-														>
-															Week {h.Semaine}
-														</span>
-													</div>
-												);
-											}
-										)
-									: [40, 41, 42, 43].map((w) => (
-											<div key={w} className="flex flex-col items-center gap-3">
-												<div className="kpi-circle status-green">
-													<span className="kpi-value">—</span>
-												</div>
-												<span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-													Week {w}
-												</span>
-											</div>
-										))}
-							</div>
-							<div className="lg:col-span-8 h-40 relative">
-								<svg
-									className="w-full h-full"
-									preserveAspectRatio="none"
-									viewBox="0 0 500 100"
-								>
-									<line
-										stroke="#cbd5e1"
-										strokeDasharray="4"
-										strokeWidth="2"
-										x1="0"
-										x2="500"
-										y1="90"
-										y2="10"
-									/>
-									<path
-										d="M0,90 L125,75 L250,55 L375,45 L500,40"
-										fill="none"
-										stroke="#0d7ff2"
-										strokeLinecap="round"
-										strokeWidth="3"
-									/>
-									<circle cx="500" cy="40" fill="#0d7ff2" r="5" />
-								</svg>
-								<div className="absolute bottom-0 right-0">
-									<span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
-										Dashed: Forecast | Solid: Actual
-									</span>
-								</div>
-							</div>
-						</div>
-					</section>
-				</div>
 			</div>
 		);
 	}, [monthlyData]);

@@ -6,38 +6,36 @@ import { TabSelector } from "@/components/ui/TabSelector"
 type TabType = "weekly" | "monthly"
 
 interface HistoriqueWeekItem {
-	Semaine: number
-	Annee: number
-	Valeur: number
-	Target: number
+	Semaine: string
+	Annee: string
+	Valeur: string
+	Target: string
 }
 
 interface HistoriqueMonthItem {
-	Mois: number
-	Annee: number
-	Valeur: number
-	Target: number
+	Mois: string
+	Annee: string
+	Valeur: string
+	Target: string
 }
 
 interface WeeklyKPI {
-	Semaine_Actuelle: number
-	Annee: number
-	Valeur_Actuelle: number
-	Target_Actuelle: number
-	Valeur_Semaine_Precedente: number
-	Variation_Vs_Semaine_Precedente: number
+	Semaine_Actuelle: string
+	Annee: string
+	Valeur_Actuelle: string
+	Target_Actuelle: string
 	Historique_4_Semaines: HistoriqueWeekItem[]
 }
 
 interface MonthlyKPI {
-	Mois_Courant: number
-	Annee_Courante: number
-	Mois_Precedent: number
-	Annee_Mois_Precedent: number
-	Valeur_Mois_Courant: number
-	Target_Mois_Courant: number
-	Valeur_Mois_Precedent: number
-	Variation_Vs_Mois_Precedent: number
+	Mois_Courant: string
+	Annee_Courante: string
+	Mois_Precedent: string
+	Annee_Mois_Precedent: string
+	Valeur_Mois_Courant: string
+	Target_Mois_Courant: string
+	Valeur_Mois_Precedent: string
+	Variation_Vs_Mois_Precedent: string
 	Historique_4_Mois: HistoriqueMonthItem[]
 }
 
@@ -55,20 +53,19 @@ interface MonthlyData {
 	Suivi_Efficience: MonthlyKPI
 }
 
-interface OperationsData {
-	weekly: WeeklyData
-	monthly: MonthlyData
-}
 
 const MONTH_NAMES = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc']
 
-function getMonthName(month: number): string {
-	return MONTH_NAMES[month - 1] || ''
+function getMonthName(month: string | number): string {
+	const monthNum = typeof month === 'string' ? parseInt(month, 10) : month
+	return MONTH_NAMES[monthNum - 1] || ''
 }
 
-function getStatusColor(value: number, target: number, isLowerBetter = false): string {
-	const diff = isLowerBetter ? target - value : value - target
-	const percentDiff = (diff / target) * 100
+function getStatusColor(value: string | number, target: string | number, isLowerBetter = false): string {
+	const numValue = typeof value === 'string' ? parseFloat(value) : value
+	const numTarget = typeof target === 'string' ? parseFloat(target) : target
+	const diff = isLowerBetter ? numTarget - numValue : numValue - numTarget
+	const percentDiff = (diff / numTarget) * 100
 
 	if (percentDiff >= 0) return 'green'
 	if (percentDiff >= -10) return 'yellow'
@@ -93,25 +90,39 @@ export default function OperationsPage() {
 	const [activeTab, setActiveTab] = useState<TabType>('weekly')
 	const [weeklyData, setWeeklyData] = useState<WeeklyData | null>(null)
 	const [monthlyData, setMonthlyData] = useState<MonthlyData | null>(null)
-	const [data, setData] = useState<OperationsData | null>(null)
 	const [loading, setLoading] = useState(true)
 
 	useEffect(() => {
 		async function fetchData() {
 			setLoading(true)
 
-			const res = await fetch(`/api/operations?type=${activeTab}`, {
-				cache: 'no-store',
-			})
-			const json = await res.json()
+			try {
+				const res = await fetch(`/api/operations?type=${activeTab}`, {
+					cache: 'no-store',
+				})
+				
+				if (!res.ok) {
+					throw new Error(`HTTP error! status: ${res.status}`)
+				}
+				
+				const json = await res.json()
+				const data = json?.data?.data
 
-			if (activeTab === 'weekly') {
-				setData(json.data)
-			} else {
-				setData(json.data)
+				if (activeTab === 'weekly') {
+					setWeeklyData(data || null)
+				} else {
+					setMonthlyData(data || null)
+				}
+			} catch (error) {
+				console.error('Error fetching operations data:', error)
+				if (activeTab === 'weekly') {
+					setWeeklyData(null)
+				} else {
+					setMonthlyData(null)
+				}
+			} finally {
+				setLoading(false)
 			}
-
-			setLoading(false)
 		}
 
 		fetchData()
@@ -128,9 +139,19 @@ export default function OperationsPage() {
 	}
 	// Monthly Operations Component
 	const MonthlyOperations = () => {
-		if (!data) return null
+		if (!monthlyData) return null
 
-		const { Taux_Heures_Supplementaires, Taux_Chomage_Technique, Taux_Scrap, Suivi_Efficience } = data.monthly
+		const { Taux_Heures_Supplementaires, Taux_Chomage_Technique, Taux_Scrap, Suivi_Efficience } = monthlyData
+
+		if (!Taux_Heures_Supplementaires || !Taux_Chomage_Technique || !Taux_Scrap || !Suivi_Efficience) {
+			return (
+				<main className="flex-grow">
+					<div className="p-3 sm:p-4 lg:p-6 flex items-center justify-center min-h-[400px]">
+						<div className="text-white text-lg">Chargement des données...</div>
+					</div>
+				</main>
+			)
+		}
 
 		return (
 			<main className="flex-grow">
@@ -144,10 +165,10 @@ export default function OperationsPage() {
 							<div className="flex flex-col">
 								<div className="flex items-end gap-1.5 lg:gap-3">
 									<p className="text-2xl lg:text-4xl font-bold text-white">{Taux_Heures_Supplementaires.Valeur_Mois_Courant}%</p>
-									<div className={`flex items-center ${Taux_Heures_Supplementaires.Variation_Vs_Mois_Precedent <= 0 ? 'text-green-500' : 'text-red-500'}`}>
+									<div className={`flex items-center ${parseFloat(Taux_Heures_Supplementaires.Variation_Vs_Mois_Precedent) <= 0 ? 'text-green-500' : 'text-red-500'}`}>
 										<div className="flex items-baseline gap-1">
 											<p className="text-lg lg:text-2xl font-bold">
-												{Taux_Heures_Supplementaires.Variation_Vs_Mois_Precedent > 0 ? '+' : ''}{Taux_Heures_Supplementaires.Variation_Vs_Mois_Precedent}%
+												{parseFloat(Taux_Heures_Supplementaires.Variation_Vs_Mois_Precedent) > 0 ? '+' : ''}{Taux_Heures_Supplementaires.Variation_Vs_Mois_Precedent}%
 											</p>
 											<p className="text-[10px] lg:text-sm">vs mois précédent</p>
 										</div>
@@ -187,7 +208,7 @@ export default function OperationsPage() {
 					<div className="rounded-lg border border-white/20 bg-slate-800/90 backdrop-blur-sm p-2 transition-transform duration-300 cursor-pointer">
 						<h2 className="mb-1 lg:mb-3 flex items-center gap-1.5 text-sm lg:text-lg font-semibold text-gray-300">
 							Taux de Chômage Technique
-							{Taux_Chomage_Technique.Valeur_Mois_Courant > Taux_Chomage_Technique.Target_Mois_Courant && (
+							{parseFloat(Taux_Chomage_Technique.Valeur_Mois_Courant) > parseFloat(Taux_Chomage_Technique.Target_Mois_Courant) && (
 								<span className="text-base lg:text-lg text-yellow-400">⚠️</span>
 							)}
 						</h2>
@@ -195,10 +216,10 @@ export default function OperationsPage() {
 							<div className="flex flex-col">
 								<div className="flex items-end gap-1.5 lg:gap-2">
 									<p className="text-2xl lg:text-3xl font-bold text-white">{Taux_Chomage_Technique.Valeur_Mois_Courant}%</p>
-									<div className={`flex items-center ${Taux_Chomage_Technique.Variation_Vs_Mois_Precedent <= 0 ? 'text-green-500' : 'text-red-500'}`}>
+									<div className={`flex items-center ${parseFloat(Taux_Chomage_Technique.Variation_Vs_Mois_Precedent) <= 0 ? 'text-green-500' : 'text-red-500'}`}>
 										<div className="flex items-baseline gap-1">
 											<p className="text-lg lg:text-xl font-bold">
-												{Taux_Chomage_Technique.Variation_Vs_Mois_Precedent > 0 ? '+' : ''}{Taux_Chomage_Technique.Variation_Vs_Mois_Precedent}%
+												{parseFloat(Taux_Chomage_Technique.Variation_Vs_Mois_Precedent) > 0 ? '+' : ''}{Taux_Chomage_Technique.Variation_Vs_Mois_Precedent}%
 											</p>
 											<p className="text-[10px] lg:text-xs">vs mois précédent</p>
 										</div>
@@ -243,10 +264,10 @@ export default function OperationsPage() {
 							<div className="flex flex-col">
 								<div className="flex items-end gap-1.5 lg:gap-2">
 									<p className="text-2xl lg:text-3xl font-bold text-white">{Suivi_Efficience.Valeur_Mois_Courant}%</p>
-									<div className={`flex items-center ${Suivi_Efficience.Variation_Vs_Mois_Precedent >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+									<div className={`flex items-center ${parseFloat(Suivi_Efficience.Variation_Vs_Mois_Precedent) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
 										<div className="flex items-baseline gap-1">
 											<p className="text-lg lg:text-xl font-bold">
-												{Suivi_Efficience.Variation_Vs_Mois_Precedent > 0 ? '+' : ''}{Suivi_Efficience.Variation_Vs_Mois_Precedent}%
+												{parseFloat(Suivi_Efficience.Variation_Vs_Mois_Precedent) > 0 ? '+' : ''}{Suivi_Efficience.Variation_Vs_Mois_Precedent}%
 											</p>
 											<p className="text-[10px] lg:text-xs">vs mois précédent</p>
 										</div>
@@ -292,10 +313,10 @@ export default function OperationsPage() {
 								<div className="flex flex-col">
 									<div className="flex items-baseline gap-1.5 lg:gap-3">
 										<p className="text-xl lg:text-3xl font-bold text-white">{Taux_Scrap.Valeur_Mois_Courant}%</p>
-										<div className={`flex items-center ${Taux_Scrap.Variation_Vs_Mois_Precedent <= 0 ? 'text-green-500' : 'text-red-500'}`}>
+										<div className={`flex items-center ${parseFloat(Taux_Scrap.Variation_Vs_Mois_Precedent) <= 0 ? 'text-green-500' : 'text-red-500'}`}>
 											<div className="flex items-baseline gap-0.5">
 												<span className="text-base lg:text-xl font-bold">
-													{Taux_Scrap.Variation_Vs_Mois_Precedent > 0 ? '+' : ''}{Taux_Scrap.Variation_Vs_Mois_Precedent}%
+													{parseFloat(Taux_Scrap.Variation_Vs_Mois_Precedent) > 0 ? '+' : ''}{Taux_Scrap.Variation_Vs_Mois_Precedent}%
 												</span>
 												<span className="text-[10px] lg:text-sm">vs mois dernier</span>
 											</div>
@@ -316,14 +337,14 @@ export default function OperationsPage() {
 									<svg className="h-full w-full -rotate-90 transform" viewBox="0 0 120 120">
 										<circle className="text-gray-700" cx="60" cy="60" fill="transparent" r="54" stroke="currentColor" strokeWidth="12" />
 										<circle 
-											className={`${Suivi_Efficience.Valeur_Mois_Courant >= Suivi_Efficience.Target_Mois_Courant ? 'text-green-500' : 'text-yellow-500'}`} 
+											className={`${parseFloat(Suivi_Efficience.Valeur_Mois_Courant) >= parseFloat(Suivi_Efficience.Target_Mois_Courant) ? 'text-green-500' : 'text-yellow-500'}`} 
 											cx="60" 
 											cy="60" 
 											fill="transparent" 
 											r="54" 
 											stroke="currentColor" 
 											strokeDasharray="339.292" 
-											strokeDashoffset={339.292 * (1 - Suivi_Efficience.Valeur_Mois_Courant / 100)} 
+											strokeDashoffset={339.292 * (1 - parseFloat(Suivi_Efficience.Valeur_Mois_Courant) / 100)} 
 											strokeLinecap="round" 
 											strokeWidth="12" 
 										/>
@@ -332,10 +353,10 @@ export default function OperationsPage() {
 										<p className="text-base lg:text-2xl font-bold text-white">{Suivi_Efficience.Target_Mois_Courant}%</p>
 									</div>
 								</div>
-								<div className={`ml-2 lg:ml-4 flex items-center ${Suivi_Efficience.Valeur_Mois_Courant >= Suivi_Efficience.Target_Mois_Courant ? 'text-green-500' : 'text-red-500'}`}>
+								<div className={`ml-2 lg:ml-4 flex items-center ${parseFloat(Suivi_Efficience.Valeur_Mois_Courant) >= parseFloat(Suivi_Efficience.Target_Mois_Courant) ? 'text-green-500' : 'text-red-500'}`}>
 									<div className="flex items-baseline gap-0.5 lg:gap-1">
 										<span className="text-base lg:text-xl font-bold">
-											{(Suivi_Efficience.Valeur_Mois_Courant - Suivi_Efficience.Target_Mois_Courant).toFixed(1)}%
+											{(parseFloat(Suivi_Efficience.Valeur_Mois_Courant) - parseFloat(Suivi_Efficience.Target_Mois_Courant)).toFixed(1)}%
 										</span>
 										<p className="text-[10px] lg:text-sm text-gray-400">VS target</p>
 									</div>
@@ -350,9 +371,19 @@ export default function OperationsPage() {
 
 	// Weekly Operations Component
 	const WeeklyOperations = () => {
-		if (!data) return null
+		if (!weeklyData) return null
 
-		const { Taux_Heures_Supplementaires, Taux_Chomage_Technique, Taux_Scrap, Suivi_Efficience } = data.weekly
+		const { Taux_Heures_Supplementaires, Taux_Chomage_Technique, Taux_Scrap, Suivi_Efficience } = weeklyData
+
+		if (!Taux_Heures_Supplementaires || !Taux_Chomage_Technique || !Taux_Scrap || !Suivi_Efficience) {
+			return (
+				<main className="w-full flex-shrink-0">
+					<div className="p-3 sm:p-4 lg:p-6 flex items-center justify-center min-h-[400px]">
+						<div className="text-white text-lg">Chargement des données...</div>
+					</div>
+				</main>
+			)
+		}
 
 		return (
 			<main className="w-full flex-shrink-0">
@@ -365,17 +396,6 @@ export default function OperationsPage() {
 							</h2>
 							<div className="flex items-end gap-1.5 lg:gap-3 mb-1.5 lg:mb-3">
 								<p className="text-2xl lg:text-4xl font-bold text-white">{Taux_Heures_Supplementaires.Valeur_Actuelle}%</p>
-								<div className="flex flex-col items-start gap-0">
-									<span className="text-[9px] lg:text-xs text-gray-400">Variation vs semaine précédente</span>
-									<div className={`flex items-center text-sm gap-0.5 ${Taux_Heures_Supplementaires.Variation_Vs_Semaine_Precedente <= 0 ? 'text-green-500' : 'text-red-500'}`}>
-										<span className="material-symbols-outlined text-xs lg:text-base">
-											{Taux_Heures_Supplementaires.Variation_Vs_Semaine_Precedente <= 0 ? 'arrow_downward' : 'arrow_upward'}
-										</span>
-										<p className="text-base lg:text-lg font-semibold">
-											{Taux_Heures_Supplementaires.Variation_Vs_Semaine_Precedente > 0 ? '+' : ''}{Taux_Heures_Supplementaires.Variation_Vs_Semaine_Precedente}%
-										</p>
-									</div>
-								</div>
 							</div>
 							<div className="mt-auto flex flex-col pt-1.5 lg:pt-3">
 								<div className="relative h-10 lg:h-20 w-full mb-2 lg:mb-4">
@@ -413,22 +433,14 @@ export default function OperationsPage() {
 						<div className="flex flex-col overflow-hidden rounded-lg bg-slate-800/90 backdrop-blur-sm p-2 lg:p-4 min-h-[200px] lg:min-h-[340px] transition-transform duration-300 cursor-pointer">
 							<h2 className="mb-1 lg:mb-2 flex items-center gap-1.5 text-sm lg:text-lg font-semibold text-gray-300">
 								Taux de Chômage technique
-								{Taux_Chomage_Technique.Valeur_Actuelle > Taux_Chomage_Technique.Target_Actuelle && (
+								{parseFloat(Taux_Chomage_Technique.Valeur_Actuelle) > parseFloat(Taux_Chomage_Technique.Target_Actuelle) && (
 									<span className="text-base lg:text-lg text-yellow-400">⚠️</span>
 								)}
 							</h2>
 							<div className="flex items-end gap-1.5 lg:gap-3 mb-1.5 lg:mb-3">
-								<p className={`flex items-center text-2xl lg:text-3xl font-bold ${Taux_Chomage_Technique.Valeur_Actuelle > Taux_Chomage_Technique.Target_Actuelle ? 'text-red-500' : 'text-white'}`}>
+								<p className={`flex items-center text-2xl lg:text-3xl font-bold ${parseFloat(Taux_Chomage_Technique.Valeur_Actuelle) > parseFloat(Taux_Chomage_Technique.Target_Actuelle) ? 'text-red-500' : 'text-white'}`}>
 									{Taux_Chomage_Technique.Valeur_Actuelle}%
 								</p>
-								<div className="flex flex-col items-start gap-0">
-									<span className="text-[9px] lg:text-[10px] text-gray-400">Variation vs semaine précédente</span>
-									<div className={`flex items-center text-sm gap-0.5 ${Taux_Chomage_Technique.Variation_Vs_Semaine_Precedente <= 0 ? 'text-green-500' : 'text-red-500'}`}>
-										<p className="text-base lg:text-lg font-semibold">
-											{Taux_Chomage_Technique.Variation_Vs_Semaine_Precedente > 0 ? '+' : ''}{Taux_Chomage_Technique.Variation_Vs_Semaine_Precedente}%
-										</p>
-									</div>
-								</div>
 							</div>
 							<div className="mt-auto flex flex-col pt-1.5 lg:pt-3">
 								<div className="relative h-10 lg:h-20 w-full mb-2 lg:mb-4">
@@ -469,7 +481,7 @@ export default function OperationsPage() {
 							<div className="flex flex-col overflow-hidden rounded-lg bg-slate-800/90 backdrop-blur-sm p-2 lg:p-4 min-h-[200px] lg:min-h-[340px] transition-transform duration-300 cursor-pointer">
 								<h2 className="mb-1 lg:mb-2 flex items-center gap-1.5 text-sm lg:text-lg font-semibold text-gray-300">
 									Taux de Scrap 
-									{Taux_Scrap.Valeur_Actuelle > Taux_Scrap.Target_Actuelle && (
+									{parseFloat(Taux_Scrap.Valeur_Actuelle) > parseFloat(Taux_Scrap.Target_Actuelle) && (
 										<span className="text-base lg:text-lg text-yellow-400">⚠️</span>
 									)}
 								</h2>
@@ -478,27 +490,19 @@ export default function OperationsPage() {
 										<svg className="h-full w-full -rotate-90" viewBox="0 0 100 100">
 											<circle className="stroke-current text-gray-600" cx="50" cy="50" fill="none" r="45" strokeWidth="8" />
 											<circle 
-												className={`stroke-current transition-all duration-500 ${Taux_Scrap.Valeur_Actuelle <= Taux_Scrap.Target_Actuelle ? 'text-green-500' : 'text-red-500'}`} 
+												className={`stroke-current transition-all duration-500 ${parseFloat(Taux_Scrap.Valeur_Actuelle) <= parseFloat(Taux_Scrap.Target_Actuelle) ? 'text-green-500' : 'text-red-500'}`} 
 												cx="50" 
 												cy="50" 
 												fill="none" 
 												r="45" 
 												strokeDasharray="282.74" 
-												strokeDashoffset={282.74 * (1 - Math.min(Taux_Scrap.Valeur_Actuelle / 10, 1))} 
+												strokeDashoffset={282.74 * (1 - Math.min(parseFloat(Taux_Scrap.Valeur_Actuelle) / 10, 1))} 
 												strokeLinecap="round" 
 												strokeWidth="8" 
 											/>
 										</svg>
 										<div className="absolute inset-0 flex items-center justify-center">
 											<span className="text-xl lg:text-3xl font-bold text-white">{Taux_Scrap.Valeur_Actuelle}%</span>
-										</div>
-									</div>
-									<div className="flex flex-col items-start gap-0">
-										<span className="text-[9px] lg:text-[10px] text-gray-400">Variation vs semaine précédente</span>
-										<div className={`flex items-center gap-0.5 ${Taux_Scrap.Variation_Vs_Semaine_Precedente <= 0 ? 'text-green-500' : 'text-red-500'}`}>
-											<span className="text-base lg:text-lg font-semibold">
-												{Taux_Scrap.Variation_Vs_Semaine_Precedente > 0 ? '+' : ''}{Taux_Scrap.Variation_Vs_Semaine_Precedente}%
-											</span>
 										</div>
 									</div>
 								</div>
@@ -550,24 +554,13 @@ export default function OperationsPage() {
 												fill="none" 
 												r="45" 
 												strokeDasharray="282.74" 
-												strokeDashoffset={282.74 * (1 - Suivi_Efficience.Valeur_Actuelle / 100)} 
+												strokeDashoffset={282.74 * (1 - parseFloat(Suivi_Efficience.Valeur_Actuelle) / 100)} 
 												strokeLinecap="round" 
 												strokeWidth="8" 
 											/>
 										</svg>
 										<div className="absolute inset-0 flex items-center justify-center">
-											<span className="text-xl lg:text-3xl font-bold text-white">{Suivi_Efficience.Valeur_Actuelle}%</span>
-										</div>
-									</div>
-									<div className="flex flex-col items-start gap-0">
-										<span className="text-[9px] lg:text-[10px] text-gray-400">Variation vs semaine précédente</span>
-										<div className={`flex items-center gap-0.5 ${Suivi_Efficience.Variation_Vs_Semaine_Precedente >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-											<span className="material-symbols-outlined text-sm lg:text-base">
-												{Suivi_Efficience.Variation_Vs_Semaine_Precedente >= 0 ? 'arrow_upward' : 'arrow_downward'}
-											</span>
-											<span className="text-base lg:text-lg font-semibold">
-												{Suivi_Efficience.Variation_Vs_Semaine_Precedente > 0 ? '+' : ''}{Suivi_Efficience.Variation_Vs_Semaine_Precedente}%
-											</span>
+											<span className="text-md lg:text-xl font-bold text-white">{Suivi_Efficience.Valeur_Actuelle}%</span>
 										</div>
 									</div>
 								</div>

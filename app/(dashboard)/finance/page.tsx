@@ -22,7 +22,6 @@ interface SemaineDuMois {
 
 interface ChiffreAffaires {
 	Valeur_Mois_Cumulee_MEUR: number
-	Target_Mois_MEUR: number
 	Annee_Reference: number
 	Semaine_Reference: number
 	Dernieres_4_Semaines: DerniereSemaine[]
@@ -32,7 +31,6 @@ interface ChiffreAffaires {
 interface TauxFacturationLivraison {
 	Valeur_S_1: number
 	Variation_Pts_Vs_S_1: number
-	Target: number
 	Dernieres_4_Semaines: DerniereSemaine[]
 }
 
@@ -52,20 +50,18 @@ interface SuiviMois {
 }
 
 interface EfficienceFinanciere {
-	Valeur_Actuelle?: number
+	Valeur_Affichee: number
+	Delta_Affiche: number
 	Delta_Unite: string
 	VsLabel: string
-	Delta_Valeur?: number
-	Target: number
 	Suivi_4_Mois: SuiviMois[]
 }
 
 interface ExecutionBudgetaire {
-	Valeur_Actuelle?: number
+	Valeur_Affichee: number
+	Delta_Affiche: number
 	Delta_Unite: string
 	VsLabel: string
-	Delta_Valeur?: number
-	Target: number
 	Suivi_4_Mois: SuiviMois[]
 }
 
@@ -74,7 +70,6 @@ interface PaiementsRetard {
 	Delta_Affiche_MEUR: number
 	Delta_Unite: string
 	VsLabel: string
-	Target: number
 	Suivi_4_Mois: SuiviMois[]
 }
 
@@ -84,33 +79,47 @@ interface FinanceMois {
 	Paiements_Retard: PaiementsRetard
 }
 
-interface FinanceData {
-	weekly: { Finance_Semaine: FinanceSemaine }
-	monthly: { Finance_Mois: FinanceMois }
-}
-
 // Finance Dashboard Page - Fetches data from /api/finance
 export default function FinancePage() {
 	const [activeTab, setActiveTab] = useState<TabType>("weekly")
-	const [data, setData] = useState<FinanceData | null>(null)
+	const [weeklyData, setWeeklyData] = useState<FinanceSemaine | null>(null)
+	const [monthlyData, setMonthlyData] = useState<FinanceMois | null>(null)
 	const [loading, setLoading] = useState(true)
+	const [error, setError] = useState<string | null>(null)
 
 	useEffect(() => {
 		async function fetchData() {
 			setLoading(true)
+			setError(null)
 			try {
 				const res = await fetch(`/api/finance?type=${activeTab}`, { cache: "no-store" })
-				const financeData = await res.json()
-				setData(financeData)
-			} catch {
-				setData(null)
+				if (!res.ok) {
+					throw new Error(`HTTP error! status: ${res.status}`)
+				}
+				const json = await res.json()
+				// Handle nested data structure: API returns { data: { Finance_Semaine/Finance_Mois: ... } }
+				const finalData = json?.data ?? json
+
+				if (activeTab === "weekly") {
+					setWeeklyData(finalData?.Finance_Semaine ?? null)
+				} else {
+					setMonthlyData(finalData?.Finance_Mois ?? null)
+				}
+			} catch (err) {
+				console.error(`Error fetching finance ${activeTab} data:`, err)
+				setError(err instanceof Error ? err.message : "Failed to load finance data")
+				if (activeTab === "weekly") {
+					setWeeklyData(null)
+				} else {
+					setMonthlyData(null)
+				}
 			} finally {
 				setLoading(false)
 			}
 		}
 
 		fetchData()
-	}, [])
+	}, [activeTab])
 
 	if (loading) {
 		return (
@@ -122,14 +131,11 @@ export default function FinancePage() {
 		)
 	}
 
-	const weeklyData = data?.weekly?.Finance_Semaine
-	const monthlyData = data?.monthly?.Finance_Mois
-
-	if (!data) {
+	if (error) {
 		return (
 			<main className="flex-1 overflow-hidden">
 				<div className="p-3 sm:p-4 lg:p-6 flex items-center justify-center min-h-[400px]">
-					<div className="text-red-500 text-lg">Erreur lors du chargement des données.</div>
+					<div className="text-red-500 text-lg">Erreur lors du chargement des données: {error}</div>
 				</div>
 			</main>
 		)
@@ -137,7 +143,15 @@ export default function FinancePage() {
 
 	// Monthly KPI Dashboard Content
 	const MonthlyDashboard = () => {
-		if (!monthlyData) return null
+		if (!monthlyData) {
+			return (
+				<main className="flex-1 overflow-hidden">
+					<div className="p-3 sm:p-4 lg:p-6 flex items-center justify-center min-h-[400px]">
+						<div className="text-gray-400 text-lg">Aucune donnée disponible.</div>
+					</div>
+				</main>
+			)
+		}
 
 		const eff = monthlyData.Efficience_Financiere
 		const exec = monthlyData.Execution_Budgetaire
@@ -155,14 +169,14 @@ export default function FinancePage() {
 									</p>
 									<div className="flex items-end gap-2 mt-1">
 										<p className="text-white tracking-light text-[32px] font-bold leading-tight truncate">
-											{eff.Valeur_Actuelle ?? '-'}%
+											{eff.Valeur_Affichee ?? '-'}%
 										</p>
-										<p className={`text-base font-medium ${(eff.Delta_Valeur ?? 0) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-											({eff.Delta_Valeur != null ? (eff.Delta_Valeur >= 0 ? '+' : '') + eff.Delta_Valeur : '-'} pts {eff.VsLabel})
+										<p className={`text-base font-medium ${(eff.Delta_Affiche ?? 0) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+											({eff.Delta_Affiche != null ? (eff.Delta_Affiche >= 0 ? '+' : '') + eff.Delta_Affiche : '-'} {eff.Delta_Unite} {eff.VsLabel})
 										</p>
 									</div>
 									<p className="text-sm text-gray-400 mt-1">
-										Efficacité Globale (Objectif : {eff.Target}%)
+										Efficacité Globale
 									</p>
 									<div className="flex justify-start items-center mt-4 space-x-3">
 										{eff.Suivi_4_Mois.map((item, i) => (
@@ -221,19 +235,19 @@ export default function FinancePage() {
 									</p>
 									<div className="flex items-end gap-2 mt-1">
 										<p className="text-white tracking-light text-[32px] font-bold leading-tight truncate">
-											{exec.Valeur_Actuelle ?? '-'}%
+											{exec.Valeur_Affichee ?? '-'}%
 										</p>
-										<div className={`flex items-center ${(exec.Delta_Valeur ?? 0) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+										<div className={`flex items-center ${(exec.Delta_Affiche ?? 0) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
 											<span className="material-symbols-outlined text-lg">
 												arrow_upward
 											</span>
 											<p className="text-base font-medium">
-												{exec.Delta_Valeur != null ? (exec.Delta_Valeur >= 0 ? '+' : '') + exec.Delta_Valeur + ' pts' : '-'}
+												{exec.Delta_Affiche != null ? (exec.Delta_Affiche >= 0 ? '+' : '') + exec.Delta_Affiche + ' ' + exec.Delta_Unite : '-'}
 											</p>
 										</div>
 									</div>
 									<p className="text-sm text-gray-400 mt-1">
-										Consommé vs. mois dernier (Objectif : {exec.Target}%)
+										Consommé vs. mois dernier
 									</p>
 									<div className="flex justify-start items-center mt-4 space-x-3">
 										{exec.Suivi_4_Mois.map((item) => (
@@ -298,7 +312,7 @@ export default function FinancePage() {
 										</div>
 									</div>
 									<p className="text-sm text-gray-400 mt-1">
-										Amélioration vs mois dernier (Objectif : &lt;1,0 M€)
+										Amélioration vs mois dernier
 									</p>
 									<div className="flex justify-start items-center mt-4 space-x-3">
 										{paiements.Suivi_4_Mois.map((item) => (
@@ -350,7 +364,15 @@ export default function FinancePage() {
 	}
 
 	const WeeklyDashboard = () => {
-		if (!weeklyData) return null
+		if (!weeklyData) {
+			return (
+				<main className="flex-1 overflow-hidden">
+					<div className="p-3 sm:p-4 lg:p-6 flex items-center justify-center min-h-[400px]">
+						<div className="text-gray-400 text-lg">Aucune donnée disponible.</div>
+					</div>
+				</main>
+			)
+		}
 
 		const ca = weeklyData.Chiffre_Affaires
 		const taux = weeklyData.Taux_Facturation_Livraison
@@ -379,7 +401,7 @@ export default function FinancePage() {
 									<p className="text-xl font-semibold">vs S-1</p>
 								</div>
 							</div>
-							<p className="text-sm text-gray-300 font-medium">Objectif : {ca.Target_Mois_MEUR} M€</p>
+							<p className="text-sm text-gray-300 font-medium">Cumul du mois</p>
             </div>
             <div className="flex items-end gap-4">
               <div className="flex flex-col text-right">
@@ -582,9 +604,6 @@ export default function FinancePage() {
 							))}
 						</div>
         </div>
-						<div className="text-base text-gray-300 font-semibold text-right pr-2 mt-3">
-							Objectif : {taux.Target}%
-						</div>
 					</div>
 				</div>
 			</main>
