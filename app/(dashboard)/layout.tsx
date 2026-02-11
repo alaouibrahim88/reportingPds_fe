@@ -72,7 +72,7 @@ export default function DashboardLayout({
 		<div className="flex h-screen">
 			<DesktopSidebar />
 			<div className="flex flex-col flex-1 min-h-screen">
-				<header className="flex items-center justify-between px-4 sm:px-6 py-3 bg-background border-b">
+				<header className="flex items-center justify-between px-4 sm:px-6 py-3 bg-background">
 					<div className="flex flex-row justify-between w-full">
 						<BreadCrumbHeader />
 						<div className="gap-2 sm:gap-4 flex items-center">
