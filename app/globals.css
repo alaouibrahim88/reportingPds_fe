@@ -86,6 +86,20 @@
     --sidebar-accent-foreground: 210 40% 98%;
     --sidebar-border: 215 27.9% 16.9%;
     --sidebar-ring: 216 12.2% 83.9%;
+
+    /* Executive horizon dashboard theme tokens */
+    --bg-main: #ffffff;
+    --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04),
+      0 4px 6px -2px rgba(0, 0, 0, 0.01);
+    --card-shadow-hover: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+    --emerald: #10b981;
+    --sapphire: #0ea5e9;
+    --teal: #14b8a6;
+    --amber: #f59e0b;
+    --rose: #f43f5e;
+    --violet: #8b5cf6;
+    --indigo: #6366f1;
+    --slate: #64748b;
   }
 }
 
@@ -96,6 +110,32 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .serif-numbers {
+    font-family: 'Playfair Display', ui-serif, Georgia, 'Times New Roman',
+      serif;
+  }
+
+  .kpi-card {
+    @apply bg-white rounded-[2rem] p-6 transition-all duration-500 border border-slate-100 relative overflow-hidden flex flex-col justify-between;
+    box-shadow: var(--card-shadow);
+  }
+
+  .kpi-card:hover {
+    box-shadow: var(--card-shadow-hover);
+    transform: translateY(-2px);
+  }
+
+  .dot-grid {
+    background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+
+  .progress-stacked {
+    @apply h-4 rounded-full overflow-hidden flex bg-slate-100;
   }
 }
 

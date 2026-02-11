@@ -4,13 +4,13 @@ import { useEffect, useState } from 'react'
 import { KPIDashboard } from '@/components/KPIDashboard'
 import { normalizeDashboardKpiResponse } from '@/lib/dashboard-kpi'
 import type { DashboardKpiCategoryResponse, IndicateursData } from '@/types'
-
+import { ExecutiveHorizonContent } from '../executive-horizon/executive-horizon-content'
 export default function GlobalOps() {
 	const [weeklyData, setWeeklyData] = useState<IndicateursData | null>(null)
 	const [isLoading, setIsLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
 
-	useEffect(() => {
+	/*useEffect(() => {
 		let cancelled = false
 		async function fetchData() {
 			try {
@@ -41,9 +41,9 @@ export default function GlobalOps() {
 		return () => {
 			cancelled = true
 		}
-	}, [])
+	}, [])*/
 
-	if (error) {
+	/*if (error) {
 		return (
 			<div className="min-h-screen flex items-center justify-center">
 				<div className="rounded-2xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/30 p-6 text-red-700 dark:text-red-300">
@@ -52,9 +52,9 @@ export default function GlobalOps() {
 				</div>
 			</div>
 		)
-	}
+	}*/
 
-	if (isLoading) {
+	/*if (isLoading) {
 		return (
 			<div className="min-h-screen flex items-center justify-center">
 				<div className="flex items-center justify-center min-h-[320px] rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
@@ -64,12 +64,13 @@ export default function GlobalOps() {
 				</div>
 			</div>
 		)
-	}
+	}*/
 
 	return (
 		<div className="min-h-screen">
 			<div className="flex flex-col gap-4 p-4 max-w-[2000px] mx-auto">
-				<KPIDashboard weeklyData={weeklyData ?? undefined} />
+				{/*<KPIDashboard weeklyData={weeklyData ?? undefined} />*/}
+				<ExecutiveHorizonContent />
 			</div>
 		</div>
 	)

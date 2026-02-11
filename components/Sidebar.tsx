@@ -63,7 +63,7 @@ const routes = [
 
 function DesktopSidebar() {
   const pathname = usePathname();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const activeRoute =
     routes.find((route) =>
       route.href === ""
