@@ -50,5 +50,10 @@ export const INTERNAL_API_ENDPOINTS = {
 		monthly:
 			'/GetOperationsIndicateurs_Mensuel?MoisCourante=5&AnneeCourante=2025',
 	},
+  supplychain: {
+		weekly: '/GetInventoryIndicateurs?SemaineCourante=5&AnneeCourante=2026',
+		monthly:
+			'/GetInventoryIndicateurs_Mensuel?MoisCourante=5&AnneeCourante=2025',
+	},
 	dashboardKpiCategory:"/GetExecutiveHorizonIndicateursWeekly",
 } as const
