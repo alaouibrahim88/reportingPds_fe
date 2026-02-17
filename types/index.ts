@@ -207,7 +207,14 @@ export type FilesByDepartment = Record<string, UploadedFile[]>
 
 export interface FileUploadContextType {
 	files: FilesByDepartment
-	uploadFile: (departmentId: string, file: File) => Promise<void>
+	uploadFile: (
+		departmentId: string,
+		file: File,
+		payload: {
+			domain: string
+			annee: string
+		},
+	) => Promise<void>
 	deleteFile: (departmentId: string, fileId: string) => void
 	getFilesForDepartment: (departmentId: string) => UploadedFile[]
 }

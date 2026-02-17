@@ -8,9 +8,15 @@ import type { Department } from '../page'
 
 interface UploadSectionProps {
 	department: Department
+	domain: string
+	year: string
 }
 
-export function UploadSection({ department }: UploadSectionProps) {
+export function UploadSection({
+	department,
+	domain,
+	year,
+}: UploadSectionProps) {
 	const [isUploading, setIsUploading] = useState(false)
 	const [fileInputKey, setFileInputKey] = useState(0)
 	const { getFilesForDepartment, uploadFile, deleteFile } = useFileUpload()
@@ -27,7 +33,10 @@ export function UploadSection({ department }: UploadSectionProps) {
 
 		setIsUploading(true)
 		try {
-			await uploadFile(department.id, file)
+			await uploadFile(department.id, file, {
+				domain,
+				annee: year,
+			})
 		} catch (error) {
 			console.error('Upload failed:', error)
 			// You could add a toast notification here
@@ -60,7 +69,7 @@ export function UploadSection({ department }: UploadSectionProps) {
 				key={fileInputKey}
 				id={`file-input-${department.id}`}
 				type="file"
-				accept=".xlsx,.xls"
+				accept=".xlsx"
 				onChange={handleFileChange}
 				className="hidden"
 			/>

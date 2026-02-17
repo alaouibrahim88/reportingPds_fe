@@ -56,4 +56,9 @@ export const INTERNAL_API_ENDPOINTS = {
 			'/GetInventoryIndicateurs_Mensuel?MoisCourante=5&AnneeCourante=2025',
 	},
 	dashboardKpiCategory:"/GetExecutiveHorizonIndicateursWeekly",
+	uploadFilesKPICategories: '/ImportExcel/excel',
 } as const
+
+
+export const UPLOAD_FILES_URL =
+	`${process.env.NEXT_PUBLIC_BASE_URL_CATEGORY_KPI}/ImportExcel/excel`

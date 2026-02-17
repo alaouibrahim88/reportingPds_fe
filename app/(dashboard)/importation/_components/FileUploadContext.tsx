@@ -2,19 +2,16 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react'
 import { loadFromLocalStorage, saveToLocalStorage } from '@/lib/client-storage'
-import type { 
-	UploadedFile, 
-	FilesByDepartment, 
-	FileUploadContextType 
+import type {
+	UploadedFile,
+	FilesByDepartment,
+	FileUploadContextType
 } from '@/types'
-
 // Constants
 const STORAGE_KEY = 'importation_files'
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
-const ALLOWED_FILE_TYPES = [
-	'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
-	'application/vnd.ms-excel', // .xls
-]
+const XLSX_MIME_TYPE =
+	'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 
 // Context
 const FileUploadContext = createContext<FileUploadContextType | undefined>(
@@ -37,7 +34,7 @@ interface FileUploadProviderProps {
 
 // Provider Component
 export function FileUploadProvider({ children }: FileUploadProviderProps) {
-	const [files, setFiles] = useState<FilesByDepartment>(() => 
+	const [files, setFiles] = useState<FilesByDepartment>(() =>
 		loadFromLocalStorage<FilesByDepartment>(STORAGE_KEY, {})
 	)
 
@@ -52,8 +49,12 @@ export function FileUploadProvider({ children }: FileUploadProviderProps) {
 
 	// Validate file before upload
 	const validateFile = (file: File) => {
-		if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-			throw new Error('Please upload a valid Excel file (.xlsx or .xls)')
+		const hasXlsxExtension = file.name.toLowerCase().endsWith('.xlsx')
+		const hasXlsxMimeType = file.type === XLSX_MIME_TYPE
+
+		// Some browsers can provide an empty MIME type, so we also rely on extension.
+		if (!hasXlsxExtension || (file.type && !hasXlsxMimeType)) {
+			throw new Error('Please upload a valid Excel file (.xlsx only)')
 		}
 
 		if (file.size > MAX_FILE_SIZE) {
@@ -72,8 +73,8 @@ export function FileUploadProvider({ children }: FileUploadProviderProps) {
 
 	// Update file status
 	const updateFileStatus = (
-		departmentId: string, 
-		fileId: string, 
+		departmentId: string,
+		fileId: string,
 		status: UploadedFile['status']
 	) => {
 		updateFilesState(prev => ({
@@ -84,7 +85,14 @@ export function FileUploadProvider({ children }: FileUploadProviderProps) {
 		}))
 	}
 
-	const uploadFile = async (departmentId: string, file: File) => {
+	const uploadFile = async (
+		departmentId: string,
+		file: File,
+		payload: {
+			domain: string
+			annee: string
+		},
+	) => {
 		validateFile(file)
 
 		const newFile = createUploadedFile(file, 'uploading')
@@ -96,8 +104,19 @@ export function FileUploadProvider({ children }: FileUploadProviderProps) {
 		}))
 
 		try {
-			// Simulate upload delay (replace with actual API call)
-			await new Promise(resolve => setTimeout(resolve, 1500))
+			const formData = new FormData()
+			formData.append('file', file)
+			formData.append('domain', payload.domain)
+			formData.append('annee', payload.annee)
+			// should be fixed after use api/upload-files-kpi-categories instead of set hardcoded baseUrl
+            const response = await fetch("http://localhost:2222/api/Polydesign/Kpi/ImportExcel/excel", {
+				method: 'POST',
+				body: formData,
+			})
+
+			if (!response.ok) {
+				throw new Error('Failed to upload file')
+			}
 
 			// Update status to uploaded
 			updateFileStatus(departmentId, newFile.id, 'uploaded')
