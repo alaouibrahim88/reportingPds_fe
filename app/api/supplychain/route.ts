@@ -9,8 +9,8 @@ export async function GET(request: Request) {
 
 	const endpoint =
 		type === 'monthly'
-			? INTERNAL_API_ENDPOINTS.quality.monthly
-			: INTERNAL_API_ENDPOINTS.quality.weekly
+			? INTERNAL_API_ENDPOINTS.supplychain.monthly
+			: INTERNAL_API_ENDPOINTS.supplychain.weekly
 
 	const res = await fetchInternalApi(endpoint)
 	const data = await res.json()

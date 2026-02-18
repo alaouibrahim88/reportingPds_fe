@@ -1,197 +1,255 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
-import { TabSelector } from "@/components/ui/TabSelector"
+import React, { useEffect, useState } from 'react'
+import { TabSelector } from '@/components/ui/TabSelector'
+import {
+	FaArrowUp,
+	FaArrowDown,
+	FaChartLine,
+	FaTruck,
+	FaShieldAlt,
+	FaBoxes,
+	FaSyncAlt,
+} from 'react-icons/fa'
+type TabType = 'weekly' | 'monthly'
 
-type TabType = "weekly" | "monthly"
+// ─── Types ────────────────────────────────────────────────────────────────────
 
-// ─── Weekly interfaces ─────────────────────────────────────────────────────────
-
-interface WeeklySerieItem {
+interface WeeklyHistoryItem {
 	Label: string
-	Semaine?: string
-	Annee?: string
-	Valeur: string
-	Target: string
+	Annee: number
+	Semaine: number
+	Valeur: number
 }
 
-interface SuiviReclamationItem {
-	Label: string
-	Valeur: string
-	Target: string
+interface WeeklyKpiMetric {
+	Valeur_Semaine: number
+	Variation_Pts_Vs_S_1: number
+	Historique_5_Semaines: WeeklyHistoryItem[]
 }
 
-interface ReclamationsClients {
-	Semaine_Actuelle?: string
-	Annee?: string
-	Valeur_Actuelle?: string
-	Target_Actuelle?: string
-	Valeur_Semaine_Precedente?: string
-	Variation_Vs_Semaine_Precedente?: string
-	Serie_4_Semaines?: WeeklySerieItem[]
-	Suivi_Reclamations?: SuiviReclamationItem[]
-}
-
-interface IncidentZone {
-	Zone: string
-	Valeur: string
-	Target: string
-}
-
-interface WeeklyIncidents {
-	Semaine_Actuelle?: string
-	Annee?: string
-	Valeur_Actuelle?: string
-	Target_Actuelle?: string
-	Par_Zone?: Record<string, string>
-	Incidents_Par_Zone?: IncidentZone[]
-}
-
-interface EfficienceGlobale {
-	Semaine_Actuelle?: string
-	Annee?: string
-	Valeur_Actuelle?: string
-	Target_Actuelle?: string
-	Valeur_Semaine_Precedente?: string
-	Variation_Vs_Semaine_Precedente?: string
-	Serie_4_Semaines?: WeeklySerieItem[]
-}
-
-interface EfficienceParZone {
-	Semaine_Actuelle?: string
-	Annee?: string
-	Zones?: Record<string, string>
+interface WeeklyInventorySemaine {
+	Taux_Service_Client_OTIF: WeeklyKpiMetric
+	Taux_Service_Fournisseurs_OTIF: WeeklyKpiMetric
+	Fiabilite_Client: WeeklyKpiMetric
 }
 
 interface WeeklyApiData {
-	Reclamations_Clients?: ReclamationsClients
-	Incidents?: WeeklyIncidents
-	Efficience_Globale?: EfficienceGlobale
-	Efficience_Par_Zone?: EfficienceParZone
+	Inventory_Semaine: WeeklyInventorySemaine
 }
 
-// ─── Monthly interfaces ────────────────────────────────────────────────────────
-
-interface MoisSerieItem {
+interface MonthlyHistoryJours {
 	Label: string
-	Mois?: string
-	Annee?: string
-	Valeur: string
-	Target: string
-	Jours_Perdus?: string | null
+	Mois: number
+	Annee: number
+	Valeur_Jours: number
 }
 
-interface PPMScrapClient {
-	PPM_Mois_Courant?: string
-	Target_PPM_Mois_Courant?: string
-	Variation_PPM_Vs_Mois_Precedent?: string
-	Scrap_Mois_Courant?: string
-	Target_Scrap_Mois_Courant?: string
-	Variation_Scrap_Vs_Mois_Precedent?: string
-	Suivi_PPM_4_Mois?: MoisSerieItem[]
-	Suivi_Scrap_4_Mois?: MoisSerieItem[]
+interface MonthlyHistoryPct {
+	Label: string
+	Mois: number
+	Annee: number
+	Valeur: number
 }
 
-interface AuditMetric {
-	Valeur_Mois_Courant?: string
-	Valeur_Mois_Precedent?: string
-	Variation_Vs_Mois_Precedent?: string
-}
-
-interface TauxConformiteAudits {
-	Completion?: AuditMetric
-	Compliance?: AuditMetric
-}
-
-interface ClientScore {
-	Client: string
-	Valeur: string
-	Target: string
-}
-
-interface ScorecardsClients {
-	Score_Global?: string
-	Clients?: ClientScore[]
-}
-
-interface IncidentsAccidentsTravail {
-	Valeur_Mois_Courant?: string
-	Target_Mois_Courant?: string
-	Variation_Vs_Mois_Precedent?: string
-	Serie_4_Mois?: MoisSerieItem[]
-}
-
-interface EfficienceMensuelle {
-	Valeur_Mois_Courant?: string
-	Target_Mois_Courant?: string
-	Variation_Vs_Mois_Precedent?: string
-	Variation_Vs_Target?: string
-	Suivi_4_Mois?: MoisSerieItem[]
+interface MonthlyHistoryMEur {
+	Label: string
+	Mois: number
+	Annee: number
+	Valeur_MEUR: number
 }
 
 interface MonthlyApiData {
-	PPM_Scrap_Client?: PPMScrapClient
-	Taux_Conformite_Audits?: TauxConformiteAudits
-	Scorecards_Clients?: ScorecardsClients
-	Incidents_Accidents_Travail?: IncidentsAccidentsTravail
-	Efficience_Mensuelle?: EfficienceMensuelle
+	Inventory_Mois: {
+		Rotation_Stocks: {
+			Valeur_Jours: number
+			Variation_Jours_Vs_M_1: number
+			VsLabel: string
+			Suivi_5_Mois: MonthlyHistoryJours[]
+		}
+		Fiabilite_Stocks: {
+			Valeur_Pct: number
+			Variation_Pts_Vs_M_1: number
+			Detail_Warehouses: {
+				Warehouse_A: number
+				Warehouse_B: number
+				Warehouse_C: number
+			}
+			Suivi_5_Mois: MonthlyHistoryPct[]
+		}
+		Cout_Logistique_Total: {
+			Valeur_MEUR: number
+			Delta_MEUR_Vs_M_1: number
+			VsLabel: string
+			Suivi_5_Mois: MonthlyHistoryMEur[]
+		}
+	}
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function n(value: string | number | undefined | null, fallback = 0): number {
-	const parsed = Number(value)
-	return Number.isFinite(parsed) ? parsed : fallback
+function formatVariation(v: number): string {
+	return v > 0 ? `+${v.toFixed(1)} pts` : `${v.toFixed(1)} pts`
 }
 
-function fmt(value: number, decimals = 2): string {
-	return value.toFixed(decimals)
+interface ChartPoint {
+	x: number
+	svgY: number
+	bottomPct: number
+	leftPct: number
+	label: string
+	valeur: number
 }
 
-function signed(value: number, decimals = 2): string {
-	const sign = value > 0 ? "+" : ""
-	return `${sign}${value.toFixed(decimals)}`
+function computeChartPoints(history: WeeklyHistoryItem[]): {
+	points: ChartPoint[]
+	linePath: string
+	fillPath: string
+} {
+	if (!history.length) return { points: [], linePath: '', fillPath: '' }
+	const values = history.map((h) => h.Valeur)
+	const min = Math.min(...values)
+	const max = Math.max(...values)
+	const range = max === min ? 1 : max - min
+	const pad = range * 0.2
+	const padMin = min - pad
+	const padRange = max + pad - padMin
+	const W = 400
+	const H = 100
+	const last = history.length - 1
+
+	const points: ChartPoint[] = history.map((h, i) => {
+		const x = last === 0 ? W / 2 : (i / last) * W
+		const norm = (h.Valeur - padMin) / padRange
+		const svgY = H - norm * H * 0.8 - H * 0.1
+		const bottomPct = ((H - svgY) / H) * 100
+		const leftPct = last === 0 ? 50 : (i / last) * 100
+		return { x, svgY, bottomPct, leftPct, label: h.Label, valeur: h.Valeur }
+	})
+
+	const linePath = points
+		.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.svgY.toFixed(1)}`)
+		.join(' ')
+	const fillPath = `${linePath} L ${W} ${H} L 0 ${H} Z`
+	return { points, linePath, fillPath }
 }
 
-function trendIcon(variation: number): string {
-	return variation >= 0 ? "arrow_upward" : "arrow_downward"
+function pointTransform(i: number, total: number): string {
+	if (i === 0) return 'translate(0, 50%)'
+	if (i === total - 1) return 'translate(-100%, 50%)'
+	return 'translate(-50%, 50%)'
 }
 
-function trendColor(variation: number, lowerIsBetter = false): string {
-	const isGood = lowerIsBetter ? variation <= 0 : variation >= 0
-	return isGood ? "text-blue-500" : "text-red-500"
+/** Maps values to SVG points for a 100×40 viewBox sparkline. */
+function computeSparklinePts(values: number[]): { x: number; y: number }[] {
+	if (values.length < 2) return []
+	const min = Math.min(...values)
+	const max = Math.max(...values)
+	const range = max === min ? 1 : max - min
+	const last = values.length - 1
+	return values.map((v, i) => ({
+		x: +(5 + (i / last) * 90).toFixed(2),
+		y: +(35 - ((v - min) / range) * 25).toFixed(2),
+	}))
 }
 
-function bubbleColor(
-	value: number,
-	target: number,
+function sparklinePtsToPolyline(pts: { x: number; y: number }[]): string {
+	return pts.map((p) => `${p.x},${p.y}`).join(' ')
+}
+
+// ─── Sub-components ───────────────────────────────────────────────────────────
+
+function VariationBadge({ value }: { value: number }) {
+	const isPositive = value >= 0
+	const colorClass = isPositive ? 'text-primary' : 'text-danger'
+	const icon = isPositive ? 'arrow_upward' : 'arrow_downward'
+	return (
+		<div className='flex items-center gap-1 pb-1'>
+			<span className={`material-symbols-outlined text-sm ${colorClass}`}>
+				{icon}
+			</span>
+			<p className={`text-xl font-extrabold ${colorClass}`}>
+				{formatVariation(value)}
+			</p>
+			<p className='text-sm font-normal text-text-light-secondary dark:text-dark-secondary'>
+				vs S-1
+			</p>
+		</div>
+	)
+}
+
+function WeekCircleBadge({ label, valeur }: { label: string; valeur: number }) {
+	return (
+		<div className='flex flex-col items-center gap-2'>
+			<div className='flex h-[76px] w-[76px] items-center justify-center rounded-full bg-primary/10 ring-2 ring-primary/50 dark:bg-primary/20 dark:ring-primary/60'>
+				<span className='text-xl font-extrabold tracking-tight text-primary'>
+					{valeur.toFixed(0)}%
+				</span>
+			</div>
+			<p className='text-xs font-semibold text-text-light-secondary dark:text-dark-secondary'>
+				{label}
+			</p>
+		</div>
+	)
+}
+
+interface MonthDeltaBadgeProps {
+	value: number
+	unit: string
+	vsLabel: string
+	/** When true, a negative delta is styled as good (primary) */
+	lowerIsBetter?: boolean
+}
+
+function MonthDeltaBadge({
+	value,
+	unit,
+	vsLabel,
 	lowerIsBetter = false,
-): string {
-	const isGood = lowerIsBetter ? value <= target : value >= target
-	return isGood
-		? "bg-blue-500/20 text-blue-500"
-		: "bg-yellow-500/20 text-yellow-500"
+}: MonthDeltaBadgeProps) {
+	const isGood = lowerIsBetter ? value <= 0 : value >= 0
+	const colorClass = isGood ? 'text-primary' : 'text-danger'
+	const icon = value >= 0 ? 'arrow_upward' : 'arrow_downward'
+	const sign = value > 0 ? '+' : ''
+	return (
+		<div className='flex items-center gap-1'>
+			<span className={`material-symbols-outlined text-sm ${colorClass}`}>
+				{icon}
+			</span>
+			<p className={`text-xl font-extrabold ${colorClass}`}>
+				{sign}
+				{value.toFixed(2)} {unit}
+			</p>
+			<p className='text-sm font-normal text-text-light-secondary dark:text-dark-secondary'>
+				{vsLabel}
+			</p>
+		</div>
+	)
 }
 
-function getZoneEntries(
-	zones: Record<string, string> | undefined,
-): Array<{ zone: string; value: number; target: number }> {
-	if (!zones) {
-		return []
-	}
-	return Object.keys(zones)
-		.filter((k) => !k.startsWith("Target_"))
-		.map((zone) => ({
-			zone,
-			value: n(zones[zone]),
-			target: n(zones[`Target_${zone}`]),
-		}))
+function CardHeader({
+	title,
+	icon,
+}: {
+	title: string
+	icon: React.ReactNode
+}) {
+	return (
+		<div className='flex items-center justify-between'>
+			<p className='text-sm font-semibold uppercase tracking-wider text-text-light-secondary dark:text-dark-secondary'>
+				{title}
+			</p>
+			<div className='flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 text-text-light-secondary dark:text-dark-secondary'>
+				{icon}
+			</div>
+		</div>
+	)
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function SupplyChainPage() {
-	const [activeTab, setActiveTab] = useState<TabType>("weekly")
+	const [activeTab, setActiveTab] = useState<TabType>('weekly')
 	const [weeklyData, setWeeklyData] = useState<WeeklyApiData | null>(null)
 	const [monthlyData, setMonthlyData] = useState<MonthlyApiData | null>(null)
 	const [loading, setLoading] = useState(true)
@@ -201,21 +259,21 @@ export default function SupplyChainPage() {
 			setLoading(true)
 			try {
 				const res = await fetch(`/api/supplychain?type=${activeTab}`, {
-					cache: "no-store",
+					cache: 'no-store',
 				})
 				if (!res.ok) {
 					throw new Error(`HTTP error! status: ${res.status}`)
 				}
 				const json = await res.json()
 				const finalData = json?.data?.data ?? json?.data ?? json
-				if (activeTab === "weekly") {
+				if (activeTab === 'weekly') {
 					setWeeklyData(finalData || null)
 				} else {
 					setMonthlyData(finalData || null)
 				}
 			} catch (error) {
-				console.error("Error fetching supply chain data:", error)
-				if (activeTab === "weekly") {
+				console.error('Error fetching supply chain data:', error)
+				if (activeTab === 'weekly') {
 					setWeeklyData(null)
 				} else {
 					setMonthlyData(null)
@@ -229,799 +287,361 @@ export default function SupplyChainPage() {
 
 	if (loading) {
 		return (
-			<main className="flex-1 overflow-hidden bg-slate-900">
-				<div className="p-4 sm:p-6 lg:p-8 flex items-center justify-center min-h-[400px]">
-					<div className="text-white text-lg">Chargement des données...</div>
+			<main className='flex-1 overflow-hidden bg-slate-900'>
+				<div className='flex min-h-[400px] items-center justify-center p-4 sm:p-6 lg:p-8'>
+					<div className='text-white text-lg'>Chargement des données...</div>
 				</div>
 			</main>
 		)
 	}
 
-	// ── Weekly derived data ──────────────────────────────────────────────────
-	const reclamations = weeklyData?.Reclamations_Clients
-	const incidents = weeklyData?.Incidents
-	const effGlobale = weeklyData?.Efficience_Globale
-	const effParZone = weeklyData?.Efficience_Par_Zone
-	const zoneEntries = getZoneEntries(effParZone?.Zones)
-
-	const weeklySubtitle = effGlobale?.Semaine_Actuelle
-		? `Semaine ${effGlobale.Semaine_Actuelle} · ${effGlobale.Annee}`
-		: reclamations?.Semaine_Actuelle
-			? `Semaine ${reclamations.Semaine_Actuelle} · ${reclamations.Annee}`
-			: "Données hebdomadaires"
-
-	// ── Monthly derived data ─────────────────────────────────────────────────
-	const ppmScrap = monthlyData?.PPM_Scrap_Client
-	const audits = monthlyData?.Taux_Conformite_Audits
-	const scorecards = monthlyData?.Scorecards_Clients
-	const accidents = monthlyData?.Incidents_Accidents_Travail
-	const effMensuelle = monthlyData?.Efficience_Mensuelle
-
-	// ── Weekly view ──────────────────────────────────────────────────────────
-	const WeeklyView = () => (
-		<div className="flex flex-col gap-6">
-
-			{/* Row 1 – Réclamations + Incidents */}
-			<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-
-				{/* Réclamations Clients */}
-				{reclamations && (
-					<div className="flex flex-col gap-5 rounded-lg border border-gray-700 bg-gray-900 p-5 md:p-6">
-						<div className="flex items-start justify-between">
-							<p className="text-base font-bold text-white">
-								Réclamations Clients
-							</p>
-							<span className="material-symbols-outlined text-gray-400">
-								feedback
-							</span>
-						</div>
-
-						{/* KPI hero */}
-						<div className="flex flex-wrap items-end gap-3">
-							<p className="text-5xl font-extrabold tracking-tighter text-white">
-								{reclamations.Valeur_Actuelle ?? "—"}
-							</p>
-							<div className="flex flex-col pb-1 gap-0.5">
-								<p className="text-xs text-gray-400">
-									Target:{" "}
-									<span className="font-bold text-blue-500">
-										{reclamations.Target_Actuelle ?? "—"}
-									</span>
-								</p>
-								<div className="flex items-center gap-1">
-									<span
-										className={`material-symbols-outlined text-xs leading-none ${trendColor(
-											n(reclamations.Variation_Vs_Semaine_Precedente),
-											true,
-										)}`}
-									>
-										{trendIcon(
-											n(reclamations.Variation_Vs_Semaine_Precedente),
-										)}
-									</span>
-									<p
-										className={`text-sm font-bold ${trendColor(
-											n(reclamations.Variation_Vs_Semaine_Precedente),
-											true,
-										)}`}
-									>
-										{signed(
-											n(reclamations.Variation_Vs_Semaine_Precedente),
-											0,
-										)}
-									</p>
-									<p className="text-xs text-gray-400">vs S-1</p>
-								</div>
-							</div>
-						</div>
-
-						{/* Suivi semaines */}
-						{reclamations.Suivi_Reclamations &&
-							reclamations.Suivi_Reclamations.length > 0 && (
-								<div className="flex items-end justify-around gap-2 pt-2">
-									{reclamations.Suivi_Reclamations.map((item, idx) => {
-										const val = n(item.Valeur)
-										const target = n(item.Target)
-										return (
-											<div
-												key={`recl-${item.Label}-${idx}`}
-												className="flex flex-col items-center gap-1"
-											>
-												<div
-													className={`flex h-14 w-14 items-center justify-center rounded-full text-lg font-bold ${bubbleColor(
-														val,
-														target,
-														true,
-													)}`}
-												>
-													{val.toFixed(0)}
-												</div>
-												<p className="text-xs text-gray-400">{item.Label}</p>
-											</div>
-										)
-									})}
-								</div>
-							)}
-					</div>
-				)}
-
-				{/* Incidents */}
-				{incidents && (
-					<div className="flex flex-col gap-5 rounded-lg border border-gray-700 bg-gray-900 p-5 md:p-6">
-						<div className="flex items-start justify-between">
-							<p className="text-base font-bold text-white">Incidents</p>
-							<span className="material-symbols-outlined text-gray-400">
-								warning
-							</span>
-						</div>
-
-						{/* KPI hero */}
-						<div className="flex flex-wrap items-end gap-3">
-							<p className="text-5xl font-extrabold tracking-tighter text-white">
-								{incidents.Valeur_Actuelle ?? "—"}
-							</p>
-							<p className="pb-1 text-xs text-gray-400">
-								Target:{" "}
-								<span className="font-bold text-blue-500">
-									{incidents.Target_Actuelle ?? "—"}
-								</span>
-							</p>
-						</div>
-
-						{/* Par zone bars */}
-						{incidents.Incidents_Par_Zone &&
-							incidents.Incidents_Par_Zone.length > 0 && (
-								<div className="flex flex-col gap-2 pt-2">
-									{incidents.Incidents_Par_Zone.map((zone) => {
-										const val = n(zone.Valeur)
-										const target = n(zone.Target)
-										const maxVal = Math.max(
-											...incidents.Incidents_Par_Zone!.map((z) =>
-												n(z.Valeur),
-											),
-											1,
-										)
-										const pct = Math.round((val / maxVal) * 100)
-										const isOk = val <= target
-										return (
-											<div
-												key={zone.Zone}
-												className="flex items-center gap-2"
-											>
-												<p className="w-20 shrink-0 text-xs font-semibold text-gray-400">
-													{zone.Zone}
-												</p>
-												<div className="relative h-6 w-full overflow-hidden rounded bg-gray-700">
-													<div
-														className={`h-full rounded ${
-															isOk ? "bg-blue-500" : "bg-red-500"
-														}`}
-														style={{ width: `${pct}%` }}
-													/>
-													<span className="absolute inset-0 flex items-center px-2 text-xs font-bold text-white">
-														{val.toFixed(0)}
-													</span>
-												</div>
-												<p className="w-12 shrink-0 text-right text-xs text-gray-500">
-													/{target.toFixed(0)}
-												</p>
-											</div>
-										)
-									})}
-								</div>
-							)}
-					</div>
-				)}
-			</div>
-
-			{/* Row 2 – Efficience Globale */}
-			{effGlobale && (
-				<div className="flex flex-col gap-5 rounded-lg border border-gray-700 bg-gray-900 p-5 md:p-6">
-					<div className="flex items-start justify-between">
-						<p className="text-base font-bold text-white">
-							Efficience Globale
-						</p>
-						<span className="material-symbols-outlined text-gray-400">
-							speed
-						</span>
-					</div>
-
-					<div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-						{/* Left – hero value */}
-						<div className="flex flex-col gap-3 lg:col-span-2">
-							<p className="text-6xl font-extrabold tracking-tighter text-white">
-								{fmt(n(effGlobale.Valeur_Actuelle), 1)}%
-							</p>
-							<div className="flex items-baseline gap-2">
-								<p className="text-sm text-gray-400">Target:</p>
-								<p className="text-xl font-bold text-blue-500">
-									{fmt(n(effGlobale.Target_Actuelle), 0)}%
-								</p>
-							</div>
-							{effGlobale.Variation_Vs_Semaine_Precedente !== undefined && (
-								<div className="flex items-center gap-1">
-									<span
-										className={`material-symbols-outlined text-sm ${trendColor(
-											n(effGlobale.Variation_Vs_Semaine_Precedente),
-										)}`}
-									>
-										{trendIcon(n(effGlobale.Variation_Vs_Semaine_Precedente))}
-									</span>
-									<p
-										className={`text-lg font-bold ${trendColor(
-											n(effGlobale.Variation_Vs_Semaine_Precedente),
-										)}`}
-									>
-										{signed(n(effGlobale.Variation_Vs_Semaine_Precedente))} pts
-									</p>
-									<p className="text-xs text-gray-400">vs S-1</p>
-								</div>
-							)}
-						</div>
-
-						{/* Right – 4-week bubbles */}
-						{effGlobale.Serie_4_Semaines &&
-							effGlobale.Serie_4_Semaines.length > 0 && (
-								<div className="flex items-end justify-around gap-3 lg:col-span-3">
-									{effGlobale.Serie_4_Semaines.map((item, idx) => {
-										const val = n(item.Valeur)
-										const target = n(item.Target)
-										return (
-											<div
-												key={`eff-glob-${item.Label}-${idx}`}
-												className="flex flex-col items-center gap-1"
-											>
-												<div
-													className={`flex h-20 w-20 items-center justify-center rounded-full text-base font-bold ${bubbleColor(
-														val,
-														target,
-													)}`}
-												>
-													{fmt(val, 1)}%
-												</div>
-												<p className="text-xs text-gray-400">{item.Label}</p>
-											</div>
-										)
-									})}
-								</div>
-							)}
-					</div>
+	// ── Weekly view ────────────────────────────────────────────────────────────
+	const WeeklyView = () => {
+		const semaine = weeklyData?.Inventory_Semaine
+		if (!semaine) {
+			return (
+				<div className='flex h-40 items-center justify-center text-text-light-secondary dark:text-dark-secondary'>
+					Aucune donnée disponible
 				</div>
-			)}
+			)
+		}
 
-			{/* Row 3 – Efficience Par Zone */}
-			{zoneEntries.length > 0 && (
-				<div className="flex flex-col gap-5 rounded-lg border border-gray-700 bg-gray-900 p-5 md:p-6">
-					<div className="flex items-start justify-between">
-						<p className="text-base font-bold text-white">
-							Efficience Par Zone
-						</p>
-						<span className="material-symbols-outlined text-gray-400">
-							grid_view
-						</span>
-					</div>
+		const clientOtif = semaine.Taux_Service_Client_OTIF
+		const fournOtif = semaine.Taux_Service_Fournisseurs_OTIF
+		const fiabilite = semaine.Fiabilite_Client
 
-					<div className="flex flex-col gap-3">
-						{zoneEntries.map(({ zone, value, target }) => {
-							const isOk = value >= target
-							return (
-								<div key={zone} className="flex items-center gap-3">
-									<p className="w-28 shrink-0 text-sm font-semibold text-gray-400">
-										{zone}
-									</p>
-									<div className="relative h-8 w-full overflow-hidden rounded bg-gray-700">
-										<div
-											className={`h-full rounded transition-all ${
-												isOk ? "bg-blue-500" : "bg-yellow-500"
-											}`}
-											style={{
-												width: `${Math.max(0, Math.min(100, value))}%`,
-											}}
-										/>
-										<span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-white">
-											{fmt(value, 1)}%
-										</span>
-									</div>
-									<p className="w-16 shrink-0 text-right text-xs text-gray-500">
-										T: {fmt(target, 0)}%
-									</p>
-								</div>
-							)
-						})}
-					</div>
-				</div>
-			)}
-		</div>
-	)
+		const clientHist = clientOtif.Historique_5_Semaines
+		const maxClientVal = Math.max(...clientHist.map((h) => h.Valeur), 1)
 
-	// ── Monthly view ─────────────────────────────────────────────────────────
-	const MonthlyView = () => (
-		<div className="flex flex-col gap-6">
+		return (
+			<div className='flex flex-col gap-6'>
+				{/* Row 1 – 2 cards side by side */}
+				<div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
+					{/* Card 1: Taux de Service Client OTIF – bar chart */}
+					<div className='flex flex-col gap-5 rounded-xl border border-border-light bg-panel-background-light p-6 shadow-sm dark:border-border-dark dark:bg-panel-background-dark'>
+						<CardHeader
+						title='Taux de Service Client / OTIF'
+						icon={<FaChartLine className='text-sm' />}
+					    />
 
-			{/* PPM & Scrap Client */}
-			{ppmScrap && (
-				<div className="flex flex-col gap-5 rounded-lg border border-gray-700 bg-gray-900 p-5 md:p-6">
-					<div className="flex items-start justify-between">
-						<p className="text-base font-bold text-white">PPM & Scrap Client</p>
-						<span className="material-symbols-outlined text-gray-400">
-							analytics
-						</span>
-					</div>
-
-					<div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-						{/* PPM */}
-						<div className="flex flex-col gap-3">
-							<p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
-								PPM
+						<div className='flex flex-wrap items-end gap-3'>
+							<p className='text-5xl font-extrabold tracking-tighter text-text-light-primary dark:text-dark-primary'>
+								{clientOtif.Valeur_Semaine.toFixed(0)}%
 							</p>
-							<p className="text-5xl font-extrabold tracking-tighter text-white">
-								{fmt(n(ppmScrap.PPM_Mois_Courant))}
-							</p>
-							<div className="flex items-center gap-1">
-								<span
-									className={`material-symbols-outlined text-xs ${trendColor(
-										n(ppmScrap.Variation_PPM_Vs_Mois_Precedent),
-										true,
-									)}`}
-								>
-									{trendIcon(n(ppmScrap.Variation_PPM_Vs_Mois_Precedent))}
-								</span>
-								<p
-									className={`text-sm font-bold ${trendColor(
-										n(ppmScrap.Variation_PPM_Vs_Mois_Precedent),
-										true,
-									)}`}
-								>
-									{signed(n(ppmScrap.Variation_PPM_Vs_Mois_Precedent))}
-								</p>
-								<p className="text-xs text-gray-400">
-									vs M-1 · Target: {ppmScrap.Target_PPM_Mois_Courant}
-								</p>
-							</div>
-							{ppmScrap.Suivi_PPM_4_Mois &&
-								ppmScrap.Suivi_PPM_4_Mois.length > 0 && (
-									<div className="flex items-end gap-3 pt-1">
-										{ppmScrap.Suivi_PPM_4_Mois.map((item, idx) => {
-											const val = n(item.Valeur)
-											const target = n(item.Target)
-											return (
-												<div
-													key={`ppm-${item.Label}-${idx}`}
-													className="flex flex-col items-center gap-1"
-												>
-													<div
-														className={`flex h-14 w-14 items-center justify-center rounded-full text-xs font-bold ${bubbleColor(
-															val,
-															target,
-															true,
-														)}`}
-													>
-														{fmt(val, 0)}
-													</div>
-													<p className="text-xs text-gray-400">{item.Label}</p>
-												</div>
-											)
-										})}
-									</div>
-								)}
+							<VariationBadge value={clientOtif.Variation_Pts_Vs_S_1} />
 						</div>
 
-						{/* Scrap */}
-						<div className="flex flex-col gap-3">
-							<p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
-								Scrap
-							</p>
-							<p className="text-5xl font-extrabold tracking-tighter text-white">
-								{Number(ppmScrap.Scrap_Mois_Courant).toLocaleString()}
-							</p>
-							<div className="flex items-center gap-1">
-								<span
-									className={`material-symbols-outlined text-xs ${trendColor(
-										n(ppmScrap.Variation_Scrap_Vs_Mois_Precedent),
-										true,
-									)}`}
-								>
-									{trendIcon(n(ppmScrap.Variation_Scrap_Vs_Mois_Precedent))}
-								</span>
-								<p
-									className={`text-sm font-bold ${trendColor(
-										n(ppmScrap.Variation_Scrap_Vs_Mois_Precedent),
-										true,
-									)}`}
-								>
-									{signed(n(ppmScrap.Variation_Scrap_Vs_Mois_Precedent), 0)}
-								</p>
-								<p className="text-xs text-gray-400">
-									vs M-1 · Target:{" "}
-									{Number(
-										ppmScrap.Target_Scrap_Mois_Courant,
-									).toLocaleString()}
-								</p>
-							</div>
-							{ppmScrap.Suivi_Scrap_4_Mois &&
-								ppmScrap.Suivi_Scrap_4_Mois.length > 0 && (
-									<div className="flex items-end gap-3 pt-1">
-										{ppmScrap.Suivi_Scrap_4_Mois.map((item, idx) => {
-											const val = n(item.Valeur)
-											const target = n(item.Target)
-											return (
-												<div
-													key={`scrap-${item.Label}-${idx}`}
-													className="flex flex-col items-center gap-1"
-												>
-													<div
-														className={`flex h-14 w-14 items-center justify-center rounded-full text-xs font-bold ${bubbleColor(
-															val,
-															target,
-															true,
-														)}`}
-													>
-														{(val / 1000).toFixed(1)}k
-													</div>
-													<p className="text-xs text-gray-400">{item.Label}</p>
-												</div>
-											)
-										})}
-									</div>
-								)}
-						</div>
-					</div>
-				</div>
-			)}
-
-			{/* Row 2 – Taux Conformité Audits + Incidents Accidents */}
-			<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-
-				{/* Taux Conformité Audits */}
-				{audits && (
-					<div className="flex flex-col gap-5 rounded-lg border border-gray-700 bg-gray-900 p-5 md:p-6">
-						<div className="flex items-start justify-between">
-							<p className="text-base font-bold text-white">
-								Taux Conformité Audits
-							</p>
-							<span className="material-symbols-outlined text-gray-400">
-								fact_check
-							</span>
-						</div>
-
-						<div className="grid grid-cols-2 gap-6">
-							{/* Completion */}
-							{audits.Completion && (
-								<div className="flex flex-col gap-2">
-									<p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
-										Complétion
-									</p>
-									<p className="text-4xl font-extrabold tracking-tighter text-white">
-										{fmt(n(audits.Completion.Valeur_Mois_Courant), 1)}%
-									</p>
-									<div className="flex items-center gap-1">
-										<span
-											className={`material-symbols-outlined text-xs ${trendColor(
-												n(audits.Completion.Variation_Vs_Mois_Precedent),
-											)}`}
-										>
-											{trendIcon(
-												n(audits.Completion.Variation_Vs_Mois_Precedent),
-											)}
-										</span>
-										<p
-											className={`text-sm font-bold ${trendColor(
-												n(audits.Completion.Variation_Vs_Mois_Precedent),
-											)}`}
-										>
-											{signed(
-												n(audits.Completion.Variation_Vs_Mois_Precedent),
-											)}
-										</p>
-										<p className="text-xs text-gray-400">vs M-1</p>
-									</div>
-									<div className="h-2 w-full overflow-hidden rounded bg-gray-700">
-										<div
-											className="h-full rounded bg-blue-500"
-											style={{
-												width: `${Math.min(100, n(audits.Completion.Valeur_Mois_Courant))}%`,
-											}}
-										/>
-									</div>
-								</div>
-							)}
-
-							{/* Compliance */}
-							{audits.Compliance && (
-								<div className="flex flex-col gap-2">
-									<p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
-										Conformité
-									</p>
-									<p className="text-4xl font-extrabold tracking-tighter text-white">
-										{fmt(n(audits.Compliance.Valeur_Mois_Courant), 1)}%
-									</p>
-									<div className="flex items-center gap-1">
-										<span
-											className={`material-symbols-outlined text-xs ${trendColor(
-												n(audits.Compliance.Variation_Vs_Mois_Precedent),
-											)}`}
-										>
-											{trendIcon(
-												n(audits.Compliance.Variation_Vs_Mois_Precedent),
-											)}
-										</span>
-										<p
-											className={`text-sm font-bold ${trendColor(
-												n(audits.Compliance.Variation_Vs_Mois_Precedent),
-											)}`}
-										>
-											{signed(
-												n(audits.Compliance.Variation_Vs_Mois_Precedent),
-											)}
-										</p>
-										<p className="text-xs text-gray-400">vs M-1</p>
-									</div>
-									<div className="h-2 w-full overflow-hidden rounded bg-gray-700">
-										<div
-											className="h-full rounded bg-blue-500"
-											style={{
-												width: `${Math.min(100, n(audits.Compliance.Valeur_Mois_Courant))}%`,
-											}}
-										/>
-									</div>
-								</div>
-							)}
-						</div>
-					</div>
-				)}
-
-				{/* Incidents & Accidents Travail */}
-				{accidents && (
-					<div className="flex flex-col gap-5 rounded-lg border border-gray-700 bg-gray-900 p-5 md:p-6">
-						<div className="flex items-start justify-between">
-							<p className="text-base font-bold text-white">
-								Incidents & Accidents Travail
-							</p>
-							<span className="material-symbols-outlined text-gray-400">
-								health_and_safety
-							</span>
-						</div>
-
-						<div className="flex flex-wrap items-end gap-4">
-							<p
-								className={`text-5xl font-extrabold tracking-tighter ${
-									n(accidents.Valeur_Mois_Courant) >
-									n(accidents.Target_Mois_Courant)
-										? "text-red-500"
-										: "text-blue-500"
-								}`}
-							>
-								{accidents.Valeur_Mois_Courant ?? "—"}
-							</p>
-							<div className="flex flex-col pb-1 gap-0.5">
-								<p className="text-xs text-gray-400">
-									Target:{" "}
-									<span className="font-bold text-white">
-										{accidents.Target_Mois_Courant ?? "—"}
-									</span>
-								</p>
-								<div className="flex items-center gap-1">
-									<span
-										className={`material-symbols-outlined text-xs ${trendColor(
-											n(accidents.Variation_Vs_Mois_Precedent),
-											true,
-										)}`}
-									>
-										{trendIcon(n(accidents.Variation_Vs_Mois_Precedent))}
-									</span>
-									<p
-										className={`text-sm font-bold ${trendColor(
-											n(accidents.Variation_Vs_Mois_Precedent),
-											true,
-										)}`}
-									>
-										{signed(n(accidents.Variation_Vs_Mois_Precedent), 0)}
-									</p>
-									<p className="text-xs text-gray-400">vs M-1</p>
-								</div>
-							</div>
-						</div>
-
-						{accidents.Serie_4_Mois && accidents.Serie_4_Mois.length > 0 && (
-							<div className="flex items-end gap-4 pt-1">
-								{accidents.Serie_4_Mois.map((item, idx) => {
-									const val = n(item.Valeur)
-									const target = n(item.Target)
+						{/* Bar chart */}
+						<div className='flex flex-col gap-2 pt-1'>
+							<div className='flex h-[100px] items-end gap-2'>
+								{clientHist.map((h, i) => {
+									const barH = Math.max((h.Valeur / maxClientVal) * 80, 4)
+									const isCurrent = i === clientHist.length - 1
 									return (
 										<div
-											key={`acc-${item.Label}-${idx}`}
-											className="flex flex-col items-center gap-1"
+											key={h.Label}
+											className='flex flex-1 flex-col items-center gap-1.5'
 										>
+											<span className='text-xs font-bold leading-none text-text-light-primary dark:text-dark-primary'>
+												{h.Valeur.toFixed(0)}%
+											</span>
 											<div
-												className={`flex h-14 w-14 items-center justify-center rounded-full text-lg font-bold ${bubbleColor(
-													val,
-													target,
-													true,
-												)}`}
-											>
-												{val.toFixed(0)}
-											</div>
-											<p className="text-xs text-gray-400">{item.Label}</p>
+												className={`w-full rounded-t-md ${
+													isCurrent
+														? 'bg-blue-500'
+														: 'bg-blue-500/30 dark:bg-blue-500/25'
+												}`}
+												style={{ height: `${barH}px` }}
+											/>
 										</div>
 									)
 								})}
 							</div>
-						)}
-					</div>
-				)}
-			</div>
-
-			{/* Scorecards Clients */}
-			{scorecards && (
-				<div className="flex flex-col gap-5 rounded-lg border border-gray-700 bg-gray-900 p-5 md:p-6">
-					<div className="flex items-start justify-between">
-						<p className="text-base font-bold text-white">
-							Scorecards Clients
-						</p>
-						<span className="material-symbols-outlined text-gray-400">
-							leaderboard
-						</span>
-					</div>
-
-					<div className="flex items-baseline gap-3">
-						<p className="text-5xl font-extrabold tracking-tighter text-white">
-							{fmt(n(scorecards.Score_Global), 1)}%
-						</p>
-						<p className="text-sm text-gray-400">Score global</p>
-					</div>
-
-					{scorecards.Clients && scorecards.Clients.length > 0 && (
-						<div className="flex flex-col gap-3">
-							{scorecards.Clients.map((client) => {
-								const val = n(client.Valeur)
-								const target = n(client.Target)
-								const isOk = val >= target
-								return (
-									<div
-										key={client.Client}
-										className="flex items-center gap-3"
+							<div className='flex gap-2 border-t border-slate-200/30 pt-2 dark:border-slate-700/40'>
+								{clientHist.map((h) => (
+									<p
+										key={h.Label}
+										className='flex-1 text-center text-xs font-semibold text-text-light-secondary dark:text-dark-secondary'
 									>
-										<p className="w-32 shrink-0 truncate text-sm font-semibold text-gray-400">
-											{client.Client}
-										</p>
-										<div className="relative h-7 w-full overflow-hidden rounded bg-gray-700">
-											<div
-												className={`h-full rounded ${
-													isOk ? "bg-blue-500" : "bg-yellow-500"
-												}`}
-												style={{
-													width: `${Math.max(0, Math.min(100, val))}%`,
-												}}
-											/>
-											<span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white">
-												{fmt(val, 1)}%
-											</span>
+										{h.Label}
+									</p>
+								))}
+							</div>
+						</div>
+					</div>
+
+					{/* Card 2: Taux de Service Fournisseurs OTIF – circle badges */}
+					<div className='flex flex-col gap-5 rounded-xl border border-border-light bg-panel-background-light p-6 shadow-sm dark:border-border-dark dark:bg-panel-background-dark'>
+						<CardHeader
+						title='Taux de Service Fournisseurs OTIF'
+						icon={<FaTruck className='text-sm' />}
+					/>
+
+						<div className='flex flex-wrap items-end gap-3'>
+							<p className='text-5xl font-extrabold tracking-tighter text-text-light-primary dark:text-dark-primary'>
+								{fournOtif.Valeur_Semaine.toFixed(0)}%
+							</p>
+							<VariationBadge value={fournOtif.Variation_Pts_Vs_S_1} />
+						</div>
+
+						<div className='flex flex-1 items-center justify-around pt-3'>
+							{fournOtif.Historique_5_Semaines.map((h) => (
+								<WeekCircleBadge key={h.Label} label={h.Label} valeur={h.Valeur} />
+							))}
+						</div>
+					</div>
+				</div>
+
+				{/* Row 2 – Full-width card: Fiabilité Client */}
+				<div className='flex flex-col gap-5 rounded-xl border border-border-light bg-panel-background-light p-6 shadow-sm dark:border-border-dark dark:bg-panel-background-dark'>
+					<CardHeader
+						title='Fiabilité Client'
+						icon={<FaShieldAlt className='text-sm' />}
+					/>
+
+					<div className='flex flex-wrap items-center gap-10'>
+						{/* Current value circle */}
+						<div className='flex flex-col items-center gap-4'>
+							<div className='flex h-[140px] w-[140px] items-center justify-center rounded-full border-[10px] border-primary/20 bg-primary/10 dark:border-primary/30 dark:bg-primary/20'>
+								<div className='flex flex-col items-center gap-0.5 leading-none'>
+									<span className='text-5xl font-extrabold tracking-tighter text-primary'>
+										{fiabilite.Valeur_Semaine.toFixed(0)}%
+									</span>
+									<p className='text-xs font-semibold uppercase tracking-widest text-text-light-secondary dark:text-dark-secondary'>
+										Actuel
+									</p>
+								</div>
+							</div>
+							<VariationBadge value={fiabilite.Variation_Pts_Vs_S_1} />
+						</div>
+
+						{/* Vertical divider */}
+						<div className='hidden h-36 w-px bg-border-light dark:bg-border-dark lg:block' />
+
+						{/* History circles */}
+						<div className='flex flex-col gap-4'>
+							<p className='text-xs font-semibold uppercase tracking-widest text-text-light-secondary dark:text-dark-secondary'>
+								Historique hebdomadaire
+							</p>
+							<div className='flex flex-wrap items-center gap-5'>
+								{fiabilite.Historique_5_Semaines.map((h) => (
+									<WeekCircleBadge key={h.Label} label={h.Label} valeur={h.Valeur} />
+								))}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		)
+	}
+
+	// ── Monthly view ──────────────────────────────────────────────────────────
+	const MonthlyView = () => {
+		const mois = monthlyData?.Inventory_Mois
+		if (!mois) {
+			return (
+				<div className='flex h-40 items-center justify-center text-text-light-secondary dark:text-dark-secondary'>
+					Aucune donnée disponible
+				</div>
+			)
+		}
+
+		const {
+			Rotation_Stocks: rotation,
+			Fiabilite_Stocks: fiabilite,
+			Cout_Logistique_Total: cout,
+		} = mois
+
+		const rotPts = computeSparklinePts(rotation.Suivi_5_Mois.map((m) => m.Valeur_Jours))
+		const fibPts = computeSparklinePts(fiabilite.Suivi_5_Mois.map((m) => m.Valeur))
+		const coutPts = computeSparklinePts(cout.Suivi_5_Mois.map((m) => m.Valeur_MEUR))
+
+		const warehouseEntries = Object.entries(fiabilite.Detail_Warehouses) as [
+			string,
+			number,
+		][]
+
+		const SparklineChart = ({ pts }: { pts: { x: number; y: number }[] }) => (
+			<div className='relative flex min-h-[12rem] items-center justify-center lg:col-span-2'>
+				<div className='h-20 w-full max-w-lg'>
+					<svg
+						className='h-full w-full'
+						preserveAspectRatio='none'
+						viewBox='0 0 100 40'
+					>
+						<line
+							fill='none'
+							stroke='#3182CE'
+							strokeDasharray='4,4'
+							strokeWidth='0.5'
+							x1='0'
+							x2='100'
+							y1='20'
+							y2='20'
+						/>
+						{pts.length > 0 && (
+							<>
+								<polyline
+									fill='none'
+									points={sparklinePtsToPolyline(pts)}
+									stroke='#DD6B20'
+									strokeWidth='1'
+								/>
+								{pts.map((p, i) => (
+									<circle key={i} cx={p.x} cy={p.y} fill='#DD6B20' r='1.5' />
+								))}
+							</>
+						)}
+					</svg>
+				</div>
+			</div>
+		)
+
+		return (
+			<div className='flex flex-col gap-6'>
+				{/* Card 1: Rotation des Stocks */}
+				<div className='flex h-full flex-col gap-6 rounded-xl border border-border-light bg-panel-background-light p-6 shadow-sm dark:border-border-dark dark:bg-panel-background-dark'>
+						<CardHeader
+						title='Rotation des Stocks'
+						icon={<FaBoxes className='text-sm' />}
+					/>
+					<div className='grid flex-1 grid-cols-1 gap-6 lg:grid-cols-5'>
+						<div className='flex flex-col justify-center gap-8 py-4 lg:col-span-3'>
+							<div className='flex flex-col gap-1'>
+								<p className='text-7xl font-extrabold tracking-tighter text-text-light-primary dark:text-dark-primary'>
+									{rotation.Valeur_Jours}{' '}
+									<span className='text-5xl font-bold'>jours</span>
+								</p>
+								<MonthDeltaBadge
+									value={rotation.Variation_Jours_Vs_M_1}
+									unit='jours'
+									vsLabel={rotation.VsLabel}
+									lowerIsBetter
+								/>
+							</div>
+							<div className='flex flex-wrap items-center gap-4'>
+								{rotation.Suivi_5_Mois.map((m) => (
+									<div key={m.Label} className='flex flex-col items-center gap-2'>
+										<div className='flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary dark:bg-primary/20'>
+											<span className='text-3xl font-bold'>{m.Valeur_Jours}</span>
 										</div>
-										<p className="w-16 shrink-0 text-right text-xs text-gray-500">
-											T: {fmt(target, 0)}%
+										<p className='text-sm font-semibold text-text-light-secondary dark:text-dark-secondary'>
+											{m.Label}
 										</p>
 									</div>
-								)
-							})}
+								))}
+							</div>
 						</div>
-					)}
-				</div>
-			)}
-
-			{/* Efficience Mensuelle */}
-			{effMensuelle && (
-				<div className="flex flex-col gap-5 rounded-lg border border-gray-700 bg-gray-900 p-5 md:p-6">
-					<div className="flex items-start justify-between">
-						<p className="text-base font-bold text-white">
-							Efficience Mensuelle
-						</p>
-						<span className="material-symbols-outlined text-gray-400">
-							speed
-						</span>
+						<SparklineChart pts={rotPts} />
 					</div>
+				</div>
 
-					<div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-						{/* Left – hero + variations */}
-						<div className="flex flex-col gap-3 lg:col-span-2">
-							<p className="text-6xl font-extrabold tracking-tighter text-white">
-								{fmt(n(effMensuelle.Valeur_Mois_Courant), 1)}%
-							</p>
-							<div className="flex items-baseline gap-2">
-								<p className="text-sm text-gray-400">Target:</p>
-								<p className="text-xl font-bold text-blue-500">
-									{fmt(n(effMensuelle.Target_Mois_Courant), 0)}%
+				{/* Card 2: Taux de Fiabilité des Stocks */}
+				<div className='flex h-full flex-col gap-6 rounded-xl border border-border-light bg-panel-background-light p-6 shadow-sm dark:border-border-dark dark:bg-panel-background-dark'>
+					<CardHeader
+						title='Taux de Fiabilité des Stocks'
+						icon={<FaSyncAlt className='text-sm' />}
+					/>
+					<div className='grid flex-1 grid-cols-1 gap-6 lg:grid-cols-5'>
+						<div className='flex flex-col items-center justify-center gap-6 py-4 lg:col-span-3'>
+							<div className='flex flex-col items-center gap-1'>
+								<p className='text-8xl font-extrabold tracking-tighter text-text-light-primary dark:text-dark-primary'>
+									{fiabilite.Valeur_Pct.toFixed(0)}%
 								</p>
+								<MonthDeltaBadge
+									value={fiabilite.Variation_Pts_Vs_M_1}
+									unit='pts'
+									vsLabel='vs M-1'
+								/>
 							</div>
-							<div className="flex flex-col gap-1">
-								<div className="flex items-center gap-1">
-									<span
-										className={`material-symbols-outlined text-xs ${trendColor(
-											n(effMensuelle.Variation_Vs_Mois_Precedent),
-										)}`}
-									>
-										{trendIcon(n(effMensuelle.Variation_Vs_Mois_Precedent))}
-									</span>
-									<p
-										className={`text-sm font-bold ${trendColor(
-											n(effMensuelle.Variation_Vs_Mois_Precedent),
-										)}`}
-									>
-										{signed(n(effMensuelle.Variation_Vs_Mois_Precedent))} pts
-									</p>
-									<p className="text-xs text-gray-400">vs M-1</p>
-								</div>
-								<div className="flex items-center gap-1">
-									<span
-										className={`material-symbols-outlined text-xs ${trendColor(
-											n(effMensuelle.Variation_Vs_Target),
-										)}`}
-									>
-										{trendIcon(n(effMensuelle.Variation_Vs_Target))}
-									</span>
-									<p
-										className={`text-sm font-bold ${trendColor(
-											n(effMensuelle.Variation_Vs_Target),
-										)}`}
-									>
-										{signed(n(effMensuelle.Variation_Vs_Target))} pts
-									</p>
-									<p className="text-xs text-gray-400">vs target</p>
-								</div>
+							<div className='flex w-full max-w-md flex-col gap-4'>
+								{warehouseEntries.map(([key, val]) => (
+									<div key={key} className='flex items-center gap-4'>
+										<p className='w-28 shrink-0 text-sm font-semibold text-text-light-secondary dark:text-dark-secondary'>
+											{key.replace('_', ' ')}
+										</p>
+										<div className='h-6 w-full rounded bg-gray-200 dark:bg-gray-700'>
+											<div
+												className={`flex h-full items-center justify-end rounded pr-2 text-right text-sm font-bold text-white ${
+													val >= 95 ? 'bg-primary' : 'bg-warning'
+												}`}
+												style={{ width: `${Math.min(val, 100)}%` }}
+											>
+												{val.toFixed(1)}%
+											</div>
+										</div>
+									</div>
+								))}
 							</div>
 						</div>
-
-						{/* Right – 4-month bubbles */}
-						{effMensuelle.Suivi_4_Mois &&
-							effMensuelle.Suivi_4_Mois.length > 0 && (
-								<div className="flex items-end justify-around gap-3 lg:col-span-3">
-									{effMensuelle.Suivi_4_Mois.map((item, idx) => {
-										const val = n(item.Valeur)
-										const target = n(item.Target)
-										return (
-											<div
-												key={`eff-m-${item.Label}-${idx}`}
-												className="flex flex-col items-center gap-1"
-											>
-												<div
-													className={`flex h-20 w-20 items-center justify-center rounded-full text-base font-bold ${bubbleColor(
-														val,
-														target,
-													)}`}
-												>
-													{fmt(val, 1)}%
-												</div>
-												<p className="text-xs text-gray-400">{item.Label}</p>
-											</div>
-										)
-									})}
-								</div>
-							)}
+						<SparklineChart pts={fibPts} />
 					</div>
 				</div>
-			)}
-		</div>
-	)
+
+				{/* Card 3: Coût Logistique Total */}
+				<div className='flex h-full flex-col gap-6 rounded-xl border border-border-light bg-panel-background-light p-6 shadow-sm dark:border-border-dark dark:bg-panel-background-dark'>
+					<CardHeader
+						title='Coût Logistique Total'
+						icon={<FaTruck className='text-sm' />}
+					/>
+					<div className='grid flex-1 grid-cols-1 gap-6 lg:grid-cols-5'>
+						<div className='flex flex-col justify-center gap-8 py-4 lg:col-span-3'>
+							<div className='flex flex-col gap-1'>
+								<p className='text-7xl font-extrabold tracking-tighter text-text-light-primary dark:text-dark-primary'>
+									€{cout.Valeur_MEUR.toFixed(2)}
+									<span className='text-5xl font-bold'> M</span>
+								</p>
+								<MonthDeltaBadge
+									value={cout.Delta_MEUR_Vs_M_1}
+									unit='M€'
+									vsLabel={cout.VsLabel}
+									lowerIsBetter
+								/>
+							</div>
+							<div className='flex flex-wrap items-center gap-4'>
+								{cout.Suivi_5_Mois.map((m) => (
+									<div key={m.Label} className='flex flex-col items-center gap-2'>
+										<div className='flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary dark:bg-primary/20'>
+											<span className='text-2xl font-bold'>
+												{m.Valeur_MEUR.toFixed(2)}
+											</span>
+										</div>
+										<p className='text-sm font-semibold text-text-light-secondary dark:text-dark-secondary'>
+											{m.Label}
+										</p>
+									</div>
+								))}
+							</div>
+						</div>
+						<SparklineChart pts={coutPts} />
+					</div>
+				</div>
+			</div>
+		)
+	}
 
 	return (
-		<main className="flex-1 overflow-hidden bg-slate-900">
-			<div className="p-4 sm:p-6 lg:p-8">
-				<div className="flex w-full flex-col gap-6">
+		<main className='flex-1 overflow-hidden bg-slate-900'>
+			<div className='p-4 sm:p-6 lg:p-8'>
+				<div className='flex w-full flex-col gap-6'>
 					{/* Header */}
-					<div className="flex flex-wrap items-start justify-between gap-4">
-						<div className="flex flex-col gap-1">
-							<h1 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tighter text-white">
-								Supply Chain –{" "}
-								{activeTab === "monthly" ? "Mensuel" : "Hebdomadaire"}
+					<div className='flex flex-wrap items-start justify-between gap-4'>
+						<div className='flex flex-col gap-1'>
+							<h1 className='text-2xl font-black tracking-tighter text-white md:text-3xl lg:text-4xl'>
+								Supply Chain –{' '}
+								{activeTab === 'monthly' ? 'Mensuel' : 'Hebdomadaire'}
 							</h1>
-							<p className="text-sm md:text-base font-normal text-gray-400">
-								{activeTab === "monthly" ? "Données mensuelles" : weeklySubtitle}
+							<p className='text-sm font-normal text-gray-400 md:text-base'>
+								{activeTab === 'monthly'
+									? 'Données mensuelles'
+									: 'Données hebdomadaire'}
 							</p>
 						</div>
 						<TabSelector activeTab={activeTab} onTabChange={setActiveTab} />
 					</div>
 
 					{/* Content */}
-					{activeTab === "monthly" ? <MonthlyView /> : <WeeklyView />}
+					{activeTab === 'monthly' ? <MonthlyView /> : <WeeklyView />}
 				</div>
 			</div>
 		</main>
