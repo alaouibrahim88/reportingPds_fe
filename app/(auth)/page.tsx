@@ -167,7 +167,7 @@ export default function WelcomePage() {
                   : "translate-y-4 opacity-0"
               }`}
             >
-              Reporting platform for <br />Polydesigns System's <br /> Business operations
+              Reporting platform for <br />Polydesign Systems <br /> Business operations
             </p>
           </div>
         </div>
