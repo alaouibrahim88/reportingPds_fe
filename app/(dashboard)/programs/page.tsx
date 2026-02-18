@@ -1,6 +1,14 @@
 "use client";
 import { TabSelector } from "@/components/ui/TabSelector";
 import React, { useState, useEffect, useCallback } from "react";
+import {
+	FaTruck,
+	FaCogs,
+	FaUserPlus,
+	FaMoneyBillWave,
+	FaSitemap,
+	FaBook,
+} from "react-icons/fa";
 import type {
 	ProgramApiResponse,
 	ProgramHistoriqueMois,
@@ -250,9 +258,7 @@ export default function ProgramsPage() {
 						<div className="flex items-center justify-between mb-6">
 							<div className="flex items-center gap-3">
 								<div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-									<span className="material-symbols-outlined text-primary text-xl">
-										local_shipping
-									</span>
+									<FaTruck className="text-primary text-xl" />
 								</div>
 								<div>
 									<h2 className="text-lg font-bold text-slate-900">
@@ -360,9 +366,7 @@ export default function ProgramsPage() {
 						<div className="flex items-center justify-between mb-6">
 							<div className="flex items-center gap-3">
 								<div className="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center">
-									<span className="material-symbols-outlined text-violet-600 text-xl">
-										engineering
-									</span>
+									<FaCogs className="text-violet-600 text-xl" />
 								</div>
 								<div>
 									<h2 className="text-lg font-bold text-slate-900">
@@ -472,9 +476,7 @@ export default function ProgramsPage() {
 						<div className="flex items-center justify-between mb-6">
 							<div className="flex items-center gap-3">
 								<div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
-									<span className="material-symbols-outlined text-emerald-600 text-xl">
-										person_add
-									</span>
+									<FaUserPlus className="text-emerald-600 text-xl" />
 								</div>
 								<div>
 									<h2 className="text-lg font-bold text-slate-900">
@@ -717,9 +719,7 @@ export default function ProgramsPage() {
 					<div className="border-l-4 border-primary px-6 pt-6">
 						<div className="flex items-center gap-3 mb-1">
 							<div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-								<span className="material-symbols-outlined text-primary text-xl">
-									payments
-								</span>
+								<FaMoneyBillWave className="text-primary text-xl" />
 							</div>
 							<div>
 								<h2 className="text-lg font-bold text-slate-900">
@@ -937,9 +937,7 @@ export default function ProgramsPage() {
 					<div className="border-l-4 border-violet-500 px-6 pt-6">
 						<div className="flex items-center gap-3 mb-4">
 							<div className="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center">
-								<span className="material-symbols-outlined text-violet-600 text-xl">
-									account_tree
-								</span>
+								<FaSitemap className="text-violet-600 text-xl" />
 							</div>
 							<div>
 								<h2 className="text-lg font-bold text-slate-900">
@@ -1151,9 +1149,7 @@ export default function ProgramsPage() {
 					<div className="border-l-4 border-emerald-500 px-6 pt-6">
 						<div className="flex items-center gap-3 mb-4">
 							<div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
-								<span className="material-symbols-outlined text-emerald-600 text-xl">
-									menu_book
-								</span>
+								<FaBook className="text-emerald-600 text-xl" />
 							</div>
 							<h2 className="text-lg font-bold text-slate-900">
 								Documentation Progress

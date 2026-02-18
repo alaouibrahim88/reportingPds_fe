@@ -225,7 +225,7 @@ export default function QualityPage() {
 							</div>
 
 							{/* Weekly circles */}
-							<div className="grid grid-cols-2 gap-3 flex-1">
+							<div className="flex flex-row items-center justify-between w-full">
 								{reclamationsSeries.map((week: any, index: number) => (
 									<div
 										key={index}
