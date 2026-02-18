@@ -53,39 +53,131 @@ interface MonthlyData {
 	Suivi_Efficience: MonthlyKPI
 }
 
-
-const MONTH_NAMES = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc']
+const MONTH_NAMES = [
+	'Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun',
+	'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc',
+]
 
 function getMonthName(month: string | number): string {
 	const monthNum = typeof month === 'string' ? parseInt(month, 10) : month
 	return MONTH_NAMES[monthNum - 1] || ''
 }
 
-function getStatusColor(value: string | number, target: string | number, isLowerBetter = false): string {
+function getStatusColor(
+	value: string | number,
+	target: string | number,
+	isLowerBetter = false
+): string {
 	const numValue = typeof value === 'string' ? parseFloat(value) : value
 	const numTarget = typeof target === 'string' ? parseFloat(target) : target
 	const diff = isLowerBetter ? numTarget - numValue : numValue - numTarget
 	const percentDiff = (diff / numTarget) * 100
-
 	if (percentDiff >= 0) return 'green'
 	if (percentDiff >= -10) return 'yellow'
 	return 'red'
 }
 
-function getColorClasses(color: string): { border: string; text: string } {
+function getColorClasses(color: string): { border: string; text: string; bg: string } {
 	switch (color) {
 		case 'green':
-			return { border: 'border-green-500', text: 'text-green-500' }
+			return {
+				border: 'border-emerald-500',
+				text: 'text-emerald-400',
+				bg: 'bg-emerald-500/10',
+			}
 		case 'yellow':
-			return { border: 'border-yellow-500', text: 'text-yellow-500' }
+			return {
+				border: 'border-yellow-500',
+				text: 'text-yellow-400',
+				bg: 'bg-yellow-500/10',
+			}
 		case 'red':
-			return { border: 'border-red-500', text: 'text-red-500' }
+			return {
+				border: 'border-red-500',
+				text: 'text-red-400',
+				bg: 'bg-red-500/10',
+			}
 		default:
-			return { border: 'border-blue-500', text: 'text-white' }
+			return {
+				border: 'border-blue-500',
+				text: 'text-blue-400',
+				bg: 'bg-blue-500/10',
+			}
 	}
 }
 
-// Operations Dashboard Page - Can fetch data here
+/** Prominent target badge shown alongside or below main metric */
+function TargetBadge({
+	actual,
+	target,
+	lowerIsBetter = false,
+	label = 'Target',
+}: {
+	actual: string
+	target: string
+	lowerIsBetter?: boolean
+	label?: string
+}) {
+	const numActual = parseFloat(actual)
+	const numTarget = parseFloat(target)
+	const delta = lowerIsBetter
+		? numTarget - numActual
+		: numActual - numTarget
+	const isGood = delta >= 0
+	const sign = delta >= 0 ? '+' : ''
+	return (
+		<div className="flex items-center gap-2 flex-wrap mt-1">
+			<span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-700 text-xs font-bold text-gray-300">
+				<span className="material-symbols-outlined text-[14px] text-gray-400">
+					my_location
+				</span>
+				{label}: <span className="text-white">{target}%</span>
+			</span>
+			<span
+				className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold ${
+					isGood
+						? 'bg-emerald-500/15 text-emerald-400'
+						: 'bg-red-500/15 text-red-400'
+				}`}
+			>
+				{isGood ? '▲' : '▼'} {sign}
+				{Math.abs(delta).toFixed(1)}% vs target
+			</span>
+		</div>
+	)
+}
+
+/** Compact target pill for card headers */
+function TargetPill({
+	target,
+	lowerIsBetter = false,
+	actual,
+}: {
+	target: string
+	lowerIsBetter?: boolean
+	actual: string
+}) {
+	const numActual = parseFloat(actual)
+	const numTarget = parseFloat(target)
+	const isGood = lowerIsBetter
+		? numActual <= numTarget
+		: numActual >= numTarget
+	return (
+		<span
+			className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+				isGood
+					? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400'
+					: 'border-red-500/40 bg-red-500/10 text-red-400'
+			}`}
+		>
+			<span className="material-symbols-outlined text-[11px]">
+				{isGood ? 'check_circle' : 'cancel'}
+			</span>
+			T: {target}%
+		</span>
+	)
+}
+
 export default function OperationsPage() {
 	const [activeTab, setActiveTab] = useState<TabType>('weekly')
 	const [weeklyData, setWeeklyData] = useState<WeeklyData | null>(null)
@@ -95,19 +187,13 @@ export default function OperationsPage() {
 	useEffect(() => {
 		async function fetchData() {
 			setLoading(true)
-
 			try {
 				const res = await fetch(`/api/operations?type=${activeTab}`, {
 					cache: 'no-store',
 				})
-				
-				if (!res.ok) {
-					throw new Error(`HTTP error! status: ${res.status}`)
-				}
-				
+				if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
 				const json = await res.json()
 				const data = json?.data?.data
-
 				if (activeTab === 'weekly') {
 					setWeeklyData(data || null)
 				} else {
@@ -115,16 +201,12 @@ export default function OperationsPage() {
 				}
 			} catch (error) {
 				console.error('Error fetching operations data:', error)
-				if (activeTab === 'weekly') {
-					setWeeklyData(null)
-				} else {
-					setMonthlyData(null)
-				}
+				if (activeTab === 'weekly') setWeeklyData(null)
+				else setMonthlyData(null)
 			} finally {
 				setLoading(false)
 			}
 		}
-
 		fetchData()
 	}, [activeTab])
 
@@ -132,234 +214,377 @@ export default function OperationsPage() {
 		return (
 			<main className="flex-1 overflow-hidden">
 				<div className="p-3 sm:p-4 lg:p-6 flex items-center justify-center min-h-[400px]">
-					<div className="text-white text-lg">Chargement des données...</div>
+					<div className="flex flex-col items-center gap-4">
+						<div className="w-10 h-10 rounded-full border-4 border-blue-500 border-t-transparent animate-spin" />
+						<div className="text-gray-400 text-sm font-medium">
+							Chargement des données...
+						</div>
+					</div>
 				</div>
 			</main>
 		)
 	}
-	// Monthly Operations Component
+
+	const cardStyle =
+		'rounded-xl border border-white/10 bg-slate-800/90 backdrop-blur-sm'
+
+	// ------------------------------------------------------------------
+	// MONTHLY COMPONENT
+	// ------------------------------------------------------------------
 	const MonthlyOperations = () => {
 		if (!monthlyData) return null
 
-		const { Taux_Heures_Supplementaires, Taux_Chomage_Technique, Taux_Scrap, Suivi_Efficience } = monthlyData
+		const {
+			Taux_Heures_Supplementaires,
+			Taux_Chomage_Technique,
+			Taux_Scrap,
+			Suivi_Efficience,
+		} = monthlyData
 
-		if (!Taux_Heures_Supplementaires || !Taux_Chomage_Technique || !Taux_Scrap || !Suivi_Efficience) {
+		if (
+			!Taux_Heures_Supplementaires ||
+			!Taux_Chomage_Technique ||
+			!Taux_Scrap ||
+			!Suivi_Efficience
+		) {
 			return (
-				<main className="flex-grow">
-					<div className="p-3 sm:p-4 lg:p-6 flex items-center justify-center min-h-[400px]">
-						<div className="text-white text-lg">Chargement des données...</div>
-					</div>
-				</main>
+				<div className="p-8 text-center text-gray-400">
+					Chargement des données...
+				</div>
 			)
 		}
 
 		return (
 			<main className="flex-grow">
-				<div className="grid w-full grid-cols-1 gap-2">
-					{/* Écart de Production / Taux Heures Supplémentaires */}
-					<div className="rounded-lg border border-white/20 bg-slate-800/90 backdrop-blur-sm p-2 lg:p-4 transition-transform duration-300 cursor-pointer">
-						<h2 className="mb-1 lg:mb-3 text-sm lg:text-lg font-semibold text-gray-300">
-							Taux d&apos;Heures Supplémentaires
-						</h2>
-						<div className="grid grid-cols-1 items-center gap-2 lg:gap-4 md:grid-cols-2">
-							<div className="flex flex-col">
-								<div className="flex items-end gap-1.5 lg:gap-3">
-									<p className="text-2xl lg:text-4xl font-bold text-white">{Taux_Heures_Supplementaires.Valeur_Mois_Courant}%</p>
-									<div className={`flex items-center ${parseFloat(Taux_Heures_Supplementaires.Variation_Vs_Mois_Precedent) <= 0 ? 'text-green-500' : 'text-red-500'}`}>
-										<div className="flex items-baseline gap-1">
-											<p className="text-lg lg:text-2xl font-bold">
-												{parseFloat(Taux_Heures_Supplementaires.Variation_Vs_Mois_Precedent) > 0 ? '+' : ''}{Taux_Heures_Supplementaires.Variation_Vs_Mois_Precedent}%
-											</p>
-											<p className="text-[10px] lg:text-sm">vs mois précédent</p>
-										</div>
-									</div>
+				<div className="grid w-full grid-cols-1 gap-3">
+
+					{/* Taux d'Heures Supplémentaires */}
+					<div className={`${cardStyle} p-4 lg:p-5`}>
+						<div className="flex flex-wrap items-start justify-between gap-3 mb-4">
+							<div>
+								<div className="flex items-center gap-2 mb-1">
+									<span className="material-symbols-outlined text-blue-400 text-lg">
+										more_time
+									</span>
+									<h2 className="text-sm lg:text-base font-semibold text-gray-200">
+										Taux d&apos;Heures Supplémentaires
+									</h2>
 								</div>
-								<div className="mt-2 lg:mt-6 grid grid-cols-4 gap-1.5 lg:gap-3">
-									{Taux_Heures_Supplementaires.Historique_4_Mois.map((item, index) => {
-										const color = getStatusColor(item.Valeur, item.Target, true)
-										const colorClasses = getColorClasses(color)
-										return (
-											<div key={index} className="flex flex-col items-center justify-center">
-												<div className={`mb-0.5 lg:mb-2 flex h-8 w-8 lg:h-16 lg:w-16 items-center justify-center rounded-full border-2 ${colorClasses.border} bg-transparent`}>
-													<p className={`text-[10px] lg:text-base font-bold ${colorClasses.text}`}>{item.Valeur}%</p>
-												</div>
-												<p className="text-[9px] lg:text-sm font-medium text-gray-400">{getMonthName(item.Mois)}</p>
+								<TargetPill
+									target={Taux_Heures_Supplementaires.Target_Mois_Courant}
+									actual={Taux_Heures_Supplementaires.Valeur_Mois_Courant}
+									lowerIsBetter
+								/>
+							</div>
+							<div className="text-right">
+								<p className="text-3xl lg:text-4xl font-black text-white tabular-nums">
+									{Taux_Heures_Supplementaires.Valeur_Mois_Courant}%
+								</p>
+								<TargetBadge
+									actual={Taux_Heures_Supplementaires.Valeur_Mois_Courant}
+									target={Taux_Heures_Supplementaires.Target_Mois_Courant}
+									lowerIsBetter
+								/>
+								<div
+									className={`flex items-center justify-end gap-1 mt-1 text-sm font-bold ${
+										parseFloat(Taux_Heures_Supplementaires.Variation_Vs_Mois_Precedent) <= 0
+											? 'text-emerald-400'
+											: 'text-red-400'
+									}`}
+								>
+									{parseFloat(Taux_Heures_Supplementaires.Variation_Vs_Mois_Precedent) > 0
+										? '+'
+										: ''}
+									{Taux_Heures_Supplementaires.Variation_Vs_Mois_Precedent}%
+									<span className="text-gray-500 text-xs font-normal ml-1">
+										vs M-1
+									</span>
+								</div>
+							</div>
+						</div>
+						<div className="mt-3 grid grid-cols-4 gap-2 lg:gap-3">
+							{Taux_Heures_Supplementaires.Historique_4_Mois.map(
+								(item, index) => {
+									const color = getStatusColor(item.Valeur, item.Target, true)
+									const cls = getColorClasses(color)
+									return (
+										<div
+											key={index}
+											className="flex flex-col items-center gap-1"
+										>
+											<div
+												className={`flex h-12 w-12 lg:h-16 lg:w-16 items-center justify-center rounded-full border-2 ${cls.border} ${cls.bg}`}
+											>
+												<p
+													className={`text-xs lg:text-sm font-bold ${cls.text}`}
+												>
+													{item.Valeur}%
+												</p>
 											</div>
-										)
-									})}
-								</div>
-							</div>
-							<div className="flex h-20 lg:h-24 w-full items-center justify-center">
-								<svg className="h-full w-full" preserveAspectRatio="xMidYMid meet" viewBox="0 0 200 100">
-									<defs>
-										<linearGradient id="grad1" x1="0%" x2="0%" y1="0%" y2="100%">
-											<stop offset="0%" style={{ stopColor: "#34d399", stopOpacity: 0.3 }} />
-											<stop offset="100%" style={{ stopColor: "#34d399", stopOpacity: 0 }} />
-										</linearGradient>
-									</defs>
-									<path d="M 0 55 L 50 80 L 100 20 L 150 70 L 200 45" fill="none" stroke="#34d399" strokeWidth="2" />
-									<path d="M 0 55 L 50 80 L 100 20 L 150 70 L 200 45 L 200 100 L 0 100 Z" fill="url(#grad1)" />
-								</svg>
-							</div>
+											<p className="text-[9px] lg:text-xs text-gray-400 font-medium">
+												{getMonthName(item.Mois)}
+											</p>
+											<p className="text-[8px] text-gray-600">
+												T:{item.Target}%
+											</p>
+										</div>
+									)
+								}
+							)}
 						</div>
 					</div>
 
 					{/* Taux de Chômage Technique */}
-					<div className="rounded-lg border border-white/20 bg-slate-800/90 backdrop-blur-sm p-2 transition-transform duration-300 cursor-pointer">
-						<h2 className="mb-1 lg:mb-3 flex items-center gap-1.5 text-sm lg:text-lg font-semibold text-gray-300">
-							Taux de Chômage Technique
-							{parseFloat(Taux_Chomage_Technique.Valeur_Mois_Courant) > parseFloat(Taux_Chomage_Technique.Target_Mois_Courant) && (
-								<span className="text-base lg:text-lg text-yellow-400">⚠️</span>
-							)}
-						</h2>
-						<div className="grid grid-cols-1 items-center gap-2 lg:gap-3 md:grid-cols-2">
-							<div className="flex flex-col">
-								<div className="flex items-end gap-1.5 lg:gap-2">
-									<p className="text-2xl lg:text-3xl font-bold text-white">{Taux_Chomage_Technique.Valeur_Mois_Courant}%</p>
-									<div className={`flex items-center ${parseFloat(Taux_Chomage_Technique.Variation_Vs_Mois_Precedent) <= 0 ? 'text-green-500' : 'text-red-500'}`}>
-										<div className="flex items-baseline gap-1">
-											<p className="text-lg lg:text-xl font-bold">
-												{parseFloat(Taux_Chomage_Technique.Variation_Vs_Mois_Precedent) > 0 ? '+' : ''}{Taux_Chomage_Technique.Variation_Vs_Mois_Precedent}%
+					<div className={`${cardStyle} p-4 lg:p-5`}>
+						<div className="flex flex-wrap items-start justify-between gap-3 mb-4">
+							<div>
+								<div className="flex items-center gap-2 mb-1">
+									<span className="material-symbols-outlined text-yellow-400 text-lg">
+										pause_circle
+									</span>
+									<h2 className="text-sm lg:text-base font-semibold text-gray-200 flex items-center gap-1.5">
+										Taux de Chômage Technique
+										{parseFloat(Taux_Chomage_Technique.Valeur_Mois_Courant) >
+											parseFloat(Taux_Chomage_Technique.Target_Mois_Courant) && (
+											<span className="text-yellow-400 text-base">⚠️</span>
+										)}
+									</h2>
+								</div>
+								<TargetPill
+									target={Taux_Chomage_Technique.Target_Mois_Courant}
+									actual={Taux_Chomage_Technique.Valeur_Mois_Courant}
+									lowerIsBetter
+								/>
+							</div>
+							<div className="text-right">
+								<p className="text-3xl lg:text-4xl font-black text-white tabular-nums">
+									{Taux_Chomage_Technique.Valeur_Mois_Courant}%
+								</p>
+								<TargetBadge
+									actual={Taux_Chomage_Technique.Valeur_Mois_Courant}
+									target={Taux_Chomage_Technique.Target_Mois_Courant}
+									lowerIsBetter
+								/>
+								<div
+									className={`flex items-center justify-end gap-1 mt-1 text-sm font-bold ${
+										parseFloat(Taux_Chomage_Technique.Variation_Vs_Mois_Precedent) <= 0
+											? 'text-emerald-400'
+											: 'text-red-400'
+									}`}
+								>
+									{parseFloat(Taux_Chomage_Technique.Variation_Vs_Mois_Precedent) > 0
+										? '+'
+										: ''}
+									{Taux_Chomage_Technique.Variation_Vs_Mois_Precedent}%
+									<span className="text-gray-500 text-xs font-normal ml-1">
+										vs M-1
+									</span>
+								</div>
+							</div>
+						</div>
+						<div className="mt-3 grid grid-cols-4 gap-2 lg:gap-3">
+							{Taux_Chomage_Technique.Historique_4_Mois.map((item, index) => {
+								const color = getStatusColor(item.Valeur, item.Target, true)
+								const cls = getColorClasses(color)
+								return (
+									<div
+										key={index}
+										className="flex flex-col items-center gap-1"
+									>
+										<div
+											className={`flex h-12 w-12 lg:h-16 lg:w-16 items-center justify-center rounded-full border-2 ${cls.border} ${cls.bg}`}
+										>
+											<p className={`text-xs lg:text-sm font-bold ${cls.text}`}>
+												{item.Valeur}%
 											</p>
-											<p className="text-[10px] lg:text-xs">vs mois précédent</p>
 										</div>
+										<p className="text-[9px] lg:text-xs text-gray-400 font-medium">
+											{getMonthName(item.Mois)}
+										</p>
+										<p className="text-[8px] text-gray-600">T:{item.Target}%</p>
 									</div>
-								</div>
-								<div className="mt-2 lg:mt-6 grid grid-cols-4 gap-1.5 lg:gap-3">
-									{Taux_Chomage_Technique.Historique_4_Mois.map((item, index) => {
-										const color = getStatusColor(item.Valeur, item.Target, true)
-										const colorClasses = getColorClasses(color)
-										return (
-											<div key={index} className="flex flex-col items-center justify-center">
-												<div className={`mb-0.5 lg:mb-2 flex h-8 w-8 lg:h-16 lg:w-16 items-center justify-center rounded-full border-2 ${colorClasses.border} bg-transparent`}>
-													<p className={`text-[9px] lg:text-sm font-bold ${colorClasses.text}`}>{item.Valeur}%</p>
-												</div>
-												<p className="text-[9px] lg:text-sm font-medium text-gray-400">{getMonthName(item.Mois)}</p>
-											</div>
-										)
-									})}
-								</div>
-							</div>
-							<div className="flex h-20 lg:h-40 w-full items-center justify-center">
-								<svg className="h-full w-full" preserveAspectRatio="xMidYMid meet" viewBox="0 0 200 100">
-									<defs>
-										<linearGradient id="grad2" x1="0%" x2="0%" y1="0%" y2="100%">
-											<stop offset="0%" style={{ stopColor: "#f87171", stopOpacity: 0.3 }} />
-											<stop offset="100%" style={{ stopColor: "#f87171", stopOpacity: 0 }} />
-										</linearGradient>
-									</defs>
-									<path d="M 0 80 L 50 40 L 100 25 L 150 25 L 200 50" fill="none" stroke="#f87171" strokeWidth="2" />
-									<path d="M 0 80 L 50 40 L 100 25 L 150 25 L 200 50 L 200 100 L 0 100 Z" fill="url(#grad2)" />
-								</svg>
-							</div>
+								)
+							})}
 						</div>
 					</div>
 
-					{/* Suivi de l'Efficience mensuelle */}
-					<div className="rounded-lg border border-white/20 bg-slate-800/90 backdrop-blur-sm p-2 transition-transform duration-300 cursor-pointer">
-						<h2 className="mb-1 lg:mb-2 text-sm lg:text-base font-semibold text-gray-300">
-							Suivi de l&apos;Efficience mensuelle
-						</h2>
-						<div className="grid grid-cols-1 items-center gap-2 lg:gap-3 md:grid-cols-2">
-							<div className="flex flex-col">
-								<div className="flex items-end gap-1.5 lg:gap-2">
-									<p className="text-2xl lg:text-3xl font-bold text-white">{Suivi_Efficience.Valeur_Mois_Courant}%</p>
-									<div className={`flex items-center ${parseFloat(Suivi_Efficience.Variation_Vs_Mois_Precedent) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-										<div className="flex items-baseline gap-1">
-											<p className="text-lg lg:text-xl font-bold">
-												{parseFloat(Suivi_Efficience.Variation_Vs_Mois_Precedent) > 0 ? '+' : ''}{Suivi_Efficience.Variation_Vs_Mois_Precedent}%
+					{/* Suivi Efficience */}
+					<div className={`${cardStyle} p-4 lg:p-5`}>
+						<div className="flex flex-wrap items-start justify-between gap-3 mb-4">
+							<div>
+								<div className="flex items-center gap-2 mb-1">
+									<span className="material-symbols-outlined text-emerald-400 text-lg">
+										speed
+									</span>
+									<h2 className="text-sm lg:text-base font-semibold text-gray-200">
+										Suivi de l&apos;Efficience mensuelle
+									</h2>
+								</div>
+								<TargetPill
+									target={Suivi_Efficience.Target_Mois_Courant}
+									actual={Suivi_Efficience.Valeur_Mois_Courant}
+								/>
+							</div>
+							<div className="text-right">
+								<p className="text-3xl lg:text-4xl font-black text-white tabular-nums">
+									{Suivi_Efficience.Valeur_Mois_Courant}%
+								</p>
+								<TargetBadge
+									actual={Suivi_Efficience.Valeur_Mois_Courant}
+									target={Suivi_Efficience.Target_Mois_Courant}
+								/>
+								<div
+									className={`flex items-center justify-end gap-1 mt-1 text-sm font-bold ${
+										parseFloat(Suivi_Efficience.Variation_Vs_Mois_Precedent) >= 0
+											? 'text-emerald-400'
+											: 'text-red-400'
+									}`}
+								>
+									{parseFloat(Suivi_Efficience.Variation_Vs_Mois_Precedent) > 0
+										? '+'
+										: ''}
+									{Suivi_Efficience.Variation_Vs_Mois_Precedent}%
+									<span className="text-gray-500 text-xs font-normal ml-1">
+										vs M-1
+									</span>
+								</div>
+							</div>
+						</div>
+						<div className="mt-3 grid grid-cols-4 gap-2 lg:gap-3">
+							{Suivi_Efficience.Historique_4_Mois.map((item, index) => {
+								const color = getStatusColor(item.Valeur, item.Target, false)
+								const cls = getColorClasses(color)
+								return (
+									<div
+										key={index}
+										className="flex flex-col items-center gap-1"
+									>
+										<div
+											className={`flex h-12 w-12 lg:h-16 lg:w-16 items-center justify-center rounded-full border-2 ${cls.border} ${cls.bg}`}
+										>
+											<p className={`text-xs lg:text-sm font-bold ${cls.text}`}>
+												{item.Valeur}%
 											</p>
-											<p className="text-[10px] lg:text-xs">vs mois précédent</p>
 										</div>
+										<p className="text-[9px] lg:text-xs text-gray-400 font-medium">
+											{getMonthName(item.Mois)}
+										</p>
+										<p className="text-[8px] text-gray-600">T:{item.Target}%</p>
 									</div>
-								</div>
-								<div className="mt-2 lg:mt-6 grid grid-cols-4 gap-1.5 lg:gap-3">
-									{Suivi_Efficience.Historique_4_Mois.map((item, index) => {
-										const color = getStatusColor(item.Valeur, item.Target, false)
-										const colorClasses = getColorClasses(color)
-										return (
-											<div key={index} className="flex flex-col items-center justify-center">
-												<div className={`mb-0.5 lg:mb-2 flex h-8 w-8 lg:h-16 lg:w-16 items-center justify-center rounded-full border-2 ${colorClasses.border} bg-transparent`}>
-													<p className={`text-[10px] lg:text-base font-bold ${colorClasses.text}`}>{item.Valeur}%</p>
-												</div>
-												<p className="text-[9px] lg:text-sm font-medium text-gray-400">{getMonthName(item.Mois)}</p>
-											</div>
-										)
-									})}
-								</div>
-							</div>
-							<div className="flex h-20 lg:h-40 w-full items-center justify-center">
-								<svg className="h-full w-full" preserveAspectRatio="xMidYMid meet" viewBox="0 0 200 100">
-									<defs>
-										<linearGradient id="grad3" x1="0%" x2="0%" y1="0%" y2="100%">
-											<stop offset="0%" style={{ stopColor: "#34d399", stopOpacity: 0.3 }} />
-											<stop offset="100%" style={{ stopColor: "#34d399", stopOpacity: 0 }} />
-										</linearGradient>
-									</defs>
-									<path d="M 0 20 L 50 15 L 100 50 L 150 25 L 200 35" fill="none" stroke="#34d399" strokeWidth="2" />
-									<path d="M 0 20 L 50 15 L 100 50 L 150 25 L 200 35 L 200 100 L 0 100 Z" fill="url(#grad3)" />
-								</svg>
-							</div>
+								)
+							})}
 						</div>
 					</div>
 
-					{/* Bottom Grid - Taux Scrap and Target Info */}
-					<div className="grid w-full grid-cols-1 gap-2 md:grid-cols-2">
-						<div className="rounded-lg border border-white/20 bg-slate-800/90 backdrop-blur-sm p-2 transition-transform duration-300 cursor-pointer">
-							<h2 className="mb-1 lg:mb-3 text-sm lg:text-lg font-semibold text-gray-300">
-								Taux de Scrap Mensuel
-							</h2>
-							<div className="flex items-center justify-between">
-								<div className="flex flex-col">
-									<div className="flex items-baseline gap-1.5 lg:gap-3">
-										<p className="text-xl lg:text-3xl font-bold text-white">{Taux_Scrap.Valeur_Mois_Courant}%</p>
-										<div className={`flex items-center ${parseFloat(Taux_Scrap.Variation_Vs_Mois_Precedent) <= 0 ? 'text-green-500' : 'text-red-500'}`}>
-											<div className="flex items-baseline gap-0.5">
-												<span className="text-base lg:text-xl font-bold">
-													{parseFloat(Taux_Scrap.Variation_Vs_Mois_Precedent) > 0 ? '+' : ''}{Taux_Scrap.Variation_Vs_Mois_Precedent}%
-												</span>
-												<span className="text-[10px] lg:text-sm">vs mois dernier</span>
-											</div>
+					{/* Bottom: Scrap + Target Efficience Gauge */}
+					<div className="grid w-full grid-cols-1 gap-3 md:grid-cols-2">
+						{/* Taux Scrap */}
+						<div className={`${cardStyle} p-4 lg:p-5`}>
+							<div className="flex items-center gap-2 mb-3">
+								<span className="material-symbols-outlined text-orange-400 text-lg">
+									delete_sweep
+								</span>
+								<h2 className="text-sm lg:text-base font-semibold text-gray-200">
+									Taux de Scrap Mensuel
+								</h2>
+							</div>
+							<div className="flex items-start justify-between gap-4">
+								<div>
+									<div className="flex items-baseline gap-2">
+										<p className="text-2xl lg:text-3xl font-black text-white tabular-nums">
+											{Taux_Scrap.Valeur_Mois_Courant}%
+										</p>
+										<div
+											className={`text-sm font-bold ${
+												parseFloat(Taux_Scrap.Variation_Vs_Mois_Precedent) <= 0
+													? 'text-emerald-400'
+													: 'text-red-400'
+											}`}
+										>
+											{parseFloat(Taux_Scrap.Variation_Vs_Mois_Precedent) > 0
+												? '+'
+												: ''}
+											{Taux_Scrap.Variation_Vs_Mois_Precedent}%
+											<span className="text-gray-500 text-xs font-normal ml-1">
+												vs M-1
+											</span>
 										</div>
 									</div>
-									<p className="mt-0.5 lg:mt-1 text-[10px] lg:text-sm text-gray-400">
-										Target: {Taux_Scrap.Target_Mois_Courant}%
-									</p>
+									<TargetBadge
+										actual={Taux_Scrap.Valeur_Mois_Courant}
+										target={Taux_Scrap.Target_Mois_Courant}
+										lowerIsBetter
+									/>
 								</div>
 							</div>
 						</div>
-						<div className="rounded-lg border border-white/20 bg-slate-800/90 backdrop-blur-sm p-2 transition-transform duration-300 cursor-pointer">
-							<h2 className="mb-1 lg:mb-3 text-center text-sm lg:text-lg font-semibold text-gray-300">
-								Target Efficience
-							</h2>
-							<div className="flex items-center justify-center">
-								<div className="relative h-16 w-16 lg:h-32 lg:w-32">
-									<svg className="h-full w-full -rotate-90 transform" viewBox="0 0 120 120">
-										<circle className="text-gray-700" cx="60" cy="60" fill="transparent" r="54" stroke="currentColor" strokeWidth="12" />
-										<circle 
-											className={`${parseFloat(Suivi_Efficience.Valeur_Mois_Courant) >= parseFloat(Suivi_Efficience.Target_Mois_Courant) ? 'text-green-500' : 'text-yellow-500'}`} 
-											cx="60" 
-											cy="60" 
-											fill="transparent" 
-											r="54" 
-											stroke="currentColor" 
-											strokeDasharray="339.292" 
-											strokeDashoffset={339.292 * (1 - parseFloat(Suivi_Efficience.Valeur_Mois_Courant) / 100)} 
-											strokeLinecap="round" 
-											strokeWidth="12" 
+
+						{/* Target Efficience Radial Gauge */}
+						<div className={`${cardStyle} p-4 lg:p-5`}>
+							<div className="flex items-center gap-2 mb-3">
+								<span className="material-symbols-outlined text-blue-400 text-lg">
+									donut_large
+								</span>
+								<h2 className="text-sm lg:text-base font-semibold text-gray-200">
+									Target Efficience
+								</h2>
+							</div>
+							<div className="flex items-center gap-4">
+								<div className="relative h-20 w-20 lg:h-28 lg:w-28 flex-shrink-0">
+									<svg
+										className="h-full w-full -rotate-90"
+										viewBox="0 0 120 120"
+									>
+										<circle
+											cx="60"
+											cy="60"
+											fill="transparent"
+											r="54"
+											stroke="#1e293b"
+											strokeWidth="12"
+										/>
+										<circle
+											cx="60"
+											cy="60"
+											fill="transparent"
+											r="54"
+											stroke={
+												parseFloat(Suivi_Efficience.Valeur_Mois_Courant) >=
+												parseFloat(Suivi_Efficience.Target_Mois_Courant)
+													? '#10b981'
+													: '#f59e0b'
+											}
+											strokeDasharray="339.292"
+											strokeDashoffset={
+												339.292 *
+												(1 -
+													parseFloat(Suivi_Efficience.Valeur_Mois_Courant) /
+														100)
+											}
+											strokeLinecap="round"
+											strokeWidth="12"
 										/>
 									</svg>
 									<div className="absolute inset-0 flex flex-col items-center justify-center">
-										<p className="text-base lg:text-2xl font-bold text-white">{Suivi_Efficience.Target_Mois_Courant}%</p>
+										<p className="text-xs text-gray-400 leading-none mb-0.5">
+											Target
+										</p>
+										<p className="text-lg font-black text-white leading-none">
+											{Suivi_Efficience.Target_Mois_Courant}%
+										</p>
 									</div>
 								</div>
-								<div className={`ml-2 lg:ml-4 flex items-center ${parseFloat(Suivi_Efficience.Valeur_Mois_Courant) >= parseFloat(Suivi_Efficience.Target_Mois_Courant) ? 'text-green-500' : 'text-red-500'}`}>
-									<div className="flex items-baseline gap-0.5 lg:gap-1">
-										<span className="text-base lg:text-xl font-bold">
-											{(parseFloat(Suivi_Efficience.Valeur_Mois_Courant) - parseFloat(Suivi_Efficience.Target_Mois_Courant)).toFixed(1)}%
-										</span>
-										<p className="text-[10px] lg:text-sm text-gray-400">VS target</p>
+								<div className="flex flex-col gap-2">
+									<div>
+										<p className="text-xs text-gray-400">Actuel</p>
+										<p className="text-md font-black text-white">
+											{Suivi_Efficience.Valeur_Mois_Courant}%
+										</p>
 									</div>
+									<TargetBadge
+										actual={Suivi_Efficience.Valeur_Mois_Courant}
+										target={Suivi_Efficience.Target_Mois_Courant}
+									/>
 								</div>
 							</div>
 						</div>
@@ -369,230 +594,633 @@ export default function OperationsPage() {
 		)
 	}
 
-	// Weekly Operations Component
+	// ------------------------------------------------------------------
+	// WEEKLY COMPONENT
+	// ------------------------------------------------------------------
 	const WeeklyOperations = () => {
 		if (!weeklyData) return null
 
-		const { Taux_Heures_Supplementaires, Taux_Chomage_Technique, Taux_Scrap, Suivi_Efficience } = weeklyData
+		const {
+			Taux_Heures_Supplementaires,
+			Taux_Chomage_Technique,
+			Taux_Scrap,
+			Suivi_Efficience,
+		} = weeklyData
 
-		if (!Taux_Heures_Supplementaires || !Taux_Chomage_Technique || !Taux_Scrap || !Suivi_Efficience) {
+		if (
+			!Taux_Heures_Supplementaires ||
+			!Taux_Chomage_Technique ||
+			!Taux_Scrap ||
+			!Suivi_Efficience
+		) {
 			return (
-				<main className="w-full flex-shrink-0">
-					<div className="p-3 sm:p-4 lg:p-6 flex items-center justify-center min-h-[400px]">
-						<div className="text-white text-lg">Chargement des données...</div>
-					</div>
-				</main>
+				<div className="p-8 text-center text-gray-400">
+					Chargement des données...
+				</div>
 			)
 		}
 
 		return (
 			<main className="w-full flex-shrink-0">
-				<div className="flex flex-col gap-2">
-					<div className="relative grid grid-cols-1 gap-2 md:grid-cols-2">
-						{/* Taux d'Heures Supplémentaires */}
-						<div className="flex flex-col overflow-hidden rounded-lg bg-slate-800/90 backdrop-blur-sm p-2 lg:p-4 min-h-[200px] lg:min-h-[340px] transition-transform duration-300 cursor-pointer">
-							<h2 className="mb-1 lg:mb-2 text-sm lg:text-lg font-semibold text-gray-300">
-								Taux d&apos;Heures Supplémentaires
-							</h2>
-							<div className="flex items-end gap-1.5 lg:gap-3 mb-1.5 lg:mb-3">
-								<p className="text-2xl lg:text-4xl font-bold text-white">{Taux_Heures_Supplementaires.Valeur_Actuelle}%</p>
+				<div className="flex flex-col gap-3">
+					{/* Top row: Heures Supp + Chomage Tech */}
+					<div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+						{/* Heures Supplémentaires */}
+						<div
+							className={`${cardStyle} flex flex-col p-3 lg:p-5 min-h-[220px] lg:min-h-[320px]`}
+						>
+							<div className="flex items-start justify-between mb-2">
+								<div>
+									<div className="flex items-center gap-1.5 mb-1">
+										<span className="material-symbols-outlined text-blue-400 text-base">
+											more_time
+										</span>
+										<h2 className="text-sm lg:text-base font-semibold text-gray-200">
+											Taux d&apos;Heures Supplémentaires
+										</h2>
+									</div>
+									<TargetPill
+										target={Taux_Heures_Supplementaires.Target_Actuelle}
+										actual={Taux_Heures_Supplementaires.Valeur_Actuelle}
+										lowerIsBetter
+									/>
+								</div>
 							</div>
-							<div className="mt-auto flex flex-col pt-1.5 lg:pt-3">
-								<div className="relative h-10 lg:h-20 w-full mb-2 lg:mb-4">
-									<svg className="absolute inset-0 h-full w-full" fill="none" preserveAspectRatio="none" strokeWidth="3" viewBox="0 0 200 80">
+							<div className="flex items-end gap-2 mb-2">
+								<p className="text-3xl lg:text-4xl font-black text-white tabular-nums">
+									{Taux_Heures_Supplementaires.Valeur_Actuelle}%
+								</p>
+							</div>
+							<TargetBadge
+								actual={Taux_Heures_Supplementaires.Valeur_Actuelle}
+								target={Taux_Heures_Supplementaires.Target_Actuelle}
+								lowerIsBetter
+							/>
+							<div className="mt-auto flex flex-col pt-3">
+								{/* Mini trend chart */}
+								<div className="relative h-12 lg:h-20 w-full mb-3">
+									<svg
+										className="absolute inset-0 h-full w-full"
+										fill="none"
+										preserveAspectRatio="none"
+										viewBox="0 0 200 80"
+									>
 										<defs>
-											<linearGradient id="gradient1" x1="0" x2="0" y1="0" y2="1">
-												<stop offset="0%" stopColor="#3b82f6" stopOpacity="0.2" />
-												<stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
+											<linearGradient
+												id="hs-grad"
+												x1="0"
+												x2="0"
+												y1="0"
+												y2="1"
+											>
+												<stop
+													offset="0%"
+													stopColor="#3b82f6"
+													stopOpacity="0.25"
+												/>
+												<stop
+													offset="100%"
+													stopColor="#3b82f6"
+													stopOpacity="0"
+												/>
 											</linearGradient>
 										</defs>
-										<path className="stroke-dashed stroke-gray-500" d="M 0 40 L 200 40" strokeDasharray="4 4" />
-										<path className="stroke-blue-500" d="M 0 20 L 66 60 L 132 30 L 200 50" />
-										<path d="M 0 20 L 66 60 L 132 30 L 200 50 L 200 80 L 0 80 Z" fill="url(#gradient1)" />
+										{/* Target line */}
+										<line
+											x1="0"
+											y1="40"
+											x2="200"
+											y2="40"
+											stroke="#f59e0b"
+											strokeWidth="1.5"
+											strokeDasharray="5 3"
+										/>
+										<text
+											x="3"
+											y="36"
+											fontSize="9"
+											fill="#f59e0b"
+											fontWeight="600"
+										>
+											T:{Taux_Heures_Supplementaires.Target_Actuelle}%
+										</text>
+										<path
+											className="stroke-blue-500"
+											d="M 0 20 L 66 60 L 132 30 L 200 50"
+											strokeWidth="2.5"
+											strokeLinecap="round"
+										/>
+										<path
+											d="M 0 20 L 66 60 L 132 30 L 200 50 L 200 80 L 0 80 Z"
+											fill="url(#hs-grad)"
+										/>
 									</svg>
-									<div className="absolute -top-1.5 left-0 text-[9px] lg:text-[10px] text-gray-500">Target: {Taux_Heures_Supplementaires.Target_Actuelle}%</div>
 								</div>
-								<div className="mt-0.5 lg:mt-2 flex justify-between gap-1 lg:gap-2">
-									{Taux_Heures_Supplementaires.Historique_4_Semaines.slice().reverse().map((item, index) => {
-										const color = getStatusColor(item.Valeur, item.Target, true)
-										const colorClasses = getColorClasses(color)
-										return (
-											<div key={index} className="flex flex-col items-center gap-0.5 lg:gap-1">
-												<div className={`flex h-10 w-10 lg:h-14 lg:w-14 items-center justify-center rounded-full border-2 ${colorClasses.border} bg-slate-800 p-1`}>
-													<span className={`text-[10px] lg:text-xs font-bold leading-none ${colorClasses.text}`}>{item.Valeur}%</span>
+								{/* History circles */}
+								<div className="flex justify-between gap-1 lg:gap-2">
+									{Taux_Heures_Supplementaires.Historique_4_Semaines
+										.slice()
+										.reverse()
+										.map((item, index) => {
+											const color = getStatusColor(
+												item.Valeur,
+												item.Target,
+												true
+											)
+											const cls = getColorClasses(color)
+											return (
+												<div
+													key={index}
+													className="flex flex-col items-center gap-0.5"
+												>
+													<div
+														className={`flex h-11 w-11 lg:h-14 lg:w-14 items-center justify-center rounded-full border-2 ${cls.border} ${cls.bg}`}
+													>
+														<span
+															className={`text-[10px] lg:text-xs font-bold leading-none ${cls.text}`}
+														>
+															{item.Valeur}%
+														</span>
+													</div>
+													<span className="font-bold text-gray-400 text-[9px]">
+														S{item.Semaine}
+													</span>
+													<span className="text-gray-600 text-[8px]">
+														T:{item.Target}%
+													</span>
 												</div>
-												<span className="font-bold text-gray-400 text-[9px] lg:text-[10px]">S{item.Semaine}</span>
-											</div>
-										)
-									})}
+											)
+										})}
 								</div>
 							</div>
 						</div>
 
-						{/* Taux de Chômage technique */}
-						<div className="flex flex-col overflow-hidden rounded-lg bg-slate-800/90 backdrop-blur-sm p-2 lg:p-4 min-h-[200px] lg:min-h-[340px] transition-transform duration-300 cursor-pointer">
-							<h2 className="mb-1 lg:mb-2 flex items-center gap-1.5 text-sm lg:text-lg font-semibold text-gray-300">
-								Taux de Chômage technique
-								{parseFloat(Taux_Chomage_Technique.Valeur_Actuelle) > parseFloat(Taux_Chomage_Technique.Target_Actuelle) && (
-									<span className="text-base lg:text-lg text-yellow-400">⚠️</span>
-								)}
-							</h2>
-							<div className="flex items-end gap-1.5 lg:gap-3 mb-1.5 lg:mb-3">
-								<p className={`flex items-center text-2xl lg:text-3xl font-bold ${parseFloat(Taux_Chomage_Technique.Valeur_Actuelle) > parseFloat(Taux_Chomage_Technique.Target_Actuelle) ? 'text-red-500' : 'text-white'}`}>
+						{/* Chomage Technique */}
+						<div
+							className={`${cardStyle} flex flex-col p-3 lg:p-5 min-h-[220px] lg:min-h-[320px]`}
+						>
+							<div className="flex items-start justify-between mb-2">
+								<div>
+									<div className="flex items-center gap-1.5 mb-1">
+										<span className="material-symbols-outlined text-yellow-400 text-base">
+											pause_circle
+										</span>
+										<h2 className="text-sm lg:text-base font-semibold text-gray-200 flex items-center gap-1">
+											Taux de Chômage technique
+											{parseFloat(Taux_Chomage_Technique.Valeur_Actuelle) >
+												parseFloat(Taux_Chomage_Technique.Target_Actuelle) && (
+												<span className="text-yellow-400">⚠️</span>
+											)}
+										</h2>
+									</div>
+									<TargetPill
+										target={Taux_Chomage_Technique.Target_Actuelle}
+										actual={Taux_Chomage_Technique.Valeur_Actuelle}
+										lowerIsBetter
+									/>
+								</div>
+							</div>
+							<div className="flex items-end gap-2 mb-2">
+								<p
+									className={`text-3xl lg:text-4xl font-black tabular-nums ${
+										parseFloat(Taux_Chomage_Technique.Valeur_Actuelle) >
+										parseFloat(Taux_Chomage_Technique.Target_Actuelle)
+											? 'text-red-400'
+											: 'text-white'
+									}`}
+								>
 									{Taux_Chomage_Technique.Valeur_Actuelle}%
 								</p>
 							</div>
-							<div className="mt-auto flex flex-col pt-1.5 lg:pt-3">
-								<div className="relative h-10 lg:h-20 w-full mb-2 lg:mb-4">
-									<svg className="absolute inset-0 h-full w-full" fill="none" preserveAspectRatio="none" strokeWidth="3" viewBox="0 0 200 80">
+							<TargetBadge
+								actual={Taux_Chomage_Technique.Valeur_Actuelle}
+								target={Taux_Chomage_Technique.Target_Actuelle}
+								lowerIsBetter
+							/>
+							<div className="mt-auto flex flex-col pt-3">
+								<div className="relative h-12 lg:h-20 w-full mb-3">
+									<svg
+										className="absolute inset-0 h-full w-full"
+										fill="none"
+										preserveAspectRatio="none"
+										viewBox="0 0 200 80"
+									>
 										<defs>
-											<linearGradient id="gradient2" x1="0" x2="0" y1="0" y2="1">
-												<stop offset="0%" stopColor="#3b82f6" stopOpacity="0.2" />
-												<stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
+											<linearGradient
+												id="ct-grad"
+												x1="0"
+												x2="0"
+												y1="0"
+												y2="1"
+											>
+												<stop
+													offset="0%"
+													stopColor="#3b82f6"
+													stopOpacity="0.25"
+												/>
+												<stop
+													offset="100%"
+													stopColor="#3b82f6"
+													stopOpacity="0"
+												/>
 											</linearGradient>
 										</defs>
-										<path className="stroke-dashed stroke-gray-500" d="M 0 40 L 200 40" strokeDasharray="4 4" />
-										<path className="stroke-blue-500" d="M 0 60 L 66 20 L 132 50 L 200 30" />
-										<path d="M 0 60 L 66 20 L 132 50 L 200 30 L 200 80 L 0 80 Z" fill="url(#gradient2)" />
+										<line
+											x1="0"
+											y1="40"
+											x2="200"
+											y2="40"
+											stroke="#f59e0b"
+											strokeWidth="1.5"
+											strokeDasharray="5 3"
+										/>
+										<text
+											x="3"
+											y="36"
+											fontSize="9"
+											fill="#f59e0b"
+											fontWeight="600"
+										>
+											T:{Taux_Chomage_Technique.Target_Actuelle}%
+										</text>
+										<path
+											className="stroke-blue-500"
+											d="M 0 60 L 66 20 L 132 50 L 200 30"
+											strokeWidth="2.5"
+											strokeLinecap="round"
+										/>
+										<path
+											d="M 0 60 L 66 20 L 132 50 L 200 30 L 200 80 L 0 80 Z"
+											fill="url(#ct-grad)"
+										/>
 									</svg>
-									<div className="absolute -top-1.5 left-0 text-[9px] lg:text-[10px] text-gray-500">Target: {Taux_Chomage_Technique.Target_Actuelle}%</div>
 								</div>
-								<div className="mt-0.5 flex justify-between gap-1">
-									{Taux_Chomage_Technique.Historique_4_Semaines.slice().reverse().map((item, index) => {
-										const color = getStatusColor(item.Valeur, item.Target, true)
-										const colorClasses = getColorClasses(color)
-										return (
-											<div key={index} className="flex flex-col items-center gap-0.5">
-												<div className={`flex h-10 w-10 lg:h-11 lg:w-11 items-center justify-center rounded-full border-2 ${colorClasses.border} bg-slate-800 p-1`}>
-													<span className={`text-[10px] lg:text-xs font-bold leading-none ${colorClasses.text}`}>{item.Valeur}%</span>
+								<div className="flex justify-between gap-1">
+									{Taux_Chomage_Technique.Historique_4_Semaines.slice()
+										.reverse()
+										.map((item, index) => {
+											const color = getStatusColor(
+												item.Valeur,
+												item.Target,
+												true
+											)
+											const cls = getColorClasses(color)
+											return (
+												<div
+													key={index}
+													className="flex flex-col items-center gap-0.5"
+												>
+													<div
+														className={`flex h-11 w-11 lg:h-14 lg:w-14 items-center justify-center rounded-full border-2 ${cls.border} ${cls.bg}`}
+													>
+														<span
+															className={`text-[10px] lg:text-xs font-bold leading-none ${cls.text}`}
+														>
+															{item.Valeur}%
+														</span>
+													</div>
+													<span className="font-bold text-gray-400 text-[9px]">
+														S{item.Semaine}
+													</span>
+													<span className="text-gray-600 text-[8px]">
+														T:{item.Target}%
+													</span>
 												</div>
-												<span className="font-bold text-gray-400 text-[9px] lg:text-[10px]">S{item.Semaine}</span>
-											</div>
-										)
-									})}
+											)
+										})}
 								</div>
 							</div>
 						</div>
 					</div>
 
-					<div className="rounded-lg bg-gray-900/50">
-						<div className="grid grid-cols-1 gap-2 md:grid-cols-2">
-							{/* Taux de Scrap */}
-							<div className="flex flex-col overflow-hidden rounded-lg bg-slate-800/90 backdrop-blur-sm p-2 lg:p-4 min-h-[200px] lg:min-h-[340px] transition-transform duration-300 cursor-pointer">
-								<h2 className="mb-1 lg:mb-2 flex items-center gap-1.5 text-sm lg:text-lg font-semibold text-gray-300">
-									Taux de Scrap 
-									{parseFloat(Taux_Scrap.Valeur_Actuelle) > parseFloat(Taux_Scrap.Target_Actuelle) && (
-										<span className="text-base lg:text-lg text-yellow-400">⚠️</span>
-									)}
-								</h2>
-								<div className="flex items-center gap-1.5 lg:gap-3">
-									<div className="relative flex h-16 w-16 lg:h-28 lg:w-28 flex-shrink-0 items-center justify-center">
-										<svg className="h-full w-full -rotate-90" viewBox="0 0 100 100">
-											<circle className="stroke-current text-gray-600" cx="50" cy="50" fill="none" r="45" strokeWidth="8" />
-											<circle 
-												className={`stroke-current transition-all duration-500 ${parseFloat(Taux_Scrap.Valeur_Actuelle) <= parseFloat(Taux_Scrap.Target_Actuelle) ? 'text-green-500' : 'text-red-500'}`} 
-												cx="50" 
-												cy="50" 
-												fill="none" 
-												r="45" 
-												strokeDasharray="282.74" 
-												strokeDashoffset={282.74 * (1 - Math.min(parseFloat(Taux_Scrap.Valeur_Actuelle) / 10, 1))} 
-												strokeLinecap="round" 
-												strokeWidth="8" 
-											/>
-										</svg>
-										<div className="absolute inset-0 flex items-center justify-center">
-											<span className="text-xl lg:text-3xl font-bold text-white">{Taux_Scrap.Valeur_Actuelle}%</span>
-										</div>
+					{/* Bottom row: Scrap + Efficience */}
+					<div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+						{/* Taux de Scrap */}
+						<div
+							className={`${cardStyle} flex flex-col p-3 lg:p-5 min-h-[220px] lg:min-h-[320px]`}
+						>
+							<div className="flex items-start justify-between mb-2">
+								<div>
+									<div className="flex items-center gap-1.5 mb-1">
+										<span className="material-symbols-outlined text-orange-400 text-base">
+											delete_sweep
+										</span>
+										<h2 className="text-sm lg:text-base font-semibold text-gray-200 flex items-center gap-1">
+											Taux de Scrap
+											{parseFloat(Taux_Scrap.Valeur_Actuelle) >
+												parseFloat(Taux_Scrap.Target_Actuelle) && (
+												<span className="text-yellow-400">⚠️</span>
+											)}
+										</h2>
 									</div>
-								</div>
-								<div className="mt-auto flex flex-col pt-1.5 lg:pt-3">
-									<div className="relative h-10 lg:h-20 w-full mb-2 lg:mb-4">
-										<svg className="absolute inset-0 h-full w-full" fill="none" preserveAspectRatio="none" strokeWidth="3" viewBox="0 0 200 80">
-											<defs>
-												<linearGradient id="gradient3" x1="0" x2="0" y1="0" y2="1">
-													<stop offset="0%" stopColor="#3b82f6" stopOpacity="0.2" />
-													<stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
-												</linearGradient>
-											</defs>
-											<path className="stroke-dashed stroke-gray-500" d="M 0 50 L 200 50" strokeDasharray="4 4" />
-											<path className="stroke-blue-500" d="M 0 70 L 66 40 L 132 60 L 200 20" />
-											<path d="M 0 70 L 66 40 L 132 60 L 200 20 L 200 80 L 0 80 Z" fill="url(#gradient3)" />
-										</svg>
-										<div className="absolute -top-1.5 left-0 text-[9px] lg:text-[10px] text-gray-500">Target: {Taux_Scrap.Target_Actuelle}%</div>
-									</div>
-									<div className="mt-0.5 flex justify-between gap-1">
-										{Taux_Scrap.Historique_4_Semaines.slice().reverse().map((item, index) => {
-											const color = getStatusColor(item.Valeur, item.Target, true)
-											const colorClasses = getColorClasses(color)
-											return (
-												<div key={index} className="flex flex-col items-center gap-0.5">
-													<div className={`flex h-10 w-10 lg:h-11 lg:w-11 items-center justify-center rounded-full border-2 ${colorClasses.border} bg-slate-800 p-1`}>
-														<span className={`text-[10px] lg:text-xs font-bold leading-none ${colorClasses.text}`}>{item.Valeur}%</span>
-													</div>
-													<span className="font-bold text-gray-400 text-[9px] lg:text-[10px]">S{item.Semaine}</span>
-												</div>
-											)
-										})}
-									</div>
+									<TargetPill
+										target={Taux_Scrap.Target_Actuelle}
+										actual={Taux_Scrap.Valeur_Actuelle}
+										lowerIsBetter
+									/>
 								</div>
 							</div>
-
-							{/* Suivi de l'Efficience par semaine */}
-							<div className="flex flex-col overflow-hidden rounded-lg bg-slate-800/90 backdrop-blur-sm p-2 lg:p-4 min-h-[200px] lg:min-h-[340px] transition-transform duration-300 cursor-pointer">
-								<h2 className="mb-1 lg:mb-2 text-sm lg:text-lg font-semibold text-gray-300">
-									Suivi de l&apos;Efficience par semaine
-								</h2>
-								<div className="flex items-center gap-1.5 lg:gap-3">
-									<div className="relative flex h-16 w-16 lg:h-28 lg:w-28 flex-shrink-0 items-center justify-center rounded-full bg-gray-700">
-										<svg className="h-full w-full -rotate-90" viewBox="0 0 100 100">
-											<circle className="stroke-current text-gray-600" cx="50" cy="50" fill="none" r="45" strokeWidth="8" />
-											<circle 
-												className="stroke-current text-blue-500 transition-all duration-500" 
-												cx="50" 
-												cy="50" 
-												fill="none" 
-												r="45" 
-												strokeDasharray="282.74" 
-												strokeDashoffset={282.74 * (1 - parseFloat(Suivi_Efficience.Valeur_Actuelle) / 100)} 
-												strokeLinecap="round" 
-												strokeWidth="8" 
-											/>
-										</svg>
-										<div className="absolute inset-0 flex items-center justify-center">
-											<span className="text-md lg:text-xl font-bold text-white">{Suivi_Efficience.Valeur_Actuelle}%</span>
-										</div>
+							{/* Radial */}
+							<div className="flex items-center gap-3 mb-2">
+								<div className="relative flex h-20 w-20 lg:h-24 lg:w-24 flex-shrink-0 items-center justify-center">
+									<svg className="h-full w-full -rotate-90" viewBox="0 0 100 100">
+										<circle
+											className="stroke-current text-slate-700"
+											cx="50"
+											cy="50"
+											fill="none"
+											r="45"
+											strokeWidth="8"
+										/>
+										<circle
+											className={`stroke-current transition-all duration-500 ${
+												parseFloat(Taux_Scrap.Valeur_Actuelle) <=
+												parseFloat(Taux_Scrap.Target_Actuelle)
+													? 'text-emerald-500'
+													: 'text-red-500'
+											}`}
+											cx="50"
+											cy="50"
+											fill="none"
+											r="45"
+											strokeDasharray="282.74"
+											strokeDashoffset={
+												282.74 *
+												(1 -
+													Math.min(
+														parseFloat(Taux_Scrap.Valeur_Actuelle) / 10,
+														1
+													))
+											}
+											strokeLinecap="round"
+											strokeWidth="8"
+										/>
+									</svg>
+									<div className="absolute inset-0 flex flex-col items-center justify-center">
+										<span className="text-[10px] text-gray-500">Actuel</span>
+										<span className="text-md font-black text-white tabular-nums">
+											{Taux_Scrap.Valeur_Actuelle}%
+										</span>
 									</div>
 								</div>
-								<div className="mt-auto flex flex-col pt-1.5 lg:pt-3">
-									<div className="relative h-10 lg:h-20 w-full mb-2 lg:mb-4">
-										<svg className="absolute inset-0 h-full w-full" fill="none" preserveAspectRatio="none" strokeWidth="3" viewBox="0 0 200 80">
-											<defs>
-												<linearGradient id="gradient4" x1="0" x2="0" y1="0" y2="1">
-													<stop offset="0%" stopColor="#3b82f6" stopOpacity="0.2" />
-													<stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
-												</linearGradient>
-											</defs>
-											<path className="stroke-dashed stroke-gray-500" d="M 0 25 L 200 25" strokeDasharray="4 4" />
-											<path className="stroke-blue-500" d="M 0 30 L 66 20 L 132 50 L 200 40" />
-											<path d="M 0 30 L 66 20 L 132 50 L 200 40 L 200 80 L 0 80 Z" fill="url(#gradient4)" />
-										</svg>
-										<div className="absolute -top-1.5 left-0 text-[9px] lg:text-[10px] text-gray-500">Target: {Suivi_Efficience.Target_Actuelle}%</div>
-									</div>
-									<div className="mt-0.5 flex justify-between gap-1">
-										{Suivi_Efficience.Historique_4_Semaines.slice().reverse().map((item, index) => {
-											const color = getStatusColor(item.Valeur, item.Target, false)
-											const colorClasses = getColorClasses(color)
+								<TargetBadge
+									actual={Taux_Scrap.Valeur_Actuelle}
+									target={Taux_Scrap.Target_Actuelle}
+									lowerIsBetter
+								/>
+							</div>
+							<div className="mt-auto flex flex-col pt-2">
+								<div className="relative h-12 lg:h-16 w-full mb-3">
+									<svg
+										className="absolute inset-0 h-full w-full"
+										fill="none"
+										preserveAspectRatio="none"
+										viewBox="0 0 200 80"
+									>
+										<defs>
+											<linearGradient
+												id="scrap-grad"
+												x1="0"
+												x2="0"
+												y1="0"
+												y2="1"
+											>
+												<stop
+													offset="0%"
+													stopColor="#3b82f6"
+													stopOpacity="0.2"
+												/>
+												<stop
+													offset="100%"
+													stopColor="#3b82f6"
+													stopOpacity="0"
+												/>
+											</linearGradient>
+										</defs>
+										<line
+											x1="0"
+											y1="50"
+											x2="200"
+											y2="50"
+											stroke="#f59e0b"
+											strokeWidth="1.5"
+											strokeDasharray="5 3"
+										/>
+										<text
+											x="3"
+											y="80"
+											fontSize="9"
+											fill="#f59e0b"
+											fontWeight="600"
+										>
+											T:{Taux_Scrap.Target_Actuelle}%
+										</text>
+										<path
+											className="stroke-blue-500"
+											d="M 0 70 L 66 40 L 132 60 L 200 20"
+											strokeWidth="2.5"
+											strokeLinecap="round"
+										/>
+										<path
+											d="M 0 70 L 66 40 L 132 60 L 200 20 L 200 80 L 0 80 Z"
+											fill="url(#scrap-grad)"
+										/>
+									</svg>
+								</div>
+								<div className="flex justify-between gap-1">
+									{Taux_Scrap.Historique_4_Semaines.slice()
+										.reverse()
+										.map((item, index) => {
+											const color = getStatusColor(
+												item.Valeur,
+												item.Target,
+												true
+											)
+											const cls = getColorClasses(color)
 											return (
-												<div key={index} className="flex flex-col items-center gap-0.5">
-													<div className={`flex h-10 w-10 lg:h-11 lg:w-11 items-center justify-center rounded-full border-2 ${colorClasses.border} bg-slate-800 p-1`}>
-														<span className={`text-[10px] lg:text-xs font-bold leading-none ${colorClasses.text}`}>{item.Valeur}%</span>
+												<div
+													key={index}
+													className="flex flex-col items-center gap-0.5"
+												>
+													<div
+														className={`flex h-11 w-11 lg:h-14 lg:w-14 items-center justify-center rounded-full border-2 ${cls.border} ${cls.bg}`}
+													>
+														<span
+															className={`text-[10px] lg:text-xs font-bold leading-none ${cls.text}`}
+														>
+															{item.Valeur}%
+														</span>
 													</div>
-													<span className="font-bold text-gray-400 text-[9px] lg:text-[10px]">S{item.Semaine}</span>
+													<span className="font-bold text-gray-400 text-[9px]">
+														S{item.Semaine}
+													</span>
+													<span className="text-gray-600 text-[8px]">
+														T:{item.Target}%
+													</span>
 												</div>
 											)
 										})}
+								</div>
+							</div>
+						</div>
+
+						{/* Suivi Efficience */}
+						<div
+							className={`${cardStyle} flex flex-col p-3 lg:p-5 min-h-[220px] lg:min-h-[320px]`}
+						>
+							<div className="flex items-start justify-between mb-2">
+								<div>
+									<div className="flex items-center gap-1.5 mb-1">
+										<span className="material-symbols-outlined text-emerald-400 text-base">
+											speed
+										</span>
+										<h2 className="text-sm lg:text-base font-semibold text-gray-200">
+											Suivi de l&apos;Efficience par semaine
+										</h2>
 									</div>
+									<TargetPill
+										target={Suivi_Efficience.Target_Actuelle}
+										actual={Suivi_Efficience.Valeur_Actuelle}
+									/>
+								</div>
+							</div>
+							{/* Radial */}
+							<div className="flex items-center gap-3 mb-2">
+								<div className="relative flex h-20 w-20 lg:h-24 lg:w-24 flex-shrink-0 items-center justify-center">
+									<svg className="h-full w-full -rotate-90" viewBox="0 0 100 100">
+										<circle
+											className="stroke-current text-slate-700"
+											cx="50"
+											cy="50"
+											fill="none"
+											r="45"
+											strokeWidth="8"
+										/>
+										<circle
+											className={`stroke-current transition-all duration-500 ${
+												parseFloat(Suivi_Efficience.Valeur_Actuelle) >=
+												parseFloat(Suivi_Efficience.Target_Actuelle)
+													? 'text-emerald-500'
+													: 'text-blue-500'
+											}`}
+											cx="50"
+											cy="50"
+											fill="none"
+											r="45"
+											strokeDasharray="282.74"
+											strokeDashoffset={
+												282.74 *
+												(1 -
+													parseFloat(Suivi_Efficience.Valeur_Actuelle) /
+														100)
+											}
+											strokeLinecap="round"
+											strokeWidth="8"
+										/>
+									</svg>
+									<div className="absolute inset-0 flex flex-col items-center justify-center">
+										<span className="text-[10px] text-gray-500">Actuel</span>
+										<span className="text-md font-black text-white tabular-nums">
+											{Suivi_Efficience.Valeur_Actuelle}%
+										</span>
+									</div>
+								</div>
+								<TargetBadge
+									actual={Suivi_Efficience.Valeur_Actuelle}
+									target={Suivi_Efficience.Target_Actuelle}
+								/>
+							</div>
+							<div className="mt-auto flex flex-col pt-2">
+								<div className="relative h-12 lg:h-16 w-full mb-3">
+									<svg
+										className="absolute inset-0 h-full w-full"
+										fill="none"
+										preserveAspectRatio="none"
+										viewBox="0 0 200 80"
+									>
+										<defs>
+											<linearGradient
+												id="eff-grad"
+												x1="0"
+												x2="0"
+												y1="0"
+												y2="1"
+											>
+												<stop
+													offset="0%"
+													stopColor="#3b82f6"
+													stopOpacity="0.2"
+												/>
+												<stop
+													offset="100%"
+													stopColor="#3b82f6"
+													stopOpacity="0"
+												/>
+											</linearGradient>
+										</defs>
+										<line
+											x1="0"
+											y1="25"
+											x2="200"
+											y2="25"
+											stroke="#f59e0b"
+											strokeWidth="1.5"
+											strokeDasharray="5 3"
+										/>
+										<text
+											x="3"
+											y="60"
+											fontSize="9"
+											fill="#f59e0b"
+											fontWeight="600"
+										>
+											T:{Suivi_Efficience.Target_Actuelle}%
+										</text>
+										<path
+											className="stroke-blue-500"
+											d="M 0 30 L 66 20 L 132 50 L 200 40"
+											strokeWidth="2.5"
+											strokeLinecap="round"
+										/>
+										<path
+											d="M 0 30 L 66 20 L 132 50 L 200 40 L 200 80 L 0 80 Z"
+											fill="url(#eff-grad)"
+										/>
+									</svg>
+								</div>
+								<div className="flex justify-between gap-1">
+									{Suivi_Efficience.Historique_4_Semaines.slice()
+										.reverse()
+										.map((item, index) => {
+											const color = getStatusColor(
+												item.Valeur,
+												item.Target,
+												false
+											)
+											const cls = getColorClasses(color)
+											return (
+												<div
+													key={index}
+													className="flex flex-col items-center gap-0.5"
+												>
+													<div
+														className={`flex h-11 w-11 lg:h-14 lg:w-14 items-center justify-center rounded-full border-2 ${cls.border} ${cls.bg}`}
+													>
+														<span
+															className={`text-[10px] lg:text-xs font-bold leading-none ${cls.text}`}
+														>
+															{item.Valeur}%
+														</span>
+													</div>
+													<span className="font-bold text-gray-400 text-[9px]">
+														S{item.Semaine}
+													</span>
+													<span className="text-gray-600 text-[8px]">
+														T:{item.Target}%
+													</span>
+												</div>
+											)
+										})}
 								</div>
 							</div>
 						</div>
@@ -602,29 +1230,38 @@ export default function OperationsPage() {
 		)
 	}
 
-	const currentWeek = weeklyData?.Taux_Heures_Supplementaires?.Semaine_Actuelle
-	const currentMonth = monthlyData?.Taux_Heures_Supplementaires?.Mois_Courant
+	const currentWeek =
+		weeklyData?.Taux_Heures_Supplementaires?.Semaine_Actuelle
+	const currentMonth =
+		monthlyData?.Taux_Heures_Supplementaires?.Mois_Courant
 
 	return (
 		<main className="flex-1 overflow-hidden">
 			<div className="p-3 sm:p-4 lg:p-6">
-				{/* Header with tabs */}
-				<div className="mb-3 lg:mb-5 flex justify-between items-start">
+				{/* Header */}
+				<div className="mb-4 lg:mb-6 flex justify-between items-start gap-4">
 					<div>
-						<h1 className="text-2xl lg:text-3xl font-bold text-white mb-1 lg:mb-2">
-							Factory Performance Overview - {activeTab === "monthly" ? "Mensuel" : "Hebdomadaire"}
+						<div className="flex items-center gap-2 mb-1">
+							<span className="w-1 h-8 rounded-full bg-blue-500 block" />
+							<span className="text-xs font-bold uppercase tracking-widest text-blue-400">
+								Operations KPI
+							</span>
+						</div>
+						<h1 className="text-2xl lg:text-3xl font-bold text-white">
+							Factory Performance &mdash;{' '}
+							{activeTab === 'monthly' ? 'Mensuel' : 'Hebdomadaire'}
 						</h1>
-						<div className="flex flex-wrap items-center justify-start gap-2 lg:gap-4">
-							{activeTab === "weekly" && currentWeek && (
-								<div className="rounded-lg bg-slate-800/90 border border-slate-700/50 px-3 py-1.5 text-xs lg:text-sm font-medium text-gray-300">
-									<span className="font-normal">Semaine actuelle :</span>
-									<span className="font-semibold text-white ml-1">S{currentWeek}</span>
+						<div className="flex flex-wrap items-center gap-2 mt-2">
+							{activeTab === 'weekly' && currentWeek && (
+								<div className="rounded-lg bg-slate-800/90 border border-slate-700/50 px-3 py-1 text-xs font-medium text-gray-300">
+									Semaine actuelle:{' '}
+									<span className="font-bold text-white">S{currentWeek}</span>
 								</div>
 							)}
 							{currentMonth && (
-								<div className="rounded-lg bg-slate-800/90 border border-slate-700/50 px-3 py-1.5 text-xs lg:text-sm font-medium text-gray-300">
-									<span className="font-normal">Mois en cours :</span>
-									<span className="font-semibold text-white ml-1">M{currentMonth}</span>
+								<div className="rounded-lg bg-slate-800/90 border border-slate-700/50 px-3 py-1 text-xs font-medium text-gray-300">
+									Mois en cours:{' '}
+									<span className="font-bold text-white">M{currentMonth}</span>
 								</div>
 							)}
 						</div>
@@ -632,8 +1269,7 @@ export default function OperationsPage() {
 					<TabSelector activeTab={activeTab} onTabChange={setActiveTab} />
 				</div>
 
-				{/* Conditional Content Rendering */}
-				{activeTab === "weekly" ? <WeeklyOperations /> : <MonthlyOperations />}
+				{activeTab === 'weekly' ? <WeeklyOperations /> : <MonthlyOperations />}
 			</div>
 		</main>
 	)
