@@ -1,10 +1,9 @@
 "use client"
 
 import React, { useEffect, useState } from 'react'
-import { TabSelector } from '@/components/ui/TabSelector'
+import { PeriodSelector } from '@/components/ui/PeriodSelector'
+import { useKpiPeriod } from '@/hooks/use-kpi-period'
 import {
-	FaArrowUp,
-	FaArrowDown,
 	FaChartLine,
 	FaTruck,
 	FaShieldAlt,
@@ -249,7 +248,9 @@ function CardHeader({
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function SupplyChainPage() {
-	const [activeTab, setActiveTab] = useState<TabType>('weekly')
+	const { type: activeTab, setType: setActiveTab, period, setPeriod, year, setYear } =
+		useKpiPeriod('weekly')
+
 	const [weeklyData, setWeeklyData] = useState<WeeklyApiData | null>(null)
 	const [monthlyData, setMonthlyData] = useState<MonthlyApiData | null>(null)
 	const [loading, setLoading] = useState(true)
@@ -258,9 +259,9 @@ export default function SupplyChainPage() {
 		async function fetchData() {
 			setLoading(true)
 			try {
-				const res = await fetch(`/api/supplychain?type=${activeTab}`, {
-					cache: 'no-store',
-				})
+				const url =
+					`/api/supplychain?type=${activeTab}&period=${period}&year=${year}`
+				const res = await fetch(url, { cache: 'no-store' })
 				if (!res.ok) {
 					throw new Error(`HTTP error! status: ${res.status}`)
 				}
@@ -283,7 +284,7 @@ export default function SupplyChainPage() {
 			}
 		}
 		fetchData()
-	}, [activeTab])
+	}, [activeTab, period, year])
 
 	if (loading) {
 		return (
@@ -637,7 +638,14 @@ export default function SupplyChainPage() {
 									: 'Données hebdomadaire'}
 							</p>
 						</div>
-						<TabSelector activeTab={activeTab} onTabChange={setActiveTab} />
+						<PeriodSelector
+							type={activeTab}
+							period={period}
+							year={year}
+							onTypeChange={setActiveTab}
+							onPeriodChange={setPeriod}
+							onYearChange={setYear}
+						/>
 					</div>
 
 					{/* Content */}

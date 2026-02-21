@@ -28,34 +28,30 @@ export const Endpoints = {
 
 
 
-/** Internal API endpoint paths grouped by period (weekly/monthly) */
+/** Internal API base paths — query params are built dynamically at request time */
 export const INTERNAL_API_ENDPOINTS = {
-	rh: "/GetRHIndicateurs?SemaineCourante=11&AnneeCourante=2025",
+	rh: '/GetRHIndicateurs',
 	finance: {
-		weekly: '/GetFinanceIndicateurs?SemaineCourante=10&AnneeCourante=2025',
-		monthly:
-			'/GetFinanceIndicateurs_Mensuel?MoisCourante=4&AnneeCourante=2025',
+		weekly: '/GetFinanceIndicateurs',
+		monthly: '/GetFinanceIndicateurs_Mensuel',
 	},
 	program: {
-		weekly: '/GetProgramIndicateurs?SemaineCourante=40&AnneeCourante=2025',
-		monthly:
-			'/GetProgramIndicateurs_Mensuel?MoisCourante=6&AnneeCourante=2025',
+		weekly: '/GetProgramIndicateurs',
+		monthly: '/GetProgramIndicateurs_Mensuel',
 	},
 	quality: {
-		weekly: '/GetQualityIndicateurs?SemaineCourante=5&AnneeCourante=2026',
-		monthly: '/GetQualityIndicateurs_Mensuel?MoisCourante=1&AnneeCourante=2026',
+		weekly: '/GetQualityIndicateurs',
+		monthly: '/GetQualityIndicateurs_Mensuel',
 	},
 	operations: {
-		weekly: '/GetOperationsIndicateurs?SemaineCourante=10&AnneeCourante=2026',
-		monthly:
-			'/GetOperationsIndicateurs_Mensuel?MoisCourante=5&AnneeCourante=2025',
+		weekly: '/GetOperationsIndicateurs',
+		monthly: '/GetOperationsIndicateurs_Mensuel',
 	},
-  supplychain: {
-		weekly: '/GetInventoryIndicateurs?SemaineCourante=5&AnneeCourante=2026',
-		monthly:
-			'/GetInventoryIndicateurs_Mensuel?MoisCourante=5&AnneeCourante=2026',
+	supplychain: {
+		weekly: '/GetInventoryIndicateurs',
+		monthly: '/GetInventoryIndicateurs_Mensuel',
 	},
-	dashboardKpiCategory:"/GetExecutiveHorizonIndicateursWeekly",
+	dashboardKpiCategory: '/GetExecutiveHorizonIndicateursWeekly',
 	uploadFilesKPICategories: '/ImportExcel/excel',
 } as const
 
