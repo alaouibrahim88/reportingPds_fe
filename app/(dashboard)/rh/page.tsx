@@ -1,6 +1,8 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
+import { PeriodSelector } from "@/components/ui/PeriodSelector"
+import { useKpiPeriod } from "@/hooks/use-kpi-period"
 
 interface SerieMoisItem {
 	Mois: string
@@ -108,6 +110,7 @@ function formatNumber(num: string | number): string {
 }
 
 export default function RHPage() {
+	const { period, setPeriod, year, setYear } = useKpiPeriod('weekly')
 	const [data, setData] = useState<RHData | null>(null)
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
@@ -117,7 +120,7 @@ export default function RHPage() {
 			setLoading(true)
 			setError(null)
 			try {
-				const res = await fetch('/api/rh')
+				const res = await fetch(`/api/rh?period=${period}&year=${year}`)
 				if (!res.ok) throw new Error('Erreur lors du chargement des données')
 				const raw = await res.json()
 				const rhData = raw['rh-Indicateurs'] ?? raw
@@ -130,7 +133,7 @@ export default function RHPage() {
 		}
 
 		fetchData()
-	}, [])
+	}, [period, year])
 
 	if (loading) {
 		return (
@@ -165,10 +168,17 @@ export default function RHPage() {
 
 	return (
     <div className="min-h-screen w-full flex flex-col bg-gradient-to-br from-slate-900 via-gray-900 to-black pb-10">
-      <header className="mb-6 flex items-center justify-end px-8 pt-4">
+      <header className="mb-6 flex items-center justify-between px-8 pt-4">
         <p className="text-base text-gray-200 font-medium">
           Dernière mise à jour : il y a 2 minutes
         </p>
+        <PeriodSelector
+          type='weekly'
+          period={period}
+          year={year}
+          onPeriodChange={setPeriod}
+          onYearChange={setYear}
+        />
       </header>
       <main className="grid flex-1 grid-cols-3 grid-rows-2 gap-4 px-6">
         {/* Taux de Départ (Mensuel) */}

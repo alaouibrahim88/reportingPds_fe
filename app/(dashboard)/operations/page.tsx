@@ -130,9 +130,6 @@ function TargetBadge({
 	return (
 		<div className="flex items-center gap-2 flex-wrap mt-1">
 			<span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-700 text-xs font-bold text-gray-300">
-				<span className="material-symbols-outlined text-[14px] text-gray-400">
-					my_location
-				</span>
 				{label}: <span className="text-white">{target}%</span>
 			</span>
 			<span
@@ -265,9 +262,6 @@ export default function OperationsPage() {
 						<div className="flex flex-wrap items-start justify-between gap-3 mb-4">
 							<div>
 								<div className="flex items-center gap-2 mb-1">
-									<span className="material-symbols-outlined text-blue-400 text-lg">
-										more_time
-									</span>
 									<h2 className="text-sm lg:text-base font-semibold text-gray-200">
 										Taux d&apos;Heures Supplémentaires
 									</h2>
@@ -341,9 +335,6 @@ export default function OperationsPage() {
 						<div className="flex flex-wrap items-start justify-between gap-3 mb-4">
 							<div>
 								<div className="flex items-center gap-2 mb-1">
-									<span className="material-symbols-outlined text-yellow-400 text-lg">
-										pause_circle
-									</span>
 									<h2 className="text-sm lg:text-base font-semibold text-gray-200 flex items-center gap-1.5">
 										Taux de Chômage Technique
 										{parseFloat(Taux_Chomage_Technique.Valeur_Mois_Courant) >
@@ -415,9 +406,6 @@ export default function OperationsPage() {
 						<div className="flex flex-wrap items-start justify-between gap-3 mb-4">
 							<div>
 								<div className="flex items-center gap-2 mb-1">
-									<span className="material-symbols-outlined text-emerald-400 text-lg">
-										speed
-									</span>
 									<h2 className="text-sm lg:text-base font-semibold text-gray-200">
 										Suivi de l&apos;Efficience mensuelle
 									</h2>
@@ -483,9 +471,6 @@ export default function OperationsPage() {
 						{/* Taux Scrap */}
 						<div className={`${cardStyle} p-4 lg:p-5`}>
 							<div className="flex items-center gap-2 mb-3">
-								<span className="material-symbols-outlined text-orange-400 text-lg">
-									delete_sweep
-								</span>
 								<h2 className="text-sm lg:text-base font-semibold text-gray-200">
 									Taux de Scrap Mensuel
 								</h2>
@@ -524,9 +509,6 @@ export default function OperationsPage() {
 						{/* Target Efficience Radial Gauge */}
 						<div className={`${cardStyle} p-4 lg:p-5`}>
 							<div className="flex items-center gap-2 mb-3">
-								<span className="material-symbols-outlined text-blue-400 text-lg">
-									donut_large
-								</span>
 								<h2 className="text-sm lg:text-base font-semibold text-gray-200">
 									Target Efficience
 								</h2>
@@ -634,9 +616,6 @@ export default function OperationsPage() {
 							<div className="flex items-start justify-between mb-2">
 								<div>
 									<div className="flex items-center gap-1.5 mb-1">
-										<span className="material-symbols-outlined text-blue-400 text-base">
-											more_time
-										</span>
 										<h2 className="text-sm lg:text-base font-semibold text-gray-200">
 											Taux d&apos;Heures Supplémentaires
 										</h2>
@@ -764,9 +743,6 @@ export default function OperationsPage() {
 							<div className="flex items-start justify-between mb-2">
 								<div>
 									<div className="flex items-center gap-1.5 mb-1">
-										<span className="material-symbols-outlined text-yellow-400 text-base">
-											pause_circle
-										</span>
 										<h2 className="text-sm lg:text-base font-semibold text-gray-200 flex items-center gap-1">
 											Taux de Chômage technique
 											{parseFloat(Taux_Chomage_Technique.Valeur_Actuelle) >
@@ -904,9 +880,6 @@ export default function OperationsPage() {
 							<div className="flex items-start justify-between mb-2">
 								<div>
 									<div className="flex items-center gap-1.5 mb-1">
-										<span className="material-symbols-outlined text-orange-400 text-base">
-											delete_sweep
-										</span>
 										<h2 className="text-sm lg:text-base font-semibold text-gray-200 flex items-center gap-1">
 											Taux de Scrap
 											{parseFloat(Taux_Scrap.Valeur_Actuelle) >
@@ -1073,9 +1046,6 @@ export default function OperationsPage() {
 							<div className="flex items-start justify-between mb-2">
 								<div>
 									<div className="flex items-center gap-1.5 mb-1">
-										<span className="material-symbols-outlined text-emerald-400 text-base">
-											speed
-										</span>
 										<h2 className="text-sm lg:text-base font-semibold text-gray-200">
 											Suivi de l&apos;Efficience par semaine
 										</h2>

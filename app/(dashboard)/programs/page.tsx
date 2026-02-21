@@ -1422,6 +1422,7 @@ export default function ProgramsPage() {
 						year={year}
 						onPeriodChange={setPeriod}
 						onYearChange={setYear}
+						variant="light"
 					/>
 					<TabSelector
 						activeTab={activeTab}

@@ -1,4 +1,5 @@
 'use client'
+import { cn } from '@/lib/utils'
 
 import {
 	Select,
@@ -13,10 +14,13 @@ export interface PeriodSelectorProps {
 	period: number
 	year: number
 	onPeriodChange: (v: number) => void
-	onYearChange: (v: number) => void
+	onYearChange: (v: number) => void,
+	/** 'dark' (default) for pages with dark backgrounds, 'light' for white/light pages */
+	variant?: 'dark' | 'light'
 }
 
-const YEARS = [2024, 2025, 2026]
+const CURRENT_YEAR = new Date().getFullYear()
+const YEARS = [CURRENT_YEAR - 1, CURRENT_YEAR, CURRENT_YEAR + 1]
 
 const WEEKS = Array.from({ length: 52 }, (_, i) => i + 1)
 
@@ -41,7 +45,13 @@ export function PeriodSelector({
 	year,
 	onPeriodChange,
 	onYearChange,
+	variant = 'dark',
 }: PeriodSelectorProps) {
+	const triggerClass = cn(
+		variant === 'light'
+			? 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+			: 'bg-slate-800/50 border-slate-700/50 text-gray-300 hover:bg-slate-700/50',
+	)
 	return (
 		<div className='flex flex-wrap items-center gap-3'>
 			{type === 'weekly' ? (
@@ -49,10 +59,10 @@ export function PeriodSelector({
 					value={period > 0 ? String(period) : ''}
 					onValueChange={(v) => onPeriodChange(Number(v))}
 				>
-					<SelectTrigger className='w-[160px]'>
+					<SelectTrigger className={cn('w-[160px]', triggerClass)}>
 						<SelectValue placeholder='Choisir semaine' />
 					</SelectTrigger>
-					<SelectContent>
+				    <SelectContent className={cn(triggerClass)}>
 						{WEEKS.map((w) => (
 							<SelectItem key={w} value={String(w)}>
 								Semaine {w}
@@ -65,10 +75,10 @@ export function PeriodSelector({
 					value={period > 0 ? String(period) : ''}
 					onValueChange={(v) => onPeriodChange(Number(v))}
 				>
-					<SelectTrigger className='w-[160px]'>
+					<SelectTrigger className={cn('w-[160px]', triggerClass)}>
 						<SelectValue placeholder='Choisir mois' />
 					</SelectTrigger>
-					<SelectContent>
+				    <SelectContent className={cn(triggerClass)}>
 						{MONTHS.map((m) => (
 							<SelectItem key={m.value} value={String(m.value)}>
 								{m.label}
@@ -82,10 +92,10 @@ export function PeriodSelector({
 				value={year > 0 ? String(year) : ''}
 				onValueChange={(v) => onYearChange(Number(v))}
 			>
-				<SelectTrigger className='w-[150px]'>
+					<SelectTrigger className={cn('w-[160px]', triggerClass)}>
 					<SelectValue placeholder="Choisir l'année" />
 				</SelectTrigger>
-				<SelectContent>
+				<SelectContent className={cn(triggerClass)}>
 					{YEARS.map((y) => (
 						<SelectItem key={y} value={String(y)}>
 							{y}

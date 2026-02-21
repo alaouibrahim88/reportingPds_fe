@@ -207,10 +207,11 @@ function MonthDeltaBadge({
 	vsLabel,
 	lowerIsBetter = false,
 }: MonthDeltaBadgeProps) {
-	const isGood = lowerIsBetter ? value <= 0 : value >= 0
+	const safeValue = value ?? 0
+	const isGood = lowerIsBetter ? safeValue <= 0 : safeValue >= 0
 	const colorClass = isGood ? 'text-primary' : 'text-danger'
-	const icon = value >= 0 ? 'arrow_upward' : 'arrow_downward'
-	const sign = value > 0 ? '+' : ''
+	const icon = safeValue >= 0 ? 'arrow_upward' : 'arrow_downward'
+	const sign = safeValue > 0 ? '+' : ''
 	return (
 		<div className='flex items-center gap-1'>
 			<span className={`material-symbols-outlined text-sm ${colorClass}`}>
@@ -218,7 +219,7 @@ function MonthDeltaBadge({
 			</span>
 			<p className={`text-xl font-extrabold ${colorClass}`}>
 				{sign}
-				{value.toFixed(2)} {unit}
+				{safeValue.toFixed(2)} {unit}
 			</p>
 			<p className='text-sm font-normal text-text-light-secondary dark:text-dark-secondary'>
 				{vsLabel}
@@ -590,7 +591,7 @@ export default function SupplyChainPage() {
 						<div className='flex flex-col justify-center gap-8 py-4 lg:col-span-3'>
 							<div className='flex flex-col gap-1'>
 								<p className='text-7xl font-extrabold tracking-tighter text-text-light-primary dark:text-dark-primary'>
-									€{cout.Valeur_MEUR.toFixed(2)}
+									€{(cout.Valeur_MEUR ?? 0).toFixed(2)}
 									<span className='text-5xl font-bold'> M</span>
 								</p>
 								<MonthDeltaBadge
@@ -605,7 +606,7 @@ export default function SupplyChainPage() {
 									<div key={m.Label} className='flex flex-col items-center gap-2'>
 										<div className='flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary dark:bg-primary/20'>
 											<span className='text-2xl font-bold'>
-												{m.Valeur_MEUR.toFixed(2)}
+												{(m.Valeur_MEUR ?? 0).toFixed(2)}
 											</span>
 										</div>
 										<p className='text-sm font-semibold text-text-light-secondary dark:text-dark-secondary'>
