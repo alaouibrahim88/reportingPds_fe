@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { PeriodSelector } from '@/components/ui/PeriodSelector'
+import { TabSelector } from '@/components/ui/TabSelector'
 import { useKpiPeriod } from '@/hooks/use-kpi-period'
 import {
 	FaChartLine,
@@ -638,14 +639,16 @@ export default function SupplyChainPage() {
 									: 'Données hebdomadaire'}
 							</p>
 						</div>
-						<PeriodSelector
-							type={activeTab}
-							period={period}
-							year={year}
-							onTypeChange={setActiveTab}
-							onPeriodChange={setPeriod}
-							onYearChange={setYear}
-						/>
+						<div className='flex flex-wrap items-center gap-3'>
+							<PeriodSelector
+								type={activeTab}
+								period={period}
+								year={year}
+								onPeriodChange={setPeriod}
+								onYearChange={setYear}
+							/>
+							<TabSelector activeTab={activeTab} onTabChange={(tab) => { setActiveTab(tab); setPeriod(0) }} />
+						</div>
 					</div>
 
 					{/* Content */}

@@ -1,7 +1,9 @@
 "use client";
 
 import React, { ReactElement, useEffect, useState } from "react";
+import { PeriodSelector } from "@/components/ui/PeriodSelector";
 import { TabSelector } from "@/components/ui/TabSelector";
+import { useKpiPeriod } from "@/hooks/use-kpi-period";
 import { FaBug,FaFreeCodeCamp,FaMapMarked,FaChartBar,FaCheckDouble,FaChartArea,FaFileExport,FaHotjar  } from "react-icons/fa";
 
 type TabType = "weekly" | "monthly";
@@ -80,7 +82,8 @@ function StatusChip({
 }
 
 export default function QualityPage() {
-	const [activeTab, setActiveTab] = useState<TabType>("weekly");
+	const { type: activeTab, setType: setActiveTab, period, setPeriod, year, setYear } =
+		useKpiPeriod('weekly');
 	const [data, setData] = useState<any>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -90,9 +93,8 @@ export default function QualityPage() {
 			setLoading(true);
 			setError(null);
 			try {
-				const res = await fetch(`/api/quality?type=${activeTab}`, {
-					cache: "no-store",
-				});
+				const url = `/api/quality?type=${activeTab}&period=${period}&year=${year}`;
+				const res = await fetch(url, { cache: "no-store" });
 				const json = await res.json();
 				if (!res.ok) {
 					throw new Error(json.message || "Erreur lors du chargement");
@@ -108,7 +110,7 @@ export default function QualityPage() {
 			}
 		};
 		fetchData();
-	}, [activeTab]);
+	}, [activeTab, period, year]);
 
 	const WeeklyQuality = () => {
 		if (!data) return <div className="text-gray-400 p-8">Chargement...</div>;
@@ -1320,7 +1322,16 @@ export default function QualityPage() {
 							: "Indicateurs de performance qualité mensuelle"}
 					</p>
 				</div>
-				<TabSelector activeTab={activeTab} onTabChange={setActiveTab} />
+				<div className="flex flex-wrap items-center gap-3">
+				<PeriodSelector
+					type={activeTab}
+					period={period}
+					year={year}
+					onPeriodChange={setPeriod}
+					onYearChange={setYear}
+				/>
+				<TabSelector activeTab={activeTab} onTabChange={(tab) => { setActiveTab(tab); setPeriod(0) }} />
+			</div>
 			</div>
 
 			{error && (

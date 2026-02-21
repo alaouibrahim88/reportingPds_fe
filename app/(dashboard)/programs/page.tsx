@@ -1,5 +1,7 @@
 "use client";
+import { PeriodSelector } from "@/components/ui/PeriodSelector";
 import { TabSelector } from "@/components/ui/TabSelector";
+import { useKpiPeriod } from "@/hooks/use-kpi-period";
 import React, { useState, useEffect, useCallback } from "react";
 import {
 	FaTruck,
@@ -112,7 +114,8 @@ function KpiCircle({
 }
 
 export default function ProgramsPage() {
-	const [activeTab, setActiveTab] = useState<TabType>("weekly");
+	const { type: activeTab, setType: setActiveTab, period, setPeriod, year, setYear } =
+		useKpiPeriod('weekly');
 	const [programData, setProgramData] = useState<ProgramApiResponse | null>(
 		null
 	);
@@ -124,9 +127,8 @@ export default function ProgramsPage() {
 			setLoading(true);
 			setError(null);
 			try {
-				const res = await fetch(`/api/program?type=${activeTab}`, {
-					cache: "no-store",
-				});
+				const url = `/api/program?type=${activeTab}&period=${period}&year=${year}`;
+				const res = await fetch(url, { cache: "no-store" });
 				if (!res.ok) throw new Error("Failed to fetch program data");
 				const json = await res.json();
 				const finalData = json?.data?.data ?? json?.data ?? json;
@@ -142,7 +144,7 @@ export default function ProgramsPage() {
 			}
 		}
 		fetchProgram();
-	}, [activeTab]);
+	}, [activeTab, period, year]);
 
 	const weeklyData = programData?.Program_Semaine ?? null;
 	const monthlyData = programData?.Program_Mois ?? null;
@@ -1413,11 +1415,20 @@ export default function ProgramsPage() {
 							adherence, and project documentation readiness.
 						</p>
 					</div>
+				<div className="flex flex-wrap items-center gap-3">
+					<PeriodSelector
+						type={activeTab}
+						period={period}
+						year={year}
+						onPeriodChange={setPeriod}
+						onYearChange={setYear}
+					/>
 					<TabSelector
 						activeTab={activeTab}
-						onTabChange={setActiveTab}
+						onTabChange={(tab) => { setActiveTab(tab); setPeriod(0) }}
 						variant="light"
 					/>
+				</div>
 				</div>
 
 				{activeTab === "weekly" ? <WeeklyProgram /> : <MonthlyProgram />}

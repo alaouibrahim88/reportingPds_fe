@@ -6,16 +6,16 @@ export function middleware(request: NextRequest) {
   // If the user is not logged in and trying to access a protected route
 
   // IF u want to move login uncomment this logic code 
-  /*if (
+  if (
 		!isAuthenticated &&
 		(request.nextUrl.pathname.startsWith("/login") ||
 			request.nextUrl.pathname.startsWith("/register"))
 	) {
 		// Redirect to the welcome page
 		return NextResponse.redirect(new URL("/scrap", request.url));
-	}*/
+	}
 
-  if (
+  /*if (
     !isAuthenticated &&
     !request.nextUrl.pathname.startsWith("/login") &&
     !request.nextUrl.pathname.startsWith("/register") &&
@@ -23,7 +23,7 @@ export function middleware(request: NextRequest) {
   ) {
     // Redirect to the login page
     return NextResponse.redirect(new URL("/login", request.url));
-  }
+  }*/
 
   // If the user is logged in and trying to access auth pages
   if (

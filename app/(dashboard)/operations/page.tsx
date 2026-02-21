@@ -1,7 +1,9 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
+import { PeriodSelector } from "@/components/ui/PeriodSelector"
 import { TabSelector } from "@/components/ui/TabSelector"
+import { useKpiPeriod } from "@/hooks/use-kpi-period"
 
 type TabType = "weekly" | "monthly"
 
@@ -179,7 +181,8 @@ function TargetPill({
 }
 
 export default function OperationsPage() {
-	const [activeTab, setActiveTab] = useState<TabType>('weekly')
+	const { type: activeTab, setType: setActiveTab, period, setPeriod, year, setYear } =
+		useKpiPeriod('weekly')
 	const [weeklyData, setWeeklyData] = useState<WeeklyData | null>(null)
 	const [monthlyData, setMonthlyData] = useState<MonthlyData | null>(null)
 	const [loading, setLoading] = useState(true)
@@ -188,9 +191,8 @@ export default function OperationsPage() {
 		async function fetchData() {
 			setLoading(true)
 			try {
-				const res = await fetch(`/api/operations?type=${activeTab}`, {
-					cache: 'no-store',
-				})
+				const url = `/api/operations?type=${activeTab}&period=${period}&year=${year}`
+				const res = await fetch(url, { cache: 'no-store' })
 				if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
 				const json = await res.json()
 				const data = json?.data?.data
@@ -208,7 +210,7 @@ export default function OperationsPage() {
 			}
 		}
 		fetchData()
-	}, [activeTab])
+	}, [activeTab, period, year])
 
 	if (loading) {
 		return (
@@ -1266,7 +1268,16 @@ export default function OperationsPage() {
 							)}
 						</div>
 					</div>
-					<TabSelector activeTab={activeTab} onTabChange={setActiveTab} />
+					<div className="flex flex-wrap items-center gap-3">
+					<PeriodSelector
+						type={activeTab}
+						period={period}
+						year={year}
+						onPeriodChange={setPeriod}
+						onYearChange={setYear}
+					/>
+					<TabSelector activeTab={activeTab} onTabChange={(tab) => { setActiveTab(tab); setPeriod(0) }} />
+				</div>
 				</div>
 
 				{activeTab === 'weekly' ? <WeeklyOperations /> : <MonthlyOperations />}

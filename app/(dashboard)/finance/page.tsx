@@ -2,7 +2,9 @@
 
 import React, { useEffect, useState } from "react"
 import { ArrowUp, ArrowDown, Target } from "lucide-react"
+import { PeriodSelector } from "@/components/ui/PeriodSelector"
 import { TabSelector } from "@/components/ui/TabSelector"
+import { useKpiPeriod } from "@/hooks/use-kpi-period"
 
 type TabType = "weekly" | "monthly"
 
@@ -81,7 +83,8 @@ interface FinanceMois {
 
 // Finance Dashboard Page - Fetches data from /api/finance
 export default function FinancePage() {
-	const [activeTab, setActiveTab] = useState<TabType>("weekly")
+	const { type: activeTab, setType: setActiveTab, period, setPeriod, year, setYear } =
+		useKpiPeriod('weekly')
 	const [weeklyData, setWeeklyData] = useState<FinanceSemaine | null>(null)
 	const [monthlyData, setMonthlyData] = useState<FinanceMois | null>(null)
 	const [loading, setLoading] = useState(true)
@@ -92,12 +95,12 @@ export default function FinancePage() {
 			setLoading(true)
 			setError(null)
 			try {
-				const res = await fetch(`/api/finance?type=${activeTab}`, { cache: "no-store" })
+				const url = `/api/finance?type=${activeTab}&period=${period}&year=${year}`
+				const res = await fetch(url, { cache: "no-store" })
 				if (!res.ok) {
 					throw new Error(`HTTP error! status: ${res.status}`)
 				}
 				const json = await res.json()
-				// Handle nested data structure: API returns { data: { Finance_Semaine/Finance_Mois: ... } }
 				const finalData = json?.data ?? json
 
 				if (activeTab === "weekly") {
@@ -119,7 +122,7 @@ export default function FinancePage() {
 		}
 
 		fetchData()
-	}, [activeTab])
+	}, [activeTab, period, year])
 
 	if (loading) {
 		return (
@@ -623,12 +626,21 @@ export default function FinancePage() {
               Vue en direct des indicateurs de performance clés {activeTab === "monthly" ? "mensuels" : "hebdomadaires"}.
             </p>
           </div>
-          <TabSelector
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            weeklyLabel="Hebdomadaires"
-            monthlyLabel="Mensuel"
-          />
+          <div className="flex flex-wrap items-center gap-3">
+            <PeriodSelector
+              type={activeTab}
+              period={period}
+              year={year}
+              onPeriodChange={setPeriod}
+              onYearChange={setYear}
+            />
+            <TabSelector
+              activeTab={activeTab}
+              onTabChange={(tab) => { setActiveTab(tab); setPeriod(0) }}
+              weeklyLabel="Hebdomadaires"
+              monthlyLabel="Mensuel"
+            />
+          </div>
         </div>
 
         {/* Conditional Content Rendering */}
