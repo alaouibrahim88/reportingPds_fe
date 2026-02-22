@@ -123,6 +123,25 @@ export default function QualityPage() {
 		const reclamationsSeries = reclamations?.Serie_4_Semaines || [];
 		const efficienceSeries = efficienceGlobale?.Serie_4_Semaines || [];
 
+		const getWeekNum = (item: any) => {
+			const str = String(item.Label || item.Semaine || '')
+			const num = parseInt(str.replace(/\D/g, ''))
+			return isNaN(num) ? 0 : num
+		}
+
+		const sortedReclamationsSeries = [...reclamationsSeries].sort(
+			(a: any, b: any) => getWeekNum(a) - getWeekNum(b)
+		)
+
+		const incidentsSeries = incidents?.Serie_4_Semaines || []
+		const sortedIncidentsSeries = [...incidentsSeries].sort(
+			(a: any, b: any) => getWeekNum(a) - getWeekNum(b)
+		)
+
+		const sortedEfficienceSeries = [...efficienceSeries].sort(
+			(a: any, b: any) => getWeekNum(a) - getWeekNum(b)
+		)
+
 		const progressColors = ["#3b82f6", "#8b5cf6", "#06b6d4", "#10b981"];
 
 		const zoneKeys = ["Boot", "HeadRest", "Gainage", "Volant", "Net"];
@@ -214,49 +233,49 @@ export default function QualityPage() {
 									{variationReclamation >= 0 ? "+" : ""}
 									{variationReclamation} vs Sem. Préc.
 								</div>
-								<div className="flex flex-col items-center gap-1">
-									<span className="text-xs text-gray-400">
-										Target: {reclamationTarget}
-									</span>
-									<StatusChip
-										value={reclamationValue}
-										target={reclamationTarget}
-										lowerIsBetter
-									/>
-								</div>
+							<div className="flex flex-col items-center gap-1">
+								<span className="text-xs text-gray-400">
+									Target: {reclamationTarget}
+								</span>
+							</div>
 							</div>
 
-							{/* Weekly circles */}
-							<div className="flex flex-row items-center justify-between w-full">
-								{reclamationsSeries.map((week: any, index: number) => (
+						{/* Weekly circles */}
+						<div className="flex flex-row items-center justify-between w-full">
+							{sortedReclamationsSeries.map((week: any, index: number) => (
+								<div
+									key={index}
+									className="flex flex-col items-center gap-1"
+								>
+									<span className="text-xs text-gray-400 font-medium">
+										{week.Label || `S-${index + 1}`}
+									</span>
 									<div
-										key={index}
-										className="flex flex-col items-center gap-2"
+										className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center shadow-lg"
+										style={{
+											background: `${progressColors[index % progressColors.length]}22`,
+											border: `2px solid ${progressColors[index % progressColors.length]}66`,
+										}}
 									>
-										<span className="text-xs text-gray-400 font-medium">
-											{week.Label || `S-${index + 1}`}
-										</span>
-										<div
-											className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center shadow-lg"
+										<span
+											className="text-xl md:text-2xl font-black"
 											style={{
-												background: `${progressColors[index % progressColors.length]}22`,
-												border: `2px solid ${progressColors[index % progressColors.length]}66`,
+												color: progressColors[
+													index % progressColors.length
+												],
 											}}
 										>
-											<span
-												className="text-xl md:text-2xl font-black"
-												style={{
-													color: progressColors[
-														index % progressColors.length
-													],
-												}}
-											>
-												{Number(week.Valeur)}
-											</span>
-										</div>
+											{Number(week.Valeur)}
+										</span>
 									</div>
-								))}
-							</div>
+									{week.Target != null && (
+										<span className="text-[10px] text-gray-500">
+											T: {Number(week.Target)}
+										</span>
+									)}
+								</div>
+							))}
+						</div>
 						</div>
 
 						{/* Right: Chart */}
@@ -332,34 +351,69 @@ export default function QualityPage() {
 						className="rounded-2xl border bg-gray-900/60 backdrop-blur-sm p-6 transition-all hover:border-gray-600"
 						style={{ borderColor: "rgba(255,255,255,0.08)" }}
 					>
-						<SectionHeader
-							icon={<FaBug/>}
-							title="Incidents"
-							accent="#f59e0b"
-						/>
+					<SectionHeader
+						icon={<FaBug/>}
+						title="Incidents"
+						accent="#f59e0b"
+					/>
 						<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-							{/* Left */}
-							<div className="flex items-center gap-6">
-								<div className="text-center">
-									<div className="text-6xl md:text-7xl font-black text-white mb-2 leading-none tabular-nums">
-										{Number(incidents?.Valeur_Actuelle) || 0}
-									</div>
-									<div className="flex flex-col items-center gap-1">
-										<span className="text-xs text-gray-400">
-											Target: {Number(incidents?.Target_Actuelle) || 0}
-										</span>
-										<StatusChip
-											value={Number(incidents?.Valeur_Actuelle || 0)}
-											target={Number(incidents?.Target_Actuelle || 0)}
-											lowerIsBetter
-										/>
-									</div>
-									<div className="text-xs text-gray-500 mt-2">
-										Semaine {incidents?.Semaine_Actuelle || "N/A"} -{" "}
-										{incidents?.Annee || "N/A"}
-									</div>
+						{/* Left */}
+						<div className="flex items-start gap-8">
+							<div className="text-center">
+								<div className="text-6xl md:text-7xl font-black text-white mb-2 leading-none tabular-nums">
+									{Number(incidents?.Valeur_Actuelle) || 0}
+								</div>
+								<div className="flex flex-col items-center gap-1">
+									<span className="text-xs text-gray-400">
+										Target: {Number(incidents?.Target_Actuelle) || 0}
+									</span>
+									<StatusChip
+										value={Number(incidents?.Valeur_Actuelle || 0)}
+										target={Number(incidents?.Target_Actuelle || 0)}
+										lowerIsBetter
+									/>
 								</div>
 							</div>
+
+							{/* Weekly circles */}
+							{sortedIncidentsSeries.length > 0 && (
+								<div className="flex flex-row items-center justify-between w-full">
+									{sortedIncidentsSeries.map((week: any, index: number) => (
+										<div
+											key={index}
+											className="flex flex-col items-center gap-1"
+										>
+											<span className="text-xs text-gray-400 font-medium">
+												{week.Label || `S-${index + 1}`}
+											</span>
+											<div
+												className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center shadow-lg"
+												style={{
+													background: `${progressColors[index % progressColors.length]}22`,
+													border: `2px solid ${progressColors[index % progressColors.length]}66`,
+												}}
+											>
+												<span
+													className="text-xl md:text-2xl font-black"
+													style={{
+														color: progressColors[
+															index % progressColors.length
+														],
+													}}
+												>
+													{Number(week.Valeur)}
+												</span>
+											</div>
+											{week.Target != null && (
+												<span className="text-[10px] text-gray-500">
+													T: {Number(week.Target)}
+												</span>
+											)}
+										</div>
+									))}
+								</div>
+							)}
+						</div>
 
 							{/* Right: Zone Bar Chart */}
 							<div
@@ -467,7 +521,7 @@ export default function QualityPage() {
 					/>
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 						{/* Left */}
-						<div className="flex items-start gap-8">
+						<div className="flex flex-col gap-4">
 							<div className="text-center">
 								<div className="text-6xl md:text-7xl font-black text-white mb-2 leading-none tabular-nums">
 									{efficienceGlobale?.Valeur_Actuelle || 0}%
@@ -489,15 +543,15 @@ export default function QualityPage() {
 								</div>
 							</div>
 
-							{/* Weekly progress circles */}
-							<div className="grid grid-cols-2 gap-3 flex-1">
-								{efficienceSeries.map((week: any, index: number) => {
+							{/* Weekly progress circles — horizontal */}
+							<div className="flex flex-row items-end justify-between gap-2">
+								{sortedEfficienceSeries.map((week: any, index: number) => {
 									const val = Number(week.Valeur);
 									const strokeDashOffset = calculateStrokeDashOffset(val);
 									return (
 										<div
 											key={index}
-											className="flex flex-col items-center gap-2"
+											className="flex flex-col items-center gap-1"
 										>
 											<span className="text-xs text-gray-400 font-medium">
 												{week.Label || `S-${index + 1}`}
@@ -1304,24 +1358,7 @@ export default function QualityPage() {
 	return (
 		<main className="flex-1 overflow-hidden p-4 md:p-6">
 			{/* Header */}
-			<div className="mx-auto mb-6 flex justify-between items-start gap-4">
-				<div>
-					<div className="flex items-center gap-2 mb-1">
-						<span className="w-1 h-8 rounded-full bg-blue-500 block" />
-						<span className="text-xs font-bold uppercase tracking-widest text-blue-400">
-							Quality KPI
-						</span>
-					</div>
-					<h1 className="text-2xl md:text-3xl font-bold text-white">
-						Qualité &mdash;{" "}
-						{activeTab === "weekly" ? "Hebdomadaire" : "Mensuel"}
-					</h1>
-					<p className="text-gray-400 text-sm mt-1">
-						{activeTab === "weekly"
-							? "Réclamations Client · Incidents · Efficience par semaine"
-							: "Indicateurs de performance qualité mensuelle"}
-					</p>
-				</div>
+			<div className="mx-auto mb-6 flex justify-end items-start gap-4">
 				<div className="flex flex-wrap items-center gap-3">
 				<PeriodSelector
 					type={activeTab}
@@ -1330,7 +1367,7 @@ export default function QualityPage() {
 					onPeriodChange={setPeriod}
 					onYearChange={setYear}
 				/>
-				<TabSelector activeTab={activeTab} onTabChange={(tab) => { setActiveTab(tab); setPeriod(0) }} />
+				<TabSelector activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab)} />
 			</div>
 			</div>
 

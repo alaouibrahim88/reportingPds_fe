@@ -617,15 +617,7 @@ export default function FinancePage() {
     <div className="flex-1 overflow-hidden">
       <div className="p-5">
         {/* Tab Selector */}
-        <div className="mb-6 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-white mb-2">
-              Indicateurs {activeTab === "monthly" ? "Mensuels" : "Hebdomadaires"}
-            </h1>
-            <p className="text-gray-300">
-              Vue en direct des indicateurs de performance clés {activeTab === "monthly" ? "mensuels" : "hebdomadaires"}.
-            </p>
-          </div>
+        <div className="mb-6 flex justify-end items-center">
           <div className="flex flex-wrap items-center gap-3">
             <PeriodSelector
               type={activeTab}
@@ -636,7 +628,7 @@ export default function FinancePage() {
             />
             <TabSelector
               activeTab={activeTab}
-              onTabChange={(tab) => { setActiveTab(tab); setPeriod(0) }}
+              onTabChange={(tab) => setActiveTab(tab)}
               weeklyLabel="Hebdomadaires"
               monthlyLabel="Mensuel"
             />

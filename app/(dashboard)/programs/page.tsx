@@ -73,11 +73,13 @@ function KpiCircle({
 	label,
 	isActive,
 	status,
+	target,
 }: {
 	value: string;
 	label: string;
 	isActive: boolean;
 	status: string;
+	target?: string;
 }) {
 	const ring = isActive
 		? "ring-4 ring-primary/20 border-primary bg-primary/5"
@@ -98,7 +100,14 @@ function KpiCircle({
 	const labelColor = isActive ? "text-primary" : "text-slate-500";
 
 	return (
-		<div className="flex flex-col items-center gap-2">
+		<div className="flex flex-col items-center gap-1">
+			{target !== undefined ? (
+				<span className="text-[10px] text-slate-400 font-semibold">
+					T: {target}
+				</span>
+			) : (
+				<span className="text-[10px] opacity-0 select-none">—</span>
+			)}
 			<div
 				className={`w-14 h-14 rounded-full border-2 flex items-center justify-center transition-all ${ring}`}
 			>
@@ -280,11 +289,6 @@ export default function ProgramsPage() {
 									<p
 										className={`text-sm font-semibold mt-1 flex items-center justify-end gap-1 ${(otd?.Variation_Vs_Semaine_Precedente ?? 0) >= 0 ? "text-emerald-600" : "text-rose-600"}`}
 									>
-										<span className="material-symbols-outlined text-base">
-											{(otd?.Variation_Vs_Semaine_Precedente ?? 0) >= 0
-												? "trending_up"
-												: "trending_down"}
-										</span>
 										{(otd?.Variation_Vs_Semaine_Precedente ?? 0) >= 0
 											? "+"
 											: ""}
@@ -325,6 +329,7 @@ export default function ProgramsPage() {
 															}
 															isActive={isLast}
 															status={st}
+															target="90%"
 														/>
 													);
 												}
@@ -336,6 +341,7 @@ export default function ProgramsPage() {
 													label={`W${w}`}
 													isActive={false}
 													status="green"
+													target="90%"
 												/>
 											))}
 								</div>
@@ -388,12 +394,6 @@ export default function ProgramsPage() {
 									<p
 										className={`text-sm font-semibold mt-1 flex items-center justify-end gap-1 ${(equipment?.Variation_Vs_Semaine_Precedente ?? 0) >= 0 ? "text-emerald-600" : "text-rose-600"}`}
 									>
-										<span className="material-symbols-outlined text-base">
-											{(equipment?.Variation_Vs_Semaine_Precedente ??
-												0) >= 0
-												? "trending_up"
-												: "trending_down"}
-										</span>
 										{(equipment?.Variation_Vs_Semaine_Precedente ??
 											0) >= 0
 											? "+"
@@ -435,6 +435,7 @@ export default function ProgramsPage() {
 															}
 															isActive={isLast}
 															status={st}
+															target="90%"
 														/>
 													);
 												}
@@ -446,6 +447,7 @@ export default function ProgramsPage() {
 													label={`W${w}`}
 													isActive={false}
 													status="green"
+													target="90%"
 												/>
 											))}
 								</div>
@@ -533,6 +535,7 @@ export default function ProgramsPage() {
 															}
 															isActive={isLast}
 															status={st}
+															target={`${h.Forecast ?? 0}`}
 														/>
 													);
 												}
@@ -544,6 +547,7 @@ export default function ProgramsPage() {
 													label={`W${w}`}
 													isActive={false}
 													status="green"
+													target="—"
 												/>
 											))}
 								</div>
@@ -779,12 +783,10 @@ export default function ProgramsPage() {
 												return (
 													<div
 														key={`${h.Mois}-${h.Annee}`}
-														className="flex flex-col items-center gap-2"
+														className="flex flex-col items-center gap-1"
 													>
-														<span
-															className={`text-xs font-black ${isLast ? "text-primary" : "text-slate-700"}`}
-														>
-															{dv}
+														<span className="text-[10px] text-slate-400 font-semibold">
+															T: $0k
 														</span>
 														<div
 															className={`w-14 h-14 rounded-full border-2 ${borderCls} flex items-center justify-center ${bgCls}`}
@@ -802,30 +804,30 @@ export default function ProgramsPage() {
 												);
 											}
 										)
-									: [1, 2, 3, 4].map((i) => (
-											<div
-												key={i}
-												className="flex flex-col items-center gap-2"
-											>
-												<span className="text-xs font-black text-slate-300">
+								: [1, 2, 3, 4].map((i) => (
+										<div
+											key={i}
+											className="flex flex-col items-center gap-1"
+										>
+											<span className="text-[10px] text-slate-300 font-semibold">
+												T: $0k
+											</span>
+											<div className="w-14 h-14 rounded-full border-2 border-slate-200 flex items-center justify-center">
+												<span className="text-xs font-bold text-slate-300">
 													—
 												</span>
-												<div className="w-14 h-14 rounded-full border-2 border-slate-200 flex items-center justify-center">
-													<span className="text-xs font-bold text-slate-300">
-														—
-													</span>
-												</div>
-												<p className="text-[10px] font-bold text-slate-300">
-													—
-												</p>
 											</div>
-										))}
-							</div>
+											<p className="text-[10px] font-bold text-slate-300">
+												—
+											</p>
+										</div>
+									))}
 						</div>
-						<div className="col-span-12 lg:col-span-7 border-l border-slate-100 lg:pl-8">
-							<div className="flex items-center justify-between mb-3">
-								<p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-									Monthly Spend Trend
+					</div>
+					<div className="col-span-12 lg:col-span-7 border-l border-slate-100 lg:pl-8">
+						<div className="flex items-center justify-between mb-3">
+							<p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+								Monthly Spend Trend
 								</p>
 								<div className="flex gap-4">
 									<span className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500">
@@ -988,12 +990,10 @@ export default function ProgramsPage() {
 												return (
 													<div
 														key={`apqp-${h.Mois}-${h.Annee}`}
-														className="flex flex-col items-center gap-2"
+														className="flex flex-col items-center gap-1"
 													>
-														<span
-															className={`text-xs font-black ${isLast ? "text-violet-600" : "text-slate-700"}`}
-														>
-															{Math.round(val)}%
+														<span className="text-[10px] text-slate-400 font-semibold">
+															T: 100%
 														</span>
 														<div
 															className={`w-14 h-14 rounded-full border-2 ${borderCls} flex items-center justify-center ${isLast ? "ring-4 ring-violet-100" : ""}`}
@@ -1011,26 +1011,26 @@ export default function ProgramsPage() {
 												);
 											}
 										)
-									: [1, 2, 3, 4].map((i) => (
-											<div
-												key={i}
-												className="flex flex-col items-center gap-2"
-											>
-												<span className="text-xs font-black text-slate-300">
+								: [1, 2, 3, 4].map((i) => (
+										<div
+											key={i}
+											className="flex flex-col items-center gap-1"
+										>
+											<span className="text-[10px] text-slate-300 font-semibold">
+												T: 100%
+											</span>
+											<div className="w-14 h-14 rounded-full border-2 border-slate-200 flex items-center justify-center">
+												<span className="text-xs font-bold text-slate-300">
 													—
 												</span>
-												<div className="w-14 h-14 rounded-full border-2 border-slate-200 flex items-center justify-center">
-													<span className="text-xs font-bold text-slate-300">
-														—
-													</span>
-												</div>
-												<p className="text-[10px] font-bold text-slate-300">
-													—
-												</p>
 											</div>
-										))}
-							</div>
-							<div className="p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs text-slate-500">
+											<p className="text-[10px] font-bold text-slate-300">
+												—
+											</p>
+										</div>
+									))}
+						</div>
+						<div className="p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs text-slate-500">
 								{apqp
 									? `Delta: ${(apqp.Delta_Pts_Vs_M_1 ?? 0) >= 0 ? "+" : ""}${apqp.Delta_Pts_Vs_M_1 ?? 0} pts vs M-1`
 									: "No data available."}
@@ -1183,12 +1183,10 @@ export default function ProgramsPage() {
 												return (
 													<div
 														key={`doc-${h.Mois}-${h.Annee}`}
-														className="flex flex-col items-center gap-2"
+														className="flex flex-col items-center gap-1"
 													>
-														<span
-															className={`text-xs font-black ${isLast ? "text-emerald-600" : "text-slate-700"}`}
-														>
-															{Math.round(val)}%
+														<span className="text-[10px] text-slate-400 font-semibold">
+															T: 100%
 														</span>
 														<div
 															className={`w-14 h-14 rounded-full border-2 ${borderCls} flex items-center justify-center ${isLast ? "ring-4 ring-emerald-100" : ""}`}
@@ -1206,26 +1204,26 @@ export default function ProgramsPage() {
 												);
 											}
 										)
-									: [1, 2, 3, 4].map((i) => (
-											<div
-												key={i}
-												className="flex flex-col items-center gap-2"
-											>
-												<span className="text-xs font-black text-slate-300">
+								: [1, 2, 3, 4].map((i) => (
+										<div
+											key={i}
+											className="flex flex-col items-center gap-1"
+										>
+											<span className="text-[10px] text-slate-300 font-semibold">
+												T: 100%
+											</span>
+											<div className="w-14 h-14 rounded-full border-2 border-slate-200 flex items-center justify-center">
+												<span className="text-xs font-bold text-slate-300">
 													—
 												</span>
-												<div className="w-14 h-14 rounded-full border-2 border-slate-200 flex items-center justify-center">
-													<span className="text-xs font-bold text-slate-300">
-														—
-													</span>
-												</div>
-												<p className="text-[10px] font-bold text-slate-300">
-													—
-												</p>
 											</div>
-										))}
-							</div>
-							{/* Breakdown pills */}
+											<p className="text-[10px] font-bold text-slate-300">
+												—
+											</p>
+										</div>
+									))}
+						</div>
+						{/* Breakdown pills */}
 							<div className="grid grid-cols-3 gap-3 pt-1">
 								{[
 									{
@@ -1398,23 +1396,7 @@ export default function ProgramsPage() {
 		<main className="flex-1 overflow-hidden">
 			<div className="p-6 sm:p-8">
 				{/* Header */}
-				<div className="mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-6">
-					<div className="space-y-2">
-						<div className="flex items-center gap-2">
-							<span className="flex h-10 w-1 rounded-full bg-primary" />
-							<span className="text-sm font-semibold uppercase tracking-wider text-primary">
-								Project KPI
-							</span>
-						</div>
-						<h1 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-							{activeTab === "weekly" ? "Hebdomadaire" : "Mensuel"}{" "}
-							Reporting
-						</h1>
-						<p className="text-slate-500 max-w-xl leading-relaxed text-sm">
-							Executive overview of financial health, APQP milestone
-							adherence, and project documentation readiness.
-						</p>
-					</div>
+				<div className="mb-8 flex flex-col sm:flex-row sm:justify-end sm:items-start gap-6">
 				<div className="flex flex-wrap items-center gap-3">
 					<PeriodSelector
 						type={activeTab}
@@ -1424,9 +1406,9 @@ export default function ProgramsPage() {
 						onYearChange={setYear}
 						variant="light"
 					/>
-					<TabSelector
-						activeTab={activeTab}
-						onTabChange={(tab) => { setActiveTab(tab); setPeriod(0) }}
+					<TabSelector 
+					    activeTab={activeTab} 
+					    onTabChange={(tab) => setActiveTab(tab)}
 						variant="light"
 					/>
 				</div>

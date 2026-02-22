@@ -146,37 +146,6 @@ function TargetBadge({
 	)
 }
 
-/** Compact target pill for card headers */
-function TargetPill({
-	target,
-	lowerIsBetter = false,
-	actual,
-}: {
-	target: string
-	lowerIsBetter?: boolean
-	actual: string
-}) {
-	const numActual = parseFloat(actual)
-	const numTarget = parseFloat(target)
-	const isGood = lowerIsBetter
-		? numActual <= numTarget
-		: numActual >= numTarget
-	return (
-		<span
-			className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-				isGood
-					? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400'
-					: 'border-red-500/40 bg-red-500/10 text-red-400'
-			}`}
-		>
-			<span className="material-symbols-outlined text-[11px]">
-				{isGood ? 'check_circle' : 'cancel'}
-			</span>
-			T: {target}%
-		</span>
-	)
-}
-
 export default function OperationsPage() {
 	const { type: activeTab, setType: setActiveTab, period, setPeriod, year, setYear } =
 		useKpiPeriod('weekly')
@@ -215,7 +184,7 @@ export default function OperationsPage() {
 				<div className="p-3 sm:p-4 lg:p-6 flex items-center justify-center min-h-[400px]">
 					<div className="flex flex-col items-center gap-4">
 						<div className="w-10 h-10 rounded-full border-4 border-blue-500 border-t-transparent animate-spin" />
-						<div className="text-gray-400 text-sm font-medium">
+						<div className="text-white text-s10 font-medium">
 							Chargement des données...
 						</div>
 					</div>
@@ -247,8 +216,8 @@ export default function OperationsPage() {
 			!Suivi_Efficience
 		) {
 			return (
-				<div className="p-8 text-center text-gray-400">
-					Chargement des données...
+				<div className="p-8 text-center text-white">
+				10Chargement des données...
 				</div>
 			)
 		}
@@ -266,11 +235,6 @@ export default function OperationsPage() {
 										Taux d&apos;Heures Supplémentaires
 									</h2>
 								</div>
-								<TargetPill
-									target={Taux_Heures_Supplementaires.Target_Mois_Courant}
-									actual={Taux_Heures_Supplementaires.Valeur_Mois_Courant}
-									lowerIsBetter
-								/>
 							</div>
 							<div className="text-right">
 								<p className="text-3xl lg:text-4xl font-black text-white tabular-nums">
@@ -317,10 +281,10 @@ export default function OperationsPage() {
 													{item.Valeur}%
 												</p>
 											</div>
-											<p className="text-[9px] lg:text-xs text-gray-400 font-medium">
+											<p className="text-[9px] lg:text-xs text-white font-m10dium">
 												{getMonthName(item.Mois)}
 											</p>
-											<p className="text-[8px] text-gray-600">
+											<p className="text-[8px] text-white">
 												T:{item.Target}%
 											</p>
 										</div>
@@ -343,11 +307,6 @@ export default function OperationsPage() {
 										)}
 									</h2>
 								</div>
-								<TargetPill
-									target={Taux_Chomage_Technique.Target_Mois_Courant}
-									actual={Taux_Chomage_Technique.Valeur_Mois_Courant}
-									lowerIsBetter
-								/>
 							</div>
 							<div className="text-right">
 								<p className="text-3xl lg:text-4xl font-black text-white tabular-nums">
@@ -391,10 +350,10 @@ export default function OperationsPage() {
 												{item.Valeur}%
 											</p>
 										</div>
-										<p className="text-[9px] lg:text-xs text-gray-400 font-medium">
+										<p className="text-[9px] lg:text-xs text-white font-m10dium">
 											{getMonthName(item.Mois)}
 										</p>
-										<p className="text-[8px] text-gray-600">T:{item.Target}%</p>
+										<p className="text-[8px] text-white">T:{item.Target}%</p>
 									</div>
 								)
 							})}
@@ -410,10 +369,6 @@ export default function OperationsPage() {
 										Suivi de l&apos;Efficience mensuelle
 									</h2>
 								</div>
-								<TargetPill
-									target={Suivi_Efficience.Target_Mois_Courant}
-									actual={Suivi_Efficience.Valeur_Mois_Courant}
-								/>
 							</div>
 							<div className="text-right">
 								<p className="text-3xl lg:text-4xl font-black text-white tabular-nums">
@@ -456,10 +411,10 @@ export default function OperationsPage() {
 												{item.Valeur}%
 											</p>
 										</div>
-										<p className="text-[9px] lg:text-xs text-gray-400 font-medium">
+										<p className="text-[9px] lg:text-xs text-white font-m10dium">
 											{getMonthName(item.Mois)}
 										</p>
-										<p className="text-[8px] text-gray-600">T:{item.Target}%</p>
+										<p className="text-[8px] text-white">T:{item.Target}%</p>
 									</div>
 								)
 							})}
@@ -550,7 +505,7 @@ export default function OperationsPage() {
 										/>
 									</svg>
 									<div className="absolute inset-0 flex flex-col items-center justify-center">
-										<p className="text-xs text-gray-400 leading-none mb-0.5">
+										<p className="text-xs text-white leadin10-none mb-0.5">
 											Target
 										</p>
 										<p className="text-lg font-black text-white leading-none">
@@ -560,7 +515,7 @@ export default function OperationsPage() {
 								</div>
 								<div className="flex flex-col gap-2">
 									<div>
-										<p className="text-xs text-gray-400">Actuel</p>
+										<p className="text-xs text-white">Actue10</p>
 										<p className="text-md font-black text-white">
 											{Suivi_Efficience.Valeur_Mois_Courant}%
 										</p>
@@ -598,8 +553,8 @@ export default function OperationsPage() {
 			!Suivi_Efficience
 		) {
 			return (
-				<div className="p-8 text-center text-gray-400">
-					Chargement des données...
+				<div className="p-8 text-center text-white">
+				10Chargement des données...
 				</div>
 			)
 		}
@@ -620,11 +575,6 @@ export default function OperationsPage() {
 											Taux d&apos;Heures Supplémentaires
 										</h2>
 									</div>
-									<TargetPill
-										target={Taux_Heures_Supplementaires.Target_Actuelle}
-										actual={Taux_Heures_Supplementaires.Valeur_Actuelle}
-										lowerIsBetter
-									/>
 								</div>
 							</div>
 							<div className="flex items-end gap-2 mb-2">
@@ -723,10 +673,10 @@ export default function OperationsPage() {
 															{item.Valeur}%
 														</span>
 													</div>
-													<span className="font-bold text-gray-400 text-[9px]">
+													<span className="font-bold text-white text-[10px]">
 														S{item.Semaine}
 													</span>
-													<span className="text-gray-600 text-[8px]">
+													<span className="text-white text-[8px]">
 														T:{item.Target}%
 													</span>
 												</div>
@@ -751,11 +701,6 @@ export default function OperationsPage() {
 											)}
 										</h2>
 									</div>
-									<TargetPill
-										target={Taux_Chomage_Technique.Target_Actuelle}
-										actual={Taux_Chomage_Technique.Valeur_Actuelle}
-										lowerIsBetter
-									/>
 								</div>
 							</div>
 							<div className="flex items-end gap-2 mb-2">
@@ -857,10 +802,10 @@ export default function OperationsPage() {
 															{item.Valeur}%
 														</span>
 													</div>
-													<span className="font-bold text-gray-400 text-[9px]">
+													<span className="font-bold text-white text-[10px]">
 														S{item.Semaine}
 													</span>
-													<span className="text-gray-600 text-[8px]">
+													<span className="text-white text-[8px]">
 														T:{item.Target}%
 													</span>
 												</div>
@@ -888,11 +833,6 @@ export default function OperationsPage() {
 											)}
 										</h2>
 									</div>
-									<TargetPill
-										target={Taux_Scrap.Target_Actuelle}
-										actual={Taux_Scrap.Valeur_Actuelle}
-										lowerIsBetter
-									/>
 								</div>
 							</div>
 							{/* Radial */}
@@ -1026,10 +966,10 @@ export default function OperationsPage() {
 															{item.Valeur}%
 														</span>
 													</div>
-													<span className="font-bold text-gray-400 text-[9px]">
+													<span className="font-bold text-white text-[10px]">
 														S{item.Semaine}
 													</span>
-													<span className="text-gray-600 text-[8px]">
+													<span className="text-white text-[8px]">
 														T:{item.Target}%
 													</span>
 												</div>
@@ -1050,10 +990,6 @@ export default function OperationsPage() {
 											Suivi de l&apos;Efficience par semaine
 										</h2>
 									</div>
-									<TargetPill
-										target={Suivi_Efficience.Target_Actuelle}
-										actual={Suivi_Efficience.Valeur_Actuelle}
-									/>
 								</div>
 							</div>
 							{/* Radial */}
@@ -1184,10 +1120,10 @@ export default function OperationsPage() {
 															{item.Valeur}%
 														</span>
 													</div>
-													<span className="font-bold text-gray-400 text-[9px]">
+													<span className="font-bold text-white text-[10px]">
 														S{item.Semaine}
 													</span>
-													<span className="text-gray-600 text-[8px]">
+													<span className="text-white text-[10px]">
 														T:{item.Target}%
 													</span>
 												</div>
@@ -1213,16 +1149,6 @@ export default function OperationsPage() {
 				{/* Header */}
 				<div className="mb-4 lg:mb-6 flex justify-between items-start gap-4">
 					<div>
-						<div className="flex items-center gap-2 mb-1">
-							<span className="w-1 h-8 rounded-full bg-blue-500 block" />
-							<span className="text-xs font-bold uppercase tracking-widest text-blue-400">
-								Operations KPI
-							</span>
-						</div>
-						<h1 className="text-2xl lg:text-3xl font-bold text-white">
-							Factory Performance &mdash;{' '}
-							{activeTab === 'monthly' ? 'Mensuel' : 'Hebdomadaire'}
-						</h1>
 						<div className="flex flex-wrap items-center gap-2 mt-2">
 							{activeTab === 'weekly' && currentWeek && (
 								<div className="rounded-lg bg-slate-800/90 border border-slate-700/50 px-3 py-1 text-xs font-medium text-gray-300">
@@ -1246,7 +1172,7 @@ export default function OperationsPage() {
 						onPeriodChange={setPeriod}
 						onYearChange={setYear}
 					/>
-					<TabSelector activeTab={activeTab} onTabChange={(tab) => { setActiveTab(tab); setPeriod(0) }} />
+					<TabSelector activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab)} />
 				</div>
 				</div>
 

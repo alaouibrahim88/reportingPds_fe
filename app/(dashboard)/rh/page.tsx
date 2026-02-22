@@ -168,10 +168,7 @@ export default function RHPage() {
 
 	return (
     <div className="min-h-screen w-full flex flex-col bg-gradient-to-br from-slate-900 via-gray-900 to-black pb-10">
-      <header className="mb-6 flex items-center justify-between px-8 pt-4">
-        <p className="text-base text-gray-200 font-medium">
-          Dernière mise à jour : il y a 2 minutes
-        </p>
+      <header className="mb-6 flex items-center justify-end px-8 pt-4">
         <PeriodSelector
           type='weekly'
           period={period}

@@ -178,13 +178,26 @@ function VariationBadge({ value }: { value: number }) {
 	)
 }
 
-function WeekCircleBadge({ label, valeur }: { label: string; valeur: number }) {
+function WeekCircleBadge({
+	label,
+	valeur,
+	target,
+}: {
+	label: string
+	valeur: number
+	target?: number
+}) {
 	return (
 		<div className='flex flex-col items-center gap-2'>
-			<div className='flex h-[76px] w-[76px] items-center justify-center rounded-full bg-primary/10 ring-2 ring-primary/50 dark:bg-primary/20 dark:ring-primary/60'>
-				<span className='text-xl font-extrabold tracking-tight text-primary'>
+			<div className='flex h-[76px] w-[76px] flex-col items-center justify-center rounded-full bg-primary/10 ring-2 ring-primary/50 dark:bg-primary/20 dark:ring-primary/60'>
+				<span className='text-xl font-extrabold tracking-tight text-white '>
 					{valeur.toFixed(0)}%
 				</span>
+				{target !== undefined && (
+					<span className='text-[10px] font-semibold text-slate-500 dark:text-slate-400'>
+						Cible: {target}%
+					</span>
+				)}
 			</div>
 			<p className='text-xs font-semibold text-text-light-secondary dark:text-dark-secondary'>
 				{label}
@@ -387,11 +400,16 @@ export default function SupplyChainPage() {
 							<VariationBadge value={fournOtif.Variation_Pts_Vs_S_1} />
 						</div>
 
-						<div className='flex flex-1 items-center justify-around pt-3'>
-							{fournOtif.Historique_5_Semaines.map((h) => (
-								<WeekCircleBadge key={h.Label} label={h.Label} valeur={h.Valeur} />
-							))}
-						</div>
+					<div className='flex flex-1 items-center justify-around pt-3'>
+						{fournOtif.Historique_5_Semaines.map((h) => (
+							<WeekCircleBadge
+								key={h.Label}
+								label={h.Label}
+								valeur={h.Valeur}
+								target={95}
+							/>
+						))}
+					</div>
 					</div>
 				</div>
 
@@ -404,19 +422,22 @@ export default function SupplyChainPage() {
 
 					<div className='flex flex-wrap items-center gap-10'>
 						{/* Current value circle */}
-						<div className='flex flex-col items-center gap-4'>
-							<div className='flex h-[140px] w-[140px] items-center justify-center rounded-full border-[10px] border-primary/20 bg-primary/10 dark:border-primary/30 dark:bg-primary/20'>
-								<div className='flex flex-col items-center gap-0.5 leading-none'>
-									<span className='text-5xl font-extrabold tracking-tighter text-primary'>
-										{fiabilite.Valeur_Semaine.toFixed(0)}%
-									</span>
-									<p className='text-xs font-semibold uppercase tracking-widest text-text-light-secondary dark:text-dark-secondary'>
-										Actuel
-									</p>
-								</div>
+					<div className='flex flex-col items-center gap-4'>
+						<div className='flex h-[140px] w-[140px] items-center justify-center rounded-full border-[10px] border-primary/20 bg-primary/10 dark:border-primary/30 dark:bg-primary/20'>
+							<div className='flex flex-col items-center gap-0.5 leading-none'>
+								<span className='text-5xl font-extrabold tracking-tighter text-white '>
+									{fiabilite.Valeur_Semaine.toFixed(0)}%
+								</span>
+								<p className='text-xs font-semibold uppercase tracking-widest text-text-light-secondary dark:text-dark-secondary'>
+									Actuel
+								</p>
+								<p className='text-[11px] font-semibold text-slate-500 dark:text-slate-400'>
+									Cible: 98%
+								</p>
 							</div>
-							<VariationBadge value={fiabilite.Variation_Pts_Vs_S_1} />
 						</div>
+						<VariationBadge value={fiabilite.Variation_Pts_Vs_S_1} />
+					</div>
 
 						{/* Vertical divider */}
 						<div className='hidden h-36 w-px bg-border-light dark:bg-border-dark lg:block' />
@@ -426,11 +447,16 @@ export default function SupplyChainPage() {
 							<p className='text-xs font-semibold uppercase tracking-widest text-text-light-secondary dark:text-dark-secondary'>
 								Historique hebdomadaire
 							</p>
-							<div className='flex flex-wrap items-center gap-5'>
-								{fiabilite.Historique_5_Semaines.map((h) => (
-									<WeekCircleBadge key={h.Label} label={h.Label} valeur={h.Valeur} />
-								))}
-							</div>
+						<div className='flex flex-wrap items-center gap-5'>
+							{fiabilite.Historique_5_Semaines.map((h) => (
+								<WeekCircleBadge
+									key={h.Label}
+									label={h.Label}
+									valeur={h.Valeur}
+									target={98}
+								/>
+							))}
+						</div>
 						</div>
 					</div>
 				</div>
@@ -628,18 +654,7 @@ export default function SupplyChainPage() {
 			<div className='p-4 sm:p-6 lg:p-8'>
 				<div className='flex w-full flex-col gap-6'>
 					{/* Header */}
-					<div className='flex flex-wrap items-start justify-between gap-4'>
-						<div className='flex flex-col gap-1'>
-							<h1 className='text-2xl font-black tracking-tighter text-white md:text-3xl lg:text-4xl'>
-								Supply Chain –{' '}
-								{activeTab === 'monthly' ? 'Mensuel' : 'Hebdomadaire'}
-							</h1>
-							<p className='text-sm font-normal text-gray-400 md:text-base'>
-								{activeTab === 'monthly'
-									? 'Données mensuelles'
-									: 'Données hebdomadaire'}
-							</p>
-						</div>
+					<div className='flex flex-wrap items-start justify-end gap-4'>
 						<div className='flex flex-wrap items-center gap-3'>
 							<PeriodSelector
 								type={activeTab}
