@@ -101,12 +101,12 @@ interface ChartPoint {
 	valeur: number
 }
 
-function computeChartPoints(history: WeeklyHistoryItem[]): {
+function computeChartPoints(history: WeeklyHistoryItem[] | null | undefined): {
 	points: ChartPoint[]
 	linePath: string
 	fillPath: string
 } {
-	if (!history.length) return { points: [], linePath: '', fillPath: '' }
+	if (!history || !history.length) return { points: [], linePath: '', fillPath: '' }
 	const values = history.map((h) => h.Valeur)
 	const min = Math.min(...values)
 	const max = Math.max(...values)
@@ -141,8 +141,10 @@ function pointTransform(i: number, total: number): string {
 }
 
 /** Maps values to SVG points for a 100×40 viewBox sparkline. */
-function computeSparklinePts(values: number[]): { x: number; y: number }[] {
-	if (values.length < 2) return []
+function computeSparklinePts(
+	values: number[] | null | undefined
+): { x: number; y: number }[] {
+	if (!values || values.length < 2) return []
 	const min = Math.min(...values)
 	const max = Math.max(...values)
 	const range = max === min ? 1 : max - min
@@ -322,11 +324,19 @@ export default function SupplyChainPage() {
 			)
 		}
 
-		const clientOtif = semaine.Taux_Service_Client_OTIF
-		const fournOtif = semaine.Taux_Service_Fournisseurs_OTIF
-		const fiabilite = semaine.Fiabilite_Client
+		const clientOtif = semaine?.Taux_Service_Client_OTIF
+		const fournOtif = semaine?.Taux_Service_Fournisseurs_OTIF
+		const fiabilite = semaine?.Fiabilite_Client
 
-		const clientHist = clientOtif.Historique_5_Semaines
+		if (!clientOtif || !fournOtif || !fiabilite) {
+			return (
+				<div className='flex h-40 items-center justify-center text-text-light-secondary dark:text-dark-secondary'>
+					Aucune donnée disponible
+				</div>
+			)
+		}
+
+		const clientHist = clientOtif.Historique_5_Semaines ?? []
 		const maxClientVal = Math.max(...clientHist.map((h) => h.Valeur), 1)
 
 		return (
@@ -341,10 +351,10 @@ export default function SupplyChainPage() {
 					    />
 
 						<div className='flex flex-wrap items-end gap-3'>
-							<p className='text-5xl font-extrabold tracking-tighter text-text-light-primary dark:text-dark-primary'>
-								{clientOtif.Valeur_Semaine.toFixed(0)}%
-							</p>
-							<VariationBadge value={clientOtif.Variation_Pts_Vs_S_1} />
+						<p className='text-5xl font-extrabold tracking-tighter text-text-light-primary dark:text-dark-primary'>
+							{(clientOtif.Valeur_Semaine ?? 0).toFixed(0)}%
+						</p>
+						<VariationBadge value={clientOtif.Variation_Pts_Vs_S_1 ?? 0} />
 						</div>
 
 						{/* Bar chart */}
@@ -394,14 +404,14 @@ export default function SupplyChainPage() {
 					/>
 
 						<div className='flex flex-wrap items-end gap-3'>
-							<p className='text-5xl font-extrabold tracking-tighter text-text-light-primary dark:text-dark-primary'>
-								{fournOtif.Valeur_Semaine.toFixed(0)}%
-							</p>
-							<VariationBadge value={fournOtif.Variation_Pts_Vs_S_1} />
+						<p className='text-5xl font-extrabold tracking-tighter text-text-light-primary dark:text-dark-primary'>
+							{(fournOtif.Valeur_Semaine ?? 0).toFixed(0)}%
+						</p>
+						<VariationBadge value={fournOtif.Variation_Pts_Vs_S_1 ?? 0} />
 						</div>
 
-					<div className='flex flex-1 items-center justify-around pt-3'>
-						{fournOtif.Historique_5_Semaines.map((h) => (
+				<div className='flex flex-1 items-center justify-around pt-3'>
+					{(fournOtif.Historique_5_Semaines ?? []).map((h) => (
 							<WeekCircleBadge
 								key={h.Label}
 								label={h.Label}
@@ -426,7 +436,7 @@ export default function SupplyChainPage() {
 						<div className='flex h-[140px] w-[140px] items-center justify-center rounded-full border-[10px] border-primary/20 bg-primary/10 dark:border-primary/30 dark:bg-primary/20'>
 							<div className='flex flex-col items-center gap-0.5 leading-none'>
 								<span className='text-5xl font-extrabold tracking-tighter text-white '>
-									{fiabilite.Valeur_Semaine.toFixed(0)}%
+									{(fiabilite.Valeur_Semaine ?? 0).toFixed(0)}%
 								</span>
 								<p className='text-xs font-semibold uppercase tracking-widest text-text-light-secondary dark:text-dark-secondary'>
 									Actuel
@@ -436,7 +446,7 @@ export default function SupplyChainPage() {
 								</p>
 							</div>
 						</div>
-						<VariationBadge value={fiabilite.Variation_Pts_Vs_S_1} />
+						<VariationBadge value={fiabilite.Variation_Pts_Vs_S_1 ?? 0} />
 					</div>
 
 						{/* Vertical divider */}
@@ -448,7 +458,7 @@ export default function SupplyChainPage() {
 								Historique hebdomadaire
 							</p>
 						<div className='flex flex-wrap items-center gap-5'>
-							{fiabilite.Historique_5_Semaines.map((h) => (
+							{(fiabilite.Historique_5_Semaines ?? []).map((h) => (
 								<WeekCircleBadge
 									key={h.Label}
 									label={h.Label}
@@ -481,14 +491,21 @@ export default function SupplyChainPage() {
 			Cout_Logistique_Total: cout,
 		} = mois
 
-		const rotPts = computeSparklinePts(rotation.Suivi_5_Mois.map((m) => m.Valeur_Jours))
-		const fibPts = computeSparklinePts(fiabilite.Suivi_5_Mois.map((m) => m.Valeur))
-		const coutPts = computeSparklinePts(cout.Suivi_5_Mois.map((m) => m.Valeur_MEUR))
+		if (!rotation || !fiabilite || !cout) {
+			return (
+				<div className='flex h-40 items-center justify-center text-text-light-secondary dark:text-dark-secondary'>
+					Aucune donnée disponible
+				</div>
+			)
+		}
 
-		const warehouseEntries = Object.entries(fiabilite.Detail_Warehouses) as [
-			string,
-			number,
-		][]
+		const rotPts = computeSparklinePts(rotation?.Suivi_5_Mois?.map((m) => m.Valeur_Jours))
+		const fibPts = computeSparklinePts(fiabilite?.Suivi_5_Mois?.map((m) => m.Valeur))
+		const coutPts = computeSparklinePts(cout?.Suivi_5_Mois?.map((m) => m.Valeur_MEUR))
+
+		const warehouseEntries = Object.entries(
+			fiabilite.Detail_Warehouses ?? {}
+		) as [string, number][]
 
 		const SparklineChart = ({ pts }: { pts: { x: number; y: number }[] }) => (
 			<div className='relative flex min-h-[12rem] items-center justify-center lg:col-span-2'>
@@ -538,18 +555,18 @@ export default function SupplyChainPage() {
 						<div className='flex flex-col justify-center gap-8 py-4 lg:col-span-3'>
 							<div className='flex flex-col gap-1'>
 								<p className='text-7xl font-extrabold tracking-tighter text-text-light-primary dark:text-dark-primary'>
-									{rotation.Valeur_Jours}{' '}
+									{rotation.Valeur_Jours ?? '—'}{' '}
 									<span className='text-5xl font-bold'>jours</span>
 								</p>
 								<MonthDeltaBadge
-									value={rotation.Variation_Jours_Vs_M_1}
+									value={rotation.Variation_Jours_Vs_M_1 ?? 0}
 									unit='jours'
-									vsLabel={rotation.VsLabel}
+									vsLabel={rotation.VsLabel ?? ''}
 									lowerIsBetter
 								/>
 							</div>
-							<div className='flex flex-wrap items-center gap-4'>
-								{rotation.Suivi_5_Mois.map((m) => (
+						<div className='flex flex-wrap items-center gap-4'>
+							{(rotation.Suivi_5_Mois ?? []).map((m) => (
 									<div key={m.Label} className='flex flex-col items-center gap-2'>
 										<div className='flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary dark:bg-primary/20'>
 											<span className='text-3xl font-bold'>{m.Valeur_Jours}</span>
@@ -575,10 +592,10 @@ export default function SupplyChainPage() {
 						<div className='flex flex-col items-center justify-center gap-6 py-4 lg:col-span-3'>
 							<div className='flex flex-col items-center gap-1'>
 								<p className='text-8xl font-extrabold tracking-tighter text-text-light-primary dark:text-dark-primary'>
-									{fiabilite.Valeur_Pct.toFixed(0)}%
+									{(fiabilite.Valeur_Pct ?? 0).toFixed(0)}%
 								</p>
 								<MonthDeltaBadge
-									value={fiabilite.Variation_Pts_Vs_M_1}
+									value={fiabilite.Variation_Pts_Vs_M_1 ?? 0}
 									unit='pts'
 									vsLabel='vs M-1'
 								/>
@@ -621,14 +638,14 @@ export default function SupplyChainPage() {
 									<span className='text-5xl font-bold'> M</span>
 								</p>
 								<MonthDeltaBadge
-									value={cout.Delta_MEUR_Vs_M_1}
+									value={cout.Delta_MEUR_Vs_M_1 ?? 0}
 									unit='M€'
-									vsLabel={cout.VsLabel}
+									vsLabel={cout.VsLabel ?? ''}
 									lowerIsBetter
 								/>
 							</div>
 							<div className='flex flex-wrap items-center gap-4'>
-								{cout.Suivi_5_Mois.map((m) => (
+								{(cout.Suivi_5_Mois ?? []).map((m) => (
 									<div key={m.Label} className='flex flex-col items-center gap-2'>
 										<div className='flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary dark:bg-primary/20'>
 											<span className='text-2xl font-bold'>
@@ -663,7 +680,7 @@ export default function SupplyChainPage() {
 								onPeriodChange={setPeriod}
 								onYearChange={setYear}
 							/>
-							<TabSelector activeTab={activeTab} onTabChange={(tab) => { setActiveTab(tab); setPeriod(0) }} />
+							<TabSelector activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab)} />
 						</div>
 					</div>
 
