@@ -17,8 +17,8 @@ const MenuKPIDashboard = () => {
     <div className="relative">
       {/* Background Pattern */}
 
-      <div className="p-5 dark:bg-slate-800/90 backdrop-blur-sm shadow-md shadow-slate-300/20 dark:shadow-slate-900/30">
-        <div className="space-y-3">
+      <div className="p-2 dark:bg-slate-800/90 backdrop-blur-sm shadow-md shadow-slate-300/20 dark:shadow-slate-900/30">
+        <div className="space-y-2">
           <div className="flex items-center justify-end gap-4">
 
             {/* Navigation Items */}
