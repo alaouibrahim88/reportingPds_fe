@@ -239,6 +239,7 @@ export default function QualityPage() {
 								</span>
 							</div>
 							</div>
+							
 
 						{/* Weekly circles */}
 						<div className="flex flex-row items-center justify-between w-full">
@@ -376,43 +377,41 @@ export default function QualityPage() {
 							</div>
 
 							{/* Weekly circles */}
-							{sortedIncidentsSeries.length > 0 && (
-								<div className="flex flex-row items-center justify-between w-full">
-									{sortedIncidentsSeries.map((week: any, index: number) => (
-										<div
-											key={index}
-											className="flex flex-col items-center gap-1"
+							<div className="flex flex-row items-center justify-between w-full">
+							{sortedReclamationsSeries.map((week: any, index: number) => (
+								<div
+									key={index}
+									className="flex flex-col items-center gap-1"
+								>
+									<span className="text-xs text-gray-400 font-medium">
+										{week.Label || `S-${index + 1}`}
+									</span>
+									<div
+										className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center shadow-lg"
+										style={{
+											background: `${progressColors[index % progressColors.length]}22`,
+											border: `2px solid ${progressColors[index % progressColors.length]}66`,
+										}}
+									>
+										<span
+											className="text-xl md:text-2xl font-black"
+											style={{
+												color: progressColors[
+													index % progressColors.length
+												],
+											}}
 										>
-											<span className="text-xs text-gray-400 font-medium">
-												{week.Label || `S-${index + 1}`}
-											</span>
-											<div
-												className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center shadow-lg"
-												style={{
-													background: `${progressColors[index % progressColors.length]}22`,
-													border: `2px solid ${progressColors[index % progressColors.length]}66`,
-												}}
-											>
-												<span
-													className="text-xl md:text-2xl font-black"
-													style={{
-														color: progressColors[
-															index % progressColors.length
-														],
-													}}
-												>
-													{Number(week.Valeur)}
-												</span>
-											</div>
-											{week.Target != null && (
-												<span className="text-[10px] text-gray-500">
-													T: {Number(week.Target)}
-												</span>
-											)}
-										</div>
-									))}
+											{Number(week.Valeur)}
+										</span>
+									</div>
+									{week.Target != null && (
+										<span className="text-[10px] text-gray-500">
+											T: {Number(week.Target)}
+										</span>
+									)}
 								</div>
-							)}
+							))}
+						</div>
 						</div>
 
 							{/* Right: Zone Bar Chart */}
@@ -1358,7 +1357,13 @@ export default function QualityPage() {
 	return (
 		<main className="flex-1 overflow-hidden p-4 md:p-6">
 			{/* Header */}
-			<div className="mx-auto mb-6 flex justify-end items-start gap-4">
+			<div className="mx-auto mb-6 flex justify-between items-start gap-4">
+				<div className="flex flex-wrap items-center gap-2 mt-2">
+							<span className="w-1 h-8 rounded-full bg-white block" />
+							<span className="text-xs font-bold uppercase tracking-widest text-white-400">
+								Quality KPI
+							</span>
+						</div>
 				<div className="flex flex-wrap items-center gap-3">
 				<PeriodSelector
 					type={activeTab}
@@ -1368,7 +1373,7 @@ export default function QualityPage() {
 					onYearChange={setYear}
 				/>
 				<TabSelector activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab)} />
-			</div>
+			    </div>
 			</div>
 
 			{error && (

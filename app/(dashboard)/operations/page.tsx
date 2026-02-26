@@ -1150,18 +1150,10 @@ export default function OperationsPage() {
 				<div className="mb-4 lg:mb-6 flex justify-between items-start gap-4">
 					<div>
 						<div className="flex flex-wrap items-center gap-2 mt-2">
-							{activeTab === 'weekly' && currentWeek && (
-								<div className="rounded-lg bg-slate-800/90 border border-slate-700/50 px-3 py-1 text-xs font-medium text-gray-300">
-									Semaine actuelle:{' '}
-									<span className="font-bold text-white">S{currentWeek}</span>
-								</div>
-							)}
-							{currentMonth && (
-								<div className="rounded-lg bg-slate-800/90 border border-slate-700/50 px-3 py-1 text-xs font-medium text-gray-300">
-									Mois en cours:{' '}
-									<span className="font-bold text-white">M{currentMonth}</span>
-								</div>
-							)}
+							<span className="w-1 h-8 rounded-full bg-white block" />
+							<span className="text-xs font-bold uppercase tracking-widest text-white-400">
+								Operations KPI
+							</span>
 						</div>
 					</div>
 					<div className="flex flex-wrap items-center gap-3">

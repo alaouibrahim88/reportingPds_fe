@@ -617,7 +617,13 @@ export default function FinancePage() {
     <div className="flex-1 overflow-hidden">
       <div className="p-5">
         {/* Tab Selector */}
-        <div className="mb-6 flex justify-end items-center">
+        <div className="mb-6 flex justify-between items-center">
+			<div className="flex flex-wrap items-center gap-2 mt-2">
+							<span className="w-1 h-8 rounded-full bg-white block" />
+							<span className="text-xs font-bold uppercase tracking-widest text-white">
+								Finance KPI
+							</span>
+						</div>
           <div className="flex flex-wrap items-center gap-3">
             <PeriodSelector
               type={activeTab}

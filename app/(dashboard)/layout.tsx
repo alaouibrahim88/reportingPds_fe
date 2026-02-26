@@ -10,7 +10,7 @@ import React, { useEffect, useState } from "react"
 import { LogoutButton } from "@/components/LogoutButton"
 import { getCookieValue } from "@/lib/storage"
 
-// Pages that should use the category navigation header (no sidebar)
+// Pages that use the category navigation header
 const CATEGORY_PAGES = [
 	"/operations",
 	"/finance",
@@ -46,21 +46,22 @@ export default function DashboardLayout({
 		checkAuthentication()
 	}, [])
 
-	// Category pages layout (no sidebar, category navigation header)
-	// Programs page uses light theme; other category pages use dark theme
 	if (isCategoryPage) {
 		return (
-			<div
-				className={`flex flex-col min-h-screen ${
-					isProgramsPage ? "bg-slate-50" : "bg-slate-900"
-				}`}
-			>
-				<CategoryNavigationHeader variant={isProgramsPage ? "light" : "dark"} />
-				<div className="flex-1 overflow-auto">
-					<div
-						className={isProgramsPage ? "text-slate-900" : "text-white"}
-					>
-						{children}
+			<div className="flex h-screen">
+				<DesktopSidebar />
+				<div
+					className={`flex flex-col flex-1 min-h-screen ${
+						isProgramsPage ? "bg-slate-50" : "bg-slate-900"
+					}`}
+				>
+					<CategoryNavigationHeader variant={isProgramsPage ? "light" : "dark"} />
+					<div className="flex-1 overflow-auto">
+						<div
+							className={isProgramsPage ? "text-slate-900" : "text-white"}
+						>
+							{children}
+						</div>
 					</div>
 				</div>
 			</div>

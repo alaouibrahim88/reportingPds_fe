@@ -74,15 +74,14 @@ function DesktopSidebar() {
   return (
     <div
     className={cn(
-      "relative hidden h-screen border-r bg-background lg:block transition-all duration-300",
+      "relative hidden h-screen border-r bg-background lg:block transition-all duration-300 shrink-0 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
       isCollapsed ? "w-[60px]" : "w-[220px]"
     )}
     >
-      {/* Collapse Toggle Button */}
       <Button
         variant="ghost"
         size="icon"
-        className="absolute -right-4 top-6 z-10 h-8 w-8 rounded-full border bg-background"
+        className="absolute right-1 top-6 z-10 h-8 w-8 rounded-full border bg-background shadow-sm"
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
         {isCollapsed ? (

@@ -1396,7 +1396,13 @@ export default function ProgramsPage() {
 		<main className="flex-1 overflow-hidden">
 			<div className="p-6 sm:p-8">
 				{/* Header */}
-				<div className="mb-8 flex flex-col sm:flex-row sm:justify-end sm:items-start gap-6">
+				<div className="mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-6">
+					<div className="flex flex-wrap items-center gap-2 mt-2">
+							<span className="w-1 h-8 rounded-full bg-blue-500 block" />
+							<span className="text-xs font-bold uppercase tracking-widest text-blue-500">
+								Program KPI
+							</span>
+						</div>
 				<div className="flex flex-wrap items-center gap-3">
 					<PeriodSelector
 						type={activeTab}

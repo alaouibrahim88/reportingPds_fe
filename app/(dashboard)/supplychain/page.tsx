@@ -671,7 +671,13 @@ export default function SupplyChainPage() {
 			<div className='p-4 sm:p-6 lg:p-8'>
 				<div className='flex w-full flex-col gap-6'>
 					{/* Header */}
-					<div className='flex flex-wrap items-start justify-end gap-4'>
+					<div className='flex flex-wrap items-start justify-between gap-4'>
+						<div className="flex flex-wrap items-center gap-2 mt-2">
+							<span className="w-1 h-8 rounded-full bg-white block" />
+							<span className="text-xs font-bold uppercase tracking-widest text-white">
+								Supply Chain KPI
+							</span>
+						</div>
 						<div className='flex flex-wrap items-center gap-3'>
 							<PeriodSelector
 								type={activeTab}

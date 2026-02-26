@@ -168,7 +168,13 @@ export default function RHPage() {
 
 	return (
     <div className="min-h-screen w-full flex flex-col bg-gradient-to-br from-slate-900 via-gray-900 to-black pb-10">
-      <header className="mb-6 flex items-center justify-end px-8 pt-4">
+      <header className="mb-6 flex items-center justify-between px-8 pt-4">
+        <div className="flex flex-wrap items-center gap-2 mt-2">
+							<span className="w-1 h-8 rounded-full bg-white block" />
+							<span className="text-xs font-bold uppercase tracking-widest text-white">
+								RH KPI
+							</span>
+						</div>
         <PeriodSelector
           type='weekly'
           period={period}

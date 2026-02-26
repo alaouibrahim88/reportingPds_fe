@@ -6,7 +6,7 @@ import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { ModeToggle } from "@/components/ThemeModeToggle"
 import { Bell, User } from "lucide-react"
-
+import Logo from "./Logo"
 interface CategoryNavigationHeaderProps {
 	variant?: "light" | "dark"
 }
@@ -39,14 +39,7 @@ export function CategoryNavigationHeader({
 				<div className="flex items-center gap-8">
 					<Link href="/" className="flex items-center gap-2">
 						<div className="flex items-center">
-							<span className="text-2xl font-bold text-blue-500">V</span>
-							<span
-								className={`text-xl font-semibold ${
-									isLight ? "text-slate-900" : "text-white"
-								}`}
-							>
-								vizora
-							</span>
+							<Logo height={100} />
 						</div>
 					</Link>
 
