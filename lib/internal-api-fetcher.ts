@@ -23,7 +23,7 @@ interface FetchInternalApiOptions {
 export async function fetchInternalApi<T = unknown>(
 	endpoint: string,
 ): Promise<NextResponse<T>> {
-	const url = `${process.env.BASE_URL_CATEGORY_KPI}${endpoint}`
+	const url = `${process.env.NEXT_PUBLIC_CATEGORY_KPI}${endpoint}`
 	const res = await fetch(url, FETCH_OPTIONS)
 	const data = (await res.json()) as T
 	return NextResponse.json(data)

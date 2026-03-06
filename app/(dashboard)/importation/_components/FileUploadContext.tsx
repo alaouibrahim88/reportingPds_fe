@@ -7,6 +7,7 @@ import type {
 	FilesByDepartment,
 	FileUploadContextType
 } from '@/types'
+import {INTERNAL_API_ENDPOINTS} from "@/constants/api"
 // Constants
 const STORAGE_KEY = 'importation_files'
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
@@ -26,7 +27,6 @@ export function useFileUpload() {
 	}
 	return context
 }
-import {UPLOAD_FILES_URL} from "@/constants/api"
 // Provider Props
 interface FileUploadProviderProps {
 	children: ReactNode
@@ -109,7 +109,7 @@ export function FileUploadProvider({ children }: FileUploadProviderProps) {
 			formData.append('domain', payload.domain)
 			formData.append('annee', payload.annee)
 			// should be fixed after use api/upload-files-kpi-categories instead of set hardcoded baseUrl
-            const response = await fetch(UPLOAD_FILES_URL, {
+			const response = await fetch(`${process.env.NEXT_PUBLIC_CATEGORY_KPI}${INTERNAL_API_ENDPOINTS.uploadFilesKPICategories}`, {
 				method: 'POST',
 				body: formData,
 			})

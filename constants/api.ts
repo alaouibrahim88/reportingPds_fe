@@ -57,4 +57,4 @@ export const INTERNAL_API_ENDPOINTS = {
 
 
 export const UPLOAD_FILES_URL =
-	`${process.env.NEXT_PUBLIC_BASE_URL_CATEGORY_KPI}/ImportExcel/excel`
+	`${process.env.NEXT_PUBLIC_NEXT_PUBLIC_CATEGORY_KPI}/ImportExcel/excel`

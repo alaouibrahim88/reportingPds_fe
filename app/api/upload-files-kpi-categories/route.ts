@@ -33,7 +33,7 @@ export async function POST(request: Request) {
 				: DEFAULT_YEAR,
 		)
      
-		const targetUrl = `${process.env.BASE_URL_CATEGORY_KPI}${INTERNAL_API_ENDPOINTS.uploadFilesKPICategories}`
+		const targetUrl = `${process.env.NEXT_PUBLIC_CATEGORY_KPI}${INTERNAL_API_ENDPOINTS.uploadFilesKPICategories}`
 		const response = await fetch(targetUrl, {
 			method: 'POST',
 			body: formData,
