@@ -26,7 +26,7 @@ export function useFileUpload() {
 	}
 	return context
 }
-
+import {UPLOAD_FILES_URL} from "@/constants/api"
 // Provider Props
 interface FileUploadProviderProps {
 	children: ReactNode
@@ -109,7 +109,7 @@ export function FileUploadProvider({ children }: FileUploadProviderProps) {
 			formData.append('domain', payload.domain)
 			formData.append('annee', payload.annee)
 			// should be fixed after use api/upload-files-kpi-categories instead of set hardcoded baseUrl
-            const response = await fetch("http://localhost:2222/api/Polydesign/Kpi/ImportExcel/excel", {
+            const response = await fetch(UPLOAD_FILES_URL, {
 				method: 'POST',
 				body: formData,
 			})
