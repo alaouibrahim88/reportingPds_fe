@@ -428,35 +428,72 @@ export default function FinancePage() {
 				</div>
 		<div className="h-60 min-h-[240px] relative pt-8 pb-4 px-6 overflow-visible bg-slate-800/30 rounded-lg border border-slate-700/50">
           <div className="absolute inset-0 px-6 pt-8 pb-4">
-            <svg
-              className="w-full h-full"
-              fill="none"
-              preserveAspectRatio="none"
-              viewBox="0 0 286 112"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M35.75 89.6L107.25 58.8L178.75 39.2L250.25 0"
-                stroke="#EAB308"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <circle cx="35.75" cy="89.6" fill="#EAB308" r="6" stroke="#fef08a" strokeWidth="2" />
-              <circle cx="107.25" cy="58.8" fill="#EAB308" r="6" stroke="#fef08a" strokeWidth="2" />
-              <circle cx="178.75" cy="39.2" fill="#EAB308" r="6" stroke="#fef08a" strokeWidth="2" />
-              <circle cx="250.25" cy="0" fill="#EAB308" r="6" stroke="#fef08a" strokeWidth="2" />
-            </svg>
+            {(() => {
+              const items = ca.Dernieres_4_Semaines ?? []
+              const values = items.map((s) => s.Valeur_MEUR ?? s.Valeur ?? 0)
+              const maxVal = Math.max(...values, 1)
+              const n = items.length
+              const w = 286
+              const h = 112
+              const padTop = 10
+              const padBottom = 10
+              const usableH = h - padTop - padBottom
+              const pts = items.map((s, i) => {
+                const val = s.Valeur_MEUR ?? s.Valeur ?? 0
+                const x = n > 1 ? ((2 * i + 1) * w) / (2 * n) : w / 2
+                const cyVal = padTop + (1 - val / maxVal) * usableH
+                return { x, cy: cyVal }
+              })
+              const pathD = pts.length > 1
+                ? `M${pts.map((p) => `${p.x} ${p.cy}`).join('L')}`
+                : ''
+              return (
+                <svg
+                  className="w-full h-full"
+                  fill="none"
+                  preserveAspectRatio="none"
+                  viewBox={`0 0 ${w} ${h}`}
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  {pathD && (
+                    <path
+                      d={pathD}
+                      stroke="#EAB308"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  )}
+                  {pts.map((p, i) => (
+                    <circle
+                      key={items[i].Label}
+                      cx={p.x}
+                      cy={p.cy}
+                      fill="#EAB308"
+                      r="6"
+                      stroke="#fef08a"
+                      strokeWidth="2"
+                    />
+                  ))}
+                </svg>
+              )
+            })()}
           </div>
-          <div className="absolute inset-0 grid grid-cols-4 items-end px-6">
-							{ca.Dernieres_4_Semaines.map((s, i) => {
+          <div
+            className="absolute inset-0 grid items-end px-6"
+            style={{
+              gridTemplateColumns: `repeat(${Math.max(1, (ca.Dernieres_4_Semaines ?? []).length)}, minmax(0, 1fr))`,
+            }}
+          >
+							{(ca.Dernieres_4_Semaines ?? []).map((s, i) => {
+								const items = ca.Dernieres_4_Semaines ?? []
 								const val = s.Valeur_MEUR ?? s.Valeur ?? 0
-								const maxVal = Math.max(...ca.Dernieres_4_Semaines.map((x) => x.Valeur_MEUR ?? x.Valeur ?? 0), 1)
+								const maxVal = Math.max(...items.map((x) => x.Valeur_MEUR ?? x.Valeur ?? 0), 1)
 								const height = Math.max(40, (val / maxVal) * 90)
 								return (
 									<div
 										key={s.Label}
-										className={`rounded-t-md relative mx-auto w-1/3 flex justify-center ${i === ca.Dernieres_4_Semaines.length - 1 ? 'bg-primary' : 'bg-primary/80'}`}
+										className={`rounded-t-md relative mx-auto w-1/3 flex justify-center ${i === items.length - 1 ? 'bg-primary' : 'bg-primary/80'}`}
 										style={{ height: `${height}%` }}
 									>
 										<span className="absolute -top-8 left-1/2 -translate-x-1/2 px-3 py-2 rounded-lg text-white text-base font-bold bg-slate-800 border-2 border-slate-500 whitespace-nowrap shadow-xl z-10 min-w-[4rem] text-center">
