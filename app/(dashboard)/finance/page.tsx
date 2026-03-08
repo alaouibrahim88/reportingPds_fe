@@ -156,9 +156,14 @@ export default function FinancePage() {
 			)
 		}
 
-		const eff = monthlyData.Efficience_Financiere
-		const exec = monthlyData.Execution_Budgetaire
-		const paiements = monthlyData.Paiements_Retard
+		const eff = monthlyData.Efficience_Financiere ?? ({} as EfficienceFinanciere)
+		const exec = monthlyData.Execution_Budgetaire ?? ({} as ExecutionBudgetaire)
+		const paiements = monthlyData.Paiements_Retard ?? ({} as PaiementsRetard)
+		const effSuivi = Array.isArray(eff.Suivi_4_Mois) ? eff.Suivi_4_Mois : []
+		const execSuivi = Array.isArray(exec.Suivi_4_Mois) ? exec.Suivi_4_Mois : []
+		const paiementsSuivi = Array.isArray(paiements.Suivi_4_Mois)
+			? paiements.Suivi_4_Mois
+			: []
 
 		return (
 			<main className="flex-1">
@@ -253,12 +258,12 @@ export default function FinancePage() {
 										Consommé vs. mois dernier
 									</p>
 									<div className="flex justify-start items-center mt-4 space-x-3">
-										{exec.Suivi_4_Mois.map((item) => (
+										{execSuivi.map((item, i) => (
 											<div
-												key={item.Label}
+												key={item?.Label ?? `exec-${i}`}
 												className="flex items-center justify-center w-14 h-14 rounded-full border-2 bg-blue-500/20 text-blue-300 border-blue-400"
 											>
-												<span className="font-bold text-lg">{item.Valeur ?? '-'}</span>
+												<span className="font-bold text-lg">{item?.Valeur ?? '-'}</span>
 											</div>
 										))}
 									</div>
@@ -303,14 +308,14 @@ export default function FinancePage() {
 									</p>
 									<div className="flex items-end gap-2 mt-1">
 										<p className="text-red-500 tracking-light text-[32px] font-bold leading-tight truncate">
-											{paiements.Valeur_Affichee_MEUR} M€
+											{paiements?.Valeur_Affichee_MEUR ?? '-'} M€
 										</p>
-										<div className={`flex items-center ${paiements.Delta_Affiche_MEUR <= 0 ? 'text-green-500' : 'text-red-500'}`}>
+										<div className={`flex items-center ${(paiements?.Delta_Affiche_MEUR ?? 0) <= 0 ? 'text-green-500' : 'text-red-500'}`}>
 											<span className="material-symbols-outlined text-lg">
 												check_circle
 											</span>
 											<p className="text-base font-medium">
-												{paiements.Delta_Affiche_MEUR >= 0 ? '+' : ''}{paiements.Delta_Affiche_MEUR} M€
+												{(paiements?.Delta_Affiche_MEUR ?? 0) >= 0 ? '+' : ''}{paiements?.Delta_Affiche_MEUR ?? '-'} M€
 											</p>
 										</div>
 									</div>
@@ -318,12 +323,12 @@ export default function FinancePage() {
 										Amélioration vs mois dernier
 									</p>
 									<div className="flex justify-start items-center mt-4 space-x-3">
-										{paiements.Suivi_4_Mois.map((item) => (
+										{paiementsSuivi.map((item, i) => (
 											<div
-												key={item.Label}
+												key={item?.Label ?? `paiements-${i}`}
 												className="flex items-center justify-center w-14 h-14 rounded-full border-2 bg-blue-500/20 text-blue-300 border-blue-400"
 											>
-												<span className="font-bold text-lg">{item.Valeur_MEUR ?? '-'}</span>
+												<span className="font-bold text-lg">{item?.Valeur_MEUR ?? '-'}</span>
 											</div>
 										))}
 									</div>
@@ -377,8 +382,12 @@ export default function FinancePage() {
 			)
 		}
 
-		const ca = weeklyData.Chiffre_Affaires
-		const taux = weeklyData.Taux_Facturation_Livraison
+		const ca = weeklyData.Chiffre_Affaires ?? ({} as ChiffreAffaires)
+		const taux = weeklyData.Taux_Facturation_Livraison ?? ({} as TauxFacturationLivraison)
+		const semaines = Array.isArray(ca?.Semaine_Du_Mois) ? ca.Semaine_Du_Mois : []
+		const derniers4 = Array.isArray(taux?.Dernieres_4_Semaines)
+			? taux.Dernieres_4_Semaines
+			: []
 
 		return (
     <main className="flex-1 flex flex-col">
@@ -396,7 +405,9 @@ export default function FinancePage() {
             <div className="flex flex-col gap-1">
               <div className="flex items-end gap-2">
                 <p className="text-blue-400 tracking-light text-7xl font-bold leading-tight truncate tabular-nums">
-									<span className="text-blue-400">{ca.Valeur_Mois_Cumulee_MEUR}</span>
+									<span className="text-blue-400">
+										{ca?.Valeur_Mois_Cumulee_MEUR ?? '-'}
+									</span>
 									<span className="text-blue-300/90 text-5xl ml-1">M€</span>
 								</p>
 								<div className="flex items-center gap-1.5 text-green-400">
@@ -409,16 +420,16 @@ export default function FinancePage() {
             <div className="flex items-end gap-4">
               <div className="flex flex-col text-right">
                 <div className="flex items-center gap-4">
-									{ca.Dernieres_4_Semaines.map((s) => (
-										<div key={s.Label} className="flex flex-col items-center gap-2.5">
+									{semaines.map((s, idx) => (
+										<div key={s?.Label ?? `w-${idx}`} className="flex flex-col items-center gap-2.5">
 											<div
 												className="w-20 h-20 rounded-full bg-slate-700/60 border-2 border-blue-400/80 flex items-center justify-center shadow-xl shadow-blue-500/20 ring-2 ring-blue-500/20"
 											>
 												<span className="text-white text-lg font-bold tabular-nums">
-													{s.Valeur_MEUR ?? s.Valeur ?? '-'} M€
+													{s.Cumul_MEUR ?? s.Reel_MEUR ?? s.Prevision_MEUR ?? '-'} M€
 												</span>
 											</div>
-											<span className="text-gray-300 text-sm font-medium">{s.Label}</span>
+											<span className="text-gray-300 text-sm font-medium">{s?.Label ?? '-'}</span>
 										</div>
 									))}
 								</div>
@@ -428,99 +439,115 @@ export default function FinancePage() {
 				</div>
 		<div className="h-60 min-h-[240px] relative pt-8 pb-4 px-6 overflow-visible bg-slate-800/30 rounded-lg border border-slate-700/50">
           <div className="absolute inset-0 px-6 pt-8 pb-4">
-            {(() => {
-              const items = ca.Dernieres_4_Semaines ?? []
-              const values = items.map((s) => s.Valeur_MEUR ?? s.Valeur ?? 0)
-              const maxVal = Math.max(...values, 1)
-              const n = items.length
-              const w = 286
-              const h = 112
-              const padTop = 10
-              const padBottom = 10
-              const usableH = h - padTop - padBottom
-              const pts = items.map((s, i) => {
-                const val = s.Valeur_MEUR ?? s.Valeur ?? 0
-                const x = n > 1 ? ((2 * i + 1) * w) / (2 * n) : w / 2
-                const cyVal = padTop + (1 - val / maxVal) * usableH
-                return { x, cy: cyVal }
-              })
-              const pathD = pts.length > 1
-                ? `M${pts.map((p) => `${p.x} ${p.cy}`).join('L')}`
-                : ''
-              return (
-                <svg
-                  className="w-full h-full"
-                  fill="none"
-                  preserveAspectRatio="none"
-                  viewBox={`0 0 ${w} ${h}`}
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  {pathD && (
-                    <path
-                      d={pathD}
-                      stroke="#EAB308"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  )}
-                  {pts.map((p, i) => (
-                    <circle
-                      key={items[i].Label}
-                      cx={p.x}
-                      cy={p.cy}
-                      fill="#EAB308"
-                      r="6"
-                      stroke="#fef08a"
-                      strokeWidth="2"
-                    />
-                  ))}
-                </svg>
-              )
-            })()}
+						{(() => {
+							const items = semaines
+							const getVal = (s: SemaineDuMois | undefined) =>
+								s?.Cumul_MEUR ?? s?.Reel_MEUR ?? s?.Prevision_MEUR ?? 0
+							const values = items.map(getVal)
+							const maxVal = Math.max(...values, 1)
+							const n = items.length
+							const w = 286
+							const h = 112
+							const padTop = 10
+							const padBottom = 10
+							const usableH = h - padTop - padBottom
+							const pts = items.map((s, i) => {
+								const val = getVal(s)
+								const x = n > 1 ? ((2 * i + 1) * w) / (2 * n) : w / 2
+								const cyVal = padTop + (1 - val / maxVal) * usableH
+								return { x, cy: cyVal }
+							})
+							const pathD =
+								pts.length > 1
+									? `M${pts.map((p) => `${p.x} ${p.cy}`).join('L')}`
+									: ''
+							return (
+								<svg
+									className="w-full h-full"
+									fill="none"
+									preserveAspectRatio="none"
+									viewBox={`0 0 ${w} ${h}`}
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									{pathD && (
+										<path
+											d={pathD}
+											stroke="#EAB308"
+											strokeWidth="2.5"
+											strokeLinecap="round"
+											strokeLinejoin="round"
+										/>
+									)}
+									{pts.map((p, i) => (
+										<circle
+											key={items[i]?.Label ?? `pt-${i}`}
+											cx={p.x}
+											cy={p.cy}
+											fill="#EAB308"
+											r="6"
+											stroke="#fef08a"
+											strokeWidth="2"
+										/>
+									))}
+								</svg>
+							)
+						})()}
           </div>
           <div
-            className="absolute inset-0 grid items-end px-6"
-            style={{
-              gridTemplateColumns: `repeat(${Math.max(1, (ca.Dernieres_4_Semaines ?? []).length)}, minmax(0, 1fr))`,
-            }}
-          >
-							{(ca.Dernieres_4_Semaines ?? []).map((s, i) => {
-								const items = ca.Dernieres_4_Semaines ?? []
-								const val = s.Valeur_MEUR ?? s.Valeur ?? 0
-								const maxVal = Math.max(...items.map((x) => x.Valeur_MEUR ?? x.Valeur ?? 0), 1)
-								const height = Math.max(40, (val / maxVal) * 90)
-								return (
-									<div
-										key={s.Label}
-										className={`rounded-t-md relative mx-auto w-1/3 flex justify-center ${i === items.length - 1 ? 'bg-primary' : 'bg-primary/80'}`}
-										style={{ height: `${height}%` }}
-									>
-										<span className="absolute -top-8 left-1/2 -translate-x-1/2 px-3 py-2 rounded-lg text-white text-base font-bold bg-slate-800 border-2 border-slate-500 whitespace-nowrap shadow-xl z-10 min-w-[4rem] text-center">
-											{val || '-'} M€
-										</span>
-									</div>
-								)
-							})}
-						</div>
+						className="absolute inset-0 grid items-end px-6"
+						style={{
+							gridTemplateColumns: `repeat(${Math.max(1, semaines.length)}, minmax(0, 1fr))`,
+						}}
+					>
+						{semaines.map((s, i) => {
+							const items = semaines
+							const getVal = (x: SemaineDuMois | undefined) =>
+								x?.Cumul_MEUR ?? x?.Reel_MEUR ?? x?.Prevision_MEUR ?? 0
+							const val = getVal(s)
+							const maxVal = Math.max(...items.map(getVal), 1)
+							const height = Math.max(40, (val / maxVal) * 90)
+							return (
+								<div
+									key={s?.Label ?? `bar-${i}`}
+									className={`rounded-t-md relative mx-auto w-1/3 flex justify-center ${i === items.length - 1 ? 'bg-primary' : 'bg-primary/80'}`}
+									style={{ height: `${height}%` }}
+								>
+									<span className="absolute -top-8 left-1/2 -translate-x-1/2 px-3 py-2 rounded-lg text-white text-base font-bold bg-slate-800 border-2 border-slate-500 whitespace-nowrap shadow-xl z-10 min-w-[4rem] text-center">
+										{val || '-'} M€
+									</span>
+								</div>
+							)
+						})}
+					</div>
           <div
             className="absolute top-2 right-6 flex flex-col items-end gap-1.5 z-20"
           >
             <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/95 border border-yellow-500/50">
               <Target className="w-4 h-4 text-yellow-400 shrink-0" strokeWidth={2.5} />
-              <span className="text-sm font-bold text-yellow-300 tabular-nums">{ca.Valeur_Mois_Cumulee_MEUR} M€</span>
+              <span className="text-sm font-bold text-yellow-300 tabular-nums">
+								{semaines.reduce(
+									(sum, s) =>
+										sum +
+										(s?.Cumul_MEUR ?? s?.Reel_MEUR ?? s?.Prevision_MEUR ?? 0),
+									0
+								)}{' '}
+								M€
+							</span>
             </div>
             <span className="text-xs font-medium text-gray-400">Objectif cible</span>
           </div>
         </div>
 						<div
-							className="grid grid-cols-4 text-center pt-5 px-6"
+							className="grid text-center pt-5 px-6"
+							style={{
+								gridTemplateColumns: `repeat(${Math.max(1, semaines.length)}, minmax(0, 1fr))`,
+							}}
 						>
-							{ca.Semaine_Du_Mois.map((s) => (
-								<div key={s.Label} className="flex flex-col items-center gap-2">
-									<span className="font-bold text-base text-white">{s.Label}</span>
+							{semaines.map((s, idx) => (
+								<div key={s?.Label ?? `grid-${idx}`} className="flex flex-col items-center gap-2">
+									<span className="font-bold text-base text-white">{s?.Label ?? '-'}</span>
 									<span className="text-gray-300 text-sm font-medium tabular-nums">
-										{s.Cumul_MEUR ?? s.Reel_MEUR ?? s.Prevision_MEUR ?? '-'} M€
+										{s?.Cumul_MEUR ?? s?.Reel_MEUR ?? s?.Prevision_MEUR ?? '-'} M€
 									</span>
 								</div>
 							))}
@@ -535,29 +562,29 @@ export default function FinancePage() {
 						<div className="flex items-center justify-between">
 							<div className="flex items-end gap-2">
 								<p className="text-blue-400 tracking-light text-4xl font-bold leading-tight truncate tabular-nums">
-									<span className="text-blue-400">{taux.Valeur_S_1}</span>
+									<span className="text-blue-400">{taux?.Valeur_S_1 ?? '-'}</span>
 									<span className="text-blue-300/90 text-3xl ml-0.5">%</span>
 								</p>
-								<div className={`flex items-center gap-1.5 ${taux.Variation_Pts_Vs_S_1 >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-									{taux.Variation_Pts_Vs_S_1 >= 0 ? (
+								<div className={`flex items-center gap-1.5 ${(taux?.Variation_Pts_Vs_S_1 ?? 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+									{(taux?.Variation_Pts_Vs_S_1 ?? 0) >= 0 ? (
 										<ArrowUp className="w-5 h-5 shrink-0" strokeWidth={2.5} />
 									) : (
 										<ArrowDown className="w-5 h-5 shrink-0" strokeWidth={2.5} />
 									)}
 									<p className="text-lg font-semibold">
-										{taux.Variation_Pts_Vs_S_1 >= 0 ? '+' : ''}{taux.Variation_Pts_Vs_S_1} pts vs S-1
+										{(taux?.Variation_Pts_Vs_S_1 ?? 0) >= 0 ? '+' : ''}{taux?.Variation_Pts_Vs_S_1 ?? '-'} pts vs S-1
 									</p>
 								</div>
 							</div>
 							<div className="flex items-center gap-4">
-								{taux.Dernieres_4_Semaines.map((s) => (
-									<div key={s.Label} className="flex flex-col items-center gap-2.5">
+								{derniers4.map((s, idx) => (
+									<div key={s?.Label ?? `taux-${idx}`} className="flex flex-col items-center gap-2.5">
 										<div
 											className="w-16 h-16 rounded-full border-2 flex items-center justify-center bg-slate-700/60 border-blue-400/80 shadow-xl shadow-blue-500/20 ring-2 ring-blue-500/20"
 										>
-											<span className="text-white text-base font-bold tabular-nums">{s.Valeur ?? s.Valeur_MEUR ?? '-'}%</span>
+											<span className="text-white text-base font-bold tabular-nums">{s?.Valeur ?? s?.Valeur_MEUR ?? '-'}%</span>
 										</div>
-										<span className="text-gray-300 text-sm font-medium">{s.Label}</span>
+										<span className="text-gray-300 text-sm font-medium">{s?.Label ?? '-'}</span>
 									</div>
 								))}
 							</div>
@@ -618,27 +645,30 @@ export default function FinancePage() {
             </svg>
             {/* Data point value labels - positioned above each point */}
             <div className="absolute inset-0 z-10 pointer-events-none flex justify-between px-6">
-              {taux.Dernieres_4_Semaines.map((s) => (
+              {derniers4.map((s, idx) => (
                 <div
-                  key={s.Label}
+                  key={s?.Label ?? `label-${idx}`}
                   className="flex flex-col items-center -mt-3"
                   style={{ width: '22%' }}
                 >
                   <span className="px-3 py-1.5 rounded-lg text-sm font-bold text-yellow-300 bg-slate-800/95 border-2 border-slate-500 whitespace-nowrap shadow-xl">
-                    {s.Valeur ?? s.Valeur_MEUR ?? '-'}%
+                    {s?.Valeur ?? s?.Valeur_MEUR ?? '-'}%
                   </span>
                 </div>
               ))}
             </div>
           </div>
 						<div
-							className="grid grid-cols-4 text-center mt-5 px-6"
+							className="grid text-center mt-5 px-6"
+							style={{
+								gridTemplateColumns: `repeat(${Math.max(1, derniers4.length)}, minmax(0, 1fr))`,
+							}}
 						>
-							{taux.Dernieres_4_Semaines.map((s) => (
-								<div key={s.Label} className="flex flex-col items-center gap-2">
-									<span className="font-bold text-base text-white">{s.Label}</span>
+							{derniers4.map((s, idx) => (
+								<div key={s?.Label ?? `taux-grid-${idx}`} className="flex flex-col items-center gap-2">
+									<span className="font-bold text-base text-white">{s?.Label ?? '-'}</span>
 									<span className="text-gray-300 text-sm font-medium tabular-nums">
-										{s.Valeur ?? s.Valeur_MEUR ?? '-'}%
+										{s?.Valeur ?? s?.Valeur_MEUR ?? '-'}%
 									</span>
 								</div>
 							))}

@@ -188,7 +188,7 @@ export default function QualityPage() {
 		const efficiencePoints = efficienceChartValues
 			.map((s: any, i: number) => {
 				const x = 100 + i * 100;
-				const y = mapValueToY(Number(s.Valeur), 80, 100, 20, 180);
+				const y = mapValueToY(Number(s.Valeur), 80, 100, 25, 170);
 				return `${x},${y}`;
 			})
 			.join(" ");
@@ -287,16 +287,16 @@ export default function QualityPage() {
 							<p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
 								Suivi des Réclamations
 							</p>
-							<svg viewBox="0 0 450 120" className="w-full max-w-md h-auto">
+							<svg viewBox="0 0 450 120" className="w-full max-w-3xl min-h-[160px] h-auto">
 								<line
 									x1="50"
-									y1="95"
+									y1="105"
 									x2="420"
-									y2="95"
+									y2="105"
 									stroke="#374151"
 									strokeWidth="1"
 								/>
-								{[30, 60].map((y) => (
+								{[35, 70].map((y) => (
 									<line
 										key={y}
 										x1="50"
@@ -307,18 +307,6 @@ export default function QualityPage() {
 										strokeWidth="1"
 										strokeDasharray="4 4"
 									/>
-								))}
-								{reclamationsChartValues.map((s: any, i: number) => (
-									<text
-										key={i}
-										x={100 + i * 100}
-										y="112"
-										textAnchor="middle"
-										fontSize="11"
-										className="fill-gray-500"
-									>
-										{s.Label || `S-${4 - i}`}
-									</text>
 								))}
 								<polyline
 									points={reclamationsPoints}
@@ -337,8 +325,32 @@ export default function QualityPage() {
 										15,
 										85
 									);
+									const val = Number(s.Valeur);
+									const tgt = s.Target != null ? Number(s.Target) : reclamationTarget;
+									const labelY = Math.max(y - 12, 8);
 									return (
-										<circle key={i} cx={x} cy={y} r="5" fill="#06b6d4" />
+										<g key={i}>
+											<text
+												x={x}
+												y={labelY}
+												textAnchor="middle"
+												fontSize="11"
+												fontWeight="600"
+												fill="#22d3ee"
+											>
+												{val} / T:{tgt}
+											</text>
+											<circle cx={x} cy={y} r="5" fill="#06b6d4" />
+											<text
+												x={x}
+												y="108"
+												textAnchor="middle"
+												fontSize="10"
+												fill="#6b7280"
+											>
+												{s.Label || `S-${4 - i}`}
+											</text>
+										</g>
 									);
 								})}
 							</svg>
@@ -361,7 +373,7 @@ export default function QualityPage() {
 						{/* Left */}
 						<div className="flex items-start gap-8">
 							<div className="text-center">
-								<div className="text-6xl md:text-7xl font-black text-white mb-2 leading-none tabular-nums">
+								<div className="text-6xl md:text-7xl font-black text-white mb-5 leading-none tabular-nums">
 									{Number(incidents?.Valeur_Actuelle) || 0}
 								</div>
 								<div className="flex flex-col items-center gap-1">
@@ -422,7 +434,7 @@ export default function QualityPage() {
 								<p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
 									Incidents par Zone
 								</p>
-								<svg viewBox="0 0 550 150" className="w-full max-w-lg h-auto">
+								<svg viewBox="0 0 550 150" className="w-full max-w-3xl min-h-[200px] h-auto">
 									{zoneKeys.map((zone, i) => {
 										const value = getZoneValue(zone);
 										const target = getZoneTarget(zone);
@@ -460,25 +472,14 @@ export default function QualityPage() {
 												/>
 												<text
 													x={x + 25}
-													y={y - 6}
+													y={y - 20}
 													textAnchor="middle"
 													fontSize="12"
 													fontWeight="700"
-													className="fill-white"
+													fill="white"
 												>
-													{value}
+													{value} / T:{target}
 												</text>
-												{target > 0 && (
-													<text
-														x={x + 25}
-														y={targetY - 8}
-														textAnchor="middle"
-														fontSize="9"
-														className="fill-yellow-400"
-													>
-														T:{target}
-													</text>
-												)}
 											</React.Fragment>
 										);
 									})}
@@ -496,8 +497,9 @@ export default function QualityPage() {
 											x={75 + i * 100}
 											y="138"
 											textAnchor="middle"
-											fontSize="10"
-											className="fill-gray-400"
+											fontSize="11"
+											fontWeight="600"
+											fill="#d1d5db"
 										>
 											{zone}
 										</text>
@@ -535,10 +537,6 @@ export default function QualityPage() {
 									<span className="text-xs text-gray-400">
 										Target: {efficienceTarget}%
 									</span>
-									<StatusChip
-										value={efficienceValue}
-										target={efficienceTarget}
-									/>
 								</div>
 							</div>
 
@@ -546,6 +544,10 @@ export default function QualityPage() {
 							<div className="flex flex-row items-end justify-between gap-2">
 								{sortedEfficienceSeries.map((week: any, index: number) => {
 									const val = Number(week.Valeur);
+									const tgt =
+										week.Target != null
+											? Number(week.Target)
+											: efficienceTarget;
 									const strokeDashOffset = calculateStrokeDashOffset(val);
 									return (
 										<div
@@ -594,6 +596,9 @@ export default function QualityPage() {
 													{val}%
 												</text>
 											</svg>
+											<span className="text-[10px] text-gray-500 font-medium">
+												T: {tgt}%
+											</span>
 										</div>
 									);
 								})}
@@ -609,16 +614,16 @@ export default function QualityPage() {
 								<p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
 									Tendance hebdomadaire
 								</p>
-								<svg viewBox="0 0 450 240" className="w-full h-auto">
+								<svg viewBox="0 0 450 230" className="w-full max-w-3xl min-h-[300px] h-auto">
 									<line
 										x1="50"
-										y1="200"
+										y1="195"
 										x2="420"
-										y2="200"
+										y2="195"
 										stroke="#374151"
 										strokeWidth="1"
 									/>
-									{[80, 130].map((y) => (
+									{[80, 140].map((y) => (
 										<line
 											key={y}
 											x1="50"
@@ -629,18 +634,6 @@ export default function QualityPage() {
 											strokeWidth="1"
 											strokeDasharray="4 4"
 										/>
-									))}
-									{efficienceChartValues.map((s: any, i: number) => (
-										<text
-											key={i}
-											x={100 + i * 100}
-											y="225"
-											textAnchor="middle"
-											fontSize="12"
-											className="fill-gray-500"
-										>
-											{s.Label || `S-${4 - i}`}
-										</text>
 									))}
 									<polyline
 										points={efficiencePoints}
@@ -656,11 +649,49 @@ export default function QualityPage() {
 											Number(s.Valeur),
 											80,
 											100,
-											20,
-											180
+											25,
+											170
 										);
+										const val = Number(s.Valeur);
+										const tgt =
+											s.Target != null
+												? Number(s.Target)
+												: efficienceTarget;
+										const labelY = Math.max(y - 18, 20);
 										return (
-											<circle key={i} cx={x} cy={y} r="6" fill="#10b981" />
+											<g key={i}>
+												<rect
+													x={x - 40}
+													y={labelY - 9}
+													width="80"
+													height="16"
+													rx="8"
+													fill="rgba(16,185,129,0.2)"
+													stroke="rgba(16,185,129,0.4)"
+													strokeWidth="1"
+												/>
+												<text
+													x={x}
+													y={labelY}
+													textAnchor="middle"
+													dominantBaseline="middle"
+													fontSize="11"
+													fontWeight="600"
+													fill="#34d399"
+												>
+													{val}% / T:{tgt}%
+												</text>
+												<circle cx={x} cy={y} r="6" fill="#10b981" />
+												<text
+													x={x}
+													y="208"
+													textAnchor="middle"
+													fontSize="10"
+													fill="#6b7280"
+												>
+													{s.Label || `S-${4 - i}`}
+												</text>
+											</g>
 										);
 									})}
 								</svg>

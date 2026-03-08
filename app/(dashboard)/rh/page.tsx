@@ -5,197 +5,228 @@ import { PeriodSelector } from "@/components/ui/PeriodSelector"
 import { useKpiPeriod } from "@/hooks/use-kpi-period"
 
 interface SerieMoisItem {
-	Mois: string
-	Annee: string
-	Global?: string | null
-	Target_Global?: string | null
-	Managers?: string | null
-	Target_Managers?: string | null
-	Employes?: string | null
-	Target_Employes?: string | null
+  Mois: string
+  Annee: string
+  Global?: string | null
+  Target_Global?: string | null
+  Managers?: string | null
+  Target_Managers?: string | null
+  Employes?: string | null
+  Target_Employes?: string | null
 }
 
 interface TauxDepart {
-	Mois_Courant: string
-	Annee_Mois: string
-	Global_Mois_Courant: string
-	Target_Global: string
-	Global_Mois_Precedent: string
-	Variation_Global_Vs_Mois_Precedent: string
-	Managers_Mois_Courant: string
-	Target_Managers: string
-	Employes_Mois_Courant: string
-	Target_Employes: string
-	Serie_6_Mois: SerieMoisItem[]
+  Mois_Courant: string
+  Annee_Mois: string
+  Global_Mois_Courant: string
+  Target_Global: string
+  Global_Mois_Precedent: string
+  Variation_Global_Vs_Mois_Precedent: string
+  Managers_Mois_Courant: string
+  Target_Managers: string
+  Employes_Mois_Courant: string
+  Target_Employes: string
+  Serie_6_Mois: SerieMoisItem[]
 }
 
 interface TauxRemplissageTransport {
-	Valeur_Mois_Courant: string
-	Target_Mois_Courant: string
-	Valeur_Mois_Precedent: string
-	Variation_Vs_Mois_Precedent: string
-	Serie_5_Mois: Array<{ Mois: string; Annee: string; Valeur: string; Target: string }>
+  Valeur_Mois_Courant: string
+  Target_Mois_Courant: string
+  Valeur_Mois_Precedent: string
+  Variation_Vs_Mois_Precedent: string
+  Serie_5_Mois: Array<{ Mois: string; Annee: string; Valeur: string; Target: string }>
 }
 
 interface EffectifEtCouts {
-	Effectif_Mois_Courant: string
-	Target_Effectif: string
-	Couts_Mois_Courant: string
-	Target_Couts: string
-	Variation_Effectif_Vs_Mois_Precedent: string
-	Variation_Couts_Vs_Mois_Precedent: string
-	Serie_6_Mois: Array<{
-		Mois: string
-		Annee: string
-		Effectif: string | null
-		Couts: string | null
-	}>
+  Effectif_Mois_Courant: string
+  Target_Effectif: string
+  Couts_Mois_Courant: string
+  Target_Couts: string
+  Variation_Effectif_Vs_Mois_Precedent: string
+  Variation_Couts_Vs_Mois_Precedent: string
+  Serie_6_Mois: Array<{
+    Mois: string
+    Annee: string
+    Effectif: string | null
+    Couts: string | null
+  }>
 }
 
 interface DelaiMoyenRecrutement {
-	Delai_Moyen_Global: string
-	Target_Global: string
-	Variation_Vs_Mois_Precedent: string
-	Par_Departement: Record<string, string>
-	Serie_6_Mois: Array<{
-		Mois: string
-		Annee: string
-		Ventes?: string | null
-		Marketing?: string | null
-		IT?: string | null
-		Operations?: string | null
-		RH?: string | null
-	}>
+  Delai_Moyen_Global: string
+  Target_Global: string
+  Variation_Vs_Mois_Precedent: string
+  Par_Departement: Record<string, string>
+  Serie_6_Mois: Array<{
+    Mois: string
+    Annee: string
+    Ventes?: string | null
+    Marketing?: string | null
+    IT?: string | null
+    Operations?: string | null
+    RH?: string | null
+  }>
 }
 
 interface TauxAbsentisme {
-	Valeur_Actuelle: string
-	Target_Actuelle: string
-	Valeur_Semaine_Precedente: string
-	Variation_Vs_Semaine_Precedente: string
-	Serie_6_Semaines: Array<{ Semaine: string; Annee: string; Valeur: string; Target: string }>
+  Valeur_Actuelle: string
+  Target_Actuelle: string
+  Valeur_Semaine_Precedente: string
+  Variation_Vs_Semaine_Precedente: string
+  Serie_6_Semaines: Array<{ Semaine: string; Annee: string; Valeur: string; Target: string }>
 }
 
 interface IndiceClimatSocial {
-	Indice_Satisfaction_Mois_Courant: string
-	Target_Indice_Satisfaction_Mois_Courant: string
-	Incidents_Mois_Courant: string
-	Target_Incidents_Mois_Courant: string
-	Variation_Vs_Mois_Precedent: string
-	Serie_6_Mois: Array<{
-		Mois: string
-		Annee: string
-		Indice_Satisfaction: string | null
-		Incidents: string | null
-	}>
+  Indice_Satisfaction_Mois_Courant: string
+  Target_Indice_Satisfaction_Mois_Courant: string
+  Incidents_Mois_Courant: string
+  Target_Incidents_Mois_Courant: string
+  Variation_Vs_Mois_Precedent: string
+  Serie_6_Mois: Array<{
+    Mois: string
+    Annee: string
+    Indice_Satisfaction: string | null
+    Incidents: string | null
+  }>
 }
 
 interface RHData {
-	Taux_Depart?: TauxDepart
-	Taux_Remplissage_Transport?: TauxRemplissageTransport
-	Effectif_Et_Couts?: EffectifEtCouts
-	Delai_Moyen_Recrutement?: DelaiMoyenRecrutement
-	Taux_Absentisme?: TauxAbsentisme
-	Indice_Climat_Social?: IndiceClimatSocial
+  Taux_Depart?: TauxDepart
+  Taux_Remplissage_Transport?: TauxRemplissageTransport
+  Effectif_Et_Couts?: EffectifEtCouts
+  Delai_Moyen_Recrutement?: DelaiMoyenRecrutement
+  Taux_Absentisme?: TauxAbsentisme
+  Indice_Climat_Social?: IndiceClimatSocial
 }
 
 const MONTH_NAMES = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc']
 
 function formatNumber(num: string | number): string {
-	const n = Number(num)
-	if (isNaN(n)) return String(num)
-	if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M'
-	if (n >= 1000) return (n / 1000).toFixed(0) + 'K'
-	return n.toLocaleString()
+  const n = Number(num)
+  if (isNaN(n)) return String(num)
+  if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M'
+  if (n >= 1000) return (n / 1000).toFixed(0) + 'K'
+  return n.toLocaleString()
 }
 
 export default function RHPage() {
-	const { period, setPeriod, year, setYear } = useKpiPeriod('weekly')
-	const [data, setData] = useState<RHData | null>(null)
-	const [loading, setLoading] = useState(true)
-	const [error, setError] = useState<string | null>(null)
+  const { period, setPeriod, year, setYear } = useKpiPeriod('weekly')
+  const [viewMode, setViewMode] = useState<'weekly' | 'monthly'>('weekly')
+  const [data, setData] = useState<RHData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-	useEffect(() => {
-		async function fetchData() {
-			setLoading(true)
-			setError(null)
-			try {
-				const res = await fetch(`/api/rh?period=${period}&year=${year}`)
-				if (!res.ok) throw new Error('Erreur lors du chargement des données')
-				const raw = await res.json()
-				const rhData = raw['rh-Indicateurs'] ?? raw
-				setData(rhData)
-			} catch (err) {
-				setError(err instanceof Error ? err.message : 'Erreur inconnue')
-			} finally {
-				setLoading(false)
-			}
-		}
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true)
+      setError(null)
+      try {
+        const res = await fetch(`/api/rh?period=${period}&year=${year}`)
+        if (!res.ok) throw new Error('Erreur lors du chargement des données')
+        const raw = await res.json()
+        const rhData = raw['rh-Indicateurs'] ?? raw
+        setData(rhData)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Erreur inconnue')
+      } finally {
+        setLoading(false)
+      }
+    }
 
-		fetchData()
-	}, [period, year])
+    fetchData()
+  }, [period, year])
 
-	if (loading) {
-		return (
-			<div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-900 via-gray-900 to-black">
-				<p className="text-lg text-gray-200">Chargement des données...</p>
-			</div>
-		)
-	}
+  if (loading) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-900 via-gray-900 to-black">
+        <p className="text-lg text-gray-200">Chargement des données...</p>
+      </div>
+    )
+  }
 
-	if (error) {
-		return (
-			<div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-900 via-gray-900 to-black">
-				<div className="text-center">
-					<p className="text-lg text-red-400 mb-4">{error}</p>
-					<button
-						onClick={() => window.location.reload()}
-						className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
-					>
-						Réessayer
-					</button>
-				</div>
-			</div>
-		)
-	}
+  if (error) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-900 via-gray-900 to-black">
+        <div className="text-center">
+          <p className="text-lg text-red-400 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
+          >
+            Réessayer
+          </button>
+        </div>
+      </div>
+    )
+  }
 
-	const tauxDepart = data?.Taux_Depart
-	const tauxRemplissage = data?.Taux_Remplissage_Transport
-	const effectifCouts = data?.Effectif_Et_Couts
-	const delaiRecrutement = data?.Delai_Moyen_Recrutement
-	const tauxAbsentisme = data?.Taux_Absentisme
-	const indiceClimat = data?.Indice_Climat_Social
+  const tauxDepart = data?.Taux_Depart
+  const tauxRemplissage = data?.Taux_Remplissage_Transport
+  const effectifCouts = data?.Effectif_Et_Couts
+  const delaiRecrutement = data?.Delai_Moyen_Recrutement
+  const tauxAbsentisme = data?.Taux_Absentisme
+  const indiceClimat = data?.Indice_Climat_Social
 
-	return (
+  return (
     <div className="min-h-screen w-full flex flex-col bg-gradient-to-br from-slate-900 via-gray-900 to-black pb-10">
       <header className="mb-6 flex items-center justify-between px-8 pt-4">
         <div className="flex flex-wrap items-center gap-2 mt-2">
-							<span className="w-1 h-8 rounded-full bg-white block" />
-							<span className="text-xs font-bold uppercase tracking-widest text-white">
-								RH KPI
-							</span>
-						</div>
-        <PeriodSelector
-          type='weekly'
-          period={period}
-          year={year}
-          onPeriodChange={setPeriod}
-          onYearChange={setYear}
-        />
+          <span className="w-1 h-8 rounded-full bg-white block" />
+          <span className="text-xs font-bold uppercase tracking-widest text-white">
+            RH KPI
+          </span>
+        </div>
+        <div className="flex flex-wrap items-center gap-4">
+
+          <PeriodSelector
+            type="weekly"
+            period={period}
+            year={year}
+            onPeriodChange={setPeriod}
+            onYearChange={setYear}
+          />
+          <div className="flex rounded-lg border border-gray-700/50 overflow-hidden bg-slate-800/50">
+            <button
+              type="button"
+              onClick={() => setViewMode('weekly')}
+              className={`px-4 py-2 text-sm font-medium transition-colors ${viewMode === 'weekly'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-400 hover:text-white hover:bg-slate-700/50'
+                }`}
+            >
+              Semaine
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('monthly')}
+              className={`px-4 py-2 text-sm font-medium transition-colors ${viewMode === 'monthly'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-400 hover:text-white hover:bg-slate-700/50'
+                }`}
+            >
+              Mois
+            </button>
+          </div>
+        </div>
       </header>
       <main className="grid flex-1 grid-cols-3 grid-rows-2 gap-4 px-6">
-        {/* Taux de Départ (Mensuel) */}
-        <div className="bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-8 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm h-[450px] transition-transform duration-300 cursor-pointer">
+        {/* Taux de Départ (Mensuel) - active when monthly */}
+        <div className="relative bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-8 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm h-[450px] transition-transform duration-300 cursor-pointer">
+          {viewMode === 'weekly' && (
+            <div
+              className="absolute inset-0 bg-black/30 rounded-xl z-10 pointer-events-none"
+              aria-hidden
+            />
+          )}
           <div className="flex items-start justify-between">
             <h2 className="text-xl font-bold text-white tracking-wide">
               Taux de Départ (Mensuel)
             </h2>
             <div className="flex items-center gap-2 text-sm text-white">
-              <span className={`h-3 w-3 rounded-full shadow-lg ${
-                tauxDepart && parseFloat(tauxDepart.Global_Mois_Courant) <= parseFloat(tauxDepart.Target_Global)
+              <span className={`h-3 w-3 rounded-full shadow-lg ${tauxDepart && parseFloat(tauxDepart.Global_Mois_Courant) <= parseFloat(tauxDepart.Target_Global)
                   ? 'bg-green-500 shadow-green-500/50'
                   : 'bg-yellow-500 shadow-yellow-500/50'
-              }`}></span>
+                }`}></span>
               <span className="font-medium">
                 {tauxDepart && parseFloat(tauxDepart.Global_Mois_Courant) <= parseFloat(tauxDepart.Target_Global)
                   ? 'Cible Atteinte'
@@ -212,15 +243,14 @@ export default function RHPage() {
                   </span>
                 </div>
                 <div className="flex flex-col">
-                  <span className={`font-bold flex items-center gap-2 text-2xl ${
-                    tauxDepart && parseFloat(tauxDepart.Variation_Global_Vs_Mois_Precedent) <= 0
+                  <span className={`font-bold flex items-center gap-2 text-2xl ${tauxDepart && parseFloat(tauxDepart.Variation_Global_Vs_Mois_Precedent) <= 0
                       ? 'text-green-400'
                       : 'text-yellow-400'
-                  }`}>
+                    }`}>
                     <span>
                       {tauxDepart?.Variation_Global_Vs_Mois_Precedent
                         ? (parseFloat(tauxDepart.Variation_Global_Vs_Mois_Precedent) >= 0 ? '+' : '') +
-                          tauxDepart.Variation_Global_Vs_Mois_Precedent + '%'
+                        tauxDepart.Variation_Global_Vs_Mois_Precedent + '%'
                         : '—'}
                     </span>
                     <span className="text-3xl">⚠️</span>
@@ -246,10 +276,10 @@ export default function RHPage() {
                 })}
               </div>
               <svg className="absolute inset-0 h-full w-full" fill="none" preserveAspectRatio="none" viewBox="0 0 400 200">
-                <line stroke="#FFFFFF" strokeDasharray="2 2" strokeOpacity="0.1" x1="0" x2="400" y1="50" y2="50"/>
-                <line stroke="#FFFFFF" strokeDasharray="2 2" strokeOpacity="0.1" x1="0" x2="400" y1="100" y2="100"/>
-                <line stroke="#FFFFFF" strokeDasharray="2 2" strokeOpacity="0.1" x1="0" x2="400" y1="150" y2="150"/>
-                <line stroke="#DC3545" strokeDasharray="4 4" strokeWidth="1.5" x1="0" x2="400" y1="80" y2="80"/>
+                <line stroke="#FFFFFF" strokeDasharray="2 2" strokeOpacity="0.1" x1="0" x2="400" y1="50" y2="50" />
+                <line stroke="#FFFFFF" strokeDasharray="2 2" strokeOpacity="0.1" x1="0" x2="400" y1="100" y2="100" />
+                <line stroke="#FFFFFF" strokeDasharray="2 2" strokeOpacity="0.1" x1="0" x2="400" y1="150" y2="150" />
+                <line stroke="#DC3545" strokeDasharray="4 4" strokeWidth="1.5" x1="0" x2="400" y1="80" y2="80" />
                 <text fill="#DC3545" fontFamily="Manrope" fontSize="10" x="365" y="75">Cible</text>
               </svg>
             </div>
@@ -275,8 +305,14 @@ export default function RHPage() {
           </div>
         </div>
 
-        {/* Taux de Remplissage du Transport */}
-        <div className="bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm p-6 flex flex-col h-[450px] transition-transform duration-300 cursor-pointer">
+        {/* Taux de Remplissage du Transport - active when monthly */}
+        <div className="relative bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm p-6 flex flex-col h-[450px] transition-transform duration-300 cursor-pointer">
+          {viewMode === 'weekly' && (
+            <div
+              className="absolute inset-0 bg-black/30 rounded-xl z-10 pointer-events-none"
+              aria-hidden
+            />
+          )}
           <div className="flex items-start justify-between">
             <h2 className="text-xl font-bold text-white tracking-wide">
               Taux de Remplissage du Transport
@@ -289,14 +325,13 @@ export default function RHPage() {
                   {tauxRemplissage?.Valeur_Mois_Courant ?? '—'}%
                 </span>
                 <div className="flex flex-col">
-                  <span className={`font-extrabold flex items-center gap-1 text-3xl ${
-                    tauxRemplissage && parseFloat(tauxRemplissage.Variation_Vs_Mois_Precedent) >= 0
+                  <span className={`font-extrabold flex items-center gap-1 text-3xl ${tauxRemplissage && parseFloat(tauxRemplissage.Variation_Vs_Mois_Precedent) >= 0
                       ? 'text-green-400'
                       : 'text-red-400'
-                  }`}>
+                    }`}>
                     {tauxRemplissage?.Variation_Vs_Mois_Precedent
                       ? (parseFloat(tauxRemplissage.Variation_Vs_Mois_Precedent) >= 0 ? '+' : '') +
-                        tauxRemplissage.Variation_Vs_Mois_Precedent + '%'
+                      tauxRemplissage.Variation_Vs_Mois_Precedent + '%'
                       : '—'}
                   </span>
                   <span className="text-sm text-gray-200 mt-1">vs Mois Précédent</span>
@@ -305,11 +340,11 @@ export default function RHPage() {
             </div>
             <div className="relative h-48 flex-1">
               <svg className="absolute inset-0 h-full w-full" fill="none" preserveAspectRatio="none" viewBox="0 0 400 200">
-                <line stroke="#FFFFFF" strokeDasharray="2 2" strokeOpacity="0.1" x1="0" x2="400" y1="40"/>
-                <line stroke="#FFFFFF" strokeDasharray="2 2" strokeOpacity="0.1" x1="0" x2="400" y1="80"/>
-                <line stroke="#FFFFFF" strokeDasharray="2 2" strokeOpacity="0.1" x1="0" x2="400" y1="120"/>
-                <line stroke="#FFFFFF" strokeDasharray="2 2" strokeOpacity="0.1" x1="0" x2="400" y1="160"/>
-                <line stroke="#DC3545" strokeDasharray="4 4" strokeWidth="1.5" x1="0" x2="400" y1="60"/>
+                <line stroke="#FFFFFF" strokeDasharray="2 2" strokeOpacity="0.1" x1="0" x2="400" y1="40" />
+                <line stroke="#FFFFFF" strokeDasharray="2 2" strokeOpacity="0.1" x1="0" x2="400" y1="80" />
+                <line stroke="#FFFFFF" strokeDasharray="2 2" strokeOpacity="0.1" x1="0" x2="400" y1="120" />
+                <line stroke="#FFFFFF" strokeDasharray="2 2" strokeOpacity="0.1" x1="0" x2="400" y1="160" />
+                <line stroke="#DC3545" strokeDasharray="4 4" strokeWidth="1.5" x1="0" x2="400" y1="60" />
                 {(() => {
                   const serie = (tauxRemplissage?.Serie_5_Mois ?? []).filter((s) => s.Valeur != null)
                   const points = serie.map((s, i) => {
@@ -322,11 +357,11 @@ export default function RHPage() {
                   return (
                     <>
                       {polylinePoints && (
-                        <polyline fill="none" points={polylinePoints} stroke="#4A90E2" strokeWidth="2"/>
+                        <polyline fill="none" points={polylinePoints} stroke="#4A90E2" strokeWidth="2" />
                       )}
                       {points.map((p, i) => (
                         <g key={i}>
-                          <circle cx={p.x} cy={p.y} fill="#1E1E1E" r="4" stroke="#4A90E2" strokeWidth="2"/>
+                          <circle cx={p.x} cy={p.y} fill="#1E1E1E" r="4" stroke="#4A90E2" strokeWidth="2" />
                           <text x={p.x} y={p.y - 10} fill="#f1f5f9" textAnchor="middle" className="text-sm font-bold">
                             {p.val}%
                           </text>
@@ -355,8 +390,14 @@ export default function RHPage() {
           </div>
         </div>
 
-        {/* Effectif Global et Coûts */}
-        <div className="bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-8 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm h-[450px] transition-transform duration-300 cursor-pointer">
+        {/* Effectif Global et Coûts - active when monthly */}
+        <div className="relative bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-8 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm h-[450px] transition-transform duration-300 cursor-pointer">
+          {viewMode === 'weekly' && (
+            <div
+              className="absolute inset-0 bg-black/30 rounded-xl z-10 pointer-events-none"
+              aria-hidden
+            />
+          )}
           <h2 className="text-xl font-bold text-white tracking-wide">Effectif Global et Coûts</h2>
           <div className="mt-6 mb-6">
             <div className="flex items-baseline gap-6">
@@ -379,7 +420,7 @@ export default function RHPage() {
             <div className="absolute h-full w-full flex items-end">
               <svg className="w-full h-full" fill="none" preserveAspectRatio="none" viewBox="0 0 400 200">
                 {[45, 95, 145, 195].map((y, i) => (
-                  <line key={i} stroke="#FFFFFF" strokeDasharray="2 2" strokeOpacity="0.1" x1="0" x2="370" y1={y} y2={y}/>
+                  <line key={i} stroke="#FFFFFF" strokeDasharray="2 2" strokeOpacity="0.1" x1="0" x2="370" y1={y} y2={y} />
                 ))}
                 {(() => {
                   const serie = (effectifCouts?.Serie_6_Mois ?? []).filter((s) => s.Effectif != null && s.Couts != null)
@@ -406,19 +447,19 @@ export default function RHPage() {
                   const polylineEff = pointsEff.map((p) => `${p.x},${p.y}`).join(' ')
                   return (
                     <>
-                      <polyline fill="none" points={polylineCouts} stroke="#FFC107" strokeWidth="2"/>
+                      <polyline fill="none" points={polylineCouts} stroke="#FFC107" strokeWidth="2" />
                       {pointsCouts.map((p, i) => (
                         <g key={`c-${i}`}>
-                          <circle cx={p.x} cy={p.y} fill="#1E1E1E" r="3" stroke="#FFC107" strokeWidth="2"/>
+                          <circle cx={p.x} cy={p.y} fill="#1E1E1E" r="3" stroke="#FFC107" strokeWidth="2" />
                           <text x={p.x} y={p.y - 8} fill="#FFC107" textAnchor="middle" className="text-xs font-bold">
                             {formatNumber(p.val)}
                           </text>
                         </g>
                       ))}
-                      <polyline fill="none" points={polylineEff} stroke="#4A90E2" strokeWidth="2"/>
+                      <polyline fill="none" points={polylineEff} stroke="#4A90E2" strokeWidth="2" />
                       {pointsEff.map((p, i) => (
                         <g key={`e-${i}`}>
-                          <circle cx={p.x} cy={p.y} fill="#1E1E1E" r="3" stroke="#4A90E2" strokeWidth="2"/>
+                          <circle cx={p.x} cy={p.y} fill="#1E1E1E" r="3" stroke="#4A90E2" strokeWidth="2" />
                           <text x={p.x} y={p.y + 12} fill="#4A90E2" textAnchor="middle" className="text-xs font-bold">
                             {p.val}
                           </text>
@@ -447,28 +488,32 @@ export default function RHPage() {
           </div>
         </div>
 
-        {/* Délai Moyen de Recrutement */}
-        <div className="bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-8 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm h-[450px] transition-transform duration-300 cursor-pointer">
+        {/* Délai Moyen de Recrutement - active when monthly */}
+        <div className="relative bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-8 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm h-[450px] transition-transform duration-300 cursor-pointer">
+          {viewMode === 'weekly' && (
+            <div
+              className="absolute inset-0 bg-black/30 rounded-xl z-10 pointer-events-none"
+              aria-hidden
+            />
+          )}
           <h2 className="text-xl font-bold text-white tracking-wide">Délai Moyen de Recrutement</h2>
           <div className="mt-6 mb-6">
             <p className="text-sm text-gray-300 font-medium mb-3">Délai Moyen Global</p>
             <div className="flex items-baseline gap-4">
-              <span className={`text-4xl font-black ${
-                delaiRecrutement && parseInt(delaiRecrutement.Delai_Moyen_Global, 10) <= parseInt(delaiRecrutement.Target_Global, 10)
+              <span className={`text-4xl font-black ${delaiRecrutement && parseInt(delaiRecrutement.Delai_Moyen_Global, 10) <= parseInt(delaiRecrutement.Target_Global, 10)
                   ? 'text-green-400'
                   : 'text-red-400'
-              }`}>
+                }`}>
                 {delaiRecrutement?.Delai_Moyen_Global ?? '—'} jours
               </span>
               <div className="flex flex-col">
-                <span className={`font-bold flex items-center gap-2 text-2xl ${
-                  delaiRecrutement && parseFloat(delaiRecrutement.Variation_Vs_Mois_Precedent) <= 0
+                <span className={`font-bold flex items-center gap-2 text-2xl ${delaiRecrutement && parseFloat(delaiRecrutement.Variation_Vs_Mois_Precedent) <= 0
                     ? 'text-green-400'
                     : 'text-red-400'
-                }`}>
+                  }`}>
                   {delaiRecrutement?.Variation_Vs_Mois_Precedent
                     ? (parseFloat(delaiRecrutement.Variation_Vs_Mois_Precedent) >= 0 ? '+' : '') +
-                      delaiRecrutement.Variation_Vs_Mois_Precedent + 'j'
+                    delaiRecrutement.Variation_Vs_Mois_Precedent + 'j'
                     : '—'}
                 </span>
                 <span className="text-sm text-gray-200 mt-2 font-medium">vs Mois Précédent</span>
@@ -485,20 +530,20 @@ export default function RHPage() {
             <div className="h-full grid grid-cols-5 gap-6 px-4 items-end">
               {delaiRecrutement?.Par_Departement
                 ? ['Ventes', 'Marketing', 'IT', 'Operations', 'RH'].map((dept, i) => {
-                    const val = delaiRecrutement.Par_Departement[dept]
-                    const target = delaiRecrutement.Par_Departement[`Target_${dept}`] ?? delaiRecrutement.Target_Global
-                    const isOk = val && target && parseInt(val, 10) <= parseInt(target, 10)
-                    const h = val ? Math.min(parseInt(val, 10) / 50 * 100, 100) : 0
-                    return (
-                      <div key={i} className="flex flex-col items-center justify-end h-full">
-                        <span className="text-xs font-medium text-white/90 mb-1">{val ?? '—'}j</span>
-                        <div
-                          className={`w-full ${isOk ? 'bg-green-500' : 'bg-red-500'}`}
-                          style={{ height: `${h}%` }}
-                        ></div>
-                      </div>
-                    )
-                  })
+                  const val = delaiRecrutement.Par_Departement[dept]
+                  const target = delaiRecrutement.Par_Departement[`Target_${dept}`] ?? delaiRecrutement.Target_Global
+                  const isOk = val && target && parseInt(val, 10) <= parseInt(target, 10)
+                  const h = val ? Math.min(parseInt(val, 10) / 50 * 100, 100) : 0
+                  return (
+                    <div key={i} className="flex flex-col items-center justify-end h-full">
+                      <span className="text-xs font-medium text-white/90 mb-1">{val ?? '—'}j</span>
+                      <div
+                        className={`w-full ${isOk ? 'bg-green-500' : 'bg-red-500'}`}
+                        style={{ height: `${h}%` }}
+                      ></div>
+                    </div>
+                  )
+                })
                 : null}
             </div>
           </div>
@@ -509,16 +554,21 @@ export default function RHPage() {
           </div>
         </div>
 
-        {/* Taux d'absentéisme Hebdo */}
-        <div className="bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-4 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm h-[450px] transition-transform duration-300 cursor-pointer">
+        {/* Taux d'absentéisme Hebdo - active when weekly */}
+        <div className="relative bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-4 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm h-[450px] transition-transform duration-300 cursor-pointer">
+          {viewMode === 'monthly' && (
+            <div
+              className="absolute inset-0 bg-black/30 rounded-xl z-10 pointer-events-none"
+              aria-hidden
+            />
+          )}
           <div className="flex items-start justify-between">
             <h2 className="text-xl font-bold text-white tracking-wide">Taux d&apos;absentéisme Hebdo</h2>
             <div className="flex items-center gap-2 text-sm text-danger">
-              <span className={`h-2 w-2 rounded-full ${
-                tauxAbsentisme && parseFloat(tauxAbsentisme.Valeur_Actuelle) > parseFloat(tauxAbsentisme.Target_Actuelle)
+              <span className={`h-2 w-2 rounded-full ${tauxAbsentisme && parseFloat(tauxAbsentisme.Valeur_Actuelle) > parseFloat(tauxAbsentisme.Target_Actuelle)
                   ? 'bg-red-400'
                   : 'bg-green-400'
-              } text-white`}></span>
+                } text-white`}></span>
               <span className="text-sm text-gray-200 font-medium">
                 {tauxAbsentisme && parseFloat(tauxAbsentisme.Valeur_Actuelle) > parseFloat(tauxAbsentisme.Target_Actuelle)
                   ? 'Cible Dépassée'
@@ -532,14 +582,13 @@ export default function RHPage() {
                 {tauxAbsentisme?.Valeur_Actuelle ?? '—'}%
               </span>
               <div className="flex flex-col">
-                <span className={`font-bold flex items-center gap-1 text-3xl ${
-                  tauxAbsentisme && parseFloat(tauxAbsentisme.Variation_Vs_Semaine_Precedente) <= 0
+                <span className={`font-bold flex items-center gap-1 text-3xl ${tauxAbsentisme && parseFloat(tauxAbsentisme.Variation_Vs_Semaine_Precedente) <= 0
                     ? 'text-green-400'
                     : 'text-red-400'
-                }`}>
+                  }`}>
                   {tauxAbsentisme?.Variation_Vs_Semaine_Precedente
                     ? (parseFloat(tauxAbsentisme.Variation_Vs_Semaine_Precedente) >= 0 ? '+' : '') +
-                      tauxAbsentisme.Variation_Vs_Semaine_Precedente + '%'
+                    tauxAbsentisme.Variation_Vs_Semaine_Precedente + '%'
                     : '—'}
                 </span>
                 <span className="text-sm text-gray-200 mt-1">vs Semaine Précédente</span>
@@ -549,7 +598,7 @@ export default function RHPage() {
           <div className="flex-1 relative">
             <svg className="absolute inset-0 h-full w-full" fill="none" preserveAspectRatio="none" viewBox="0 0 400 200">
               {[50, 100, 150].map((y, i) => (
-                <line key={i} stroke="#FFFFFF" strokeDasharray="2 2" strokeOpacity="0.1" x1="0" x2="400" y1={y} y2={y}/>
+                <line key={i} stroke="#FFFFFF" strokeDasharray="2 2" strokeOpacity="0.1" x1="0" x2="400" y1={y} y2={y} />
               ))}
               {tauxAbsentisme?.Target_Actuelle && (
                 <>
@@ -590,7 +639,7 @@ export default function RHPage() {
                     )}
                     {points.map((p, i) => (
                       <g key={i}>
-                        <circle cx={p.x} cy={p.y} fill="#1E1E1E" r="3" stroke={p.color} strokeWidth="2"/>
+                        <circle cx={p.x} cy={p.y} fill="#1E1E1E" r="3" stroke={p.color} strokeWidth="2" />
                         <text fill={p.color} fontFamily="Manrope" fontSize="14" fontWeight="800" textAnchor="middle" x={p.x} y={p.y - 10}>
                           {p.val}%
                         </text>
@@ -608,8 +657,14 @@ export default function RHPage() {
           </div>
         </div>
 
-        {/* Indice de Climat Social */}
-        <div className="bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-8 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm h-[450px] transition-transform duration-300 cursor-pointer">
+        {/* Indice de Climat Social - active when monthly */}
+        <div className="relative bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-8 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm h-[450px] transition-transform duration-300 cursor-pointer">
+          {viewMode === 'weekly' && (
+            <div
+              className="absolute inset-0 bg-black/30 rounded-xl z-10 pointer-events-none"
+              aria-hidden
+            />
+          )}
           <h2 className="text-xl font-bold text-white tracking-wide">Indice de Climat Social</h2>
           <div className="mt-4 mb-2">
             <div className="flex items-baseline gap-3">
@@ -642,11 +697,11 @@ export default function RHPage() {
                 return (
                   <>
                     {pathD && (
-                      <path d={pathD} fill="none" stroke="#FFFFFF" strokeLinecap="round" strokeWidth="2.5"/>
+                      <path d={pathD} fill="none" stroke="#FFFFFF" strokeLinecap="round" strokeWidth="2.5" />
                     )}
                     {points.map((p, i) => (
                       <g key={i}>
-                        <circle cx={p.x} cy={p.y} fill="#1E1E1E" r="3" stroke="#FFFFFF" strokeWidth="2"/>
+                        <circle cx={p.x} cy={p.y} fill="#1E1E1E" r="3" stroke="#FFFFFF" strokeWidth="2" />
                         <text fill="#f1f5f9" fontFamily="Manrope" fontSize="12" fontWeight="600" textAnchor="middle" x={p.x} y={p.y - 10}>
                           {p.val}
                         </text>
