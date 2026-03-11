@@ -2,6 +2,7 @@
 
 import React, { ReactElement, useEffect, useState } from "react";
 import { PeriodSelector } from "@/components/ui/PeriodSelector";
+import { createGetSemaineLabel } from "@/lib/week-labels";
 import { TabSelector } from "@/components/ui/TabSelector";
 import { useKpiPeriod } from "@/hooks/use-kpi-period";
 import { FaBug,FaFreeCodeCamp,FaMapMarked,FaChartBar,FaCheckDouble,FaChartArea,FaFileExport,FaHotjar  } from "react-icons/fa";
@@ -142,6 +143,11 @@ export default function QualityPage() {
 			(a: any, b: any) => getWeekNum(a) - getWeekNum(b)
 		)
 
+		const getSemaineLabel = createGetSemaineLabel(
+			data?.Semaine_Reference ?? period,
+			4
+		)
+
 		const progressColors = ["#3b82f6", "#8b5cf6", "#06b6d4", "#10b981"];
 
 		const zoneKeys = ["Boot", "HeadRest", "Gainage", "Volant", "Net"];
@@ -171,7 +177,7 @@ export default function QualityPage() {
 			return Number(incidentsParZone[`Target_${zone}`]) || 0;
 		};
 
-		const reclamationsChartValues = [...reclamationsSeries].reverse();
+		const reclamationsChartValues = [...sortedReclamationsSeries];
 		const maxReclamation = Math.max(
 			...reclamationsChartValues.map((s: any) => Number(s.Valeur)),
 			1
@@ -184,7 +190,7 @@ export default function QualityPage() {
 			})
 			.join(" ");
 
-		const efficienceChartValues = [...efficienceSeries].reverse();
+		const efficienceChartValues = [...sortedEfficienceSeries];
 		const efficiencePoints = efficienceChartValues
 			.map((s: any, i: number) => {
 				const x = 100 + i * 100;
@@ -234,8 +240,8 @@ export default function QualityPage() {
 									{variationReclamation} vs Sem. Préc.
 								</div>
 							<div className="flex flex-col items-center gap-1">
-								<span className="text-xs text-gray-400">
-									Target: {reclamationTarget}
+								<span className="text-sm font-bold text-[#fcd34d]">
+									T: {reclamationTarget}
 								</span>
 							</div>
 							</div>
@@ -246,20 +252,20 @@ export default function QualityPage() {
 							{sortedReclamationsSeries.map((week: any, index: number) => (
 								<div
 									key={index}
-									className="flex flex-col items-center gap-1"
+									className="flex flex-col items-center gap-1.5"
 								>
-									<span className="text-xs text-gray-400 font-medium">
-										{week.Label || `S-${index + 1}`}
+									<span className="text-sm text-gray-400 font-medium">
+										{getSemaineLabel(index)}
 									</span>
 									<div
-										className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center shadow-lg"
+										className="w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center shadow-lg"
 										style={{
 											background: `${progressColors[index % progressColors.length]}22`,
 											border: `2px solid ${progressColors[index % progressColors.length]}66`,
 										}}
 									>
 										<span
-											className="text-xl md:text-2xl font-black"
+											className="text-2xl md:text-3xl font-black"
 											style={{
 												color: progressColors[
 													index % progressColors.length
@@ -270,7 +276,7 @@ export default function QualityPage() {
 										</span>
 									</div>
 									{week.Target != null && (
-										<span className="text-[10px] text-gray-500">
+										<span className="text-sm font-bold text-[#fcd34d]">
 											T: {Number(week.Target)}
 										</span>
 									)}
@@ -327,28 +333,23 @@ export default function QualityPage() {
 									);
 									const val = Number(s.Valeur);
 									const tgt = s.Target != null ? Number(s.Target) : reclamationTarget;
-									const labelY = Math.max(y - 12, 8);
+									const labelY = Math.max(y - 14, 8);
 									return (
 										<g key={i}>
-											<text
-												x={x}
-												y={labelY}
-												textAnchor="middle"
-												fontSize="11"
-												fontWeight="600"
-												fill="#22d3ee"
-											>
-												{val} / T:{tgt}
+											<text x={x} y={labelY} textAnchor="middle" dominantBaseline="middle">
+												<tspan fill="#e2e8f0" fontSize="10" fontWeight="600">T:{tgt}</tspan>
+												<tspan fill="#94a3b8" fontSize="12"> </tspan>
+												<tspan fill="#f59e0b" fontSize="13" fontWeight="700">{val}</tspan>
 											</text>
-											<circle cx={x} cy={y} r="5" fill="#06b6d4" />
+											<circle cx={x} cy={y} r="3" fill="#06b6d4" stroke="#0e7490" strokeWidth="1" />
 											<text
 												x={x}
-												y="108"
+												y="100"
 												textAnchor="middle"
-												fontSize="10"
-												fill="#6b7280"
+												fontSize="12"
+												fill="#FFF"
 											>
-												{s.Label || `S-${4 - i}`}
+												{getSemaineLabel(i)}
 											</text>
 										</g>
 									);
@@ -378,7 +379,7 @@ export default function QualityPage() {
 								</div>
 								<div className="flex flex-col items-center gap-1">
 									<span className="text-xs text-gray-400">
-										Target: {Number(incidents?.Target_Actuelle) || 0}
+										T: {Number(incidents?.Target_Actuelle) || 0}
 									</span>
 									<StatusChip
 										value={Number(incidents?.Valeur_Actuelle || 0)}
@@ -393,20 +394,20 @@ export default function QualityPage() {
 							{sortedReclamationsSeries.map((week: any, index: number) => (
 								<div
 									key={index}
-									className="flex flex-col items-center gap-1"
+									className="flex flex-col items-center gap-1.5"
 								>
-									<span className="text-xs text-gray-400 font-medium">
-										{week.Label || `S-${index + 1}`}
+									<span className="text-sm text-gray-400 font-medium">
+										{getSemaineLabel(index)}
 									</span>
 									<div
-										className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center shadow-lg"
+										className="w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center shadow-lg"
 										style={{
 											background: `${progressColors[index % progressColors.length]}22`,
 											border: `2px solid ${progressColors[index % progressColors.length]}66`,
 										}}
 									>
 										<span
-											className="text-xl md:text-2xl font-black"
+											className="text-2xl md:text-3xl font-black"
 											style={{
 												color: progressColors[
 													index % progressColors.length
@@ -417,7 +418,7 @@ export default function QualityPage() {
 										</span>
 									</div>
 									{week.Target != null && (
-										<span className="text-[10px] text-gray-500">
+										<span className="text-sm font-bold text-[#fcd34d]">
 											T: {Number(week.Target)}
 										</span>
 									)}
@@ -470,15 +471,20 @@ export default function QualityPage() {
 													rx="4"
 													opacity={isAboveTarget ? 1 : 0.75}
 												/>
-												<text
-													x={x + 25}
-													y={y - 20}
-													textAnchor="middle"
-													fontSize="12"
-													fontWeight="700"
-													fill="white"
-												>
-													{value} / T:{target}
+												<rect
+													x={x}
+													y={y - 28}
+													width="50"
+													height="22"
+													rx="11"
+													fill="rgba(245,158,11,0.2)"
+													stroke="rgba(245,158,11,0.5)"
+													strokeWidth="1"
+												/>
+												<text x={x + 25} y={y - 14} textAnchor="middle">
+													<tspan fill="#fef3c7" fontSize="12" fontWeight="700">T{target}</tspan>
+												    <tspan fill="#94a3b8" fontSize="11"> </tspan>
+													<tspan fill="#fcd34d" fontSize="13" fontWeight="800">{value}</tspan>
 												</text>
 											</React.Fragment>
 										);
@@ -534,8 +540,8 @@ export default function QualityPage() {
 									{variationEfficience}% vs Sem. Préc.
 								</div>
 								<div className="flex flex-col items-center gap-1">
-									<span className="text-xs text-gray-400">
-										Target: {efficienceTarget}%
+									<span className="text-sm font-bold text-[#fcd34d]">
+										T: {efficienceTarget}%
 									</span>
 								</div>
 							</div>
@@ -552,13 +558,13 @@ export default function QualityPage() {
 									return (
 										<div
 											key={index}
-											className="flex flex-col items-center gap-1"
+											className="flex flex-col items-center gap-1.5"
 										>
-											<span className="text-xs text-gray-400 font-medium">
-												{week.Label || `S-${index + 1}`}
+											<span className="text-sm text-gray-400 font-medium">
+												{getSemaineLabel(index)}
 											</span>
 											<svg
-												className="w-16 h-16 md:w-20 md:h-20"
+												className="w-20 h-20 md:w-24 md:h-24"
 												viewBox="0 0 120 120"
 											>
 												<circle
@@ -589,14 +595,14 @@ export default function QualityPage() {
 													x="60"
 													y="68"
 													textAnchor="middle"
-													fontSize="22"
+													fontSize="24"
 													fontWeight="bold"
 													className="fill-white"
 												>
 													{val}%
 												</text>
 											</svg>
-											<span className="text-[10px] text-gray-500 font-medium">
+											<span className="text-sm font-bold text-[#fcd34d]">
 												T: {tgt}%
 											</span>
 										</div>
@@ -660,36 +666,22 @@ export default function QualityPage() {
 										const labelY = Math.max(y - 18, 20);
 										return (
 											<g key={i}>
-												<rect
-													x={x - 40}
-													y={labelY - 9}
-													width="80"
-													height="16"
-													rx="8"
-													fill="rgba(16,185,129,0.2)"
-													stroke="rgba(16,185,129,0.4)"
-													strokeWidth="1"
-												/>
-												<text
-													x={x}
-													y={labelY}
-													textAnchor="middle"
-													dominantBaseline="middle"
-													fontSize="11"
-													fontWeight="600"
-													fill="#34d399"
-												>
-													{val}% / T:{tgt}%
+												
+												<text x={x} y={labelY} textAnchor="middle" dominantBaseline="middle">
+													<tspan fill="#d1fae5" fontSize="13" fontWeight="700">T {tgt}%</tspan>
+													<tspan fill="#94a3b8" fontSize="12"> / </tspan>
+													<tspan fill="#fcd34d" fontSize="15" fontWeight="800">{val}%</tspan>
+
 												</text>
-												<circle cx={x} cy={y} r="6" fill="#10b981" />
+												<circle cx={x} cy={y} r="3" fill="#10b981" stroke="#047857" strokeWidth="1.5" />
 												<text
 													x={x}
-													y="208"
+													y="190"
 													textAnchor="middle"
-													fontSize="10"
-													fill="#6b7280"
+													fontSize="12"
+													fill="#9ca3af"
 												>
-													{s.Label || `S-${4 - i}`}
+													{getSemaineLabel(i)}
 												</text>
 											</g>
 										);
@@ -777,8 +769,8 @@ export default function QualityPage() {
 												{vsTarget >= 0 ? "▲" : "▼"}{" "}
 												{Math.abs(vsTarget).toFixed(1)}%
 											</div>
-											<div className="text-[10px] text-gray-500 mt-0.5">
-												Target: {zoneTgt}%
+											<div className="text-sm font-semibold text-[#fcd34d] mt-1">
+												T: {zoneTgt}%
 											</div>
 										</div>
 									</div>
@@ -958,7 +950,7 @@ export default function QualityPage() {
 							</div>
 							<div className="flex items-center gap-2 mb-1">
 								<span className="text-xs text-gray-400">
-									Target: {Number(ppmScrapClient?.Target_PPM_Mois_Courant) || 0}
+									T: {Number(ppmScrapClient?.Target_PPM_Mois_Courant) || 0}
 								</span>
 								<StatusChip
 									value={ppmValue}
@@ -1317,7 +1309,7 @@ export default function QualityPage() {
 					</div>
 					<div className="flex items-center gap-2 mb-5">
 						<span className="text-sm text-gray-400">
-							Target: {efficienceTarget}%
+							T: {efficienceTarget}%
 						</span>
 						<StatusChip
 							value={efficienceValue}

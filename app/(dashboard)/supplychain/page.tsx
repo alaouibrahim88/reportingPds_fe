@@ -161,25 +161,6 @@ function sparklinePtsToPolyline(pts: { x: number; y: number }[]): string {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function VariationBadge({ value }: { value: number }) {
-	const isPositive = value >= 0
-	const colorClass = isPositive ? 'text-primary' : 'text-danger'
-	const icon = isPositive ? 'arrow_upward' : 'arrow_downward'
-	return (
-		<div className='flex items-center gap-1 pb-1'>
-			<span className={`material-symbols-outlined text-sm ${colorClass}`}>
-				{icon}
-			</span>
-			<p className={`text-xl font-extrabold ${colorClass}`}>
-				{formatVariation(value)}
-			</p>
-			<p className='text-sm font-normal text-text-light-secondary dark:text-dark-secondary'>
-				vs S-1
-			</p>
-		</div>
-	)
-}
-
 function WeekCircleBadge({
 	label,
 	valeur,
@@ -225,13 +206,9 @@ function MonthDeltaBadge({
 	const safeValue = value ?? 0
 	const isGood = lowerIsBetter ? safeValue <= 0 : safeValue >= 0
 	const colorClass = isGood ? 'text-primary' : 'text-danger'
-	const icon = safeValue >= 0 ? 'arrow_upward' : 'arrow_downward'
 	const sign = safeValue > 0 ? '+' : ''
 	return (
 		<div className='flex items-center gap-1'>
-			<span className={`material-symbols-outlined text-sm ${colorClass}`}>
-				{icon}
-			</span>
 			<p className={`text-xl font-extrabold ${colorClass}`}>
 				{sign}
 				{safeValue.toFixed(2)} {unit}
@@ -354,7 +331,6 @@ export default function SupplyChainPage() {
 						<p className='text-5xl font-extrabold tracking-tighter text-text-light-primary dark:text-dark-primary'>
 							{(clientOtif.Valeur_Semaine ?? 0).toFixed(0)}%
 						</p>
-						<VariationBadge value={clientOtif.Variation_Pts_Vs_S_1 ?? 0} />
 						</div>
 
 						{/* Bar chart */}
@@ -389,7 +365,7 @@ export default function SupplyChainPage() {
 										key={h.Label}
 										className='flex-1 text-center text-xs font-semibold text-text-light-secondary dark:text-dark-secondary'
 									>
-										{h.Label}
+										{`Semaine ${h.Semaine}`}
 									</p>
 								))}
 							</div>
@@ -407,16 +383,14 @@ export default function SupplyChainPage() {
 						<p className='text-5xl font-extrabold tracking-tighter text-text-light-primary dark:text-dark-primary'>
 							{(fournOtif.Valeur_Semaine ?? 0).toFixed(0)}%
 						</p>
-						<VariationBadge value={fournOtif.Variation_Pts_Vs_S_1 ?? 0} />
 						</div>
 
 				<div className='flex flex-1 items-center justify-around pt-3'>
 					{(fournOtif.Historique_5_Semaines ?? []).map((h) => (
 							<WeekCircleBadge
 								key={h.Label}
-								label={h.Label}
+								label={`Semaine ${h.Semaine}`}
 								valeur={h.Valeur}
-								target={95}
 							/>
 						))}
 					</div>
@@ -438,15 +412,8 @@ export default function SupplyChainPage() {
 								<span className='text-5xl font-extrabold tracking-tighter text-white '>
 									{(fiabilite.Valeur_Semaine ?? 0).toFixed(0)}%
 								</span>
-								<p className='text-xs font-semibold uppercase tracking-widest text-text-light-secondary dark:text-dark-secondary'>
-									Actuel
-								</p>
-								<p className='text-[11px] font-semibold text-slate-500 dark:text-slate-400'>
-									Cible: 98%
-								</p>
 							</div>
 						</div>
-						<VariationBadge value={fiabilite.Variation_Pts_Vs_S_1 ?? 0} />
 					</div>
 
 						{/* Vertical divider */}
@@ -461,9 +428,8 @@ export default function SupplyChainPage() {
 							{(fiabilite.Historique_5_Semaines ?? []).map((h) => (
 								<WeekCircleBadge
 									key={h.Label}
-									label={h.Label}
+									label={`Semaine ${h.Semaine}`}
 									valeur={h.Valeur}
-									target={98}
 								/>
 							))}
 						</div>

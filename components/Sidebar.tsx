@@ -2,7 +2,7 @@
 
 import {
   CoinsIcon,
-  HomeIcon,
+  PackageOpen,
   Layers2Icon,
   MenuIcon,
   ShieldCheckIcon,
@@ -27,7 +27,7 @@ const routes = [
   {
     href: "scrap",
     label: "Scrap",
-    icon: HomeIcon,
+    icon: PackageOpen,
   },
   {
     href: "workflows",

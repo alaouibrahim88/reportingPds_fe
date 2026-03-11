@@ -108,6 +108,49 @@ function getColorClasses(color: string): { border: string; text: string; bg: str
 	}
 }
 
+/** Build SVG path and target line from Historique_4_Semaines data */
+function buildTrendPath(
+	historique: HistoriqueWeekItem[],
+	target: string,
+	viewWidth = 200,
+	viewHeight = 80,
+	padding = { top: 8, bottom: 8 }
+) {
+	if (!historique?.length) {
+		return {
+			path: 'M 0 40 L 200 40',
+			areaPath: 'M 0 40 L 200 40 L 200 80 L 0 80 Z',
+			targetY: 40,
+		}
+	}
+
+	const values = historique.map((h) => parseFloat(h.Valeur))
+	const targetNum = parseFloat(target) || 0
+	const allVals = [...values, targetNum]
+	const minVal = Math.max(0, Math.min(...allVals) - 1)
+	const maxVal = Math.max(...allVals) + 1
+	const range = maxVal - minVal || 1
+
+	const height = viewHeight - padding.top - padding.bottom
+
+	function valueToY(v: number) {
+		return padding.top + height * (1 - (v - minVal) / range)
+	}
+
+	const step = viewWidth / (historique.length - 1 || 1)
+	const points = historique.map((h, i) => {
+		const x = i * step
+		const y = valueToY(parseFloat(h.Valeur))
+		return `${x} ${y}`
+	})
+
+	const pathD = `M ${points.join(' L ')}`
+	const areaD = `${pathD} L ${viewWidth} ${viewHeight} L 0 ${viewHeight} Z`
+	const targetY = valueToY(targetNum)
+
+	return { path: pathD, areaPath: areaD, targetY }
+}
+
 /** Prominent target badge shown alongside or below main metric */
 function TargetBadge({
 	actual,
@@ -224,7 +267,7 @@ export default function OperationsPage() {
 
 		return (
 			<main className="flex-grow">
-				<div className="grid w-full grid-cols-1 gap-3">
+				<div className="flex w-full flex-col gap-3">
 
 					{/* Taux d'Heures Supplémentaires */}
 					<div className={`${cardStyle} p-4 lg:p-5`}>
@@ -262,7 +305,7 @@ export default function OperationsPage() {
 								</div>
 							</div>
 						</div>
-						<div className="mt-3 grid grid-cols-4 gap-2 lg:gap-3">
+						<div className="mt-3 flex flex-wrap gap-2 lg:gap-3">
 							{Taux_Heures_Supplementaires.Historique_4_Mois.map(
 								(item, index) => {
 									const color = getStatusColor(item.Valeur, item.Target, true)
@@ -270,7 +313,7 @@ export default function OperationsPage() {
 									return (
 										<div
 											key={index}
-											className="flex flex-col items-center gap-1"
+											className="flex flex-1 min-w-0 flex-col items-center gap-1"
 										>
 											<div
 												className={`flex h-12 w-12 lg:h-16 lg:w-16 items-center justify-center rounded-full border-2 ${cls.border} ${cls.bg}`}
@@ -281,11 +324,11 @@ export default function OperationsPage() {
 													{item.Valeur}%
 												</p>
 											</div>
-											<p className="text-[9px] lg:text-xs text-white font-m10dium">
+											<p className="text-[9px] lg:text-xs text-white font-medium">
 												{getMonthName(item.Mois)}
 											</p>
 											<p className="text-[8px] text-white">
-												T:{item.Target}%
+												T: {item.Target}%
 											</p>
 										</div>
 									)
@@ -334,14 +377,14 @@ export default function OperationsPage() {
 								</div>
 							</div>
 						</div>
-						<div className="mt-3 grid grid-cols-4 gap-2 lg:gap-3">
+						<div className="mt-3 flex flex-wrap gap-2 lg:gap-3">
 							{Taux_Chomage_Technique.Historique_4_Mois.map((item, index) => {
 								const color = getStatusColor(item.Valeur, item.Target, true)
 								const cls = getColorClasses(color)
 								return (
 									<div
 										key={index}
-										className="flex flex-col items-center gap-1"
+										className="flex flex-1 min-w-0 flex-col items-center gap-1"
 									>
 										<div
 											className={`flex h-12 w-12 lg:h-16 lg:w-16 items-center justify-center rounded-full border-2 ${cls.border} ${cls.bg}`}
@@ -350,10 +393,10 @@ export default function OperationsPage() {
 												{item.Valeur}%
 											</p>
 										</div>
-										<p className="text-[9px] lg:text-xs text-white font-m10dium">
+										<p className="text-[9px] lg:text-xs text-white font-medium">
 											{getMonthName(item.Mois)}
 										</p>
-										<p className="text-[8px] text-white">T:{item.Target}%</p>
+										<p className="text-[8px] text-white">T: {item.Target}%</p>
 									</div>
 								)
 							})}
@@ -395,14 +438,14 @@ export default function OperationsPage() {
 								</div>
 							</div>
 						</div>
-						<div className="mt-3 grid grid-cols-4 gap-2 lg:gap-3">
+						<div className="mt-3 flex flex-wrap gap-2 lg:gap-3">
 							{Suivi_Efficience.Historique_4_Mois.map((item, index) => {
 								const color = getStatusColor(item.Valeur, item.Target, false)
 								const cls = getColorClasses(color)
 								return (
 									<div
 										key={index}
-										className="flex flex-col items-center gap-1"
+										className="flex flex-1 min-w-0 flex-col items-center gap-1"
 									>
 										<div
 											className={`flex h-12 w-12 lg:h-16 lg:w-16 items-center justify-center rounded-full border-2 ${cls.border} ${cls.bg}`}
@@ -411,10 +454,10 @@ export default function OperationsPage() {
 												{item.Valeur}%
 											</p>
 										</div>
-										<p className="text-[9px] lg:text-xs text-white font-m10dium">
+										<p className="text-[9px] lg:text-xs text-white font-medium">
 											{getMonthName(item.Mois)}
 										</p>
-										<p className="text-[8px] text-white">T:{item.Target}%</p>
+										<p className="text-[8px] text-white">T: {item.Target}%</p>
 									</div>
 								)
 							})}
@@ -422,9 +465,9 @@ export default function OperationsPage() {
 					</div>
 
 					{/* Bottom: Scrap + Target Efficience Gauge */}
-					<div className="grid w-full grid-cols-1 gap-3 md:grid-cols-2">
+					<div className="flex w-full flex-col gap-3 md:flex-row md:flex-wrap">
 						{/* Taux Scrap */}
-						<div className={`${cardStyle} p-4 lg:p-5`}>
+						<div className={`${cardStyle} flex min-w-0 flex-1 p-4 lg:p-5 md:min-w-[min(100%,360px)]`}>
 							<div className="flex items-center gap-2 mb-3">
 								<h2 className="text-sm lg:text-base font-semibold text-gray-200">
 									Taux de Scrap Mensuel
@@ -462,7 +505,7 @@ export default function OperationsPage() {
 						</div>
 
 						{/* Target Efficience Radial Gauge */}
-						<div className={`${cardStyle} p-4 lg:p-5`}>
+						<div className={`${cardStyle} flex min-w-0 flex-1 p-4 lg:p-5 md:min-w-[min(100%,360px)]`}>
 							<div className="flex items-center gap-2 mb-3">
 								<h2 className="text-sm lg:text-base font-semibold text-gray-200">
 									Target Efficience
@@ -563,10 +606,10 @@ export default function OperationsPage() {
 			<main className="w-full flex-shrink-0">
 				<div className="flex flex-col gap-3">
 					{/* Top row: Heures Supp + Chomage Tech */}
-					<div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+					<div className="flex flex-col gap-3 md:flex-row md:flex-wrap">
 						{/* Heures Supplémentaires */}
 						<div
-							className={`${cardStyle} flex flex-col p-3 lg:p-5 min-h-[220px] lg:min-h-[320px]`}
+							className={`${cardStyle} flex min-w-0 flex-1 flex-col p-3 lg:p-5 min-h-[220px] lg:min-h-[320px] md:min-w-[min(100%,360px)]`}
 						>
 							<div className="flex items-start justify-between mb-2">
 								<div>
@@ -588,67 +631,72 @@ export default function OperationsPage() {
 								lowerIsBetter
 							/>
 							<div className="mt-auto flex flex-col pt-3">
-								{/* Mini trend chart */}
-								<div className="relative h-12 lg:h-20 w-full mb-3">
-									<svg
-										className="absolute inset-0 h-full w-full"
-										fill="none"
-										preserveAspectRatio="none"
-										viewBox="0 0 200 80"
-									>
-										<defs>
-											<linearGradient
-												id="hs-grad"
-												x1="0"
-												x2="0"
-												y1="0"
-												y2="1"
-											>
-												<stop
-													offset="0%"
-													stopColor="#3b82f6"
-													stopOpacity="0.25"
-												/>
-												<stop
-													offset="100%"
-													stopColor="#3b82f6"
-													stopOpacity="0"
-												/>
-											</linearGradient>
-										</defs>
-										{/* Target line */}
-										<line
-											x1="0"
-											y1="40"
-											x2="200"
-											y2="40"
-											stroke="#f59e0b"
-											strokeWidth="1.5"
-											strokeDasharray="5 3"
-										/>
-										<text
-											x="3"
-											y="36"
-											fontSize="9"
-											fill="#f59e0b"
-											fontWeight="600"
-										>
-											T:{Taux_Heures_Supplementaires.Target_Actuelle}%
-										</text>
-										<path
-											className="stroke-blue-500"
-											d="M 0 20 L 66 60 L 132 30 L 200 50"
-											strokeWidth="2.5"
-											strokeLinecap="round"
-										/>
-										<path
-											d="M 0 20 L 66 60 L 132 30 L 200 50 L 200 80 L 0 80 Z"
-											fill="url(#hs-grad)"
-										/>
-									</svg>
+								{/* Target label - outside SVG to avoid overlap with graph line */}
+								<div className="mb-1 flex items-center">
+									<span className="rounded bg-slate-700/90 px-2 py-0.5 text-[15px] font-bold text-amber-400">
+										T: {Taux_Heures_Supplementaires.Target_Actuelle}%
+									</span>
 								</div>
-								{/* History circles */}
-								<div className="flex justify-between gap-1 lg:gap-2">
+								{/* Mini trend chart - data-driven */}
+								{(() => {
+									const hist = Taux_Heures_Supplementaires.Historique_4_Semaines.slice().reverse()
+									const { path, areaPath, targetY } = buildTrendPath(
+										hist,
+										Taux_Heures_Supplementaires.Target_Actuelle
+									)
+									return (
+										<div className="relative h-12 lg:h-20 w-full mb-3">
+											<svg
+												className="absolute inset-0 h-full w-full"
+												fill="none"
+												preserveAspectRatio="none"
+												viewBox="0 0 200 80"
+											>
+												<defs>
+													<linearGradient
+														id="hs-grad"
+														x1="0"
+														x2="0"
+														y1="0"
+														y2="1"
+													>
+														<stop
+															offset="0%"
+															stopColor="#3b82f6"
+															stopOpacity="0.25"
+														/>
+														<stop
+															offset="100%"
+															stopColor="#3b82f6"
+															stopOpacity="0"
+														/>
+													</linearGradient>
+												</defs>
+												<path d={areaPath} fill="url(#hs-grad)" />
+												<line
+													x1="0"
+													y1={targetY}
+													x2="200"
+													y2={targetY}
+													stroke="#f59e0b"
+													strokeWidth="1.5"
+													strokeDasharray="5 3"
+												/>
+												<path
+													className="stroke-blue-500"
+													d={path}
+													strokeWidth="2.5"
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													fill="none"
+													stroke="#3b82f6"
+												/>
+											</svg>
+										</div>
+									)
+								})()}
+								{/* History circles - enhanced readability */}
+								<div className="flex flex-wrap justify-between gap-1 lg:gap-2">
 									{Taux_Heures_Supplementaires.Historique_4_Semaines
 										.slice()
 										.reverse()
@@ -662,10 +710,10 @@ export default function OperationsPage() {
 											return (
 												<div
 													key={index}
-													className="flex flex-col items-center gap-0.5"
+													className="flex flex-1 flex-col items-center gap-1 min-w-0"
 												>
 													<div
-														className={`flex h-11 w-11 lg:h-14 lg:w-14 items-center justify-center rounded-full border-2 ${cls.border} ${cls.bg}`}
+														className={`flex h-11 w-11 lg:h-14 lg:w-14 flex-shrink-0 items-center justify-center rounded-full border-2 ${cls.border} ${cls.bg}`}
 													>
 														<span
 															className={`text-[10px] lg:text-xs font-bold leading-none ${cls.text}`}
@@ -673,11 +721,14 @@ export default function OperationsPage() {
 															{item.Valeur}%
 														</span>
 													</div>
-													<span className="font-bold text-white text-[10px]">
+													<span className="font-bold text-white text-[10px] lg:text-xs shrink-0">
 														S{item.Semaine}
 													</span>
-													<span className="text-white text-[8px]">
-														T:{item.Target}%
+													<span
+														className="inline-flex items-center rounded bg-slate-700/80 px-1.5 py-0.5 text-[10px] lg:text-xs font-medium text-amber-300"
+														title={`Target: ${item.Target}%`}
+													>
+														T: {item.Target}%
 													</span>
 												</div>
 											)
@@ -688,7 +739,7 @@ export default function OperationsPage() {
 
 						{/* Chomage Technique */}
 						<div
-							className={`${cardStyle} flex flex-col p-3 lg:p-5 min-h-[220px] lg:min-h-[320px]`}
+							className={`${cardStyle} flex min-w-0 flex-1 flex-col p-3 lg:p-5 min-h-[220px] lg:min-h-[320px] md:min-w-[min(100%,360px)]`}
 						>
 							<div className="flex items-start justify-between mb-2">
 								<div>
@@ -721,64 +772,68 @@ export default function OperationsPage() {
 								lowerIsBetter
 							/>
 							<div className="mt-auto flex flex-col pt-3">
-								<div className="relative h-12 lg:h-20 w-full mb-3">
-									<svg
-										className="absolute inset-0 h-full w-full"
-										fill="none"
-										preserveAspectRatio="none"
-										viewBox="0 0 200 80"
-									>
-										<defs>
-											<linearGradient
-												id="ct-grad"
-												x1="0"
-												x2="0"
-												y1="0"
-												y2="1"
-											>
-												<stop
-													offset="0%"
-													stopColor="#3b82f6"
-													stopOpacity="0.25"
-												/>
-												<stop
-													offset="100%"
-													stopColor="#3b82f6"
-													stopOpacity="0"
-												/>
-											</linearGradient>
-										</defs>
-										<line
-											x1="0"
-											y1="40"
-											x2="200"
-											y2="40"
-											stroke="#f59e0b"
-											strokeWidth="1.5"
-											strokeDasharray="5 3"
-										/>
-										<text
-											x="3"
-											y="36"
-											fontSize="9"
-											fill="#f59e0b"
-											fontWeight="600"
-										>
-											T:{Taux_Chomage_Technique.Target_Actuelle}%
-										</text>
-										<path
-											className="stroke-blue-500"
-											d="M 0 60 L 66 20 L 132 50 L 200 30"
-											strokeWidth="2.5"
-											strokeLinecap="round"
-										/>
-										<path
-											d="M 0 60 L 66 20 L 132 50 L 200 30 L 200 80 L 0 80 Z"
-											fill="url(#ct-grad)"
-										/>
-									</svg>
+								<div className="mb-1 flex items-center">
+									<span className="rounded bg-slate-700/90 px-2 py-0.5 text-[15px] font-bold text-amber-400">
+										T: {Taux_Chomage_Technique.Target_Actuelle}%
+									</span>
 								</div>
-								<div className="flex justify-between gap-1">
+								{(() => {
+									const hist = Taux_Chomage_Technique.Historique_4_Semaines.slice().reverse()
+									const { path, areaPath, targetY } = buildTrendPath(
+										hist,
+										Taux_Chomage_Technique.Target_Actuelle
+									)
+									return (
+										<div className="relative h-12 lg:h-20 w-full mb-3">
+											<svg
+												className="absolute inset-0 h-full w-full"
+												fill="none"
+												preserveAspectRatio="none"
+												viewBox="0 0 200 80"
+											>
+												<defs>
+													<linearGradient
+														id="ct-grad"
+														x1="0"
+														x2="0"
+														y1="0"
+														y2="1"
+													>
+														<stop
+															offset="0%"
+															stopColor="#3b82f6"
+															stopOpacity="0.25"
+														/>
+														<stop
+															offset="100%"
+															stopColor="#3b82f6"
+															stopOpacity="0"
+														/>
+													</linearGradient>
+												</defs>
+												<path d={areaPath} fill="url(#ct-grad)" />
+												<line
+													x1="0"
+													y1={targetY}
+													x2="200"
+													y2={targetY}
+													stroke="#f59e0b"
+													strokeWidth="1.5"
+													strokeDasharray="5 3"
+												/>
+												<path
+													d={path}
+													strokeWidth="2.5"
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													fill="none"
+													stroke="#3b82f6"
+												/>
+											</svg>
+										</div>
+									)
+								})()}
+								<div className="flex flex-wrap justify-between gap-1 lg:gap-2">
 									{Taux_Chomage_Technique.Historique_4_Semaines.slice()
 										.reverse()
 										.map((item, index) => {
@@ -791,10 +846,10 @@ export default function OperationsPage() {
 											return (
 												<div
 													key={index}
-													className="flex flex-col items-center gap-0.5"
+													className="flex flex-1 flex-col items-center gap-1 min-w-0"
 												>
 													<div
-														className={`flex h-11 w-11 lg:h-14 lg:w-14 items-center justify-center rounded-full border-2 ${cls.border} ${cls.bg}`}
+														className={`flex h-11 w-11 lg:h-14 lg:w-14 flex-shrink-0 items-center justify-center rounded-full border-2 ${cls.border} ${cls.bg}`}
 													>
 														<span
 															className={`text-[10px] lg:text-xs font-bold leading-none ${cls.text}`}
@@ -802,11 +857,14 @@ export default function OperationsPage() {
 															{item.Valeur}%
 														</span>
 													</div>
-													<span className="font-bold text-white text-[10px]">
+													<span className="font-bold text-white text-[10px] lg:text-xs shrink-0">
 														S{item.Semaine}
 													</span>
-													<span className="text-white text-[8px]">
-														T:{item.Target}%
+													<span
+														className="inline-flex items-center rounded bg-slate-700/80 px-1.5 py-0.5 text-[10px] lg:text-xs font-medium text-amber-300"
+														title={`Target: ${item.Target}%`}
+													>
+														T: {item.Target}%
 													</span>
 												</div>
 											)
@@ -817,10 +875,10 @@ export default function OperationsPage() {
 					</div>
 
 					{/* Bottom row: Scrap + Efficience */}
-					<div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+					<div className="flex flex-col gap-3 md:flex-row md:flex-wrap">
 						{/* Taux de Scrap */}
 						<div
-							className={`${cardStyle} flex flex-col p-3 lg:p-5 min-h-[220px] lg:min-h-[320px]`}
+							className={`${cardStyle} flex min-w-0 flex-1 flex-col p-3 lg:p-5 min-h-[220px] lg:min-h-[320px] md:min-w-[min(100%,360px)]`}
 						>
 							<div className="flex items-start justify-between mb-2">
 								<div>
@@ -885,64 +943,68 @@ export default function OperationsPage() {
 								/>
 							</div>
 							<div className="mt-auto flex flex-col pt-2">
-								<div className="relative h-12 lg:h-16 w-full mb-3">
-									<svg
-										className="absolute inset-0 h-full w-full"
-										fill="none"
-										preserveAspectRatio="none"
-										viewBox="0 0 200 80"
-									>
-										<defs>
-											<linearGradient
-												id="scrap-grad"
-												x1="0"
-												x2="0"
-												y1="0"
-												y2="1"
-											>
-												<stop
-													offset="0%"
-													stopColor="#3b82f6"
-													stopOpacity="0.2"
-												/>
-												<stop
-													offset="100%"
-													stopColor="#3b82f6"
-													stopOpacity="0"
-												/>
-											</linearGradient>
-										</defs>
-										<line
-											x1="0"
-											y1="50"
-											x2="200"
-											y2="50"
-											stroke="#f59e0b"
-											strokeWidth="1.5"
-											strokeDasharray="5 3"
-										/>
-										<text
-											x="3"
-											y="80"
-											fontSize="9"
-											fill="#f59e0b"
-											fontWeight="600"
-										>
-											T:{Taux_Scrap.Target_Actuelle}%
-										</text>
-										<path
-											className="stroke-blue-500"
-											d="M 0 70 L 66 40 L 132 60 L 200 20"
-											strokeWidth="2.5"
-											strokeLinecap="round"
-										/>
-										<path
-											d="M 0 70 L 66 40 L 132 60 L 200 20 L 200 80 L 0 80 Z"
-											fill="url(#scrap-grad)"
-										/>
-									</svg>
+								<div className="mb-1 flex items-center">
+									<span className="rounded bg-slate-700/90 px-2 py-0.5 text-[15px] font-bold text-amber-400">
+										T: {Taux_Scrap.Target_Actuelle}%
+									</span>
 								</div>
-								<div className="flex justify-between gap-1">
+								{(() => {
+									const hist = Taux_Scrap.Historique_4_Semaines.slice().reverse()
+									const { path, areaPath, targetY } = buildTrendPath(
+										hist,
+										Taux_Scrap.Target_Actuelle
+									)
+									return (
+										<div className="relative h-12 lg:h-16 w-full mb-3">
+											<svg
+												className="absolute inset-0 h-full w-full"
+												fill="none"
+												preserveAspectRatio="none"
+												viewBox="0 0 200 80"
+											>
+												<defs>
+													<linearGradient
+														id="scrap-grad"
+														x1="0"
+														x2="0"
+														y1="0"
+														y2="1"
+													>
+														<stop
+															offset="0%"
+															stopColor="#3b82f6"
+															stopOpacity="0.2"
+														/>
+														<stop
+															offset="100%"
+															stopColor="#3b82f6"
+															stopOpacity="0"
+														/>
+													</linearGradient>
+												</defs>
+												<path d={areaPath} fill="url(#scrap-grad)" />
+												<line
+													x1="0"
+													y1={targetY}
+													x2="200"
+													y2={targetY}
+													stroke="#f59e0b"
+													strokeWidth="1.5"
+													strokeDasharray="5 3"
+												/>
+												<path
+													d={path}
+													strokeWidth="2.5"
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													fill="none"
+													stroke="#3b82f6"
+												/>
+											</svg>
+										</div>
+									)
+								})()}
+								<div className="flex flex-wrap justify-between gap-1 lg:gap-2">
 									{Taux_Scrap.Historique_4_Semaines.slice()
 										.reverse()
 										.map((item, index) => {
@@ -955,10 +1017,10 @@ export default function OperationsPage() {
 											return (
 												<div
 													key={index}
-													className="flex flex-col items-center gap-0.5"
+													className="flex flex-1 flex-col items-center gap-1 min-w-0"
 												>
 													<div
-														className={`flex h-11 w-11 lg:h-14 lg:w-14 items-center justify-center rounded-full border-2 ${cls.border} ${cls.bg}`}
+														className={`flex h-11 w-11 lg:h-14 lg:w-14 flex-shrink-0 items-center justify-center rounded-full border-2 ${cls.border} ${cls.bg}`}
 													>
 														<span
 															className={`text-[10px] lg:text-xs font-bold leading-none ${cls.text}`}
@@ -966,11 +1028,14 @@ export default function OperationsPage() {
 															{item.Valeur}%
 														</span>
 													</div>
-													<span className="font-bold text-white text-[10px]">
+													<span className="font-bold text-white text-[10px] lg:text-xs shrink-0">
 														S{item.Semaine}
 													</span>
-													<span className="text-white text-[8px]">
-														T:{item.Target}%
+													<span
+														className="inline-flex items-center rounded bg-slate-700/80 px-1.5 py-0.5 text-[10px] lg:text-xs font-medium text-amber-300"
+														title={`Target: ${item.Target}%`}
+													>
+														T: {item.Target}%
 													</span>
 												</div>
 											)
@@ -981,7 +1046,7 @@ export default function OperationsPage() {
 
 						{/* Suivi Efficience */}
 						<div
-							className={`${cardStyle} flex flex-col p-3 lg:p-5 min-h-[220px] lg:min-h-[320px]`}
+							className={`${cardStyle} flex min-w-0 flex-1 flex-col p-3 lg:p-5 min-h-[220px] lg:min-h-[320px] md:min-w-[min(100%,360px)]`}
 						>
 							<div className="flex items-start justify-between mb-2">
 								<div>
@@ -1039,64 +1104,68 @@ export default function OperationsPage() {
 								/>
 							</div>
 							<div className="mt-auto flex flex-col pt-2">
-								<div className="relative h-12 lg:h-16 w-full mb-3">
-									<svg
-										className="absolute inset-0 h-full w-full"
-										fill="none"
-										preserveAspectRatio="none"
-										viewBox="0 0 200 80"
-									>
-										<defs>
-											<linearGradient
-												id="eff-grad"
-												x1="0"
-												x2="0"
-												y1="0"
-												y2="1"
-											>
-												<stop
-													offset="0%"
-													stopColor="#3b82f6"
-													stopOpacity="0.2"
-												/>
-												<stop
-													offset="100%"
-													stopColor="#3b82f6"
-													stopOpacity="0"
-												/>
-											</linearGradient>
-										</defs>
-										<line
-											x1="0"
-											y1="25"
-											x2="200"
-											y2="25"
-											stroke="#f59e0b"
-											strokeWidth="1.5"
-											strokeDasharray="5 3"
-										/>
-										<text
-											x="3"
-											y="60"
-											fontSize="9"
-											fill="#f59e0b"
-											fontWeight="600"
-										>
-											T:{Suivi_Efficience.Target_Actuelle}%
-										</text>
-										<path
-											className="stroke-blue-500"
-											d="M 0 30 L 66 20 L 132 50 L 200 40"
-											strokeWidth="2.5"
-											strokeLinecap="round"
-										/>
-										<path
-											d="M 0 30 L 66 20 L 132 50 L 200 40 L 200 80 L 0 80 Z"
-											fill="url(#eff-grad)"
-										/>
-									</svg>
+								<div className="mb-1 flex items-center">
+									<span className="rounded bg-slate-700/90 px-2 py-0.5 text-[15px] font-bold text-amber-400">
+										T: {Suivi_Efficience.Target_Actuelle}%
+									</span>
 								</div>
-								<div className="flex justify-between gap-1">
+								{(() => {
+									const hist = Suivi_Efficience.Historique_4_Semaines.slice().reverse()
+									const { path, areaPath, targetY } = buildTrendPath(
+										hist,
+										Suivi_Efficience.Target_Actuelle
+									)
+									return (
+										<div className="relative h-12 lg:h-16 w-full mb-3">
+											<svg
+												className="absolute inset-0 h-full w-full"
+												fill="none"
+												preserveAspectRatio="none"
+												viewBox="0 0 200 80"
+											>
+												<defs>
+													<linearGradient
+														id="eff-grad"
+														x1="0"
+														x2="0"
+														y1="0"
+														y2="1"
+													>
+														<stop
+															offset="0%"
+															stopColor="#3b82f6"
+															stopOpacity="0.2"
+														/>
+														<stop
+															offset="100%"
+															stopColor="#3b82f6"
+															stopOpacity="0"
+														/>
+													</linearGradient>
+												</defs>
+												<path d={areaPath} fill="url(#eff-grad)" />
+												<line
+													x1="0"
+													y1={targetY}
+													x2="200"
+													y2={targetY}
+													stroke="#f59e0b"
+													strokeWidth="1.5"
+													strokeDasharray="5 3"
+												/>
+												<path
+													d={path}
+													strokeWidth="2.5"
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													fill="none"
+													stroke="#3b82f6"
+												/>
+											</svg>
+										</div>
+									)
+								})()}
+								<div className="flex flex-wrap justify-between gap-1 lg:gap-2">
 									{Suivi_Efficience.Historique_4_Semaines.slice()
 										.reverse()
 										.map((item, index) => {
@@ -1109,10 +1178,10 @@ export default function OperationsPage() {
 											return (
 												<div
 													key={index}
-													className="flex flex-col items-center gap-0.5"
+													className="flex flex-1 flex-col items-center gap-1 min-w-0"
 												>
 													<div
-														className={`flex h-11 w-11 lg:h-14 lg:w-14 items-center justify-center rounded-full border-2 ${cls.border} ${cls.bg}`}
+														className={`flex h-11 w-11 lg:h-14 lg:w-14 flex-shrink-0 items-center justify-center rounded-full border-2 ${cls.border} ${cls.bg}`}
 													>
 														<span
 															className={`text-[10px] lg:text-xs font-bold leading-none ${cls.text}`}
@@ -1120,11 +1189,14 @@ export default function OperationsPage() {
 															{item.Valeur}%
 														</span>
 													</div>
-													<span className="font-bold text-white text-[10px]">
+													<span className="font-bold text-white text-[10px] lg:text-xs shrink-0">
 														S{item.Semaine}
 													</span>
-													<span className="text-white text-[10px]">
-														T:{item.Target}%
+													<span
+														className="inline-flex items-center rounded bg-slate-700/80 px-1.5 py-0.5 text-[10px] lg:text-xs font-medium text-amber-300"
+														title={`Target: ${item.Target}%`}
+													>
+														T: {item.Target}%
 													</span>
 												</div>
 											)

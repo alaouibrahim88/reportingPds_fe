@@ -5,6 +5,8 @@ import { ArrowUp, ArrowDown, Target } from "lucide-react"
 import { PeriodSelector } from "@/components/ui/PeriodSelector"
 import { TabSelector } from "@/components/ui/TabSelector"
 import { useKpiPeriod } from "@/hooks/use-kpi-period"
+import { createGetSemaineLabel } from "@/lib/week-labels"
+import { formatMEUR } from "@/lib/utils"
 
 type TabType = "weekly" | "monthly"
 
@@ -246,9 +248,6 @@ export default function FinancePage() {
 											{exec.Valeur_Affichee ?? '-'}%
 										</p>
 										<div className={`flex items-center ${(exec.Delta_Affiche ?? 0) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-											<span className="material-symbols-outlined text-lg">
-												arrow_upward
-											</span>
 											<p className="text-base font-medium">
 												{exec.Delta_Affiche != null ? (exec.Delta_Affiche >= 0 ? '+' : '') + exec.Delta_Affiche + ' ' + exec.Delta_Unite : '-'}
 											</p>
@@ -308,14 +307,11 @@ export default function FinancePage() {
 									</p>
 									<div className="flex items-end gap-2 mt-1">
 										<p className="text-red-500 tracking-light text-[32px] font-bold leading-tight truncate">
-											{paiements?.Valeur_Affichee_MEUR ?? '-'} M€
+											{formatMEUR(paiements?.Valeur_Affichee_MEUR)} M€
 										</p>
 										<div className={`flex items-center ${(paiements?.Delta_Affiche_MEUR ?? 0) <= 0 ? 'text-green-500' : 'text-red-500'}`}>
-											<span className="material-symbols-outlined text-lg">
-												check_circle
-											</span>
 											<p className="text-base font-medium">
-												{(paiements?.Delta_Affiche_MEUR ?? 0) >= 0 ? '+' : ''}{paiements?.Delta_Affiche_MEUR ?? '-'} M€
+												{(paiements?.Delta_Affiche_MEUR ?? 0) >= 0 ? '+' : ''}{formatMEUR(paiements?.Delta_Affiche_MEUR)} M€
 											</p>
 										</div>
 									</div>
@@ -328,7 +324,7 @@ export default function FinancePage() {
 												key={item?.Label ?? `paiements-${i}`}
 												className="flex items-center justify-center w-14 h-14 rounded-full border-2 bg-blue-500/20 text-blue-300 border-blue-400"
 											>
-												<span className="font-bold text-lg">{item?.Valeur_MEUR ?? '-'}</span>
+												<span className="font-bold text-lg">{formatMEUR(item?.Valeur_MEUR)}</span>
 											</div>
 										))}
 									</div>
@@ -388,6 +384,9 @@ export default function FinancePage() {
 		const derniers4 = Array.isArray(taux?.Dernieres_4_Semaines)
 			? taux.Dernieres_4_Semaines
 			: []
+		const refWeek = ca?.Semaine_Reference ?? 1
+		const getSemaineLabel = createGetSemaineLabel(refWeek, semaines.length)
+		const getSemaineLabelTaux = createGetSemaineLabel(refWeek, derniers4.length)
 
 		return (
     <main className="flex-1 flex flex-col">
@@ -404,16 +403,12 @@ export default function FinancePage() {
           >
             <div className="flex flex-col gap-1">
               <div className="flex items-end gap-2">
-                <p className="text-blue-400 tracking-light text-7xl font-bold leading-tight truncate tabular-nums">
+								<p className="text-blue-400 tracking-light text-7xl font-bold leading-tight truncate tabular-nums">
 									<span className="text-blue-400">
-										{ca?.Valeur_Mois_Cumulee_MEUR ?? '-'}
+										{formatMEUR(ca?.Valeur_Mois_Cumulee_MEUR)}
 									</span>
 									<span className="text-blue-300/90 text-5xl ml-1">M€</span>
 								</p>
-								<div className="flex items-center gap-1.5 text-green-400">
-									<ArrowUp className="w-6 h-6 shrink-0" strokeWidth={2.5} />
-									<p className="text-xl font-semibold">vs S-1</p>
-								</div>
 							</div>
 							<p className="text-sm text-gray-300 font-medium">Cumul du mois</p>
             </div>
@@ -421,15 +416,15 @@ export default function FinancePage() {
               <div className="flex flex-col text-right">
                 <div className="flex items-center gap-4">
 									{semaines.map((s, idx) => (
-										<div key={s?.Label ?? `w-${idx}`} className="flex flex-col items-center gap-2.5">
+										<div key={getSemaineLabel(idx)} className="flex flex-col items-center gap-2.5">
 											<div
 												className="w-20 h-20 rounded-full bg-slate-700/60 border-2 border-blue-400/80 flex items-center justify-center shadow-xl shadow-blue-500/20 ring-2 ring-blue-500/20"
 											>
 												<span className="text-white text-lg font-bold tabular-nums">
-													{s.Cumul_MEUR ?? s.Reel_MEUR ?? s.Prevision_MEUR ?? '-'} M€
+													{formatMEUR(s.Cumul_MEUR ?? s.Reel_MEUR ?? s.Prevision_MEUR)} M€
 												</span>
 											</div>
-											<span className="text-gray-300 text-sm font-medium">{s?.Label ?? '-'}</span>
+											<span className="text-gray-300 text-sm font-medium">{getSemaineLabel(idx)}</span>
 										</div>
 									))}
 								</div>
@@ -437,6 +432,8 @@ export default function FinancePage() {
 						</div>
 					</div>
 				</div>
+		{semaines.length > 0 ? (
+		<>
 		<div className="h-60 min-h-[240px] relative pt-8 pb-4 px-6 overflow-visible bg-slate-800/30 rounded-lg border border-slate-700/50">
           <div className="absolute inset-0 px-6 pt-8 pb-4">
 						{(() => {
@@ -480,7 +477,7 @@ export default function FinancePage() {
 									)}
 									{pts.map((p, i) => (
 										<circle
-											key={items[i]?.Label ?? `pt-${i}`}
+											key={getSemaineLabel(i)}
 											cx={p.x}
 											cy={p.cy}
 											fill="#EAB308"
@@ -508,12 +505,12 @@ export default function FinancePage() {
 							const height = Math.max(40, (val / maxVal) * 90)
 							return (
 								<div
-									key={s?.Label ?? `bar-${i}`}
+									key={getSemaineLabel(i)}
 									className={`rounded-t-md relative mx-auto w-1/3 flex justify-center ${i === items.length - 1 ? 'bg-primary' : 'bg-primary/80'}`}
 									style={{ height: `${height}%` }}
 								>
 									<span className="absolute -top-8 left-1/2 -translate-x-1/2 px-3 py-2 rounded-lg text-white text-base font-bold bg-slate-800 border-2 border-slate-500 whitespace-nowrap shadow-xl z-10 min-w-[4rem] text-center">
-										{val || '-'} M€
+										{formatMEUR(val)} M€
 									</span>
 								</div>
 							)
@@ -525,11 +522,13 @@ export default function FinancePage() {
             <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/95 border border-yellow-500/50">
               <Target className="w-4 h-4 text-yellow-400 shrink-0" strokeWidth={2.5} />
               <span className="text-sm font-bold text-yellow-300 tabular-nums">
-								{semaines.reduce(
-									(sum, s) =>
-										sum +
-										(s?.Cumul_MEUR ?? s?.Reel_MEUR ?? s?.Prevision_MEUR ?? 0),
-									0
+								{formatMEUR(
+									semaines.reduce(
+										(sum, s) =>
+											sum +
+											(s?.Cumul_MEUR ?? s?.Reel_MEUR ?? s?.Prevision_MEUR ?? 0),
+										0
+									)
 								)}{' '}
 								M€
 							</span>
@@ -544,14 +543,20 @@ export default function FinancePage() {
 							}}
 						>
 							{semaines.map((s, idx) => (
-								<div key={s?.Label ?? `grid-${idx}`} className="flex flex-col items-center gap-2">
-									<span className="font-bold text-base text-white">{s?.Label ?? '-'}</span>
+								<div key={getSemaineLabel(idx)} className="flex flex-col items-center gap-2">
+									<span className="font-bold text-base text-white">{getSemaineLabel(idx)}</span>
 									<span className="text-gray-300 text-sm font-medium tabular-nums">
-										{s?.Cumul_MEUR ?? s?.Reel_MEUR ?? s?.Prevision_MEUR ?? '-'} M€
+										{formatMEUR(s?.Cumul_MEUR ?? s?.Reel_MEUR ?? s?.Prevision_MEUR)} M€
 									</span>
 								</div>
 							))}
 						</div>
+		</>
+		) : (
+						<div className="h-60 min-h-[240px] flex items-center justify-center rounded-lg border border-slate-700/50 bg-slate-800/30">
+							<span className="text-gray-400 text-sm">Aucune donnée pour afficher le graphique</span>
+						</div>
+		)}
       </div>
         <div
           className="flex flex-col gap-5 rounded-xl border border-slate-700/80 bg-slate-900/60 p-6 transition-transform duration-300 cursor-pointer shadow-lg shadow-black/20"
@@ -564,32 +569,24 @@ export default function FinancePage() {
 								<p className="text-blue-400 tracking-light text-4xl font-bold leading-tight truncate tabular-nums">
 									<span className="text-blue-400">{taux?.Valeur_S_1 ?? '-'}</span>
 									<span className="text-blue-300/90 text-3xl ml-0.5">%</span>
-								</p>
-								<div className={`flex items-center gap-1.5 ${(taux?.Variation_Pts_Vs_S_1 ?? 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-									{(taux?.Variation_Pts_Vs_S_1 ?? 0) >= 0 ? (
-										<ArrowUp className="w-5 h-5 shrink-0" strokeWidth={2.5} />
-									) : (
-										<ArrowDown className="w-5 h-5 shrink-0" strokeWidth={2.5} />
-									)}
-									<p className="text-lg font-semibold">
-										{(taux?.Variation_Pts_Vs_S_1 ?? 0) >= 0 ? '+' : ''}{taux?.Variation_Pts_Vs_S_1 ?? '-'} pts vs S-1
-									</p>
-								</div>
+								</p><s></s>
 							</div>
 							<div className="flex items-center gap-4">
 								{derniers4.map((s, idx) => (
-									<div key={s?.Label ?? `taux-${idx}`} className="flex flex-col items-center gap-2.5">
+									<div key={getSemaineLabelTaux(idx)} className="flex flex-col items-center gap-2.5">
 										<div
 											className="w-16 h-16 rounded-full border-2 flex items-center justify-center bg-slate-700/60 border-blue-400/80 shadow-xl shadow-blue-500/20 ring-2 ring-blue-500/20"
 										>
 											<span className="text-white text-base font-bold tabular-nums">{s?.Valeur ?? s?.Valeur_MEUR ?? '-'}%</span>
 										</div>
-										<span className="text-gray-300 text-sm font-medium">{s?.Label ?? '-'}</span>
+										<span className="text-gray-300 text-sm font-medium">{getSemaineLabelTaux(idx)}</span>
 									</div>
 								))}
 							</div>
 						</div>
         <div className="flex-grow flex flex-col justify-center py-4">
+          {derniers4.length > 0 ? (
+          <>
           <div className="h-52 min-h-[220px] w-full relative pt-6 pb-4 pl-6 pr-16 overflow-visible bg-slate-800/30 rounded-lg border border-slate-700/50">
             <div
               className="absolute inset-0 pl-6 pr-16 flex flex-col justify-between z-0 pointer-events-none"
@@ -615,44 +612,86 @@ export default function FinancePage() {
                 <hr className="flex-1 border-[1.5px] border-dashed border-slate-500 mx-4" />
               </div>
             </div>
-            <svg
-              className="w-full h-full"
-              fill="none"
-              preserveAspectRatio="none"
-              viewBox="0 0 286 160"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M35.75 96L107.25 48L178.75 64L250.25 32"
-                stroke="#EAB308"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <circle cx="35.75" cy="96" fill="#EAB308" r="6" stroke="#fef08a" strokeWidth="2" />
-              <circle cx="107.25" cy="48" fill="#EAB308" r="6" stroke="#fef08a" strokeWidth="2" />
-              <circle cx="178.75" cy="64" fill="#EAB308" r="6" stroke="#fef08a" strokeWidth="2" />
-              <circle cx="250.25" cy="32" fill="#EAB308" r="6" stroke="#fef08a" strokeWidth="2" />
-              <line
-                className="stroke-current text-primary"
-                strokeDasharray="6 4"
-                strokeWidth="2"
-                x1="0"
-                x2="286"
-                y1="40"
-                y2="40"
-              />
-            </svg>
+            {(() => {
+              const items = derniers4
+              const getVal = (s: DerniereSemaine | undefined) =>
+                s?.Valeur ?? s?.Valeur_MEUR ?? 0
+              const n = items.length
+              const w = 286
+              const h = 160
+              const minPct = 80
+              const maxPct = 100
+              const targetPct = 95
+              const pts = items.map((s, i) => {
+                const val = Math.min(maxPct, Math.max(minPct, getVal(s)))
+                const x = n > 1 ? ((2 * i + 1) * w) / (2 * n) : w / 2
+                const cy = ((maxPct - val) / (maxPct - minPct)) * h
+                return { x, cy }
+              })
+              const pathD =
+                pts.length > 1
+                  ? `M${pts.map((p) => `${p.x} ${p.cy}`).join('L')}`
+                  : ''
+              const targetY = ((maxPct - targetPct) / (maxPct - minPct)) * h
+              return (
+                <svg
+                  className="w-full h-full"
+                  fill="none"
+                  preserveAspectRatio="none"
+                  viewBox={`0 0 ${w} ${h}`}
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <line
+                    className="stroke-current text-primary"
+                    strokeDasharray="6 4"
+                    strokeWidth="2"
+                    x1="0"
+                    x2={w}
+                    y1={targetY}
+                    y2={targetY}
+                  />
+                  {pathD && (
+                    <path
+                      d={pathD}
+                      stroke="#EAB308"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  )}
+                  {pts.map((p, i) => (
+                    <circle
+                      key={getSemaineLabelTaux(i)}
+                      cx={p.x}
+                      cy={p.cy}
+                      fill="#EAB308"
+                      r="6"
+                      stroke="#fef08a"
+                      strokeWidth="2"
+                    />
+                  ))}
+                </svg>
+              )
+            })()}
             {/* Data point value labels - positioned above each point */}
-            <div className="absolute inset-0 z-10 pointer-events-none flex justify-between px-6">
+            <div
+              className="absolute inset-0 z-10 pointer-events-none grid pt-6 pb-4 pl-6 pr-16"
+              style={{
+                gridTemplateColumns: `repeat(${Math.max(1, derniers4.length)}, minmax(0, 1fr))`,
+              }}
+            >
               {derniers4.map((s, idx) => (
                 <div
-                  key={s?.Label ?? `label-${idx}`}
+                  key={getSemaineLabelTaux(idx)}
                   className="flex flex-col items-center -mt-3"
-                  style={{ width: '22%' }}
                 >
                   <span className="px-3 py-1.5 rounded-lg text-sm font-bold text-yellow-300 bg-slate-800/95 border-2 border-slate-500 whitespace-nowrap shadow-xl">
-                    {s?.Valeur ?? s?.Valeur_MEUR ?? '-'}%
+                    {(() => {
+                      const v = s?.Valeur ?? s?.Valeur_MEUR
+                      return typeof v === 'number'
+                        ? `${Number(v.toFixed(1))}%`
+                        : '-'
+                    })()}
                   </span>
                 </div>
               ))}
@@ -665,14 +704,20 @@ export default function FinancePage() {
 							}}
 						>
 							{derniers4.map((s, idx) => (
-								<div key={s?.Label ?? `taux-grid-${idx}`} className="flex flex-col items-center gap-2">
-									<span className="font-bold text-base text-white">{s?.Label ?? '-'}</span>
+								<div key={getSemaineLabelTaux(idx)} className="flex flex-col items-center gap-2">
+									<span className="font-bold text-base text-white">{getSemaineLabelTaux(idx)}</span>
 									<span className="text-gray-300 text-sm font-medium tabular-nums">
 										{s?.Valeur ?? s?.Valeur_MEUR ?? '-'}%
 									</span>
 								</div>
 							))}
 						</div>
+          </>
+          ) : (
+						<div className="h-52 min-h-[220px] flex items-center justify-center rounded-lg border border-slate-700/50 bg-slate-800/30">
+							<span className="text-gray-400 text-sm">Aucune donnée pour afficher le graphique</span>
+						</div>
+          )}
         </div>
 					</div>
 				</div>
