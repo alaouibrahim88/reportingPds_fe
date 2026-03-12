@@ -214,7 +214,7 @@ export default function RHPage() {
         <div className="relative bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-8 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm h-[450px] transition-transform duration-300 cursor-pointer">
           {viewMode === 'weekly' && (
             <div
-              className="absolute inset-0 bg-black/30 rounded-xl z-10 pointer-events-none"
+              className="absolute inset-0 bg-black/50 rounded-xl z-10 pointer-events-none"
               aria-hidden
             />
           )}
@@ -309,7 +309,7 @@ export default function RHPage() {
         <div className="relative bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm p-6 flex flex-col h-[450px] transition-transform duration-300 cursor-pointer">
           {viewMode === 'weekly' && (
             <div
-              className="absolute inset-0 bg-black/30 rounded-xl z-10 pointer-events-none"
+              className="absolute inset-0 bg-black/50 rounded-xl z-10 pointer-events-none"
               aria-hidden
             />
           )}
@@ -394,7 +394,7 @@ export default function RHPage() {
         <div className="relative bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-8 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm h-[450px] transition-transform duration-300 cursor-pointer">
           {viewMode === 'weekly' && (
             <div
-              className="absolute inset-0 bg-black/30 rounded-xl z-10 pointer-events-none"
+              className="absolute inset-0 bg-black/50 rounded-xl z-10 pointer-events-none"
               aria-hidden
             />
           )}
@@ -492,7 +492,7 @@ export default function RHPage() {
         <div className="relative bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-8 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm h-[450px] transition-transform duration-300 cursor-pointer">
           {viewMode === 'weekly' && (
             <div
-              className="absolute inset-0 bg-black/30 rounded-xl z-10 pointer-events-none"
+              className="absolute inset-0 bg-black/50 rounded-xl z-10 pointer-events-none"
               aria-hidden
             />
           )}
@@ -558,7 +558,7 @@ export default function RHPage() {
         <div className="relative bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-4 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm h-[450px] transition-transform duration-300 cursor-pointer">
           {viewMode === 'monthly' && (
             <div
-              className="absolute inset-0 bg-black/30 rounded-xl z-10 pointer-events-none"
+              className="absolute inset-0 bg-black/50 rounded-xl z-10 pointer-events-none"
               aria-hidden
             />
           )}
@@ -661,7 +661,7 @@ export default function RHPage() {
         <div className="relative bg-gradient-to-br from-gray-800 via-slate-800 to-gray-900 p-8 flex flex-col rounded-xl shadow-2xl border border-gray-700/50 backdrop-blur-sm h-[450px] transition-transform duration-300 cursor-pointer">
           {viewMode === 'weekly' && (
             <div
-              className="absolute inset-0 bg-black/30 rounded-xl z-10 pointer-events-none"
+              className="absolute inset-0 bg-black/50 rounded-xl z-10 pointer-events-none"
               aria-hidden
             />
           )}

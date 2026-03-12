@@ -337,8 +337,6 @@ export default function QualityPage() {
 									return (
 										<g key={i}>
 											<text x={x} y={labelY} textAnchor="middle" dominantBaseline="middle">
-												<tspan fill="#e2e8f0" fontSize="10" fontWeight="600">T:{tgt}</tspan>
-												<tspan fill="#94a3b8" fontSize="12"> </tspan>
 												<tspan fill="#f59e0b" fontSize="13" fontWeight="700">{val}</tspan>
 											</text>
 											<circle cx={x} cy={y} r="3" fill="#06b6d4" stroke="#0e7490" strokeWidth="1" />
@@ -414,7 +412,8 @@ export default function QualityPage() {
 												],
 											}}
 										>
-											{Number(week.Valeur)}
+											{/*Number(week.Valeur)*/}
+											-
 										</span>
 									</div>
 									{week.Target != null && (

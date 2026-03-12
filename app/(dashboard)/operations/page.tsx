@@ -630,9 +630,9 @@ export default function OperationsPage() {
 								target={Taux_Heures_Supplementaires.Target_Actuelle}
 								lowerIsBetter
 							/>
-							<div className="mt-auto flex flex-col pt-3">
+							<div className="relative mt-auto flex flex-col pt-3">
 								{/* Target label - outside SVG to avoid overlap with graph line */}
-								<div className="mb-1 flex items-center">
+								<div className="absolute left-0 z-50 mt-6 flex items-center">
 									<span className="rounded bg-slate-700/90 px-2 py-0.5 text-[15px] font-bold text-amber-400">
 										T: {Taux_Heures_Supplementaires.Target_Actuelle}%
 									</span>
@@ -771,8 +771,8 @@ export default function OperationsPage() {
 								target={Taux_Chomage_Technique.Target_Actuelle}
 								lowerIsBetter
 							/>
-							<div className="mt-auto flex flex-col pt-3">
-								<div className="mb-1 flex items-center">
+							<div className="relative mt-auto flex flex-col pt-3">
+								<div className="absolute left-0 z-50 mt-6 flex items-center">
 									<span className="rounded bg-slate-700/90 px-2 py-0.5 text-[15px] font-bold text-amber-400">
 										T: {Taux_Chomage_Technique.Target_Actuelle}%
 									</span>
@@ -942,8 +942,8 @@ export default function OperationsPage() {
 									lowerIsBetter
 								/>
 							</div>
-							<div className="mt-auto flex flex-col pt-2">
-								<div className="mb-1 flex items-center">
+							<div className="relative mt-auto flex flex-col pt-2">
+								<div className="absolute left-0 z-50 mt-6 flex items-center">
 									<span className="rounded bg-slate-700/90 px-2 py-0.5 text-[15px] font-bold text-amber-400">
 										T: {Taux_Scrap.Target_Actuelle}%
 									</span>
@@ -1103,8 +1103,8 @@ export default function OperationsPage() {
 									target={Suivi_Efficience.Target_Actuelle}
 								/>
 							</div>
-							<div className="mt-auto flex flex-col pt-2">
-								<div className="mb-1 flex items-center">
+							<div className="relative mt-auto flex flex-col pt-2">
+								<div className="absolute left-0 z-50 mt-6 flex items-center">
 									<span className="rounded bg-slate-700/90 px-2 py-0.5 text-[15px] font-bold text-amber-400">
 										T: {Suivi_Efficience.Target_Actuelle}%
 									</span>
