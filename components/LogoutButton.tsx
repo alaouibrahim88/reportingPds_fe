@@ -19,7 +19,7 @@ export function LogoutButton() {
       setIsLoggingOut(true);
       console.log("Logging out...");
 
-      const cookiesToClear = ["access_token", "refresh_token", "auth"];
+      const cookiesToClear = ["access_token", "refresh_token", "auth","username"];
 
       await Promise.all(
         cookiesToClear.map(async (cookieName) => {

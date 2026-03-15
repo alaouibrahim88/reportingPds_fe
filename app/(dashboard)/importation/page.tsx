@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import {
 	Select,
 	SelectContent,
@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/select'
 import { UploadSection, FileUploadProvider } from './_components'
 import MenuKPIDashboard from '@/components/MenuKPIDashboard'
+import { getCookieValue } from '@/lib/storage'
 
 export interface Department {
 	id: string
@@ -18,7 +19,7 @@ export interface Department {
 }
 
 const departments: Department[] = [
-	{ id: 'operations', name: 'Operations' },
+	{ id: 'operation', name: 'Operation' },
 	{ id: 'quality', name: 'Quality' },
 	{ id: 'supply-chain', name: 'Supply Chain' },
 	{ id: 'finance', name: 'Finance' },
@@ -47,10 +48,72 @@ const DOMAIN_OPTIONS = [
 
 const YEAR_OPTIONS = ['2024', '2025', '2026', '2027', '2028'] as const
 
+type DomainOption = (typeof DOMAIN_OPTIONS)[number]
+
+function getFilteredDepartments(usernameUpper: string): Department[] {
+	if (!usernameUpper) return departments
+	return departments.filter((dept) => {
+		const deptIdUpper = dept.id.toUpperCase()
+		const deptIdBase = deptIdUpper.split('-')[0]
+		if (usernameUpper.includes('SUPPLYCH')) return dept.id === 'supply-chain'
+		if(usernameUpper.includes('RH')) return dept.id === 'human-resources'
+		return (
+			deptIdUpper.includes(usernameUpper) || usernameUpper.includes(deptIdBase)
+		)
+	})
+}
+
+function getFilteredDomainOptions(usernameUpper: string): readonly DomainOption[] {
+	if (!usernameUpper) return DOMAIN_OPTIONS
+	if (usernameUpper.includes('SUPPLYCH')) return ['INV', 'INV_TARGET'] as const
+	return DOMAIN_OPTIONS.filter((domain) => domain.includes(usernameUpper))
+}
+
 export default function ImportationPage() {
-	const [selectedDomain, setSelectedDomain] =
-		useState<(typeof DOMAIN_OPTIONS)[number]>('INV')
+	const [username, setUsername] = useState<string | null>(null)
+	const [selectedDomain, setSelectedDomain] = useState<DomainOption>('INV')
 	const [selectedYear, setSelectedYear] = useState<string>('2026')
+
+	useEffect(() => {
+		getCookieValue('username').then((value) => setUsername(value ?? null))
+	}, [])
+
+	const usernameUpper = (username ?? '').toUpperCase()
+
+	const effectiveDepartments = useMemo(() => {
+		const filtered = getFilteredDepartments(usernameUpper)
+		return filtered.length > 0 ? filtered : departments
+	}, [usernameUpper])
+
+	const effectiveDomainOptions = useMemo(() => {
+		const filtered = getFilteredDomainOptions(usernameUpper)
+		return filtered.length > 0 ? filtered : DOMAIN_OPTIONS
+	}, [usernameUpper])
+
+	const enabledDepartmentIds = useMemo(
+		() => new Set(effectiveDepartments.map((d) => d.id)),
+		[effectiveDepartments],
+	)
+
+	useEffect(() => {
+		const isValid = (effectiveDomainOptions as readonly string[]).includes(
+			selectedDomain,
+		)
+		if (!isValid && effectiveDomainOptions.length > 0) {
+			const fallback = effectiveDomainOptions[0] as DomainOption
+			if (fallback !== selectedDomain) {
+				setSelectedDomain(fallback)
+			}
+		}
+	}, [usernameUpper, effectiveDomainOptions, selectedDomain])
+
+	const handleDomainChange = useCallback((value: string) => {
+		setSelectedDomain(value as DomainOption)
+	}, [])
+
+	const handleYearChange = useCallback((value: string) => {
+		setSelectedYear(value)
+	}, [])
 
 	return (
 		<>
@@ -74,17 +137,13 @@ export default function ImportationPage() {
 							</label>
 							<Select
 								value={selectedDomain}
-								onValueChange={(value) =>
-									setSelectedDomain(
-										value as (typeof DOMAIN_OPTIONS)[number],
-									)
-								}
+								onValueChange={handleDomainChange}
 							>
 								<SelectTrigger className="w-full">
 									<SelectValue placeholder="Select domain" />
 								</SelectTrigger>
 								<SelectContent>
-									{DOMAIN_OPTIONS.map((domain) => (
+									{effectiveDomainOptions.map((domain) => (
 										<SelectItem key={domain} value={domain}>
 											{domain}
 										</SelectItem>
@@ -99,7 +158,7 @@ export default function ImportationPage() {
 							</label>
 							<Select
 								value={selectedYear}
-								onValueChange={setSelectedYear}
+								onValueChange={handleYearChange}
 							>
 								<SelectTrigger className="w-full">
 									<SelectValue placeholder="Select year" />
@@ -123,6 +182,7 @@ export default function ImportationPage() {
 								department={department}
 								domain={selectedDomain}
 								year={selectedYear}
+								disabled={!enabledDepartmentIds.has(department.id)}
 							/>
 						))}
 					</div>

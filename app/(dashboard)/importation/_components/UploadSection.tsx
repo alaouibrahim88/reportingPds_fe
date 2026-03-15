@@ -3,19 +3,22 @@
 import { useState } from 'react'
 import { Upload, FileX } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useFileUpload, FileTable } from './index'
+import { useFileUpload } from './FileUploadContext'
+import { FileTable } from './FileTable'
 import type { Department } from '../page'
 
 interface UploadSectionProps {
 	department: Department
 	domain: string
 	year: string
+	disabled?: boolean
 }
 
 export function UploadSection({
 	department,
 	domain,
 	year,
+	disabled = false,
 }: UploadSectionProps) {
 	const [isUploading, setIsUploading] = useState(false)
 	const [fileInputKey, setFileInputKey] = useState(0)
@@ -48,7 +51,13 @@ export function UploadSection({
 	}
 
 	return (
-		<div className="bg-card rounded-lg p-4 sm:p-6 border">
+		<div
+			className={`rounded-lg p-4 sm:p-6 border transition-opacity ${
+				disabled
+					? 'bg-muted/50 opacity-60 pointer-events-none'
+					: 'bg-card'
+			}`}
+		>
 			{/* Section Header */}
 			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-4">
 				<h2 className="text-lg sm:text-xl font-bold text-foreground">
@@ -56,7 +65,7 @@ export function UploadSection({
 				</h2>
 				<Button
 					onClick={handleUploadClick}
-					disabled={isUploading}
+					disabled={isUploading || disabled}
 					className="px-3 sm:px-4 py-2 rounded-md flex items-center justify-center gap-2 transition-colors w-full sm:w-auto"
 				>
 					<Upload className="h-4 w-4" />

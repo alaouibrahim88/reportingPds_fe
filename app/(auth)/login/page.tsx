@@ -72,7 +72,7 @@ export default function LoginPage() {
       if (result.access_token) {
         const expiresInSeconds = parseInt(result.expires_in);
         setCookieValue('access_token', result.access_token, { maxAge: expiresInSeconds });
-
+        await setCookieValue('username', username, { maxAge: expiresInSeconds });
         router.push('/');
       } else {
         setError(
