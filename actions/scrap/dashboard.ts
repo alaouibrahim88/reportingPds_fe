@@ -44,12 +44,15 @@ export const fetchGlobalScrap = async ({
   }
 };
 
-export const fetchWeeklyScrap = async (week: number): Promise<any> => {
+export const fetchWeeklyScrap = async (week: number, year?: number): Promise<any> => {
   try {
     const token = await getCookieValue("access_token");
     console.log('^fetchZeeklyScrqp token', token);
     const url = new URL(`${process.env.NEXT_PUBLIC_API_ENDPOINT}${Endpoints.scrap.statsPerWeek}`);
-    url.searchParams.append("week", week.toString() === '30' ? '1' : week.toString());
+    url.searchParams.append("week", week.toString());
+    if (year) {
+      url.searchParams.append("annee", year.toString());
+    }
     const response = await fetch(url.toString(), {
         method: "GET",
         headers: {

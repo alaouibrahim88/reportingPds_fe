@@ -13,11 +13,25 @@ import { zoneBarChartColors } from "@/constants/zoneBarChartColors";
 
 interface ZoneActivityProps {
   week: number;
+  year: number;
+  loading: boolean;
+  availableWeeks: number[];
+  availableYears: number[];
   data: ZoneDataType | undefined;
-  onChange: any;
+  onWeekChange: (week: number) => void;
+  onYearChange: (year: number) => void;
 }
 
-export function ZoneActivity({ week, data, onChange }: ZoneActivityProps) {
+export function ZoneActivity({
+  week,
+  year,
+  data,
+  loading,
+  availableWeeks,
+  availableYears,
+  onWeekChange,
+  onYearChange,
+}: ZoneActivityProps) {
   const zones = data?.currWeekData
     ?.slice(1)
     .map((item: weekData) => ({
@@ -45,36 +59,46 @@ export function ZoneActivity({ week, data, onChange }: ZoneActivityProps) {
     {/* lorem ipsum */}
   </span>
 </div>
-      <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+      <div className="flex items-start gap-2 text-xs text-muted-foreground mb-2">
         <svg className="w-3 h-3" viewBox="0 0 24 24">
           <path
             fill="currentColor"
             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        <span>Current Week  : </span>
-        <Select defaultValue="1" onValueChange={onChange}>
-          <SelectTrigger className="w-[98px] h-7 text-xs ml-2">
-            <SelectValue placeholder="Select week" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="1">W-01</SelectItem>
-            <SelectItem value="2">W-02</SelectItem>
-            <SelectItem value="3">W-03</SelectItem>
-            <SelectItem value="4">W-04</SelectItem>
-            <SelectItem value="5">W-05</SelectItem>
-            <SelectItem value="6">W-06</SelectItem>
-            <SelectItem value="7">W-07</SelectItem>
-            <SelectItem value="8">W-08</SelectItem>
-            <SelectItem value="9">W-09</SelectItem>
-            <SelectItem value="10">W-10</SelectItem>
-            <SelectItem value="11">W-11</SelectItem>
-            <SelectItem value="12">W-12</SelectItem>
-            <SelectItem value="13">W-13</SelectItem>
-            <SelectItem value="14">W-14</SelectItem>
-            <SelectItem value="15">W-15</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <span>Year :</span>
+            <Select value={year.toString()} onValueChange={(value) => onYearChange(Number(value))}>
+              <SelectTrigger className="w-[98px] h-7 text-xs">
+                <SelectValue placeholder="Select year" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableYears.map((yearOption) => (
+                  <SelectItem key={yearOption} value={yearOption.toString()}>
+                    {yearOption}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-2">
+            <span>Current Week :</span>
+            <Select value={week.toString()} onValueChange={(value) => onWeekChange(Number(value))}>
+              <SelectTrigger className="w-[98px] h-7 text-xs">
+                <SelectValue placeholder="Select week" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableWeeks.map((weekOption) => (
+                  <SelectItem key={weekOption} value={weekOption.toString()}>
+                    W-{weekOption.toString().padStart(2, "0")}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {loading && <span className="text-[11px] text-muted-foreground">Loading...</span>}
+          </div>
+        </div>
       </div>
 
       {/* Quick Stats */}
