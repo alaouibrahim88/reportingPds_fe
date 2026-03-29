@@ -56,7 +56,7 @@ export default function DashboardLayout({
 					}`}
 				>
 					<CategoryNavigationHeader variant={isProgramsPage ? "light" : "dark"} />
-					<div className="flex-1 overflow-auto">
+					<div className="flex-1 min-h-0 overflow-auto">
 						<div
 							className={isProgramsPage ? "text-slate-900" : "text-white"}
 						>
@@ -83,8 +83,8 @@ export default function DashboardLayout({
 					</div>
 				</header>
 				<Separator />
-				<div className="overflow-auto">
-					<div className="flex-1 text-foreground">{children}</div>
+				<div className="flex-1 min-h-0 overflow-auto">
+					<div className="min-h-full text-foreground">{children}</div>
 				</div>
 			</div>
 		</div>
