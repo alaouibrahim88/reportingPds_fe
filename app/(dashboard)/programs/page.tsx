@@ -19,12 +19,6 @@ import type {
 
 type TabType = "weekly" | "monthly";
 
-function getVarianceStatusColor(variance: number): string {
-	if (variance <= 0) return "green";
-	if (variance <= 5) return "orange";
-	return "red";
-}
-
 function getPercentStatusColor(value: number, target: number): string {
 	const pct = target ? (value / target) * 100 : 0;
 	if (pct >= 90) return "green";
@@ -69,12 +63,12 @@ function StatusPill({ status }: { status: string }) {
 }
 
 function KpiCircle({
-	value,
-	label,
-	isActive,
-	status,
-	target,
-}: {
+					   value,
+					   label,
+					   isActive,
+					   status,
+					   target,
+				   }: {
 	value: string;
 	label: string;
 	isActive: boolean;
@@ -122,6 +116,105 @@ function KpiCircle({
 	);
 }
 
+const MOCK_PROGRAM_DATA: ProgramApiResponse = {
+	Program_Semaine: {
+		On_Time_Delivery: {
+			Annee: 2026,
+			Semaine_Actuelle: 18,
+			Valeur_Actuelle: 92,
+			Target_Actuelle: 90,
+			Valeur_Semaine_Precedente: 90,
+			Variation_Vs_Semaine_Precedente: 2,
+			Historique_4_Semaines: [
+				{ Label: "W15", Annee: 2026, Semaine: 15, Valeur: 88 },
+				{ Label: "W16", Annee: 2026, Semaine: 16, Valeur: 90 },
+				{ Label: "W17", Annee: 2026, Semaine: 17, Valeur: 91 },
+				{ Label: "W18", Annee: 2026, Semaine: 18, Valeur: 92 },
+			],
+		},
+		Critical_Equipment_Availability: {
+			Annee: 2026,
+			Semaine_Actuelle: 18,
+			Valeur_Actuelle: 86,
+			Target_Actuelle: 90,
+			Valeur_Semaine_Precedente: 85,
+			Variation_Vs_Semaine_Precedente: 1,
+			Historique_4_Semaines: [
+				{ Label: "W15", Annee: 2026, Semaine: 15, Valeur: 83 },
+				{ Label: "W16", Annee: 2026, Semaine: 16, Valeur: 84 },
+				{ Label: "W17", Annee: 2026, Semaine: 17, Valeur: 85 },
+				{ Label: "W18", Annee: 2026, Semaine: 18, Valeur: 86 },
+			],
+		},
+		Recruitment_Progress: {
+			Annee: 2026,
+			Semaine_Actuelle: 18,
+			Valeur_Actuelle_Reel: 24,
+			Valeur_Actuelle_Forecast: 30,
+			Valeur_Actuelle_Pct: 80,
+			Variation_Pct_Vs_Semaine_Precedente: 4,
+			Variation_Reel_Vs_Semaine_Precedente: 2,
+			Total_Hires_MTD: 48,
+			Total_Forecast_MTD: 60,
+			Target_Hebdo_Forecast: 30,
+			Historique_4_Semaines: [
+				{ Label: "W15", Annee: 2026, Semaine: 15, Reel: 20, Forecast: 28, Pct: 71 },
+				{ Label: "W16", Annee: 2026, Semaine: 16, Reel: 22, Forecast: 29, Pct: 76 },
+				{ Label: "W17", Annee: 2026, Semaine: 17, Reel: 23, Forecast: 30, Pct: 77 },
+				{ Label: "W18", Annee: 2026, Semaine: 18, Reel: 24, Forecast: 30, Pct: 80 },
+			],
+		},
+	},
+	Program_Mois: {
+		Budget_Vs_Actual: {
+			Variance_Mois_Courant: -18000,
+			Delta_Variance_Vs_M_1: -6000,
+			Target_Variance: 0,
+			Current_Health: "At Risk",
+			Historique_4_Mois: [
+				{ Label: "JAN", Mois: 1, Annee: 2026, Variance: -12000, Budget: 120000, Actual: 132000 },
+				{ Label: "FEB", Mois: 2, Annee: 2026, Variance: -8000, Budget: 118000, Actual: 126000 },
+				{ Label: "MAR", Mois: 3, Annee: 2026, Variance: -14000, Budget: 125000, Actual: 139000 },
+				{ Label: "APR", Mois: 4, Annee: 2026, Variance: -18000, Budget: 130000, Actual: 148000 },
+			],
+		},
+		APQP_Milestones: {
+			Valeur_Mois_Courant: 86,
+			Delta_Pts_Vs_M_1: 2,
+			Target: 100,
+			Current_Health: "At Risk",
+			Historique_4_Mois: [
+				{ Label: "JAN", Mois: 1, Annee: 2026, Valeur: 80, Target: 100 },
+				{ Label: "FEB", Mois: 2, Annee: 2026, Valeur: 82, Target: 100 },
+				{ Label: "MAR", Mois: 3, Annee: 2026, Valeur: 84, Target: 100 },
+				{ Label: "APR", Mois: 4, Annee: 2026, Valeur: 86, Target: 100 },
+			],
+		},
+		Documentation_Progress: {
+			Readiness_Mois_Courant: 78,
+			Delta_Pts_Vs_M_1: 3,
+			Target: 100,
+			Current_Health: "At Risk",
+			Plans: 82,
+			Procedures: 76,
+			Work_Inst: 74,
+			Historique_4_Mois: [
+				{ Label: "JAN", Mois: 1, Annee: 2026, Valeur: 70, Target: 100 },
+				{ Label: "FEB", Mois: 2, Annee: 2026, Valeur: 73, Target: 100 },
+				{ Label: "MAR", Mois: 3, Annee: 2026, Valeur: 75, Target: 100 },
+				{ Label: "APR", Mois: 4, Annee: 2026, Valeur: 78, Target: 100 },
+			],
+			Trend_Hebdo_Mois: [
+				{ Label: "W15", Annee: 2026, Semaine: 15, Valeur: 70 },
+				{ Label: "W16", Annee: 2026, Semaine: 16, Valeur: 74 },
+				{ Label: "W17", Annee: 2026, Semaine: 17, Valeur: 76 },
+				{ Label: "W18", Annee: 2026, Semaine: 18, Valeur: 78 },
+			],
+			Average_Hebdo_Mois: 4,
+		},
+	},
+};
+
 export default function ProgramsPage() {
 	const { type: activeTab, setType: setActiveTab, period, setPeriod, year, setYear } =
 		useKpiPeriod('weekly');
@@ -130,8 +223,15 @@ export default function ProgramsPage() {
 	);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+	const [useMockData, setUseMockData] = useState(false);
 
 	useEffect(() => {
+		if (useMockData) {
+			setProgramData(MOCK_PROGRAM_DATA);
+			setLoading(false);
+			setError(null);
+			return;
+		}
 		async function fetchProgram() {
 			setLoading(true);
 			setError(null);
@@ -153,7 +253,7 @@ export default function ProgramsPage() {
 			}
 		}
 		fetchProgram();
-	}, [activeTab, period, year]);
+	}, [activeTab, period, year, useMockData]);
 
 	const weeklyData = programData?.Program_Semaine ?? null;
 	const monthlyData = programData?.Program_Mois ?? null;
@@ -308,42 +408,42 @@ export default function ProgramsPage() {
 								<div className="flex justify-between">
 									{otdHistory.length
 										? otdHistory.map(
-												(
-													h: ProgramHistoriqueSemaine,
-													i: number
-												) => {
-													const isLast =
-														i === otdHistory.length - 1;
-													const val = h.Valeur ?? 0;
-													const st = getPercentStatusColor(
-														val,
-														90
-													);
-													return (
-														<KpiCircle
-															key={`otd-${h.Semaine}`}
-															value={`${val}%`}
-															label={
-																h.Label ??
-																`W${h.Semaine}`
-															}
-															isActive={isLast}
-															status={st}
-															target="90%"
-														/>
-													);
-												}
-											)
+											(
+												h: ProgramHistoriqueSemaine,
+												i: number
+											) => {
+												const isLast =
+													i === otdHistory.length - 1;
+												const val = h.Valeur ?? 0;
+												const st = getPercentStatusColor(
+													val,
+													90
+												);
+												return (
+													<KpiCircle
+														key={`otd-${h.Semaine}`}
+														value={`${val}%`}
+														label={
+															h.Label ??
+															`W${h.Semaine}`
+														}
+														isActive={isLast}
+														status={st}
+														target="90%"
+													/>
+												);
+											}
+										)
 										: [37, 38, 39, 40].map((w) => (
-												<KpiCircle
-													key={w}
-													value="—"
-													label={`W${w}`}
-													isActive={false}
-													status="green"
-													target="90%"
-												/>
-											))}
+											<KpiCircle
+												key={w}
+												value="—"
+												label={`W${w}`}
+												isActive={false}
+												status="green"
+												target="90%"
+											/>
+										))}
 								</div>
 							</div>
 							<div className="lg:col-span-8">
@@ -414,42 +514,42 @@ export default function ProgramsPage() {
 								<div className="flex justify-between">
 									{equipHistory.length
 										? equipHistory.map(
-												(
-													h: ProgramHistoriqueSemaine,
-													i: number
-												) => {
-													const isLast =
-														i === equipHistory.length - 1;
-													const val = h.Valeur ?? 0;
-													const st = getPercentStatusColor(
-														val,
-														90
-													);
-													return (
-														<KpiCircle
-															key={`equip-${h.Semaine}`}
-															value={`${val}%`}
-															label={
-																h.Label ??
-																`W${h.Semaine}`
-															}
-															isActive={isLast}
-															status={st}
-															target="90%"
-														/>
-													);
-												}
-											)
+											(
+												h: ProgramHistoriqueSemaine,
+												i: number
+											) => {
+												const isLast =
+													i === equipHistory.length - 1;
+												const val = h.Valeur ?? 0;
+												const st = getPercentStatusColor(
+													val,
+													90
+												);
+												return (
+													<KpiCircle
+														key={`equip-${h.Semaine}`}
+														value={`${val}%`}
+														label={
+															h.Label ??
+															`W${h.Semaine}`
+														}
+														isActive={isLast}
+														status={st}
+														target="90%"
+													/>
+												);
+											}
+										)
 										: [37, 38, 39, 40].map((w) => (
-												<KpiCircle
-													key={w}
-													value="—"
-													label={`W${w}`}
-													isActive={false}
-													status="green"
-													target="90%"
-												/>
-											))}
+											<KpiCircle
+												key={w}
+												value="—"
+												label={`W${w}`}
+												isActive={false}
+												status="green"
+												target="90%"
+											/>
+										))}
 								</div>
 							</div>
 							<div className="lg:col-span-8">
@@ -515,41 +615,41 @@ export default function ProgramsPage() {
 								<div className="flex justify-between">
 									{recruitHistory.length
 										? recruitHistory.map(
-												(h: any, i: number) => {
-													const isLast =
-														i === recruitHistory.length - 1;
-													const pct = h.Pct ?? 0;
-													const st =
-														pct >= 90
-															? "green"
-															: pct >= 70
-																? "orange"
-																: "red";
-													return (
-														<KpiCircle
-															key={`recruit-${h.Semaine}`}
-															value={`${h.Reel ?? 0}/${h.Forecast ?? 0}`}
-															label={
-																h.Label ??
-																`W${h.Semaine}`
-															}
-															isActive={isLast}
-															status={st}
-															target={`${h.Forecast ?? 0}`}
-														/>
-													);
-												}
-											)
+											(h: any, i: number) => {
+												const isLast =
+													i === recruitHistory.length - 1;
+												const pct = h.Pct ?? 0;
+												const st =
+													pct >= 90
+														? "green"
+														: pct >= 70
+															? "orange"
+															: "red";
+												return (
+													<KpiCircle
+														key={`recruit-${h.Semaine}`}
+														value={`${h.Reel ?? 0}/${h.Forecast ?? 0}`}
+														label={
+															h.Label ??
+															`W${h.Semaine}`
+														}
+														isActive={isLast}
+														status={st}
+														target={`${h.Forecast ?? 0}`}
+													/>
+												);
+											}
+										)
 										: [37, 38, 39, 40].map((w) => (
-												<KpiCircle
-													key={w}
-													value="—"
-													label={`W${w}`}
-													isActive={false}
-													status="green"
-													target="—"
-												/>
-											))}
+											<KpiCircle
+												key={w}
+												value="—"
+												label={`W${w}`}
+												isActive={false}
+												status="green"
+												target="—"
+											/>
+										))}
 								</div>
 							</div>
 							<div className="lg:col-span-8">
@@ -578,7 +678,7 @@ export default function ProgramsPage() {
 													const x =
 														(i /
 															(recruitHistory.length - 1)) *
-															440 +
+														440 +
 														30;
 													const y =
 														80 -
@@ -591,7 +691,7 @@ export default function ProgramsPage() {
 													const x =
 														(i /
 															(recruitHistory.length - 1)) *
-															440 +
+														440 +
 														30;
 													const y =
 														80 -
@@ -633,12 +733,12 @@ export default function ProgramsPage() {
 																(i /
 																	(recruitHistory.length -
 																		1)) *
-																	440 +
+																440 +
 																30;
 															const y =
 																80 -
 																((h.Reel ?? 0) / maxVal) *
-																	60;
+																60;
 															return (
 																<circle
 																	key={i}
@@ -684,6 +784,8 @@ export default function ProgramsPage() {
 				? `+$${Math.round(Math.abs(v) / 1000)}k`
 				: `-$${Math.round(Math.abs(v) / 1000)}k`;
 
+		const moneyToK = (v: number) => `$${Math.round(Math.abs(v) / 1000)}k`;
+
 		if (!data) {
 			return (
 				<div className="rounded-xl bg-slate-50 border border-slate-200 p-10 text-center">
@@ -702,21 +804,21 @@ export default function ProgramsPage() {
 		const budgetHealthCfg =
 			budgetHealth === "On Track"
 				? {
-						text: "text-emerald-700",
-						bg: "bg-emerald-50",
-						dot: "bg-emerald-500",
-					}
+					text: "text-emerald-700",
+					bg: "bg-emerald-50",
+					dot: "bg-emerald-500",
+				}
 				: budgetHealth === "At Risk"
 					? {
-							text: "text-amber-700",
-							bg: "bg-amber-50",
-							dot: "bg-amber-500",
-						}
+						text: "text-amber-700",
+						bg: "bg-amber-50",
+						dot: "bg-amber-500",
+					}
 					: {
-							text: "text-slate-600",
-							bg: "bg-slate-50",
-							dot: "bg-slate-400",
-						};
+						text: "text-slate-600",
+						bg: "bg-slate-50",
+						dot: "bg-slate-400",
+					};
 
 		return (
 			<div className="space-y-6">
@@ -728,12 +830,12 @@ export default function ProgramsPage() {
 								<FaMoneyBillWave className="text-primary text-xl" />
 							</div>
 							<div>
-								<h2 className="text-lg font-bold text-slate-900">
+								<h2 className="text-xl font-bold text-slate-900">
 									Budget vs Actual (CAPEX/OPEX)
 								</h2>
 								<div className="flex items-center gap-2 mt-0.5">
 									<span
-										className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold ${budgetHealthCfg.bg} ${budgetHealthCfg.text}`}
+										className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-sm font-bold ${budgetHealthCfg.bg} ${budgetHealthCfg.text}`}
 									>
 										<span
 											className={`w-1.5 h-1.5 rounded-full ${budgetHealthCfg.dot}`}
@@ -741,13 +843,10 @@ export default function ProgramsPage() {
 										{budgetHealth}
 									</span>
 									{budget && (
-										<span className="text-xs text-slate-500">
-											Variance{" "}
-											{varianceToK(
-												budget.Variance_Mois_Courant ?? 0
-											)}{" "}
-											vs target{" "}
-											{varianceToK(budget.Target_Variance ?? 0)}
+										<span className="text-sm text-slate-500">
+											Variance {varianceToK(budget.Variance_Mois_Courant ?? 0)}
+											{" "}
+											vs target {varianceToK(budget.Target_Variance ?? 0)}
 										</span>
 									)}
 								</div>
@@ -756,91 +855,127 @@ export default function ProgramsPage() {
 					</div>
 					<div className="grid grid-cols-12 gap-6 p-6">
 						<div className="col-span-12 lg:col-span-5 space-y-6">
-							<p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+							<p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
 								Historical Performance
 							</p>
 							<div className="flex justify-between items-center gap-2 px-2">
 								{historiqueBudget.length
 									? historiqueBudget.map(
-											(h: ProgramHistoriqueMois, i: number) => {
-												const isLast =
-													i === historiqueBudget.length - 1;
-												const variance = h.Variance ?? 0;
-												const st = getVarianceStatusColor(variance);
-												const borderCls =
-													st === "green"
-														? "border-emerald-400"
-														: st === "orange"
-															? "border-amber-400"
-															: "border-red-400";
-												const bgCls = isLast
-													? "ring-4 ring-primary/10"
-													: "";
-												const labelCls = isLast
-													? "text-primary"
-													: "text-slate-500";
-												const dv = varianceToK(variance);
-												return (
+										(h: ProgramHistoriqueMois, i: number) => {
+											const isLast =
+												i === historiqueBudget.length - 1;
+											const labelCls = isLast
+												? "text-primary font-black"
+												: "text-slate-500";
+											const budgetVal = moneyToK(h.Budget ?? 0);
+											const actualVal = moneyToK(h.Actual ?? 0);
+											const maxMonthVal = Math.max(
+												h.Budget ?? 0,
+												h.Actual ?? 0,
+												1
+											);
+											const maxBarHeight = isLast ? 52 : 40;
+											const budgetHeight = Math.max(
+												8,
+												Math.round(((h.Budget ?? 0) / maxMonthVal) * maxBarHeight)
+											);
+											const actualHeight = Math.max(
+												8,
+												Math.round(((h.Actual ?? 0) / maxMonthVal) * maxBarHeight)
+											);
+											return (
+												<div
+													key={`${h.Mois}-${h.Annee}`}
+													className="flex flex-col items-center gap-1"
+												>
+													<span className={`text-xs font-semibold ${isLast ? "text-primary" : "text-slate-400"}`}>
+														T: $0k
+													</span>
 													<div
-														key={`${h.Mois}-${h.Annee}`}
-														className="flex flex-col items-center gap-1"
+														className={`rounded-xl flex items-end justify-center transition-all ${
+															isLast
+																? "w-32 h-24 bg-primary/5 shadow-md shadow-primary/10"
+																: "w-24 h-20"
+														}`}
 													>
-														<span className="text-[10px] text-slate-400 font-semibold">
-															T: $0k
-														</span>
-														<div
-															className={`w-14 h-14 rounded-full border-2 ${borderCls} flex items-center justify-center ${bgCls}`}
-														>
-															<span className="text-xs font-bold text-slate-600">
-																{dv}
-															</span>
+														<div className="flex items-end gap-3 pb-1">
+															<div className="flex flex-col items-center gap-1">
+																<div
+																	className={`rounded-sm ${isLast ? "w-12 bg-slate-400" : "w-12 bg-slate-300"}`}
+																	style={{ height: budgetHeight }}
+																/>
+																<span className={`font-bold text-slate-600 ${isLast ? "text-xs" : "text-[11px]"}`}>
+																	{budgetVal}
+																</span>
+															</div>
+															<div className="flex flex-col items-center gap-1">
+																<div
+																	className="rounded-sm bg-primary w-12"
+																	style={{ height: actualHeight }}
+																/>
+																<span className={`font-bold ${isLast ? "text-xs text-primary" : "text-[11px] text-slate-600"}`}>
+																	{actualVal}
+																</span>
+															</div>
 														</div>
-														<p
-															className={`text-[10px] font-bold ${labelCls}`}
-														>
-															{(h.Label ?? "").toUpperCase()}
-														</p>
 													</div>
-												);
-											}
-										)
-								: [1, 2, 3, 4].map((i) => (
+													<p
+														className={`text-xs font-bold ${labelCls}`}
+													>
+														{(h.Label ?? "").toUpperCase()}
+													</p>
+												</div>
+											)
+										}
+									)
+									: [1, 2, 3, 4].map((i) => (
 										<div
 											key={i}
 											className="flex flex-col items-center gap-1"
 										>
-											<span className="text-[10px] text-slate-300 font-semibold">
+											<span className="text-xs text-slate-300 font-semibold">
 												T: $0k
 											</span>
-											<div className="w-14 h-14 rounded-full border-2 border-slate-200 flex items-center justify-center">
-												<span className="text-xs font-bold text-slate-300">
-													—
-												</span>
+											<div className="w-24 h-20 rounded-xl flex items-end justify-center">
+												<div className="flex items-end gap-3 pb-1">
+													<div className="flex flex-col items-center gap-1">
+														<div className="w-6 h-8 rounded-sm bg-slate-200" />
+														<span className="text-[11px] font-bold text-slate-300">
+															—
+														</span>
+													</div>
+													<div className="flex flex-col items-center gap-1">
+														<div className="w-6 h-8 rounded-sm bg-slate-200" />
+														<span className="text-[11px] font-bold text-slate-300">
+															—
+														</span>
+													</div>
+												</div>
 											</div>
-											<p className="text-[10px] font-bold text-slate-300">
+											<p className="text-xs font-bold text-slate-300">
 												—
 											</p>
 										</div>
 									))}
+							</div>
 						</div>
-					</div>
-					<div className="col-span-12 lg:col-span-7 border-l border-slate-100 lg:pl-8">
-						<div className="flex items-center justify-between mb-3">
-							<p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-								Monthly Spend Trend
+						<div className="col-span-12 lg:col-span-7 border-l border-slate-100 lg:pl-8">
+							<div className="flex items-center justify-between mb-3">
+								<p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+									Monthly Spend Trend
 								</p>
 								<div className="flex gap-4">
-									<span className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500">
-										<span className="w-3 h-0.5 border-t border-dashed border-slate-400 inline-block" />
+									<span className="flex items-center gap-1.5 text-xs font-bold text-slate-500">
+										<span className="w-3 h-0.5 border-t border-slate-400 inline-block" />
 										BUDGET
 									</span>
-									<span className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500">
+									<span className="flex items-center gap-1.5 text-xs font-bold text-slate-500">
 										<span className="w-3 h-0.5 bg-primary inline-block rounded-full" />
 										ACTUAL
 									</span>
 								</div>
 							</div>
-							<div className="h-44">
+							<div className="h-36">
 								<svg
 									className="w-full h-full overflow-visible"
 									viewBox="0 0 400 100"
@@ -857,7 +992,7 @@ export default function ProgramsPage() {
 										const bp = historiqueBudget.map((h, i) => {
 											const x =
 												(i / (historiqueBudget.length - 1)) *
-													350 +
+												350 +
 												25;
 											const y =
 												90 - ((h.Budget ?? 0) / maxVal) * 70;
@@ -866,7 +1001,7 @@ export default function ProgramsPage() {
 										const ap = historiqueBudget.map((h, i) => {
 											const x =
 												(i / (historiqueBudget.length - 1)) *
-													350 +
+												350 +
 												25;
 											const y =
 												90 - ((h.Actual ?? 0) / maxVal) * 70;
@@ -889,20 +1024,37 @@ export default function ProgramsPage() {
 													points={bp.join(" ")}
 													fill="none"
 													stroke="#cbd5e1"
-													strokeDasharray="5 3"
+													strokeLinecap="round"
 													strokeWidth="1.5"
 												/>
 												<polyline
 													points={ap.join(" ")}
 													fill="none"
-													stroke="#0d7ff2"
+													stroke="#043f76"
 													strokeLinecap="round"
-													strokeWidth="2.5"
+													strokeWidth="1.5"
 												/>
 												{historiqueBudget.map((h, i) => {
 													const x =
 														(i / (historiqueBudget.length - 1)) *
-															350 +
+														350 +
+														25;
+													const y =
+														90 - ((h.Budget ?? 0) / maxVal) * 70;
+													return (
+														<circle
+															key={i}
+															cx={x}
+															cy={y}
+															r="2"
+															fill="#cbd5e1"
+														/>
+													);
+												})}
+												{historiqueBudget.map((h, i) => {
+													const x =
+														(i / (historiqueBudget.length - 1)) *
+														350 +
 														25;
 													const y =
 														90 - ((h.Actual ?? 0) / maxVal) * 70;
@@ -911,8 +1063,8 @@ export default function ProgramsPage() {
 															key={i}
 															cx={x}
 															cy={y}
-															r="4"
-															fill="#0d7ff2"
+															r="2"
+															fill="#043f76"
 														/>
 													);
 												})}
@@ -920,16 +1072,19 @@ export default function ProgramsPage() {
 										);
 									})()}
 								</svg>
-								<div className="flex justify-between mt-2 text-[10px] font-bold text-slate-400">
+								<div className="flex justify-between mt-2 text-xs font-bold text-slate-400">
 									{historiqueBudget.length
-										? historiqueBudget.map((h) => (
-												<span key={`${h.Mois}-${h.Annee}`}>
-													{(h.Label ?? "").toUpperCase()}
-												</span>
-											))
+										? historiqueBudget.map((h, i) => (
+											<span
+												key={`${h.Mois}-${h.Annee}`}
+												className={i === historiqueBudget.length - 1 ? "text-primary font-black" : ""}
+											>
+												{(h.Label ?? "").toUpperCase()}
+											</span>
+										))
 										: ["JAN", "FEB", "MAR", "APR"].map((l) => (
-												<span key={l}>{l}</span>
-											))}
+											<span key={l}>{l}</span>
+										))}
 								</div>
 							</div>
 						</div>
@@ -944,7 +1099,7 @@ export default function ProgramsPage() {
 								<FaSitemap className="text-violet-600 text-xl" />
 							</div>
 							<div>
-								<h2 className="text-lg font-bold text-slate-900">
+								<h2 className="text-xl font-bold text-slate-900">
 									Planning vs Forecast (APQP Milestones)
 								</h2>
 								<p className="text-xs text-slate-500">
@@ -968,55 +1123,59 @@ export default function ProgramsPage() {
 					</div>
 					<div className="grid grid-cols-12 gap-6 p-6">
 						<div className="col-span-12 lg:col-span-5 space-y-6">
-							<p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+							<p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
 								Milestone Adherence
 							</p>
 							<div className="flex justify-between items-center gap-2 px-2">
 								{(apqp?.Historique_4_Mois ?? []).length
 									? (apqp?.Historique_4_Mois ?? []).map(
-											(h: ProgramHistoriqueMois, i: number) => {
-												const isLast =
-													i ===
-													(apqp?.Historique_4_Mois?.length ?? 1) -
-														1;
-												const val = h.Valeur ?? 0;
-												const st = getPercentStatusColor(val, 100);
-												const borderCls =
-													st === "green"
-														? "border-emerald-400"
-														: st === "orange"
-															? "border-amber-400"
-															: "border-red-400";
-												return (
+										(h: ProgramHistoriqueMois, i: number) => {
+											const isLast =
+												i ===
+												(apqp?.Historique_4_Mois?.length ?? 1) -
+												1;
+											const val = h.Valeur ?? 0;
+											const st = getPercentStatusColor(val, 100);
+											const borderCls =
+												st === "green"
+													? "border-emerald-400"
+													: st === "orange"
+														? "border-amber-400"
+														: "border-red-400";
+											return (
+												<div
+													key={`apqp-${h.Mois}-${h.Annee}`}
+													className="flex flex-col items-center gap-1"
+												>
+													<span className={`text-xs font-semibold ${isLast ? "text-violet-600" : "text-slate-400"}`}>
+														T: 100%
+													</span>
 													<div
-														key={`apqp-${h.Mois}-${h.Annee}`}
-														className="flex flex-col items-center gap-1"
+														className={`rounded-full border-2 flex items-center justify-center transition-all ${
+															isLast
+																? "w-20 h-20 border-violet-500 bg-violet-50 shadow-md shadow-violet-100"
+																: `w-14 h-14 ${borderCls}`
+														}`}
 													>
-														<span className="text-[10px] text-slate-400 font-semibold">
-															T: 100%
+														<span className={`font-bold ${isLast ? "text-sm text-violet-700" : "text-xs text-slate-600"}`}>
+															{Math.round(val)}%
 														</span>
-														<div
-															className={`w-14 h-14 rounded-full border-2 ${borderCls} flex items-center justify-center ${isLast ? "ring-4 ring-violet-100" : ""}`}
-														>
-															<span className="text-xs font-bold text-slate-600">
-																{Math.round(val)}%
-															</span>
-														</div>
-														<p
-															className={`text-[10px] font-bold ${isLast ? "text-violet-600" : "text-slate-500"}`}
-														>
-															{(h.Label ?? "").toUpperCase()}
-														</p>
 													</div>
-												);
-											}
-										)
-								: [1, 2, 3, 4].map((i) => (
+													<p
+														className={`text-xs font-bold ${isLast ? "text-violet-600" : "text-slate-500"}`}
+													>
+														{(h.Label ?? "").toUpperCase()}
+													</p>
+												</div>
+											);
+										}
+									)
+									: [1, 2, 3, 4].map((i) => (
 										<div
 											key={i}
 											className="flex flex-col items-center gap-1"
 										>
-											<span className="text-[10px] text-slate-300 font-semibold">
+											<span className="text-xs text-slate-300 font-semibold">
 												T: 100%
 											</span>
 											<div className="w-14 h-14 rounded-full border-2 border-slate-200 flex items-center justify-center">
@@ -1024,13 +1183,13 @@ export default function ProgramsPage() {
 													—
 												</span>
 											</div>
-											<p className="text-[10px] font-bold text-slate-300">
+											<p className="text-xs font-bold text-slate-300">
 												—
 											</p>
 										</div>
 									))}
-						</div>
-						<div className="p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs text-slate-500">
+							</div>
+							<div className="p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs text-slate-500">
 								{apqp
 									? `Delta: ${(apqp.Delta_Pts_Vs_M_1 ?? 0) >= 0 ? "+" : ""}${apqp.Delta_Pts_Vs_M_1 ?? 0} pts vs M-1`
 									: "No data available."}
@@ -1038,15 +1197,15 @@ export default function ProgramsPage() {
 						</div>
 						<div className="col-span-12 lg:col-span-7 border-l border-slate-100 lg:pl-8">
 							<div className="flex items-center justify-between mb-3">
-								<p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+								<p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
 									Completion Rate
 								</p>
 								<div className="flex gap-4">
-									<span className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500">
+									<span className="flex items-center gap-1.5 text-xs font-bold text-slate-500">
 										<span className="w-3 h-0.5 border-t border-dashed border-slate-400 inline-block" />
 										TARGET
 									</span>
-									<span className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500">
+									<span className="flex items-center gap-1.5 text-xs font-bold text-slate-500">
 										<span className="w-3 h-0.5 bg-red-400 inline-block rounded-full" />
 										ACTUAL
 									</span>
@@ -1115,7 +1274,7 @@ export default function ProgramsPage() {
 													const y =
 														90 -
 														(((h.Valeur ?? 0) - minVal) / range) *
-															70;
+														70;
 													return (
 														<circle
 															key={i}
@@ -1130,16 +1289,19 @@ export default function ProgramsPage() {
 										);
 									})()}
 								</svg>
-								<div className="flex justify-between mt-2 text-[10px] font-bold text-slate-400">
+								<div className="flex justify-between mt-2 text-xs font-bold text-slate-400">
 									{(apqp?.Historique_4_Mois ?? []).length
-										? (apqp?.Historique_4_Mois ?? []).map((h) => (
-												<span key={`apqp-lbl-${h.Mois}-${h.Annee}`}>
-													{(h.Label ?? "").toUpperCase()}
-												</span>
-											))
+										? (apqp?.Historique_4_Mois ?? []).map((h, i) => (
+											<span
+												key={`apqp-lbl-${h.Mois}-${h.Annee}`}
+												className={i === (apqp?.Historique_4_Mois?.length ?? 1) - 1 ? "text-violet-600 font-black" : ""}
+											>
+												{(h.Label ?? "").toUpperCase()}
+											</span>
+										))
 										: ["JAN", "FEB", "MAR", "APR"].map((l) => (
-												<span key={l}>{l}</span>
-											))}
+											<span key={l}>{l}</span>
+										))}
 								</div>
 							</div>
 						</div>
@@ -1153,63 +1315,67 @@ export default function ProgramsPage() {
 							<div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
 								<FaBook className="text-emerald-600 text-xl" />
 							</div>
-							<h2 className="text-lg font-bold text-slate-900">
+							<h2 className="text-xl font-bold text-slate-900">
 								Documentation Progress
 							</h2>
 						</div>
 					</div>
 					<div className="grid grid-cols-12 gap-6 p-6">
 						<div className="col-span-12 lg:col-span-5 space-y-6">
-							<p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+							<p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
 								Historical Readiness
 							</p>
 							<div className="flex justify-between items-center gap-2 px-2">
 								{(documentation?.Historique_4_Mois ?? []).length
 									? (documentation?.Historique_4_Mois ?? []).map(
-											(h: ProgramHistoriqueMois, i: number) => {
-												const isLast =
-													i ===
-													(documentation?.Historique_4_Mois
-														?.length ?? 1) -
-														1;
-												const val = h.Valeur ?? 0;
-												const st = getPercentStatusColor(val, 100);
-												const borderCls =
-													st === "green"
-														? "border-emerald-400"
-														: st === "orange"
-															? "border-amber-400"
-															: "border-red-400";
-												return (
+										(h: ProgramHistoriqueMois, i: number) => {
+											const isLast =
+												i ===
+												(documentation?.Historique_4_Mois
+													?.length ?? 1) -
+												1;
+											const val = h.Valeur ?? 0;
+											const st = getPercentStatusColor(val, 100);
+											const borderCls =
+												st === "green"
+													? "border-emerald-400"
+													: st === "orange"
+														? "border-amber-400"
+														: "border-red-400";
+											return (
+												<div
+													key={`doc-${h.Mois}-${h.Annee}`}
+													className="flex flex-col items-center gap-1"
+												>
+													<span className={`text-xs font-semibold ${isLast ? "text-emerald-600" : "text-slate-400"}`}>
+														T: 100%
+													</span>
 													<div
-														key={`doc-${h.Mois}-${h.Annee}`}
-														className="flex flex-col items-center gap-1"
+														className={`rounded-full border-2 flex items-center justify-center transition-all ${
+															isLast
+																? "w-20 h-20 border-emerald-500 bg-emerald-50 shadow-md shadow-emerald-100"
+																: `w-14 h-14 ${borderCls}`
+														}`}
 													>
-														<span className="text-[10px] text-slate-400 font-semibold">
-															T: 100%
+														<span className={`font-bold ${isLast ? "text-sm text-emerald-700" : "text-xs text-slate-600"}`}>
+															{Math.round(val)}%
 														</span>
-														<div
-															className={`w-14 h-14 rounded-full border-2 ${borderCls} flex items-center justify-center ${isLast ? "ring-4 ring-emerald-100" : ""}`}
-														>
-															<span className="text-xs font-bold text-slate-600">
-																{Math.round(val)}%
-															</span>
-														</div>
-														<p
-															className={`text-[10px] font-bold ${isLast ? "text-emerald-600" : "text-slate-500"}`}
-														>
-															{(h.Label ?? "").toUpperCase()}
-														</p>
 													</div>
-												);
-											}
-										)
-								: [1, 2, 3, 4].map((i) => (
+													<p
+														className={`text-xs font-bold ${isLast ? "text-emerald-600" : "text-slate-500"}`}
+													>
+														{(h.Label ?? "").toUpperCase()}
+													</p>
+												</div>
+											);
+										}
+									)
+									: [1, 2, 3, 4].map((i) => (
 										<div
 											key={i}
 											className="flex flex-col items-center gap-1"
 										>
-											<span className="text-[10px] text-slate-300 font-semibold">
+											<span className="text-xs text-slate-300 font-semibold">
 												T: 100%
 											</span>
 											<div className="w-14 h-14 rounded-full border-2 border-slate-200 flex items-center justify-center">
@@ -1217,45 +1383,16 @@ export default function ProgramsPage() {
 													—
 												</span>
 											</div>
-											<p className="text-[10px] font-bold text-slate-300">
+											<p className="text-xs font-bold text-slate-300">
 												—
 											</p>
 										</div>
 									))}
-						</div>
-						{/* Breakdown pills */}
-							<div className="grid grid-cols-3 gap-3 pt-1">
-								{[
-									{
-										label: "Plans",
-										val: documentation?.Plans ?? "—",
-									},
-									{
-										label: "Procedures",
-										val: documentation?.Procedures ?? "—",
-									},
-									{
-										label: "Work Inst.",
-										val: documentation?.Work_Inst ?? "—",
-									},
-								].map((item) => (
-									<div
-										key={item.label}
-										className="p-3 rounded-xl bg-slate-50 border border-slate-100 text-center"
-									>
-										<p className="text-[10px] font-bold text-slate-400 uppercase mb-1">
-											{item.label}
-										</p>
-										<p className="text-lg font-black text-slate-800">
-											{item.val}%
-										</p>
-									</div>
-								))}
 							</div>
 						</div>
 						<div className="col-span-12 lg:col-span-7 border-l border-slate-100 lg:pl-8">
 							<div className="flex items-center justify-between mb-3">
-								<p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+								<p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
 									Approval Growth Trend
 								</p>
 								<span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
@@ -1339,18 +1476,18 @@ export default function ProgramsPage() {
 									})()}
 								</svg>
 							</div>
-							<div className="flex justify-between mt-2 text-[10px] font-bold text-slate-400">
+							<div className="flex justify-between mt-2 text-xs font-bold text-slate-400">
 								{(documentation?.Trend_Hebdo_Mois ?? []).length
 									? (documentation?.Trend_Hebdo_Mois ?? []).map(
-											(t: any) => (
-												<span key={t.Label}>
-													{t.Label?.toUpperCase() ?? ""}
-												</span>
-											)
+										(t: any) => (
+											<span key={t.Label}>
+												{t.Label?.toUpperCase() ?? ""}
+											</span>
 										)
+									)
 									: ["W14", "W15", "W16", "W17", "W18"].map((l) => (
-											<span key={l}>{l}</span>
-										))}
+										<span key={l}>{l}</span>
+									))}
 							</div>
 						</div>
 					</div>
@@ -1398,26 +1535,35 @@ export default function ProgramsPage() {
 				{/* Header */}
 				<div className="mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-6">
 					<div className="flex flex-wrap items-center gap-2 mt-2">
-							<span className="w-1 h-8 rounded-full bg-blue-500 block" />
-							<span className="text-xs font-bold uppercase tracking-widest text-blue-500">
-								Program KPI
-							</span>
-						</div>
-				<div className="flex flex-wrap items-center gap-3">
-					<PeriodSelector
-						type={activeTab}
-						period={period}
-						year={year}
-						onPeriodChange={setPeriod}
-						onYearChange={setYear}
-						variant="light"
-					/>
-					<TabSelector 
-					    activeTab={activeTab} 
-					    onTabChange={(tab) => setActiveTab(tab)}
-						variant="light"
-					/>
-				</div>
+						<span className="w-1 h-8 rounded-full bg-blue-500 block" />
+						<span className="text-xs font-bold uppercase tracking-widest text-blue-500">
+							Program KPI
+						</span>
+					</div>
+					<div className="flex flex-wrap items-center gap-3">
+						<PeriodSelector
+							type={activeTab}
+							period={period}
+							year={year}
+							onPeriodChange={setPeriod}
+							onYearChange={setYear}
+							variant="light"
+						/>
+						<TabSelector
+							activeTab={activeTab}
+							onTabChange={(tab) => setActiveTab(tab)}
+							variant="light"
+						/>
+						<label className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+							<input
+								type="checkbox"
+								className="h-4 w-4 accent-primary"
+								checked={useMockData}
+								onChange={(event) => setUseMockData(event.target.checked)}
+							/>
+							Mock data
+						</label>
+					</div>
 				</div>
 
 				{activeTab === "weekly" ? <WeeklyProgram /> : <MonthlyProgram />}
