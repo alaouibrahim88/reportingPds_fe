@@ -66,14 +66,12 @@ interface CollapsibleZoneTableProps {
   data: ApiResponse | null;
 }
 
-function flattenData(input: any[]) { // zone with no detail
+function flattenData(input: any[]) {
   const rows: any[] = [];
 
-  for (const section of input) { // each section (HEAD REST, BOOT...)
-    for (const cell of section.cells) { // each cell (Projet, Serie...)
-      for (const month of cell.months) { // each month (janvier, fevrier...)
-        
-        // Build dynamic weeks from array
+  for (const section of input) {
+    for (const cell of section.cells) {
+      for (const month of cell.months) {
         const weekData: Record<string, number> = {};
         for (const week of month.weeks) {
           weekData[`Week${week.weekNum}`] = week.value ?? 0;
@@ -85,7 +83,7 @@ function flattenData(input: any[]) { // zone with no detail
           Type: cell.type,
           Month: month.name,
           ...weekData,
-          Total: month.total
+          Total: month.total,
         });
       }
     }
@@ -117,7 +115,7 @@ function flattenDetailedData(input: any) {
           Week3: weeks["3"] ?? 0,
           Week4: weeks["4"] ?? 0,
           Week5: weeks["5"] ?? 0,
-          Total: monthData.total
+          Total: monthData.total,
         });
       }
     }
@@ -143,7 +141,6 @@ const CollapsibleZoneTable = ({
   const [months, setMonths] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Fetch data on component mount or when data prop changes
   useEffect(() => {
     const processData = async () => {
       try {
@@ -172,7 +169,6 @@ const CollapsibleZoneTable = ({
     processData();
   }, [data]);
 
-  // Process detailed data from getDetailsPerZone
   const processDetailedData = (zonesDetails: any[]) => {
     const result: Record<string, any> = {};
 
@@ -182,7 +178,6 @@ const CollapsibleZoneTable = ({
         cells: {},
       };
 
-      // Group details by cell and type
       const detailsArrayTab = Array.isArray(item?.details)
         ? item?.details
         : [item?.details];
@@ -204,7 +199,6 @@ const CollapsibleZoneTable = ({
           };
         }
 
-        // Add week data
         result[zoneName].cells[cellName].months[detail?.mois].weeks[
           detail?.semaine
         ] = detail?.couts;
@@ -214,14 +208,13 @@ const CollapsibleZoneTable = ({
     return result;
   };
 
-  // Helper functions
   const toggleZone = async (zone: ZoneKey) => {
     setExpandedZones((prev) => ({
       ...prev,
       [zone]: !prev[zone],
     }));
 
-    if(!detailedData[zone]) {
+    if (!detailedData[zone]) {
       const detailsResponse = await getZoneSubDetails(
         year,
         viewMode,
@@ -233,162 +226,123 @@ const CollapsibleZoneTable = ({
 
       if (detailsResponse) {
         const processedDetails = processDetailedData(zonesDetailsArray);
-        setDetailedData(prev => ({
+        setDetailedData((prev) => ({
           ...prev,
-          ...processedDetails
+          ...processedDetails,
         }));
       }
-
     }
-};
+  };
 
-const formatValue = (value: number) => {
-  return viewMode === "price" ? `${value} €` : value;
-};
+  const formatValue = (value: number) => {
+    return viewMode === "price" ? `${value} €` : value;
+  };
 
-// Component for table header
-const TableHeader = () => {
-  // Use the weeks per month from the first zone data
-  const weeksPerMonth =
-    zonesData.length > 0 ? zonesData[0].weeksPerMonth : {};
+  // Component for table header
+  const TableHeader = () => {
+    const weeksPerMonth =
+      zonesData.length > 0 ? zonesData[0].weeksPerMonth : {};
 
-  console.log("Weeks per month in header:", weeksPerMonth);
+    console.log("Weeks per month in header:", weeksPerMonth);
 
-  return (
-    <thead>
-      <tr>
-        <th
-          className="border p-1 text-xs font-medium text-muted-foreground"
-          colSpan={2}
-        >
-          NATURE
-        </th>
-        {months.map((month) => (
+    return (
+      <thead>
+        <tr>
           <th
-            key={month}
-            className="border p-1 text-center text-xs font-medium text-muted-foreground bg-muted/30"
-            colSpan={(weeksPerMonth[month]?.length || 0) + 1} // +1 for the total column
+            className="border p-1 text-xs font-medium text-muted-foreground"
+            colSpan={2}
           >
-            {month}
+            NATURE
           </th>
-        ))}
-      </tr>
-      <tr>
-        <th
-          className="border p-1 text-xs font-medium text-muted-foreground"
-          colSpan={2}
-        >Zone</th>
-        {months.flatMap((month) => [
-          ...(weeksPerMonth[month] || []).map((weekNum) => (
+          {months.map((month) => (
             <th
-              key={`wk${weekNum}`}
+              key={month}
+              className="border p-1 text-center text-xs font-medium text-muted-foreground bg-muted/30"
+              colSpan={(weeksPerMonth[month]?.length || 0) + 1}
+            >
+              {month}
+            </th>
+          ))}
+        </tr>
+        <tr>
+          <th
+            className="border p-1 text-xs font-medium text-muted-foreground"
+            colSpan={2}
+          >
+            Zone
+          </th>
+          {months.flatMap((month) => [
+            ...(weeksPerMonth[month] || []).map((weekNum) => (
+              <th
+                key={`wk${weekNum}`}
+                className="border p-1 text-center text-xs font-medium text-muted-foreground"
+              >
+                WK{weekNum}
+              </th>
+            )),
+            <th
+              key={`total-${month}`}
               className="border p-1 text-center text-xs font-medium text-muted-foreground"
             >
-              WK{weekNum}
-            </th>
-          )),
-          <th
-            key={`total-${month}`}
-            className="border p-1 text-center text-xs font-medium text-muted-foreground"
-          >
-            Total {month}
-          </th>,
-        ])}
-      </tr>
-    </thead>
+              Total {month}
+            </th>,
+          ])}
+        </tr>
+      </thead>
+    );
+  };
+
+  // Component for a data cell
+  const DataCell = ({ value }: { value: number }) => (
+    <td className="border p-1 text-center text-xs text-muted-foreground">
+      {formatValue(value)}
+    </td>
   );
-};
 
-// Component for a data cell
-const DataCell = ({ value }: { value: number }) => (
-  <td className="border p-1 text-center text-xs text-muted-foreground">
-    {formatValue(value)}
-  </td>
-);
-
-// Component for a total cell (with yellow background)
-const TotalCell = ({ value }: { value: number }) => (
-  <td className="border p-1 text-center text-xs text-muted-foreground bg-yellow-50">
-    {formatValue(value)}
-  </td>
-);
-
-// Component for a row total cell (with blue background)
-const RowTotalCell = ({ value }: { value: number }) => (
-  <td className="border p-1 text-center text-xs text-muted-foreground font-medium bg-blue-100">
-    {formatValue(value)}
-  </td>
-);
-
-// Component for a zone row
-const ZoneRow = ({ zone }: { zone: ZoneData }) => {
-  const isExpanded = expandedZones[zone.key];
-  const weeksPerMonth = zone.weeksPerMonth || {};
-
-  // Find the Projet cell
-  const projetCell = zone.cells.find((cell) => cell.type === "Projet");
-
-  return (
-    <tr className="hover:bg-muted/50 transition-colors">
-      <td
-        className="border p-1 cursor-pointer text-xs text-muted-foreground"
-        onClick={() => toggleZone(zone.key)}
-      >
-        {isExpanded ? "▼" : "+"} {zone.key}
-      </td>
-      <td className="border p-1 text-xs text-muted-foreground">Projet</td>
-      {months.map((month) => {
-        const actualMonthIndex = months.indexOf(month);
-        const monthData = projetCell?.months[actualMonthIndex];
-        const monthWeeks = weeksPerMonth[month] || [];
-
-        return (
-          <React.Fragment key={`${zone.key}-${month}`}>
-            {monthWeeks.map((weekNum) => {
-              const weekData = monthData?.weeks.find(
-                (w) => w.weekNum === weekNum
-              );
-              return (
-                <DataCell
-                  key={`${zone.key}-${month}-wk${weekNum}`}
-                  value={weekData?.value || 0}
-                />
-              );
-            })}
-            <TotalCell value={monthData?.total || 0} />
-          </React.Fragment>
-        );
-      })}
-    </tr>
+  // Component for a total cell (with yellow background)
+  const TotalCell = ({ value }: { value: number }) => (
+    <td className="border p-1 text-center text-xs text-muted-foreground bg-yellow-50">
+      {formatValue(value)}
+    </td>
   );
-};
 
-// Component for collapsed zone summary (just show the TOTAL row)
-const CollapsedZoneSummary = ({ zone }: { zone: ZoneData }) => {
-  const weeksPerMonth = zone.weeksPerMonth || {};
+  // Component for a row total cell (with blue background)
+  const RowTotalCell = ({ value }: { value: number }) => (
+    <td className="border p-1 text-center text-xs text-muted-foreground font-medium bg-blue-100">
+      {formatValue(value)}
+    </td>
+  );
 
-  // Find the Serie cell
-  const serieCell = zone.cells.find((cell) => cell.type === "Serie");
+  // Component for a zone row
+  const ZoneRow = ({ zone }: { zone: ZoneData }) => {
+    const isExpanded = expandedZones[zone.key];
+    const weeksPerMonth = zone.weeksPerMonth || {};
 
-  return (
-    <>
+    const projetCell = zone.cells.find((cell) => cell.type === "Projet");
+
+    return (
       <tr className="hover:bg-muted/50 transition-colors">
-        <td className="border p-1 text-xs text-muted-foreground"></td>
-        <td className="border p-1 text-xs text-muted-foreground">Serie</td>
+        <td
+          className="border p-1 cursor-pointer text-xs text-muted-foreground"
+          onClick={() => toggleZone(zone.key)}
+        >
+          {isExpanded ? "▼" : "+"} {zone.key}
+        </td>
+        <td className="border p-1 text-xs text-muted-foreground">Projet</td>
         {months.map((month) => {
           const actualMonthIndex = months.indexOf(month);
-          const monthData = serieCell?.months[actualMonthIndex];
+          const monthData = projetCell?.months[actualMonthIndex];
           const monthWeeks = weeksPerMonth[month] || [];
 
           return (
-            <React.Fragment key={`summary-${month}`}>
+            <React.Fragment key={`${zone.key}-${month}`}>
               {monthWeeks.map((weekNum) => {
                 const weekData = monthData?.weeks.find(
                   (w) => w.weekNum === weekNum
                 );
                 return (
                   <DataCell
-                    key={`summary-${month}-wk${weekNum}`}
+                    key={`${zone.key}-${month}-wk${weekNum}`}
                     value={weekData?.value || 0}
                   />
                 );
@@ -398,184 +352,351 @@ const CollapsedZoneSummary = ({ zone }: { zone: ZoneData }) => {
           );
         })}
       </tr>
-      <tr className="hover:bg-muted/50 transition-colors bg-blue-50">
-        <td className="border p-1 text-xs text-muted-foreground"></td>
-        <td className="border p-1 text-xs text-muted-foreground font-medium">
-          TOTAL
-        </td>
-        {months.map((month) => {
-          const actualMonthIndex = months.indexOf(month);
-          const monthWeeks = weeksPerMonth[month] || [];
-          const totalValues = zone.totals[actualMonthIndex];
+    );
+  };
 
-          return (
-            <React.Fragment key={`summary-total-${month}`}>
-              {monthWeeks.map((_, index) => (
-                <td
-                  key={`summary-total-${month}-${index}`}
-                  className="border p-1 text-center text-xs text-muted-foreground font-medium"
-                >
-                  {formatValue(totalValues[index] || 0)}
+  // Component for collapsed zone summary
+  const CollapsedZoneSummary = ({ zone }: { zone: ZoneData }) => {
+    const weeksPerMonth = zone.weeksPerMonth || {};
+
+    const projetCell = zone.cells.find((cell) => cell.type === "Projet");
+    const serieCell = zone.cells.find((cell) => cell.type === "Serie");
+
+    return (
+      <>
+        {/* Serie row */}
+        <tr className="hover:bg-muted/50 transition-colors">
+          <td className="border p-1 text-xs text-muted-foreground"></td>
+          <td className="border p-1 text-xs text-muted-foreground">Serie</td>
+          {months.map((month) => {
+            const actualMonthIndex = months.indexOf(month);
+            const monthData = serieCell?.months[actualMonthIndex];
+            const monthWeeks = weeksPerMonth[month] || [];
+
+            return (
+              <React.Fragment key={`summary-${month}`}>
+                {monthWeeks.map((weekNum) => {
+                  const weekData = monthData?.weeks.find(
+                    (w) => w.weekNum === weekNum
+                  );
+                  return (
+                    <DataCell
+                      key={`summary-${month}-wk${weekNum}`}
+                      value={weekData?.value || 0}
+                    />
+                  );
+                })}
+                <TotalCell value={monthData?.total || 0} />
+              </React.Fragment>
+            );
+          })}
+        </tr>
+
+        {/* Process row — discreet, above TOTAL */}
+        <tr>
+          <td className="border p-1 text-xs text-muted-foreground/40"></td>
+          <td className="border p-1 text-xs text-muted-foreground/40 italic">
+            Process
+          </td>
+          {months.map((month) => {
+            const monthWeeks = weeksPerMonth[month] || [];
+            return (
+              <React.Fragment key={`summary-process-${month}`}>
+                {monthWeeks.map((_, i) => (
+                  <td
+                    key={`summary-process-${month}-${i}`}
+                    className="border p-1 text-center text-xs text-muted-foreground/40"
+                  />
+                ))}
+                <td className="border p-1 text-center text-xs text-muted-foreground/40">
+                  —
                 </td>
-              ))}
-              <RowTotalCell
-                key={`summary-total-${month}-total`}
-                value={totalValues[totalValues.length - 1] || 0}
-              />
-            </React.Fragment>
+              </React.Fragment>
+            );
+          })}
+        </tr>
+
+        {/* Matière row — discreet, above TOTAL */}
+        <tr>
+          <td className="border p-1 text-xs text-muted-foreground/40"></td>
+          <td className="border p-1 text-xs text-muted-foreground/40 italic">
+            Matière
+          </td>
+          {months.map((month) => {
+            const monthWeeks = weeksPerMonth[month] || [];
+            return (
+              <React.Fragment key={`summary-matiere-${month}`}>
+                {monthWeeks.map((_, i) => (
+                  <td
+                    key={`summary-matiere-${month}-${i}`}
+                    className="border p-1 text-center text-xs text-muted-foreground/40"
+                  />
+                ))}
+                <td className="border p-1 text-center text-xs text-muted-foreground/40">
+                  —
+                </td>
+              </React.Fragment>
+            );
+          })}
+        </tr>
+
+        {/* TOTAL row — bold and standing out */}
+        <tr className="bg-blue-100 border-b-2 border-blue-300">
+          <td className="border p-1 text-xs font-bold text-blue-900"></td>
+          <td className="border p-1 text-xs font-bold text-blue-900">TOTAL</td>
+          {months.map((month) => {
+            const actualMonthIndex = months.indexOf(month);
+            const monthWeeks = weeksPerMonth[month] || [];
+            const totalValues = zone.totals[actualMonthIndex];
+
+            // Fix: sum Projet + Serie month totals
+            const projetTotal =
+              projetCell?.months[actualMonthIndex]?.total || 0;
+            const serieTotal = serieCell?.months[actualMonthIndex]?.total || 0;
+            const correctMonthTotal = projetTotal + serieTotal;
+
+            return (
+              <React.Fragment key={`summary-total-${month}`}>
+                {monthWeeks.map((_, index) => (
+                  <td
+                    key={`summary-total-${month}-${index}`}
+                    className="border p-1 text-center text-xs font-bold text-blue-900"
+                  >
+                    {formatValue(totalValues[index] || 0)}
+                  </td>
+                ))}
+                <td
+                  key={`summary-total-${month}-total`}
+                  className="border p-1 text-center text-xs font-bold text-blue-900 bg-blue-200"
+                >
+                  {formatValue(correctMonthTotal)}
+                </td>
+              </React.Fragment>
+            );
+          })}
+        </tr>
+      </>
+    );
+  };
+
+  // Component for expanded zone details with cells
+  const ExpandedZoneDetails = ({
+    zone,
+    data,
+  }: {
+    zone: ZoneData;
+    data: Record<string, any>;
+  }) => {
+    const zoneDetails = data[zone.key];
+    const weeksPerMonth = zone.weeksPerMonth || {};
+
+    if (!zoneDetails) {
+      return <CollapsedZoneSummary zone={zone} />;
+    }
+
+    const cellNames = Object.keys(zoneDetails.cells);
+
+    // Find Projet and Serie cells for correct total calculation
+    const projetKey = cellNames.find(
+      (k) => zoneDetails.cells[k].type === "Projet"
+    );
+    const serieKey = cellNames.find(
+      (k) => zoneDetails.cells[k].type === "Serie"
+    );
+
+    return (
+      <>
+        {cellNames.map((cellName) => {
+          const cellData = zoneDetails.cells[cellName];
+          return (
+            <tr
+              key={`${zone.key}-${cellName}`}
+              className="hover:bg-muted/50 transition-colors"
+            >
+              <td className="border p-1 text-xs text-muted-foreground">
+                {cellName}
+              </td>
+              <td className="border p-1 text-xs text-muted-foreground">
+                {cellData.type}
+              </td>
+              {months.map((month) => {
+                const monthData = cellData.months[month] || {
+                  weeks: {},
+                  total: 0,
+                };
+                const monthWeeks = weeksPerMonth[month] || [];
+
+                return (
+                  <React.Fragment key={`${zone.key}-${cellName}-${month}`}>
+                    {monthWeeks.map((weekNum) => (
+                      <DataCell
+                        key={`${zone.key}-${cellName}-${month}-wk${weekNum}`}
+                        value={monthData.weeks[weekNum] || 0}
+                      />
+                    ))}
+                    <TotalCell value={monthData.total || 0} />
+                  </React.Fragment>
+                );
+              })}
+            </tr>
           );
         })}
-      </tr>
-    </>
-  );
-};
 
-// Component for expanded zone details with cells
-const ExpandedZoneDetails = ({
-  zone,
-  data,
-}: {
-  zone: ZoneData;
-  data: Record<string, any>;
-}) => {
-  // Get detailed data for this zone
-  const zoneDetails = data[zone.key];
-  const weeksPerMonth = zone.weeksPerMonth || {};
+        {/* Process row — discreet, above TOTAL */}
+        <tr>
+          <td className="border p-1 text-xs text-muted-foreground/40"></td>
+          <td className="border p-1 text-xs text-muted-foreground/40 italic">
+            Process
+          </td>
+          {months.map((month) => {
+            const monthWeeks = weeksPerMonth[month] || [];
+            return (
+              <React.Fragment key={`${zone.key}-process-${month}`}>
+                {monthWeeks.map((_, i) => (
+                  <td
+                    key={`${zone.key}-process-${month}-${i}`}
+                    className="border p-1 text-center text-xs text-muted-foreground/40"
+                  />
+                ))}
+                <td className="border p-1 text-center text-xs text-muted-foreground/40">
+                  —
+                </td>
+              </React.Fragment>
+            );
+          })}
+        </tr>
 
-  if (!zoneDetails) {
-    // Fallback to original implementation if no detailed data
-    return <CollapsedZoneSummary zone={zone} />;
+        {/* Matière row — discreet, above TOTAL */}
+        <tr>
+          <td className="border p-1 text-xs text-muted-foreground/40"></td>
+          <td className="border p-1 text-xs text-muted-foreground/40 italic">
+            Matière
+          </td>
+          {months.map((month) => {
+            const monthWeeks = weeksPerMonth[month] || [];
+            return (
+              <React.Fragment key={`${zone.key}-matiere-${month}`}>
+                {monthWeeks.map((_, i) => (
+                  <td
+                    key={`${zone.key}-matiere-${month}-${i}`}
+                    className="border p-1 text-center text-xs text-muted-foreground/40"
+                  />
+                ))}
+                <td className="border p-1 text-center text-xs text-muted-foreground/40">
+                  —
+                </td>
+              </React.Fragment>
+            );
+          })}
+        </tr>
+
+        {/* TOTAL row — bold and standing out */}
+        <tr className="bg-blue-100 border-b-2 border-blue-300">
+          <td className="border p-1 text-xs font-bold text-blue-900"></td>
+          <td className="border p-1 text-xs font-bold text-blue-900">TOTAL</td>
+          {months.map((month) => {
+            const actualMonthIndex = months.indexOf(month);
+            const monthWeeks = weeksPerMonth[month] || [];
+            const totalValues = zone.totals[actualMonthIndex];
+
+            // Fix: sum Projet + Serie month totals from detailed data
+            const projetTotal =
+              projetKey
+                ? zoneDetails.cells[projetKey]?.months[month]?.total || 0
+                : 0;
+            const serieTotal =
+              serieKey
+                ? zoneDetails.cells[serieKey]?.months[month]?.total || 0
+                : 0;
+            const correctMonthTotal = projetTotal + serieTotal;
+
+            return (
+              <React.Fragment key={`${zone.key}-total-${month}`}>
+                {monthWeeks.map((_, index) => (
+                  <td
+                    key={`${zone.key}-total-${month}-${index}`}
+                    className="border p-1 text-center text-xs font-bold text-blue-900"
+                  >
+                    {formatValue(totalValues[index] || 0)}
+                  </td>
+                ))}
+                <td
+                  key={`${zone.key}-total-${month}-total`}
+                  className="border p-1 text-center text-xs font-bold text-blue-900 bg-blue-200"
+                >
+                  {formatValue(correctMonthTotal)}
+                </td>
+              </React.Fragment>
+            );
+          })}
+        </tr>
+      </>
+    );
+  };
+
+  if (loading) {
+    return <div className="p-4 text-center">Loading zone details...</div>;
   }
 
-  // Get all cells for this zone
-  const cellNames = Object.keys(zoneDetails.cells);
+  if (zonesData.length === 0) {
+    return <div className="p-4 text-center">No zone data available.</div>;
+  }
+
+  const handleExport = () => {
+    const flattened = flattenDetailedData(detailedData);
+    const exportData =
+      flattened.length > 0 ? flattened : flattenData(zonesData);
+    exportToExcel(
+      exportData,
+      "zoneDetail_" + new Date().getDate() + "_.xlsx"
+    );
+  };
 
   return (
-    <>
-      {cellNames.map((cellName) => {
-        const cellData = zoneDetails.cells[cellName];
-        return (
-          <tr
-            key={`${zone.key}-${cellName}`}
-            className="hover:bg-muted/50 transition-colors"
+    <div className="rounded-md border shadow-sm hover:shadow-md transition-all">
+      <div className="flex items-center gap-2 mb-1 py-3 px-4 bg-muted/30 rounded-t-md">
+        <div className="flex items-center gap-2">
+          <Users2 className="w-4 h-4 text-primary" />
+          <h3 className="font-medium text-sm">Zone Details</h3>
+        </div>
+        <div className="relative w-[80px] ml-auto">
+          <button
+            onClick={handleExport}
+            className="mt-0 flex items-center justify-center space-x-2 w-[70px] h-6 text-sm bg-green-600 text-white rounded-md hover:bg-green-500 border border-gray-200"
           >
-            <td className="border p-1 text-xs text-muted-foreground">
-              {cellName}
-            </td>
-            <td className="border p-1 text-xs text-muted-foreground">
-              {cellData.type}
-            </td>
-            {months.map((month) => {
-              const monthData = cellData.months[month] || {
-                weeks: {},
-                total: 0,
-              };
-              const monthWeeks = weeksPerMonth[month] || [];
+            <FaFileExcel className="text-white-800" />
+            <span className="text-white hover:text-white 300 text-xs">
+              Export
+            </span>
+          </button>
+        </div>
+      </div>
 
-              return (
-                <React.Fragment key={`${zone.key}-${cellName}-${month}`}>
-                  {monthWeeks.map((weekNum) => (
-                    <DataCell
-                      key={`${zone.key}-${cellName}-${month}-wk${weekNum}`}
-                      value={monthData.weeks[weekNum] || 0}
-                    />
-                  ))}
-                  <TotalCell value={monthData.total || 0} />
+      <div className="p-3 transition-all hover:border-primary/20">
+        <div className="overflow-x-auto w-full">
+          <table className="w-full border-collapse">
+            <TableHeader />
+            <tbody>
+              {zonesData.map((zone) => (
+                <React.Fragment key={zone.key}>
+                  <ZoneRow zone={zone} />
+                  {expandedZones[zone.key] ? (
+                    <ExpandedZoneDetails zone={zone} data={detailedData} />
+                  ) : (
+                    <CollapsedZoneSummary zone={zone} />
+                  )}
                 </React.Fragment>
-              );
-            })}
-          </tr>
-        );
-      })}
-      <tr className="hover:bg-muted/50 transition-colors bg-blue-50">
-        <td className="border p-1 text-xs text-muted-foreground"></td>
-        <td className="border p-1 text-xs text-muted-foreground font-medium">
-          TOTAL
-        </td>
-        {months.map((month) => {
-          const actualMonthIndex = months.indexOf(month);
-          const monthWeeks = weeksPerMonth[month] || [];
-          const totalValues = zone.totals[actualMonthIndex];
-
-          return (
-            <React.Fragment key={`${zone.key}-total-${month}`}>
-              {monthWeeks.map((_, index) => (
-                <td
-                  key={`${zone.key}-total-${month}-${index}`}
-                  className="border p-1 text-center text-xs text-muted-foreground font-medium"
-                >
-                  {formatValue(totalValues[index] || 0)}
-                </td>
               ))}
-              <RowTotalCell
-                key={`${zone.key}-total-${month}-total`}
-                value={totalValues[totalValues.length - 1] || 0}
-              />
-            </React.Fragment>
-          );
-        })}
-      </tr>
-    </>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   );
-};
-
-if (loading) {
-  return <div className="p-4 text-center">Loading zone details...</div>;
-}
-
-if (zonesData.length === 0) {
-  return <div className="p-4 text-center">No zone data available.</div>;
-}
-
-const handleExport = () => {
-  const flattened = flattenDetailedData(detailedData);
-  const data = flattened.length > 0 ? flattened : flattenData(zonesData);
-  exportToExcel(data, 'zoneDetail_'+(new Date().getDate())+'_.xlsx');
-}
-
-return (
-  <div className="rounded-md border shadow-sm hover:shadow-md transition-all">
-    <div className="flex items-center gap-2 mb-1 py-3 px-4 bg-muted/30 rounded-t-md">
-      <div className="flex items-center gap-2">
-        <Users2 className="w-4 h-4 text-primary" />
-        <h3 className="font-medium text-sm">Zone Details</h3>
-      </div>
-      <div className="relative w-[80px] ml-auto">
-        <button onClick={handleExport} className="mt-0 flex items-center justify-center space-x-2 w-[70px] h-6  text-sm bg-green-600 text-white rounded-md hover:bg-green-500 border border-gray-200">
-          <FaFileExcel className="text-white-800" />
-          <span className="text-white hover:text-white 300 text-xs">
-            Export
-          </span>
-        </button>
-      </div>
-    </div>
-
-    <div className="p-3 transition-all hover:border-primary/20">
-      <div className="overflow-x-auto w-full">
-        <table className="w-full border-collapse">
-          <TableHeader />
-          <tbody>
-            {zonesData.map((zone) => (
-              <React.Fragment key={zone.key}>
-                <ZoneRow zone={zone} />
-                {expandedZones[zone.key] ? (
-                  <ExpandedZoneDetails zone={zone} data={detailedData} />
-                ) : (
-                  <CollapsedZoneSummary zone={zone} />
-                )}
-              </React.Fragment>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-);
 };
 
 // Transform API data to the format needed for the component
 const transformApiDataToZonesData = (apiData: ApiResponse): ZoneData[] => {
-  // Extract unique months from the data
   const uniqueMonths = Array.from(
     new Set(
       apiData.zonesType.flatMap((zone) =>
@@ -583,7 +704,6 @@ const transformApiDataToZonesData = (apiData: ApiResponse): ZoneData[] => {
       )
     )
   ).sort((a, b) => {
-    // Custom sort for French month names
     const monthOrder = [
       "janvier",
       "février",
@@ -601,7 +721,6 @@ const transformApiDataToZonesData = (apiData: ApiResponse): ZoneData[] => {
     return monthOrder.indexOf(a) - monthOrder.indexOf(b);
   });
 
-  // Get actual weeks per month directly from the API data
   const weeksPerMonth: Record<string, number[]> = {};
 
   apiData.zonesType.forEach((zone) => {
@@ -616,39 +735,29 @@ const transformApiDataToZonesData = (apiData: ApiResponse): ZoneData[] => {
     });
   });
 
-  // Sort weeks within each month
   Object.keys(weeksPerMonth).forEach((month) => {
     weeksPerMonth[month].sort((a, b) => a - b);
   });
 
   console.log("Actual weeks per month from API:", weeksPerMonth);
 
-  // Transform each zone
   return apiData.zonesType.map((zoneType) => {
-    // Convert zone name to ZoneKey format
     const zoneKey = zoneType.zone as ZoneKey;
 
-    // Group details by cell type (Projet/Serie)
     const cellTypes = ["Projet", "Serie"];
 
-    // Create cells array
     const cells = cellTypes.map((cellType) => {
-      // Filter details for this cell type
       const cellDetails = zoneType.details.filter(
         (detail) => detail.typeCell === cellType
       );
 
-      // Create months data for this cell
       const months = uniqueMonths.map((month) => {
-        // Get all weeks for this month and cell type
         const monthDetails = cellDetails.filter(
           (detail) => detail.mois === month
         );
 
-        // Get the actual weeks for this month
         const monthWeeks = weeksPerMonth[month] || [];
 
-        // Create week data with the actual weeks for this month
         const weeks = monthWeeks.map((weekNum) => {
           const weekDetail = monthDetails.find(
             (detail) => detail.semaine === weekNum
@@ -656,12 +765,10 @@ const transformApiDataToZonesData = (apiData: ApiResponse): ZoneData[] => {
           return { value: weekDetail?.couts || 0, weekNum };
         });
 
-        // Get total for this month from the first detail (they all have the same total_mois)
         const monthTotal =
           monthDetails.length > 0
             ? monthDetails[0].total_mois
-            : // If no details, calculate from weeks
-            weeks.reduce((sum, week) => sum + week.value, 0);
+            : weeks.reduce((sum, week) => sum + week.value, 0);
 
         return {
           name: month,
@@ -677,17 +784,13 @@ const transformApiDataToZonesData = (apiData: ApiResponse): ZoneData[] => {
       };
     });
 
-    // Calculate totals for each month and week
     const totals = uniqueMonths.map((month) => {
-      // Get all details for this month
       const monthDetails = zoneType.details.filter(
         (detail) => detail.mois === month
       );
 
-      // Get the actual weeks for this month
       const monthWeeks = weeksPerMonth[month] || [];
 
-      // Calculate totals for each week in this month
       const weekTotals = monthWeeks.map((weekNum) => {
         const weekDetails = monthDetails.filter(
           (detail) => detail.semaine === weekNum
@@ -695,7 +798,6 @@ const transformApiDataToZonesData = (apiData: ApiResponse): ZoneData[] => {
         return weekDetails.reduce((sum, detail) => sum + detail.couts, 0);
       });
 
-      // Get the month total from the API if available
       const monthTotal =
         monthDetails.length > 0
           ? monthDetails[0].total_mois
@@ -704,7 +806,6 @@ const transformApiDataToZonesData = (apiData: ApiResponse): ZoneData[] => {
       return [...weekTotals, monthTotal];
     });
 
-    // Calculate project value (first week value for Projet type)
     const projectCell = cells.find((cell) => cell.type === "Projet");
     const projectValue = projectCell?.months[0]?.weeks[0]?.value || 0;
 
@@ -713,7 +814,7 @@ const transformApiDataToZonesData = (apiData: ApiResponse): ZoneData[] => {
       projectValue,
       cells,
       totals,
-      weeksPerMonth, // Add this to make it available throughout the component
+      weeksPerMonth,
     };
   });
 };
