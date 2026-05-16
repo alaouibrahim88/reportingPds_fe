@@ -4,7 +4,7 @@ import { getZoneDetails, getDetailsPerZone } from "@/actions/scrap";
 import { z } from "zod";
 import { FaFileExcel } from "react-icons/fa";
 import { GetZoneDetails, getZoneSubDetails } from "@/actions/scrap/details";
-import { exportToExcel } from "@/utils/excel";
+import { exportZoneDetailToExcel} from "@/app/(dashboard)/scrap/details/[id]/_utils/exportZoneDetail";
 import { Endpoints } from "@/constants/api";
 import { getCookieValue } from "@/lib/storage";
 
@@ -643,12 +643,10 @@ const CollapsibleZoneTable = ({
   }
 
   const handleExport = () => {
-    const flattened = flattenDetailedData(detailedData);
-    const exportData =
-      flattened.length > 0 ? flattened : flattenData(zonesData);
-    exportToExcel(
-      exportData,
-      "zoneDetail_" + new Date().getDate() + "_.xlsx"
+    exportZoneDetailToExcel(
+        zonesData,
+        viewMode,
+        `zoneDetail_${new Date().toISOString().slice(0, 10)}.xlsx`
     );
   };
 
