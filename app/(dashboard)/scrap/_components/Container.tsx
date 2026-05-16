@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MixBarChart, RawData } from "./MixBarChart";
 import TableZone, { YearlyZoneDataType } from "./TableZone";
 import { ZoneDataType, dashboardData } from "./data/dashboardData";
@@ -18,6 +18,38 @@ import { Endpoints } from "@/constants/api";
 import { scrapType } from "@/types";
 import { fetchGlobalScrap, fetchWeeklyScrap, fetchYearlyScrap } from "@/actions/scrap/dashboard";
 
+function getCurrentIsoWeekInfo(): { week: number; year: number } {
+  const now = new Date();
+  const utcDate = new Date(
+    Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())
+  );
+
+  // ISO week starts on Monday. Sunday (0) is converted to 7.
+  const isoDay = utcDate.getUTCDay() || 7;
+  utcDate.setUTCDate(utcDate.getUTCDate() + 4 - isoDay);
+
+  const isoYear = utcDate.getUTCFullYear();
+  const yearStart = new Date(Date.UTC(isoYear, 0, 1));
+  const week = Math.ceil(
+    ((utcDate.getTime() - yearStart.getTime()) / 86400000 + 1) / 7
+  );
+
+  return { week, year: isoYear };
+}
+
+function getIsoWeeksInYear(year: number): number {
+  // Dec 28 always falls in the last ISO week of its ISO year.
+  const utcDate = new Date(Date.UTC(year, 11, 28));
+  const isoDay = utcDate.getUTCDay() || 7;
+  utcDate.setUTCDate(utcDate.getUTCDate() + 4 - isoDay);
+
+  const isoYear = utcDate.getUTCFullYear();
+  const yearStart = new Date(Date.UTC(isoYear, 0, 1));
+  return Math.ceil(
+    ((utcDate.getTime() - yearStart.getTime()) / 86400000 + 1) / 7
+  );
+}
+
 function Container() {
   const { stats, zoneData, chartData } = dashboardData;
   const [globalData, setGlobalData] = useState<RawData | undefined>();
@@ -26,14 +58,30 @@ function Container() {
     YearlyZoneDataType[] | undefined
   >();
   const [selectedType, setSelectedType] = useState<scrapType>("zone");
-  const [month, setMonth] = useState(new Date().getMonth().toString());
+  const [month, setMonth] = useState((new Date().getMonth() + 1).toString());
   const [year, setYear] = useState(new Date().getFullYear().toString());
-  const [week, setWeek] = useState(30);
+  const currentIso = getCurrentIsoWeekInfo();
+  const currentYear = currentIso.year;
+  const currentWeek = currentIso.week;
+  const [weeklyYear, setWeeklyYear] = useState(currentYear);
+  const [week, setWeek] = useState(currentWeek);
+  const [isWeeklyLoading, setIsWeeklyLoading] = useState(false);
   const [yearlyFilter, setYearlyFilter] = useState({
     year: new Date().getFullYear(),
-    month: new Date().getMonth(),
+    month: new Date().getMonth() + 1,
     query: '',
   });
+
+  const availableYears = useMemo(
+    () => Array.from({ length: 6 }, (_, index) => currentYear - index),
+    [currentYear]
+  );
+
+  const availableWeeks = useMemo(() => {
+    const maxWeek =
+      weeklyYear === currentYear ? currentWeek : getIsoWeeksInYear(weeklyYear);
+    return Array.from({ length: maxWeek }, (_, index) => index + 1);
+  }, [weeklyYear, currentYear, currentWeek]);
 
   const handleCheckboxChange = (
     type: "zone" | "projet" | "serie"
@@ -65,12 +113,37 @@ function Container() {
   }, [selectedType, month, year]);
 
   useEffect(() => {
-    fetchWeeklyScrap(week).then(setWeeklyData);
-  }, [week]);
+    const maxWeek =
+      weeklyYear === currentYear ? currentWeek : getIsoWeeksInYear(weeklyYear);
+    if (week > maxWeek) {
+      setWeek(maxWeek);
+    }
+  }, [weeklyYear, week, currentYear, currentWeek]);
+
+  useEffect(() => {
+    let isMounted = true;
+    setIsWeeklyLoading(true);
+
+    fetchWeeklyScrap(week, weeklyYear)
+      .then((data) => {
+        if (isMounted) {
+          setWeeklyData(data);
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setIsWeeklyLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [week, weeklyYear]);
 
   useEffect(() => {
     fetchYearlyScrap(yearlyFilter).then((result) => setYearlyData(result.weekDataAnnee));
-  }, [yearlyFilter.year, yearlyFilter.month, yearlyFilter.query]);
+  }, [yearlyFilter]);
   /************* End */
 
   return (
@@ -181,7 +254,16 @@ function Container() {
 
             <MixBarChart data={globalData} />
           </div>
-          <ZoneActivity week={week} onChange={setWeek} data={weeklyData} />
+          <ZoneActivity
+            week={week}
+            year={weeklyYear}
+            data={weeklyData}
+            loading={isWeeklyLoading}
+            availableWeeks={availableWeeks}
+            availableYears={availableYears}
+            onWeekChange={setWeek}
+            onYearChange={setWeeklyYear}
+          />
         </div>
         <div className="bg-card rounded-lg shadow-sm relative border border-border">
           <TableZone
