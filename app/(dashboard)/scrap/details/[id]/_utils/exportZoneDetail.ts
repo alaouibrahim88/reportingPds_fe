@@ -12,6 +12,10 @@ type ZoneItem  = {
   totals: number[][];  // [monthIndex][weekIndex..., monthTotal]
 };
 
+type DetailedMonth = { weeks: Record<string, number>; total: number };
+type DetailedCell  = { type: "Projet" | "Serie"; months: Record<string, DetailedMonth> };
+type DetailedZone  = { cells: Record<string, DetailedCell> };
+
 // ─── Cell style type ──────────────────────────────────────────────────────────
 type CellStyle = {
   fill?:      { patternType: string; fgColor: { rgb: string } };  // rgb not argb
@@ -40,7 +44,6 @@ const C = {
   TOTAL_BG:     "D5E8F7",
   TOTAL_FG:     "1A3350",
   GRAND_TOTAL:  "BDD7EE",
-  TITLE_BG:     "1A3350",
 };
 
 // ─── Style helpers ────────────────────────────────────────────────────────────
@@ -107,24 +110,41 @@ function mergeRow(
  *     exportZoneDetailToExcel(
  *       zonesData,
  *       viewMode,
- *       `zoneDetail_${new Date().toISOString().slice(0, 10)}.xlsx`
+ *       {
+ *         fileName: `zoneDetail_${new Date().toISOString().slice(0, 10)}.xlsx`,
+ *         expandedZones,
+ *         detailedData,
+ *         months,
+ *       }
  *     );
  *   };
  */
 export function exportZoneDetailToExcel(
   zonesData: ZoneItem[],
   viewMode: "price" | "Qty" = "Qty",
-  fileName = "zoneDetail_export.xlsx"
+  options?: {
+    fileName?: string;
+    expandedZones?: Record<string, boolean>;
+    detailedData?: Record<string, DetailedZone>;
+    months?: string[];
+  }
 ) {
   if (!zonesData || zonesData.length === 0) return;
+
+  const fileName = options?.fileName ?? "zoneDetail_export.xlsx";
+  const expandedZones = options?.expandedZones ?? {};
+  const detailedData = options?.detailedData ?? {};
 
   const wb = XLSX.utils.book_new();
   const ws: XLSX.WorkSheet = {};
 
   const wpm    = zonesData[0].weeksPerMonth;
-  const months = Object.keys(wpm);
+  const months =
+    options?.months && options.months.length > 0
+      ? options.months
+      : zonesData[0]?.cells[0]?.months.map((m) => m.name) || Object.keys(wpm);
   const fmt    = (v: number): string | number =>
-    viewMode === "price" ? `${v.toFixed(0)} €` : v;
+    viewMode === "price" ? `${v} €` : v;
 
   // ── Column index map ───────────────────────────────────────────────────────
   // Col 0: zone label | Col 1: type label | then weeks + totals per month
@@ -137,16 +157,8 @@ export function exportZoneDetailToExcel(
   }
   const NCOLS = c;
 
-  // ── Row 0 — Title ─────────────────────────────────────────────────────────
-  mergeRow(ws, 0, 0, NCOLS - 1, "Zone Details — Scrap Report", {
-    fill:      argbFill(C.TITLE_BG),
-    font:      argbFont(C.ZONE_FG, true, 12),
-    alignment: { horizontal: "center", vertical: "center" },
-    border:    THIN_BORDER,
-  });
-
-  // ── Row 1 — "NATURE" + month group headers ────────────────────────────────
-  mergeRow(ws, 1, 0, FIXED - 1, "NATURE", {
+  // ── Row 0 — "NATURE" + month group headers ────────────────────────────────
+  mergeRow(ws, 0, 0, FIXED - 1, "NATURE", {
     fill:      argbFill(C.ZONE_BG),
     font:      argbFont(C.ZONE_FG, true),
     alignment: { horizontal: "center", vertical: "center" },
@@ -156,7 +168,7 @@ export function exportZoneDetailToExcel(
     const wks   = wpm[m];
     const start = colMap[`${m}_${wks[0]}`];
     const end   = colMap[`${m}_total`];
-    mergeRow(ws, 1, start, end, m.charAt(0).toUpperCase() + m.slice(1), {
+    mergeRow(ws, 0, start, end, m, {
       fill:      argbFill(C.MONTH_BG),
       font:      argbFont(C.MONTH_FG, true),
       alignment: { horizontal: "center", vertical: "center" },
@@ -164,8 +176,8 @@ export function exportZoneDetailToExcel(
     });
   }
 
-  // ── Row 2 — "Zone / Type" + week sub-headers ──────────────────────────────
-  mergeRow(ws, 2, 0, FIXED - 1, "Zone / Type", {
+  // ── Row 1 — "Zone" + week sub-headers ────────────────────────────────────
+  mergeRow(ws, 1, 0, FIXED - 1, "Zone", {
     fill:      argbFill(C.WEEK_BG),
     font:      argbFont(C.WEEK_FG, true),
     alignment: { horizontal: "center", vertical: "center" },
@@ -173,14 +185,14 @@ export function exportZoneDetailToExcel(
   });
   for (const m of months) {
     for (const wk of wpm[m]) {
-      setCell(ws, 2, colMap[`${m}_${wk}`], `WK${wk}`, {
+      setCell(ws, 1, colMap[`${m}_${wk}`], `WK${wk}`, {
         fill:      argbFill(C.WEEK_BG),
         font:      argbFont(C.WEEK_FG, true),
         alignment: { horizontal: "center", vertical: "center" },
         border:    THIN_BORDER,
       });
     }
-    setCell(ws, 2, colMap[`${m}_total`], "Total", {
+    setCell(ws, 1, colMap[`${m}_total`], `Total ${m}`, {
       fill:      argbFill(C.TOTAL_HDR_BG),
       font:      argbFont(C.TOTAL_HDR_FG, true),
       alignment: { horizontal: "center", vertical: "center" },
@@ -189,51 +201,174 @@ export function exportZoneDetailToExcel(
   }
 
   // ── Data rows ─────────────────────────────────────────────────────────────
-  let r = 3;
+  let r = 2;
+
+  const mutedCell: CellStyle = {
+    font:      argbFont("94A3B8"),
+    alignment: { horizontal: "center", vertical: "center" },
+    border:    THIN_BORDER,
+  };
 
   for (const zone of zonesData) {
-    // Zone section header
-    mergeRow(ws, r, 0, NCOLS - 1, `▶  ${zone.key}`, {
-      fill:      argbFill(C.ZONE_BG),
-      font:      argbFont(C.ZONE_FG, true, 10),
-      alignment: { horizontal: "left", vertical: "center" },
-      border:    THIN_BORDER,
-    });
-    r++;
+    const weeksPerMonth = zone.weeksPerMonth || {};
+    const isExpanded = !!expandedZones[zone.key];
+    const zoneDetails = detailedData[zone.key];
 
-    // Projet / Serie rows
-    for (const cell of zone.cells) {
-      const isProjet = cell.type === "Projet";
-      const rowBg    = isProjet ? C.PROJET_BG : C.SERIE_BG;
-      const labelFg = isProjet ? "2D6A9F" : "1A6B3A";
+    const projetCell = zone.cells.find((cell) => cell.type === "Projet");
+    const serieCell = zone.cells.find((cell) => cell.type === "Serie");
+
+    // Zone row (Projet)
+    {
       const base: CellStyle = {
-        fill:      argbFill(rowBg),
+        fill:      argbFill(C.PROJET_BG),
         font:      argbFont("000000"),
         alignment: { horizontal: "center", vertical: "center" },
         border:    THIN_BORDER,
       };
 
-      setCell(ws, r, 0, "", base);
-      setCell(ws, r, 1, cell.type, {
+      setCell(
+        ws,
+        r,
+        0,
+        `${isExpanded ? "▼" : "+"} ${zone.key}`,
+        {
+          ...base,
+          font:      argbFont(C.WEEK_FG, true),
+          alignment: { horizontal: "left", vertical: "center" },
+        }
+      );
+      setCell(ws, r, 1, "Projet", {
         ...base,
-        font:      argbFont(labelFg, true),
+        font:      argbFont("2D6A9F", true),
         alignment: { horizontal: "left", vertical: "center" },
       });
 
-      for (const mData of cell.months) {
-        const m = mData.name;
-        for (const wk of mData.weeks) {
-          if (wk.weekNum === undefined) continue;
-          setCell(ws, r, colMap[`${m}_${wk.weekNum}`], fmt(wk.value), base);
-        }
-        setCell(ws, r, colMap[`${m}_total`], fmt(mData.total), {
+      months.forEach((m, mi) => {
+        const monthData = projetCell?.months[mi];
+        const monthWeeks = weeksPerMonth[m] || [];
+        monthWeeks.forEach((weekNum) => {
+          const weekData = monthData?.weeks.find((w) => w.weekNum === weekNum);
+          setCell(ws, r, colMap[`${m}_${weekNum}`], fmt(weekData?.value || 0), base);
+        });
+        setCell(ws, r, colMap[`${m}_total`], fmt(monthData?.total || 0), {
           ...base,
           fill: argbFill(C.GRAND_TOTAL),
           font: argbFont(C.TOTAL_FG, true),
         });
-      }
+      });
       r++;
     }
+
+    if (isExpanded && zoneDetails) {
+      const cellNames = Object.keys(zoneDetails.cells);
+
+      for (const cellName of cellNames) {
+        const cell = zoneDetails.cells[cellName];
+        const isProjet = cell.type === "Projet";
+        const rowBg    = isProjet ? C.PROJET_BG : C.SERIE_BG;
+        const labelFg = isProjet ? "2D6A9F" : "1A6B3A";
+        const base: CellStyle = {
+          fill:      argbFill(rowBg),
+          font:      argbFont("000000"),
+          alignment: { horizontal: "center", vertical: "center" },
+          border:    THIN_BORDER,
+        };
+
+        setCell(ws, r, 0, cellName, {
+          ...base,
+          alignment: { horizontal: "left", vertical: "center" },
+        });
+        setCell(ws, r, 1, cell.type, {
+          ...base,
+          font:      argbFont(labelFg, true),
+          alignment: { horizontal: "left", vertical: "center" },
+        });
+
+        months.forEach((m) => {
+          const monthData = cell.months[m] || { weeks: {}, total: 0 };
+          const monthWeeks = weeksPerMonth[m] || [];
+          monthWeeks.forEach((weekNum) => {
+            setCell(
+              ws,
+              r,
+              colMap[`${m}_${weekNum}`],
+              fmt(monthData.weeks[String(weekNum)] || 0),
+              base
+            );
+          });
+          setCell(ws, r, colMap[`${m}_total`], fmt(monthData.total || 0), {
+            ...base,
+            fill: argbFill(C.GRAND_TOTAL),
+            font: argbFont(C.TOTAL_FG, true),
+          });
+        });
+        r++;
+      }
+    } else {
+      // Serie row (collapsed summary)
+      if (serieCell) {
+        const base: CellStyle = {
+          fill:      argbFill(C.SERIE_BG),
+          font:      argbFont("000000"),
+          alignment: { horizontal: "center", vertical: "center" },
+          border:    THIN_BORDER,
+        };
+
+        setCell(ws, r, 0, "", base);
+        setCell(ws, r, 1, "Serie", {
+          ...base,
+          font:      argbFont("1A6B3A", true),
+          alignment: { horizontal: "left", vertical: "center" },
+        });
+
+        months.forEach((m, mi) => {
+          const monthData = serieCell?.months[mi];
+          const monthWeeks = weeksPerMonth[m] || [];
+          monthWeeks.forEach((weekNum) => {
+            const weekData = monthData?.weeks.find((w) => w.weekNum === weekNum);
+            setCell(ws, r, colMap[`${m}_${weekNum}`], fmt(weekData?.value || 0), base);
+          });
+          setCell(ws, r, colMap[`${m}_total`], fmt(monthData?.total || 0), {
+            ...base,
+            fill: argbFill(C.GRAND_TOTAL),
+            font: argbFont(C.TOTAL_FG, true),
+          });
+        });
+        r++;
+      }
+    }
+
+    // Process row
+    setCell(ws, r, 0, "", mutedCell);
+    setCell(ws, r, 1, "Process", {
+      ...mutedCell,
+      font:      argbFont("94A3B8", false, 9, true),
+      alignment: { horizontal: "left", vertical: "center" },
+    });
+    months.forEach((m) => {
+      const monthWeeks = weeksPerMonth[m] || [];
+      monthWeeks.forEach((weekNum) => {
+        setCell(ws, r, colMap[`${m}_${weekNum}`], "", mutedCell);
+      });
+      setCell(ws, r, colMap[`${m}_total`], "—", mutedCell);
+    });
+    r++;
+
+    // Matière row
+    setCell(ws, r, 0, "", mutedCell);
+    setCell(ws, r, 1, "Matière", {
+      ...mutedCell,
+      font:      argbFont("94A3B8", false, 9, true),
+      alignment: { horizontal: "left", vertical: "center" },
+    });
+    months.forEach((m) => {
+      const monthWeeks = weeksPerMonth[m] || [];
+      monthWeeks.forEach((weekNum) => {
+        setCell(ws, r, colMap[`${m}_${weekNum}`], "", mutedCell);
+      });
+      setCell(ws, r, colMap[`${m}_total`], "—", mutedCell);
+    });
+    r++;
 
     // TOTAL row
     const totalStyle: CellStyle = {
@@ -248,35 +383,50 @@ export function exportZoneDetailToExcel(
       alignment: { horizontal: "left", vertical: "center" },
     });
     months.forEach((m, mi) => {
-        const monthTotals = zone.totals[mi] ?? [];
+      const monthWeeks = weeksPerMonth[m] || [];
+      const monthTotals = zone.totals[mi] ?? [];
 
-        // Find Projet and Serie cells (mirrors CollapsedZoneSummary logic)
-        const projetCell = zone.cells.find((c) => c.type === "Projet");
-        const serieCell  = zone.cells.find((c) => c.type === "Serie");
+      monthWeeks.forEach((wk, wi) => {
+        setCell(ws, r, colMap[`${m}_${wk}`], fmt(monthTotals[wi] ?? 0), totalStyle);
+      });
 
-        // Week columns: from zone.totals (sum of Projet + Serie per week)
-        wpm[m].forEach((wk, wi) => {
-            setCell(ws, r, colMap[`${m}_${wk}`], fmt(monthTotals[wi] ?? 0), totalStyle);
-        });
+      let projetTotal = 0;
+      let serieTotal = 0;
 
-        // Month total column: projetTotal + serieTotal (mirrors the UI fix)
-        const projetTotal = projetCell?.months[mi]?.total ?? 0;
-        const serieTotal  = serieCell?.months[mi]?.total  ?? 0;
-        const correctMonthTotal = projetTotal + serieTotal;
+      if (isExpanded && zoneDetails) {
+        const cellNames = Object.keys(zoneDetails.cells);
+        const projetKey = cellNames.find(
+          (k) => zoneDetails.cells[k].type === "Projet"
+        );
+        const serieKey = cellNames.find(
+          (k) => zoneDetails.cells[k].type === "Serie"
+        );
+        projetTotal = projetKey
+          ? zoneDetails.cells[projetKey]?.months[m]?.total || 0
+          : 0;
+        serieTotal = serieKey
+          ? zoneDetails.cells[serieKey]?.months[m]?.total || 0
+          : 0;
+      } else {
+        projetTotal = projetCell?.months[mi]?.total ?? 0;
+        serieTotal = serieCell?.months[mi]?.total ?? 0;
+      }
 
-        setCell(ws, r, colMap[`${m}_total`], fmt(correctMonthTotal), {
-            ...totalStyle,
-            fill: argbFill(C.GRAND_TOTAL),
-        });
+      const correctMonthTotal = projetTotal + serieTotal;
+
+      setCell(ws, r, colMap[`${m}_total`], fmt(correctMonthTotal), {
+        ...totalStyle,
+        fill: argbFill(C.GRAND_TOTAL),
+      });
     });
 
-    r += 2; // blank spacer between zones
+    r++;
   }
 
   // ── Column widths, row heights, sheet range ───────────────────────────────
   ws["!cols"] = [{ wch: 14 }, { wch: 10 }, ...Array(NCOLS - FIXED).fill({ wch: 9 })];
-  ws["!rows"] = [{ hpt: 20 }, { hpt: 16 }, { hpt: 14 }];
-  ws["!ref"]  = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r, c: NCOLS - 1 } });
+  ws["!rows"] = [{ hpt: 16 }, { hpt: 14 }];
+  ws["!ref"]  = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: r - 1, c: NCOLS - 1 } });
 
   XLSX.utils.book_append_sheet(wb, ws, "Zone Details");
 

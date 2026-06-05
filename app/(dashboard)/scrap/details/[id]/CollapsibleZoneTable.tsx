@@ -646,7 +646,12 @@ const CollapsibleZoneTable = ({
     exportZoneDetailToExcel(
         zonesData,
         viewMode,
-        `zoneDetail_${new Date().toISOString().slice(0, 10)}.xlsx`
+        {
+          fileName: `zoneDetail_${new Date().toISOString().slice(0, 10)}.xlsx`,
+          expandedZones,
+          detailedData,
+          months,
+        }
     );
   };
 
