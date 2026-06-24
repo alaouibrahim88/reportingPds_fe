@@ -12,6 +12,12 @@ import { getCookieValue } from "@/lib/storage";
 type ZoneKey = "Wrapping" | "Nets" | "Knitting";
 type ZoneState = Record<ZoneKey, boolean>;
 
+const initialExpandedZones: ZoneState = {
+  Wrapping: false,
+  Nets: false,
+  Knitting: false,
+};
+
 // Define data structure types
 type WeekData = {
   value: number;
@@ -130,16 +136,18 @@ const CollapsibleZoneTable = ({
   month,
   data,
 }: CollapsibleZoneTableProps) => {
-  const [expandedZones, setExpandedZones] = useState<ZoneState>({
-    Wrapping: false,
-    Nets: false,
-    Knitting: false,
-  });
+  const [expandedZones, setExpandedZones] =
+    useState<ZoneState>(initialExpandedZones);
 
   const [zonesData, setZonesData] = useState<ZoneData[]>([]);
   const [detailedData, setDetailedData] = useState<Record<string, any>>({});
   const [months, setMonths] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    setDetailedData({});
+    setExpandedZones(initialExpandedZones);
+  }, [year, month, viewMode]);
 
   useEffect(() => {
     const processData = async () => {
@@ -169,6 +177,15 @@ const CollapsibleZoneTable = ({
     processData();
   }, [data]);
 
+  const toNumber = (value: unknown) => {
+    if (typeof value === "number") return value;
+    if (typeof value === "string") {
+      return Number(value.replace(",", ".")) || 0;
+    }
+
+    return 0;
+  };
+
   const processDetailedData = (zonesDetails: any[]) => {
     const result: Record<string, any> = {};
 
@@ -195,13 +212,13 @@ const CollapsibleZoneTable = ({
         if (!result[zoneName].cells[cellName].months[detail?.mois]) {
           result[zoneName].cells[cellName].months[detail?.mois] = {
             weeks: {},
-            total: detail?.total_mois,
+            total: toNumber(detail?.total_mois),
           };
         }
 
         result[zoneName].cells[cellName].months[detail?.mois].weeks[
           detail?.semaine
-        ] = detail?.couts;
+        ] = toNumber(detail?.couts);
       });
     });
 
@@ -209,12 +226,14 @@ const CollapsibleZoneTable = ({
   };
 
   const toggleZone = async (zone: ZoneKey) => {
+    const shouldExpand = !expandedZones[zone];
+
     setExpandedZones((prev) => ({
       ...prev,
-      [zone]: !prev[zone],
+      [zone]: shouldExpand,
     }));
 
-    if (!detailedData[zone]) {
+    if (shouldExpand && !detailedData[zone]) {
       const detailsResponse = await getZoneSubDetails(
         year,
         viewMode,
@@ -222,9 +241,8 @@ const CollapsibleZoneTable = ({
         zone
       );
 
-      const zonesDetailsArray = Object.values(detailsResponse);
-
       if (detailsResponse) {
+        const zonesDetailsArray = Object.values(detailsResponse);
         const processedDetails = processDetailedData(zonesDetailsArray);
         setDetailedData((prev) => ({
           ...prev,
