@@ -30,6 +30,11 @@ export function TableFilter({ data,filters ,onFilterChange }: TableFilterProps) 
     }
   };
 
+  const handleYearChange = (value: string): void => {
+    handleFilterChange("year", value);
+    handleFilterChange("month", "");
+  };
+
   const handleOpenChange = (open: boolean) => {
     if (open) {
       handleFilterChange("year", currentYear.toString());
@@ -79,7 +84,7 @@ export function TableFilter({ data,filters ,onFilterChange }: TableFilterProps) 
                     <label className="text-sm font-medium">Year</label>
                     <Select
                       value={filters.year.toString()}
-                      onValueChange={(val) => handleFilterChange("year", val)}
+                      onValueChange={handleYearChange}
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select year" />
