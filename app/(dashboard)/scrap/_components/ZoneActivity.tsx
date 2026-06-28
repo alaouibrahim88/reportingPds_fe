@@ -133,6 +133,17 @@ export function ZoneActivity({
         </div>
       </div>
 
+      {/* Combined Total */}
+      <div className="bg-primary/10 border border-primary/20 p-2 rounded-lg mb-3">
+        <div className="text-xs text-muted-foreground">Total (Projet + Série)</div>
+        <div className="text-sm font-bold text-primary">
+          {((metrics?.totalProjet ?? 0) + (metrics?.totalSerie ?? 0)).toLocaleString("fr-FR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })} €
+        </div>
+      </div>
+
       {/* Zone List */}
       <div className="space-y-2">
         {zones?.map((zone) => (
@@ -178,7 +189,7 @@ export function ZoneActivity({
               </div>
             </div>
             <span
-              className={`text-xs sm:text-sm ${
+              className={`text-xs sm:text-sm font-bold ${
                 zone.count > 50
                   ? "text-red-500"
                   : zone.count > 25
