@@ -53,6 +53,21 @@ const numberFormatter = new Intl.NumberFormat("fr-FR", {
   maximumFractionDigits: 2,
 });
 
+const monthNames = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
 function parseNumberValue(value: number | string): number {
   if (typeof value === "number") {
     return Number.isFinite(value) ? value : 0;
@@ -108,6 +123,20 @@ function formatScrapMetric(metric: ScrapMetricTotal): string {
   }
 
   return formatNumber(metric.pcs);
+}
+
+function formatSelectedPeriod(
+  selectedYear: number,
+  selectedMonth: string,
+  fallbackPeriod: number | string
+): string {
+  const monthNumber = Number(selectedMonth);
+
+  if (!Number.isInteger(monthNumber) || monthNumber < 1 || monthNumber > 12) {
+    return fallbackPeriod.toString();
+  }
+
+  return `${monthNames[monthNumber - 1]}, ${selectedYear}`;
 }
 
 function calculateTotals(data: YearlyZoneDataType[]): YearlyZoneTotals {
@@ -177,6 +206,7 @@ export default function TableZone({ data = [], filters, onFilterChange }: TableZ
             data={currentData}
             totals={totals}
             selectedYear={filters.year}
+            selectedMonth={filters.month}
             openRows={openRows}
             toggleRow={toggleRow}
           />
@@ -276,6 +306,7 @@ interface TableContentProps {
   data: YearlyZoneDataType[];
   totals: YearlyZoneTotals;
   selectedYear: number;
+  selectedMonth: string;
   openRows: number[];
   toggleRow: (index: number) => void;
 }
@@ -284,9 +315,12 @@ function TableContent({
   data,
   totals,
   selectedYear,
+  selectedMonth,
   openRows,
   toggleRow,
 }: TableContentProps) {
+  const totalPeriod = formatSelectedPeriod(selectedYear, selectedMonth, selectedYear);
+
   return (
     <TableBody>
       {data.map((item, index) => (
@@ -303,7 +337,7 @@ function TableContent({
               {item.zone}
             </TableCell>
             <TableCell className="font-medium text-xs py-2 text-foreground">
-              {item.periode}
+              {formatSelectedPeriod(selectedYear, selectedMonth, item.periode)}
             </TableCell>
             <TableCell className="text-xs py-2 text-foreground hidden lg:table-cell">
               <span className="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/20 px-2 py-0.5 text-xs font-medium text-primary">
@@ -326,7 +360,7 @@ function TableContent({
             Total
           </TableCell>
           <TableCell className="text-xs py-3 text-foreground">
-            {selectedYear}
+            {totalPeriod}
           </TableCell>
           <TableCell className="text-xs py-3 text-foreground hidden lg:table-cell">
             <span className="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/20 px-2 py-0.5 text-xs font-medium text-primary">
