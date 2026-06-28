@@ -265,21 +265,29 @@ function TableHeaderSection({
 }
 
 function TotalsSummary({ totals }: { totals: YearlyZoneTotals }) {
+  const totalCombined = totals.process.euro + totals.matiere.euro;
+
   return (
-    <div className="grid w-full max-w-[560px] grid-cols-2 overflow-hidden rounded-md border border-primary/20 bg-primary/5">
-      <div className="border-r border-primary/20 px-4 py-2">
-        <p className="text-xs font-medium text-muted-foreground">Total Process (€)</p>
-        <p className="mt-1 text-sm font-semibold text-foreground">
-          {formatCurrency(totals.process.euro)}
-        </p>
+      <div className="grid w-full max-w-[840px] grid-cols-3 overflow-hidden rounded-md border border-primary/20 bg-primary/5">
+        <div className="border-r border-primary/20 px-4 py-2">
+          <p className="text-xs font-medium text-muted-foreground">Total Process</p>
+          <p className="mt-1 text-sm font-semibold text-foreground">
+            {formatCurrency(totals.process.euro)}
+          </p>
+        </div>
+        <div className="border-r border-primary/20 px-4 py-2">
+          <p className="text-xs font-medium text-muted-foreground">Total Matière</p>
+          <p className="mt-1 text-sm font-semibold text-foreground">
+            {formatCurrency(totals.matiere.euro)}
+          </p>
+        </div>
+        <div className="px-4 py-2">
+          <p className="text-xs font-medium text-muted-foreground">Total (Process + Matière)</p>
+          <p className="mt-1 text-sm font-semibold text-foreground">
+            {formatCurrency(totalCombined)}
+          </p>
+        </div>
       </div>
-      <div className="px-4 py-2">
-        <p className="text-xs font-medium text-muted-foreground">Total Matière (€)</p>
-        <p className="mt-1 text-sm font-semibold text-foreground">
-          {formatCurrency(totals.matiere.euro)}
-        </p>
-      </div>
-    </div>
   );
 }
 
