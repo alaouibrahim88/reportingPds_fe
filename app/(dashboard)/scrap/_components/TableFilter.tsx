@@ -19,9 +19,21 @@ import { exportToExcel } from "@/utils/excel";
 import { FaFileExcel } from "react-icons/fa";
 
 export function TableFilter({ data,filters ,onFilterChange }: TableFilterProps) {
+  const currentYear = new Date().getFullYear();
+  const emptyMonthValue = "all";
+  const selectedMonth = filters.month === "" ? emptyMonthValue : filters.month.toString();
+  const yearOptions = Array.from({ length: 6 }, (_, index) => currentYear - 4 + index);
+
   const handleFilterChange = (type: string, value: string): void => {
     if (onFilterChange){
       onFilterChange(type,value);
+    }
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    if (open) {
+      handleFilterChange("year", currentYear.toString());
+      handleFilterChange("month", "");
     }
   };
 
@@ -38,7 +50,7 @@ export function TableFilter({ data,filters ,onFilterChange }: TableFilterProps) 
             onChange={(val) => handleFilterChange("query", val.target.value)}
             className="w-[200px]"
           />
-          <Sheet>
+          <Sheet onOpenChange={handleOpenChange}>
             <SheetTrigger asChild>
               <Button variant="outline" className="flex items-center gap-2">
                 <svg
@@ -66,19 +78,18 @@ export function TableFilter({ data,filters ,onFilterChange }: TableFilterProps) 
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Year</label>
                     <Select
-                      defaultValue={filters.year.toString()}
+                      value={filters.year.toString()}
                       onValueChange={(val) => handleFilterChange("year", val)}
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select year" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="2022">2022</SelectItem>
-                        <SelectItem value="2023">2023</SelectItem>
-                        <SelectItem value="2024">2024</SelectItem>
-                        <SelectItem value="2025">2025</SelectItem>
-                        <SelectItem value="2026">2026</SelectItem>
-                        <SelectItem value="2027">2027</SelectItem>
+                        {yearOptions.map((year) => (
+                          <SelectItem key={year} value={year.toString()}>
+                            {year}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -86,13 +97,21 @@ export function TableFilter({ data,filters ,onFilterChange }: TableFilterProps) 
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Month</label>
                     <Select
-                      defaultValue={filters.month.toString()}
-                      onValueChange={(val) => handleFilterChange("month", val)}
+                      value={selectedMonth}
+                      onValueChange={(val) =>
+                        handleFilterChange(
+                          "month",
+                          val === emptyMonthValue ? "" : val
+                        )
+                      }
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select month" />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem value={emptyMonthValue} textValue="Full year">
+                          Full year
+                        </SelectItem>
                         <SelectItem value="1">January</SelectItem>
                         <SelectItem value="2">February</SelectItem>
                         <SelectItem value="3">March</SelectItem>

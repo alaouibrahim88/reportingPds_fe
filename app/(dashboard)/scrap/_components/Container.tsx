@@ -68,7 +68,7 @@ function Container() {
   const [isWeeklyLoading, setIsWeeklyLoading] = useState(false);
   const [yearlyFilter, setYearlyFilter] = useState({
     year: new Date().getFullYear(),
-    month: new Date().getMonth() + 1,
+    month: "",
     query: '',
   });
 
@@ -92,13 +92,13 @@ function Container() {
   const handleFilterChange = (type: string, value: string) => {
     switch (type) {
       case "year":
-        setYearlyFilter({ ...yearlyFilter, year: Number(value) });
+        setYearlyFilter((prev) => ({ ...prev, year: Number(value) }));
         break;
       case "month":
-        setYearlyFilter({ ...yearlyFilter, month: Number(value) });
+        setYearlyFilter((prev) => ({ ...prev, month: value }));
         break;
       case "query":
-        setYearlyFilter({ ...yearlyFilter, query: value });
+        setYearlyFilter((prev) => ({ ...prev, query: value }));
         break;
       default:
         break;

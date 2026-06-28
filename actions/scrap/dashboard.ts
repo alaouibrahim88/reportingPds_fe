@@ -4,7 +4,7 @@ import { getCookieValue } from "@/lib/storage";
 
 export interface Filters {
   year: number;
-  month: number;
+  month: string;
   query: string
 }
 
@@ -73,7 +73,7 @@ export const fetchYearlyScrap = async (fitlers: Filters): Promise<any> => {
     const token = await getCookieValue("access_token");
     const url = new URL(`${process.env.NEXT_PUBLIC_API_ENDPOINT}${Endpoints.scrap.statsPerYear}`);
     url.searchParams.append("annee", fitlers.year.toString());
-    url.searchParams.append("month", fitlers.month.toString()); 
+    url.searchParams.append("mois", fitlers.month.toString());
     url.searchParams.append("query", fitlers.query);  
   
     const response = await fetch(`${url}`,
