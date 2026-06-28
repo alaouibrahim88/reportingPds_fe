@@ -35,13 +35,6 @@ export function TableFilter({ data,filters ,onFilterChange }: TableFilterProps) 
     handleFilterChange("month", "");
   };
 
-  const handleOpenChange = (open: boolean) => {
-    if (open) {
-      handleFilterChange("year", currentYear.toString());
-      handleFilterChange("month", "");
-    }
-  };
-
   const handleExport = () => {
     exportToExcel(data, "detailsParZone.xlsx");
   };
@@ -55,7 +48,7 @@ export function TableFilter({ data,filters ,onFilterChange }: TableFilterProps) 
             onChange={(val) => handleFilterChange("query", val.target.value)}
             className="w-[200px]"
           />
-          <Sheet onOpenChange={handleOpenChange}>
+          <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" className="flex items-center gap-2">
                 <svg
