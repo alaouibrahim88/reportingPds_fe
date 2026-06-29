@@ -2,7 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -127,6 +129,13 @@ export function TableFilter({ data,filters ,onFilterChange }: TableFilterProps) 
                   </div>
                 </div>
               </div>
+              <SheetFooter>
+                <SheetClose asChild>
+                  <Button type="button" className="w-full sm:w-auto">
+                    Confirm
+                  </Button>
+                </SheetClose>
+              </SheetFooter>
             </SheetContent>
           </Sheet>
         </div>
