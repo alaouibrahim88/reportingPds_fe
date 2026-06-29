@@ -14,6 +14,39 @@ interface GlobalScrapData {
   returnMessage: string;
 }
 
+async function parseJsonResponse<T>(response: Response, fallback: T): Promise<T> {
+  if (response.status === 204) {
+    return fallback;
+  }
+
+  const body = await response.text();
+
+  if (!response.ok) {
+    console.error("Scrap dashboard request failed", {
+      status: response.status,
+      statusText: response.statusText,
+      body: body.slice(0, 500),
+    });
+    return fallback;
+  }
+
+  if (!body.trim()) {
+    return fallback;
+  }
+
+  try {
+    return JSON.parse(body) as T;
+  } catch (error) {
+    console.error("Scrap dashboard response is not valid JSON", {
+      status: response.status,
+      contentType: response.headers.get("content-type"),
+      body: body.slice(0, 500),
+      error,
+    });
+    return fallback;
+  }
+}
+
 export const fetchGlobalScrap = async ({
   type,
   year,
@@ -37,10 +70,10 @@ export const fetchGlobalScrap = async ({
         Authorization: `Bearer ${token}`,
       }
     });
-    if (!response || response.status === 204) return null;
-     return response.json();
+    return parseJsonResponse(response, null);
   } catch (error) {
     console.error(error);
+    return null;
   }
 };
 
@@ -62,9 +95,10 @@ export const fetchWeeklyScrap = async (week: number, year?: number): Promise<any
       }
     );
 
-    return response.json();
+    return parseJsonResponse(response, undefined);
   } catch (error) {
     console.error(error);
+    return undefined;
   }
 };
 
@@ -86,8 +120,9 @@ export const fetchYearlyScrap = async (fitlers: Filters): Promise<any> => {
       }
     );
 
-    return response.json();
+    return parseJsonResponse(response, { weekDataAnnee: [] });
   } catch (error) {
     console.error(error);
+    return { weekDataAnnee: [] };
   }
 };

@@ -142,7 +142,9 @@ function Container() {
   }, [week, weeklyYear]);
 
   useEffect(() => {
-    fetchYearlyScrap(yearlyFilter).then((result) => setYearlyData(result.weekDataAnnee));
+    fetchYearlyScrap(yearlyFilter).then((result) =>
+      setYearlyData(result?.weekDataAnnee ?? [])
+    );
   }, [yearlyFilter]);
   /************* End */
 
