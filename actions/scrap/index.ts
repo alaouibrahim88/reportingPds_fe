@@ -185,9 +185,9 @@ export const fetchAllZones = async (): Promise<Zone[]> => {
  */
 export async function fetchCellByZone(zone: string): Promise<Cell[]> {
   try {
-    const validZone = "HEAD REST"; //cellSchema.parse(zone);
+    const validZone = z.string().trim().min(1).parse(zone);
     const token = await getCookieValue("access_token");
-    const response: any = await fetch(
+    const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_ENDPOINT}${Endpoints.allCells}?zone=${encodeURIComponent(
         validZone
       )}`,
@@ -206,8 +206,29 @@ export async function fetchCellByZone(zone: string): Promise<Cell[]> {
     if (!response.ok) {
       throw new Error(`API error: ${response.status} - ${response.statusText}`);
     }
-    const data = await response?.json();
-    return data.getlistcell;
+
+    if (response.status === 204) {
+      return [];
+    }
+
+    const body = await response.text();
+
+    if (!body.trim()) {
+      return [];
+    }
+
+    try {
+      const data = JSON.parse(body) as { getlistcell?: unknown } | null;
+      return data && Array.isArray(data.getlistcell)
+        ? (data.getlistcell as Cell[])
+        : [];
+    } catch {
+      throw new Error(
+        `GetListCell returned invalid JSON (content-type: ${
+          response.headers.get("content-type") ?? "unknown"
+        })`
+      );
+    }
   } catch (error) {
     console.error("Failed to fetch all cells:", error);
     throw error;

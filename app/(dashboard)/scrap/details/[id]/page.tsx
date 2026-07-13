@@ -44,15 +44,49 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
   }, [selectedYear, viewMode, selectedMonth]);
 
   useEffect(() => {
+    let cancelled = false;
+
     const fetchAllCells = async () => {
-      const allCells = await fetchCellByZone(selectedZone);
-      setAllCells(allCells);
+      if (!selectedZone) {
+        setAllCells([]);
+        setSelectedCell("");
+        return;
+      }
+
+      setSelectedCell("");
+
+      try {
+        const cells = await fetchCellByZone(selectedZone);
+
+        if (!cancelled) {
+          setAllCells(cells);
+        }
+      } catch (error) {
+        console.error("Error fetching cells for zone:", error);
+
+        if (!cancelled) {
+          setAllCells([]);
+        }
+      }
     };
+
     fetchAllCells();
+
+    return () => {
+      cancelled = true;
+    };
   }, [selectedZone]);
 
   useEffect(() => {
     const fetchOperatorData = async () => {
+      if (!selectedCell) {
+        setOperatorData([]);
+        setWeekNumbers([]);
+        setMonthData({});
+        setIsLoading(false);
+        return;
+      }
+
       setIsLoading(true);
       try {
         const data = await getOperators(
@@ -98,7 +132,7 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
     };
 
     fetchOperatorData();
-  }, [selectedYear, selectedMonth, selectedCell]);
+  }, [selectedYear, selectedMonth, selectedCell, viewMode]);
 
   // Find the zone data based on the ID
   const zoneDetail = workflowData.zoneData
