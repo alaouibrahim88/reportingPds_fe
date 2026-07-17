@@ -41,21 +41,27 @@ export function AutomotiveHeroIllustration() {
           <stop stopColor="#2857A5" />
           <stop offset="1" stopColor="#0B214E" />
         </linearGradient>
-        <linearGradient id="car-paint" x1="111" x2="423" y1="351" y2="539" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#67E1FF" />
-          <stop offset="0.38" stopColor="#3694FF" />
-          <stop offset="0.72" stopColor="#336CEB" />
-          <stop offset="1" stopColor="#6857EF" />
+        <linearGradient id="car-metal-real" x1="164" x2="397" y1="353" y2="516" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#70D8FF" />
+          <stop offset="0.28" stopColor="#368FEC" />
+          <stop offset="0.65" stopColor="#285FC7" />
+          <stop offset="1" stopColor="#28378E" />
         </linearGradient>
-        <linearGradient id="car-glass" x1="202" x2="335" y1="354" y2="413" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#153A72" />
-          <stop offset="0.5" stopColor="#071D44" />
-          <stop offset="1" stopColor="#102B62" />
+        <linearGradient id="car-hood-real" x1="280" x2="280" y1="408" y2="493" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#62C4FA" stopOpacity="0.82" />
+          <stop offset="0.55" stopColor="#3679D6" stopOpacity="0.58" />
+          <stop offset="1" stopColor="#162F72" stopOpacity="0.4" />
         </linearGradient>
-        <linearGradient id="headlamp" x1="129" x2="399" y1="455" y2="473" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#F5FDFF" />
-          <stop offset="0.5" stopColor="#9EEAFF" />
-          <stop offset="1" stopColor="#FFFFFF" />
+        <linearGradient id="car-glass-real" x1="238" x2="318" y1="356" y2="405" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#2865A8" />
+          <stop offset="0.45" stopColor="#0A244E" />
+          <stop offset="1" stopColor="#07172F" />
+        </linearGradient>
+        <linearGradient id="shared-floor" x1="114" x2="644" y1="535" y2="564" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#2B7CFF" stopOpacity="0" />
+          <stop offset="0.28" stopColor="#39BDFF" stopOpacity="0.2" />
+          <stop offset="0.58" stopColor="#4C79F6" stopOpacity="0.26" />
+          <stop offset="1" stopColor="#6A58E9" stopOpacity="0" />
         </linearGradient>
         <linearGradient id="gear-paint" x1="568" x2="686" y1="411" y2="545" gradientUnits="userSpaceOnUse">
           <stop stopColor="#8EE4FF" />
@@ -137,6 +143,62 @@ export function AutomotiveHeroIllustration() {
         <rect x="378" y="332" width="70" height="6" rx="3" fill="#2D70C7" fillOpacity="0.13" />
       </g>
 
+      <ellipse cx="372" cy="552" rx="281" ry="43" fill="url(#shared-floor)" />
+      <ellipse cx="372" cy="552" rx="252" ry="31" fill="none" stroke="#78D9FF" strokeOpacity="0.16" strokeWidth="1.5" />
+
+      <g opacity="0.92">
+        <ellipse cx="280" cy="529" rx="128" ry="17" fill="#020A20" fillOpacity="0.24" />
+
+        <rect x="158" y="458" width="28" height="67" rx="11" fill="#050B19" />
+        <rect x="374" y="458" width="28" height="67" rx="11" fill="#050B19" />
+        <path d="M164 472V510M180 472V510M380 472V510M396 472V510" stroke="#2D4568" strokeOpacity="0.55" strokeWidth="2" />
+
+        <path
+          d="M146 484L156 445C160 426 171 414 190 405L211 370C220 355 235 347 253 346H307C325 347 340 355 349 370L370 405C389 414 400 426 404 445L414 484C419 504 404 520 384 520H176C156 520 141 504 146 484Z"
+          fill="url(#car-metal-real)"
+          stroke="#BCEEFF"
+          strokeOpacity="0.34"
+          strokeWidth="1.5"
+        />
+
+        <path d="M179 407H153C144 407 138 413 137 422C147 426 158 426 171 423Z" fill="#235DB0" stroke="#8FDFFF" strokeOpacity="0.35" />
+        <path d="M381 407H407C416 407 422 413 423 422C413 426 402 426 389 423Z" fill="#263F9E" stroke="#8FDFFF" strokeOpacity="0.35" />
+
+        <path d="M212 371C221 354 237 345 254 343H306C323 345 339 354 348 371" fill="none" stroke="#B8ECFF" strokeLinecap="round" strokeOpacity="0.35" strokeWidth="2" />
+        <path d="M207 401L226 372C232 363 242 358 254 358H306C318 358 328 363 334 372L353 401Z" fill="url(#car-glass-real)" stroke="#8DCEFF" strokeOpacity="0.42" strokeWidth="1.5" />
+        <path d="M280 358V401" stroke="#5594D0" strokeOpacity="0.35" strokeWidth="2" />
+        <path d="M235 367C244 362 253 361 264 361L252 397H216Z" fill="#BCEEFF" fillOpacity="0.1" />
+        <path d="M291 361H305C315 361 323 365 328 373L344 397H306Z" fill="#FFFFFF" fillOpacity="0.045" />
+        <path d="M225 397L260 393M335 397L300 393" stroke="#91BFEA" strokeLinecap="round" strokeOpacity="0.42" strokeWidth="2" />
+
+        <path d="M190 426C219 408 341 408 370 426L353 470H207Z" fill="url(#car-hood-real)" />
+        <path d="M221 416L207 461M339 416L353 461" fill="none" stroke="#B9EDFF" strokeLinecap="round" strokeOpacity="0.24" strokeWidth="1.5" />
+        <path d="M203 426C245 416 315 416 357 426" fill="none" stroke="#D8F7FF" strokeLinecap="round" strokeOpacity="0.24" />
+
+        <path d="M171 438C190 432 211 433 231 441L223 454C204 455 187 452 173 447Z" fill="#E8FAFF" stroke="#A3E8FF" strokeOpacity="0.7" />
+        <path d="M389 438C370 432 349 433 329 441L337 454C356 455 373 452 387 447Z" fill="#E8FAFF" stroke="#A3E8FF" strokeOpacity="0.7" />
+        <path d="M181 441L217 448M379 441L343 448" stroke="#5BCBFF" strokeLinecap="round" strokeWidth="2" />
+        <circle cx="215" cy="446" r="3.5" fill="#FFFFFF" />
+        <circle cx="345" cy="446" r="3.5" fill="#FFFFFF" />
+
+        <path d="M236 450C264 443 296 443 324 450L317 466H243Z" fill="#091B39" stroke="#689ED4" strokeOpacity="0.42" />
+        <circle cx="280" cy="453" r="7" fill="#183B76" stroke="#B5E9FF" strokeOpacity="0.76" strokeWidth="1.5" />
+        <path d="M276 453H284" stroke="#A7E6FF" strokeLinecap="round" strokeWidth="1.5" />
+
+        <path d="M207 474H353L342 502C340 508 335 511 328 511H232C225 511 220 508 218 502Z" fill="#07172F" stroke="#4E77AC" strokeOpacity="0.45" />
+        <path d="M222 483H338M220 491H340M224 500H336" stroke="#355581" strokeLinecap="round" strokeWidth="2" />
+        <path d="M165 466L209 470L202 497H172C164 488 162 478 165 466Z" fill="#102C5B" fillOpacity="0.9" />
+        <path d="M395 466L351 470L358 497H388C396 488 398 478 395 466Z" fill="#10264F" fillOpacity="0.9" />
+        <path d="M170 471L199 478M390 471L361 478" stroke="#4171AF" strokeLinecap="round" strokeOpacity="0.65" strokeWidth="2" />
+
+        <rect x="251" y="483" width="58" height="18" rx="4" fill="#D9EDFA" fillOpacity="0.82" stroke="#FFFFFF" strokeOpacity="0.45" />
+        <rect x="262" y="489" width="36" height="3" rx="1.5" fill="#6991B8" fillOpacity="0.7" />
+        <path d="M179 512C232 518 328 518 381 512" fill="none" stroke="#9ADFFF" strokeLinecap="round" strokeOpacity="0.34" strokeWidth="2" />
+      </g>
+
+      <path d="M149 395H202M358 395H661" stroke="#C5F2FF" strokeLinecap="round" strokeOpacity="0.48" strokeWidth="2" />
+      <path d="M149 399H198M362 399H661" stroke="#4BCBFF" strokeLinecap="round" strokeOpacity="0.18" strokeWidth="5" filter="url(#light-glow)" />
+
       <rect x="637" y="415" width="26" height="7" rx="3.5" fill="#72D7FF" fillOpacity="0.7" />
 
       <g transform="translate(625 479)" filter="url(#object-shadow)">
@@ -153,39 +215,6 @@ export function AutomotiveHeroIllustration() {
         </g>
         <circle r="34" fill="#10295C" stroke="#A6ECFF" strokeOpacity="0.38" strokeWidth="2" />
         <circle r="17" fill="url(#gear-paint)" fillOpacity="0.78" />
-      </g>
-
-      <ellipse cx="269" cy="557" rx="172" ry="29" fill="#020A20" fillOpacity="0.42" />
-
-      <g filter="url(#object-shadow)">
-        <rect x="111" y="479" width="43" height="77" rx="18" fill="#06152E" />
-        <rect x="384" y="479" width="43" height="77" rx="18" fill="#06152E" />
-
-        <path d="M110 458C115 438 129 421 150 412L177 366C189 345 213 332 239 331H298C324 332 348 345 360 366L386 412C407 421 421 438 426 458L436 497C442 520 425 542 401 542H135C111 542 94 520 100 497L110 458Z" fill="url(#car-paint)" />
-        <path d="M111 458C116 438 130 422 151 413L177 368C189 347 213 334 239 333H298C324 334 348 347 359 368L385 413C406 422 420 438 425 458" fill="none" stroke="#C8F4FF" strokeOpacity="0.55" strokeLinecap="round" strokeWidth="2" />
-
-        <path d="M179 410L202 372C210 359 224 352 239 352H298C313 352 327 359 335 372L358 410H179Z" fill="url(#car-glass)" stroke="#9DDEFF" strokeOpacity="0.46" strokeWidth="1.5" />
-        <path d="M210 369C218 360 229 356 241 356H268L253 408H184L210 369Z" fill="#7FD5FF" fillOpacity="0.08" />
-        <path d="M271 356H296C308 356 320 362 327 372L350 408H286L271 356Z" fill="#FFFFFF" fillOpacity="0.05" />
-        <path d="M268 354V410" stroke="#8ECFFF" strokeOpacity="0.22" strokeWidth="2" />
-
-        <path d="M98 427C100 416 109 408 120 408H151L143 430H111C106 430 102 429 98 427Z" fill="#4A9CF3" stroke="#A8E9FF" strokeOpacity="0.42" />
-        <path d="M439 427C437 416 428 408 417 408H386L394 430H426C431 430 435 429 439 427Z" fill="#5669E7" stroke="#A8E9FF" strokeOpacity="0.36" />
-
-        <path d="M132 450C167 427 214 418 268 418C322 418 369 427 404 450L390 487H146L132 450Z" fill="#FFFFFF" fillOpacity="0.1" />
-        <path d="M156 433C177 426 198 422 220 420M380 433C359 426 338 422 316 420" fill="none" stroke="#D6F7FF" strokeOpacity="0.36" strokeLinecap="round" strokeWidth="2" />
-
-        <path d="M126 454C143 449 164 451 188 461L180 480C158 479 139 474 123 464L126 454Z" fill="url(#headlamp)" stroke="#D8FAFF" strokeOpacity="0.72" strokeWidth="1.5" filter="url(#light-glow)" />
-        <path d="M410 454C393 449 372 451 348 461L356 480C378 479 397 474 413 464L410 454Z" fill="url(#headlamp)" stroke="#D8FAFF" strokeOpacity="0.72" strokeWidth="1.5" filter="url(#light-glow)" />
-
-        <circle cx="268" cy="458" r="9" fill="#153A79" stroke="#B9ECFF" strokeOpacity="0.8" strokeWidth="2" />
-        <path d="M260 458H276" stroke="#A8E8FF" strokeLinecap="round" strokeWidth="2" />
-
-        <rect x="204" y="481" width="128" height="39" rx="18" fill="#081A39" stroke="#79CFFF" strokeOpacity="0.28" strokeWidth="1.5" />
-        <path d="M222 493H314M230 501H306M240 509H296" stroke="#4B76BA" strokeLinecap="round" strokeWidth="2" />
-        <rect x="128" y="500" width="59" height="23" rx="10" fill="#173B73" fillOpacity="0.86" />
-        <rect x="349" y="500" width="59" height="23" rx="10" fill="#17346D" fillOpacity="0.86" />
-        <path d="M149 531H387" stroke="#B5E9FF" strokeOpacity="0.3" strokeLinecap="round" strokeWidth="3" />
       </g>
 
       <path d="M111 575C248 599 474 594 648 557" fill="none" stroke="#76D5FF" strokeDasharray="4 10" strokeOpacity="0.2" strokeWidth="1.5" />
