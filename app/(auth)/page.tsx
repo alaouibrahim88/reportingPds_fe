@@ -72,19 +72,19 @@ export default function WelcomePage() {
             </span>
           </Link>
 
-          <div className="hidden items-center gap-1 xl:flex">
-            {navItems.map((item) => (
-              <Link
-                className="rounded-xl px-4 py-3 text-sm font-semibold text-blue-100/80 transition duration-200 hover:bg-white/[0.08] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
-                href={item.href}
-                key={item.name}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </div>
+          <div className="ml-auto hidden items-center gap-4 xl:flex">
+            <div className="flex items-center gap-1">
+              {navItems.map((item) => (
+                <Link
+                  className="rounded-xl px-4 py-3 text-sm font-semibold text-blue-100/80 transition duration-200 hover:bg-white/[0.08] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
+                  href={item.href}
+                  key={item.name}
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
 
-          <div className="hidden min-w-[142px] items-center justify-end gap-2 xl:flex">
             <LogoutButton
               className="h-11 rounded-xl border-white/20 bg-white/[0.08] px-5 font-semibold text-white shadow-none hover:border-cyan-200/40 hover:bg-white/[0.14] hover:text-white"
               label="Sign out"
