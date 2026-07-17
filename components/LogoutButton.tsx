@@ -7,10 +7,20 @@ import { useState } from "react";
 // Import the server action
 import { deleteCookieValue } from "@/lib/storage";
 
+interface LogoutButtonProps {
+  className?: string;
+  label?: string;
+  variant?: "outline" | "ghost";
+}
+
 /**
  * Clears authentication cookies and redirects to login page
  */
-export function LogoutButton() {
+export function LogoutButton({
+  className,
+  label = "Logout",
+  variant = "outline",
+}: LogoutButtonProps = {}) {
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -40,12 +50,13 @@ export function LogoutButton() {
 
   return (
     <Button
-      variant="outline"
+      variant={variant}
       onClick={handleLogout}
       disabled={isLoggingOut}
-      aria-label="Logout"
+      aria-label={label}
+      className={className}
     >
-      {isLoggingOut ? "Logging out..." : "Logout"}
+      {isLoggingOut ? "Logging out..." : label}
     </Button>
   );
 }

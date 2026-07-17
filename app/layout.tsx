@@ -4,8 +4,9 @@ import { Toaster } from "@/components/ui/sonner";
 import { AppProviders } from "@/components/context/AppProviders";
 
 export const metadata: Metadata = {
-  title: "Dashboard",
-  description: "Modern dashboard application",
+  title: "Vizora | Automotive Operations Intelligence",
+  description:
+    "Connected reporting for automotive interior trim, seating components, and complete assemblies.",
 };
 
 export default function RootLayout({
