@@ -1554,15 +1554,6 @@ export default function ProgramsPage() {
 							onTabChange={(tab) => setActiveTab(tab)}
 							variant="light"
 						/>
-						<label className="flex items-center gap-2 text-xs font-semibold text-slate-500">
-							<input
-								type="checkbox"
-								className="h-4 w-4 accent-primary"
-								checked={useMockData}
-								onChange={(event) => setUseMockData(event.target.checked)}
-							/>
-							Mock data
-						</label>
 					</div>
 				</div>
 
