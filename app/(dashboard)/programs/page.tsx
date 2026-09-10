@@ -15,6 +15,7 @@ import type {
 	ProgramApiResponse,
 	ProgramHistoriqueMois,
 	ProgramHistoriqueSemaine,
+	TrendHebdoMois,
 } from "@/types";
 
 type TabType = "weekly" | "monthly";
@@ -112,6 +113,16 @@ function getApqpStatus(value?: number) {
 	const level = percentage < 85 ? "red" : percentage < 90 ? "orange" : "green";
 
 	return { percentage, ...APQP_STATUS_STYLES[level] };
+}
+
+const DOCUMENTATION_STATUS_STYLES = APQP_STATUS_STYLES;
+
+function getDocumentationStatus(value?: number) {
+	const percentage =
+		value === undefined || !Number.isFinite(value) ? 0 : Math.round(value);
+	const level = percentage < 85 ? "red" : percentage < 90 ? "orange" : "green";
+
+	return { percentage, ...DOCUMENTATION_STATUS_STYLES[level] };
 }
 
 function StatusPill({ status }: { status: string }) {
@@ -902,6 +913,15 @@ export default function ProgramsPage() {
 				(h) => h.Mois === period && h.Annee === year
 			) ?? apqpHistory[apqpHistory.length - 1];
 		const apqpCurrentStatus = getApqpStatus(apqp?.Valeur_Mois_Courant);
+		const documentationHistory = documentation?.Historique_4_Mois ?? [];
+		const selectedDocumentationMonth =
+			documentationHistory.find(
+				(h) => h.Mois === period && h.Annee === year
+			) ?? documentationHistory[documentationHistory.length - 1];
+		const documentationCurrentStatus = getDocumentationStatus(
+			documentation?.Readiness_Mois_Courant
+		);
+		const documentationTrend = documentation?.Trend_Hebdo_Mois ?? [];
 
 		return (
 			<div className="space-y-6">
@@ -1481,9 +1501,21 @@ export default function ProgramsPage() {
 							<div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
 								<FaBook className="text-emerald-600 text-xl" />
 							</div>
-							<h2 className="text-xl font-bold text-slate-900">
-								Documentation Progress
-							</h2>
+							<div>
+								<h2 className="text-xl font-bold text-slate-900">
+									Documentation Progress
+								</h2>
+								<p className="text-xs text-slate-500">
+									Current:{" "}
+									<strong className={documentationCurrentStatus.text}>
+										{documentationCurrentStatus.percentage}%
+									</strong>{" "}
+									&middot; Health:{" "}
+									<strong className={documentationCurrentStatus.text}>
+										{documentationCurrentStatus.label}
+									</strong>
+								</p>
+							</div>
 						</div>
 					</div>
 					<div className="grid grid-cols-12 gap-6 p-6">
@@ -1492,43 +1524,34 @@ export default function ProgramsPage() {
 								Historical Readiness
 							</p>
 							<div className="flex justify-between items-center gap-2 px-2">
-								{(documentation?.Historique_4_Mois ?? []).length
-									? (documentation?.Historique_4_Mois ?? []).map(
-										(h: ProgramHistoriqueMois, i: number) => {
-											const isLast =
-												i ===
-												(documentation?.Historique_4_Mois
-													?.length ?? 1) -
-												1;
-											const val = h.Valeur ?? 0;
-											const st = getPercentStatusColor(val, 100);
-											const borderCls =
-												st === "green"
-													? "border-emerald-400"
-													: st === "orange"
-														? "border-amber-400"
-														: "border-red-400";
+								{documentationHistory.length
+									? documentationHistory.map(
+										(h: ProgramHistoriqueMois) => {
+											const isSelected =
+												h.Mois === selectedDocumentationMonth?.Mois &&
+												h.Annee === selectedDocumentationMonth?.Annee;
+											const status = getDocumentationStatus(h.Valeur);
 											return (
 												<div
 													key={`doc-${h.Mois}-${h.Annee}`}
 													className="flex flex-col items-center gap-1"
 												>
-													<span className={`text-xs font-semibold ${isLast ? "text-emerald-600" : "text-slate-400"}`}>
+													<span className={`text-xs font-semibold ${isSelected ? "text-emerald-600" : "text-slate-400"}`}>
 														T: 100%
 													</span>
 													<div
-														className={`rounded-full border-2 flex items-center justify-center transition-all ${
-															isLast
-																? "w-20 h-20 border-emerald-500 bg-emerald-50 shadow-md shadow-emerald-100"
-																: `w-14 h-14 ${borderCls}`
+														className={`rounded-full border-2 flex items-center justify-center transition-all ${status.border} ${status.bg} ${
+															isSelected
+																? `w-20 h-20 shadow-md ${status.shadow}`
+																: "w-14 h-14"
 														}`}
 													>
-														<span className={`font-bold ${isLast ? "text-sm text-emerald-700" : "text-xs text-slate-600"}`}>
-															{Math.round(val)}%
+														<span className={`font-bold ${status.text} ${isSelected ? "text-sm" : "text-xs"}`}>
+															{status.percentage}%
 														</span>
 													</div>
 													<p
-														className={`text-xs font-bold ${isLast ? "text-emerald-600" : "text-slate-500"}`}
+														className={`text-xs font-bold ${isSelected ? "text-emerald-600" : "text-slate-500"}`}
 													>
 														{(h.Label ?? "").toUpperCase()}
 													</p>
@@ -1567,74 +1590,88 @@ export default function ProgramsPage() {
 							</div>
 							<div className="h-44 relative rounded-xl bg-slate-50 border border-slate-100 overflow-hidden">
 								<svg
-									className="w-full h-full px-4 pt-2"
+									className="w-full h-full overflow-visible"
 									viewBox="0 0 400 100"
+									preserveAspectRatio="none"
 								>
 									{(() => {
-										const trend =
-											documentation?.Trend_Hebdo_Mois ?? [];
-										if (trend.length < 2) return null;
+										const trend = documentationTrend;
+										if (!trend.length) return null;
+										const chartLeft = 40;
+										const chartRight = 392;
+										const chartTop = 12;
+										const chartBottom = 88;
 										const maxVal = Math.max(
-											...trend.map((t) => t.Valeur ?? 0),
+											...trend.map(
+												(t) => getDocumentationStatus(t.Valeur).percentage
+											),
 											100
 										);
 										const minVal = Math.min(
-											...trend.map((t) => t.Valeur ?? 0),
+											...trend.map(
+												(t) => getDocumentationStatus(t.Valeur).percentage
+											),
 											0
 										);
 										const range = maxVal - minVal || 1;
+										const valueToY = (value: number) =>
+											chartBottom -
+											((value - minVal) / range) * (chartBottom - chartTop);
 										const pts = trend.map((t, i) => {
+											const status = getDocumentationStatus(t.Valeur);
 											const x =
-												(i / (trend.length - 1)) * 350 + 25;
-											const y =
-												85 -
-												(((t.Valeur ?? 0) - minVal) / range) * 65;
-											return { x, y };
+												chartLeft +
+												((i + 0.5) / trend.length) *
+													(chartRight - chartLeft);
+											return { x, y: valueToY(status.percentage), status };
 										});
-										const polyline = pts
-											.map((p) => `${p.x},${p.y}`)
-											.join(" ");
-										const area = `M${pts.map((p) => `${p.x},${p.y}`).join("L")} L${pts[pts.length - 1].x},95 L${pts[0].x},95 Z`;
 										return (
 											<>
-												<defs>
-													<linearGradient
-														id="doc-grad"
-														x1="0"
-														x2="0"
-														y1="0"
-														y2="1"
-													>
-														<stop
-															offset="0%"
-															stopColor="#10b981"
-															stopOpacity="0.2"
+												{[25, 50, 75].map((percentage) => {
+													const y = valueToY(percentage);
+													return (
+														<line
+															key={percentage}
+															x1={chartLeft}
+															y1={y}
+															x2={chartRight}
+															y2={y}
+															stroke="#e2e8f0"
+															strokeWidth="1"
 														/>
-														<stop
-															offset="100%"
-															stopColor="#10b981"
-															stopOpacity="0"
+													);
+												})}
+												<line
+													x1={chartLeft}
+													y1={valueToY(100)}
+													x2={chartRight}
+													y2={valueToY(100)}
+													stroke="#94a3b8"
+													strokeWidth="1.5"
+													strokeDasharray="5 3"
+												/>
+												{pts.slice(1).map((point, i) => {
+													const previousPoint = pts[i];
+													return (
+														<line
+															key={`doc-line-${trend[i + 1].Semaine}-${trend[i + 1].Annee}`}
+															x1={previousPoint.x}
+															y1={previousPoint.y}
+															x2={point.x}
+															y2={point.y}
+															stroke={point.status.chart}
+															strokeLinecap="round"
+															strokeWidth="2.5"
 														/>
-													</linearGradient>
-												</defs>
-												<path
-													d={area}
-													fill="url(#doc-grad)"
-												/>
-												<polyline
-													points={polyline}
-													fill="none"
-													stroke="#10b981"
-													strokeLinecap="round"
-													strokeWidth="2.5"
-												/>
+													);
+												})}
 												{pts.map((p, i) => (
 													<circle
-														key={i}
+														key={`doc-point-${trend[i].Semaine}-${trend[i].Annee}`}
 														cx={p.x}
 														cy={p.y}
 														r="4"
-														fill="#10b981"
+														fill={p.status.chart}
 													/>
 												))}
 											</>
@@ -1642,17 +1679,39 @@ export default function ProgramsPage() {
 									})()}
 								</svg>
 							</div>
-							<div className="flex justify-between mt-2 text-xs font-bold text-slate-400">
-								{(documentation?.Trend_Hebdo_Mois ?? []).length
-									? (documentation?.Trend_Hebdo_Mois ?? []).map(
-										(t: any) => (
-											<span key={t.Label}>
-												{t.Label?.toUpperCase() ?? ""}
-											</span>
-										)
-									)
-									: ["W14", "W15", "W16", "W17", "W18"].map((l) => (
-										<span key={l}>{l}</span>
+							<div
+								className="grid mt-2"
+								style={{
+									paddingLeft: "10%",
+									paddingRight: "2%",
+									gridTemplateColumns: `repeat(${documentationTrend.length || 5}, minmax(0, 1fr))`,
+								}}
+							>
+								{documentationTrend.length
+									? documentationTrend.map((t: TrendHebdoMois) => {
+										const status = getDocumentationStatus(t.Valeur);
+										return (
+											<div
+												key={`doc-label-${t.Semaine}-${t.Annee}`}
+												className="flex flex-col items-center gap-1"
+											>
+												<span className={`text-base leading-none font-black ${status.text}`}>
+													{status.percentage}%
+												</span>
+												<span className="text-xs font-bold text-slate-400">
+													{t.Label?.toUpperCase() ?? ""}
+												</span>
+											</div>
+										);
+									})
+									: ["W14", "W15", "W16", "W17", "W18"].map((label) => (
+										<div
+											key={label}
+											className="flex flex-col items-center gap-1 text-slate-300"
+										>
+											<span className="text-base leading-none font-black">—</span>
+											<span className="text-xs font-bold">{label}</span>
+										</div>
 									))}
 							</div>
 						</div>
