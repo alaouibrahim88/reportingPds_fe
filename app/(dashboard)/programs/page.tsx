@@ -26,6 +26,56 @@ function getPercentStatusColor(value: number, target: number): string {
 	return "red";
 }
 
+const BUDGET_PERCENTAGE_STYLES = {
+	zero: {
+		text: "text-red-700",
+		bg: "bg-red-50",
+		dot: "bg-red-500",
+		chart: "#ef4444",
+		label: "AT RISK",
+	},
+	atRisk: {
+		text: "text-amber-700",
+		bg: "bg-amber-50",
+		dot: "bg-amber-500",
+		chart: "#f59e0b",
+		label: "AT RISK",
+	},
+	onTrack: {
+		text: "text-emerald-700",
+		bg: "bg-emerald-50",
+		dot: "bg-emerald-500",
+		chart: "#10b981",
+		label: "ON TRACK",
+	},
+} as const;
+
+function getBudgetPercentage(actual?: number, budget?: number): number {
+	if (
+		budget === undefined ||
+		budget <= 0 ||
+		!Number.isFinite(budget) ||
+		actual === undefined ||
+		!Number.isFinite(actual)
+	) {
+		return 0;
+	}
+
+	return Math.round((actual / budget) * 100);
+}
+
+function getBudgetPercentageStatus(actual?: number, budget?: number) {
+	const percentage = getBudgetPercentage(actual, budget);
+	const level =
+		percentage <= 0
+			? "zero"
+			: percentage < 40
+				? "atRisk"
+				: "onTrack";
+
+	return { percentage, ...BUDGET_PERCENTAGE_STYLES[level] };
+}
+
 function StatusPill({ status }: { status: string }) {
 	const cfg = {
 		green: {
@@ -800,25 +850,14 @@ export default function ProgramsPage() {
 		}
 
 		const historiqueBudget = budget?.Historique_4_Mois ?? [];
-		const budgetHealth = budget?.Current_Health ?? "—";
-		const budgetHealthCfg =
-			budgetHealth === "On Track"
-				? {
-					text: "text-emerald-700",
-					bg: "bg-emerald-50",
-					dot: "bg-emerald-500",
-				}
-				: budgetHealth === "At Risk"
-					? {
-						text: "text-amber-700",
-						bg: "bg-amber-50",
-						dot: "bg-amber-500",
-					}
-					: {
-						text: "text-slate-600",
-						bg: "bg-slate-50",
-						dot: "bg-slate-400",
-					};
+		const selectedBudgetMonth =
+			historiqueBudget.find(
+				(h) => h.Mois === period && h.Annee === year
+			) ?? historiqueBudget[historiqueBudget.length - 1];
+		const selectedBudgetStatus = getBudgetPercentageStatus(
+			selectedBudgetMonth?.Actual,
+			selectedBudgetMonth?.Budget
+		);
 
 		return (
 			<div className="space-y-6">
@@ -833,22 +872,23 @@ export default function ProgramsPage() {
 								<h2 className="text-xl font-bold text-slate-900">
 									Budget vs Actual (CAPEX/OPEX)
 								</h2>
-								<div className="flex items-center gap-2 mt-0.5">
-									<span
-										className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-sm font-bold ${budgetHealthCfg.bg} ${budgetHealthCfg.text}`}
-									>
-										<span
-											className={`w-1.5 h-1.5 rounded-full ${budgetHealthCfg.dot}`}
-										/>
-										{budgetHealth}
-									</span>
-									{budget && (
+								<div className="flex flex-wrap items-center gap-2 mt-0.5">
+									{/*{budget && (
 										<span className="text-sm text-slate-500">
 											Variance {varianceToK(budget.Variance_Mois_Courant ?? 0)}
 											{" "}
 											vs target {varianceToK(budget.Target_Variance ?? 0)}
 										</span>
-									)}
+									)}*/}
+									<span
+										className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-sm font-bold ${selectedBudgetStatus.bg} ${selectedBudgetStatus.text}`}
+									>
+										<span
+											className={`w-1.5 h-1.5 rounded-full ${selectedBudgetStatus.dot}`}
+										/>
+										{selectedBudgetStatus.percentage}%
+										{selectedBudgetStatus.label && ` ${selectedBudgetStatus.label}`}
+									</span>
 								</div>
 							</div>
 						</div>
@@ -869,6 +909,10 @@ export default function ProgramsPage() {
 												: "text-slate-500";
 											const budgetVal = moneyToK(h.Budget ?? 0);
 											const actualVal = moneyToK(h.Actual ?? 0);
+											const percentageStatus = getBudgetPercentageStatus(
+												h.Actual,
+												h.Budget
+											);
 											const maxMonthVal = Math.max(
 												h.Budget ?? 0,
 												h.Actual ?? 0,
@@ -924,6 +968,11 @@ export default function ProgramsPage() {
 													>
 														{(h.Label ?? "").toUpperCase()}
 													</p>
+													<span
+												className={`w-2.5 h-2.5 rounded-full ${percentageStatus.dot}`}
+												role="img"
+												aria-label={`${percentageStatus.percentage}% ${percentageStatus.label}`}
+											/>
 												</div>
 											)
 										}
@@ -970,120 +1019,159 @@ export default function ProgramsPage() {
 										BUDGET
 									</span>
 									<span className="flex items-center gap-1.5 text-xs font-bold text-slate-500">
-										<span className="w-3 h-0.5 bg-primary inline-block rounded-full" />
+										<span className="inline-flex w-4 h-0.5 overflow-hidden rounded-full">
+											<span className="flex-1 bg-red-500" />
+											<span className="flex-1 bg-amber-500" />
+											<span className="flex-1 bg-emerald-500" />
+										</span>
 										ACTUAL
 									</span>
 								</div>
 							</div>
-							<div className="h-36">
-								<svg
-									className="w-full h-full overflow-visible"
-									viewBox="0 0 400 100"
-									preserveAspectRatio="none"
+							<div>
+								<div className="h-36">
+									<svg
+										className="w-full h-full overflow-visible"
+										viewBox="0 0 400 100"
+										preserveAspectRatio="none"
+									>
+										{(() => {
+											if (!historiqueBudget.length) return null;
+											const chartLeft = 40;
+											const chartRight = 392;
+											const chartTop = 12;
+											const chartBottom = 88;
+											const percentageToY = (percentage: number) => {
+												const clampedPercentage = Math.min(
+													100,
+													Math.max(percentage, 0)
+												);
+												return (
+													chartBottom -
+													(clampedPercentage / 100) * (chartBottom - chartTop)
+												);
+											};
+											const actualPoints = historiqueBudget.map((h, i) => {
+												const status = getBudgetPercentageStatus(
+													h.Actual,
+													h.Budget
+												);
+												const x =
+													chartLeft +
+													((i + 0.5) / historiqueBudget.length) *
+														(chartRight - chartLeft);
+												return {
+													x,
+													y: percentageToY(status.percentage),
+													status,
+												};
+											});
+											const budgetY = percentageToY(100);
+											return (
+												<>
+													{[0, 50, 100].map((percentage) => {
+														const y = percentageToY(percentage);
+														return (
+															<g key={percentage}>
+																<line
+																	x1={chartLeft}
+																	y1={y}
+																	x2={chartRight}
+																	y2={y}
+																	stroke={percentage === 100 ? "#94a3b8" : "#e2e8f0"}
+																	strokeWidth={percentage === 100 ? "1.5" : "1"}
+																/>
+																<text
+																	x="4"
+																	y={y + 3}
+																	fill="#64748b"
+																	fontSize="8"
+																	fontWeight="700"
+																>
+																	{percentage}%
+																</text>
+															</g>
+														);
+													})}
+													{actualPoints.map((point, i) => (
+														<circle
+															key={`budget-${historiqueBudget[i].Mois}-${historiqueBudget[i].Annee}`}
+															cx={point.x}
+															cy={budgetY}
+															r="2"
+															fill="#94a3b8"
+														/>
+													))}
+													{actualPoints.slice(1).map((point, i) => {
+														const previousPoint = actualPoints[i];
+														return (
+															<line
+																key={`actual-${historiqueBudget[i + 1].Mois}-${historiqueBudget[i + 1].Annee}`}
+																x1={previousPoint.x}
+																y1={previousPoint.y}
+																x2={point.x}
+																y2={point.y}
+																stroke={point.status.chart}
+																strokeLinecap="round"
+																strokeWidth="2"
+															/>
+														);
+													})}
+													{actualPoints.map((point, i) => (
+														<circle
+															key={`actual-point-${historiqueBudget[i].Mois}-${historiqueBudget[i].Annee}`}
+															cx={point.x}
+															cy={point.y}
+															r="3.25"
+															fill={point.status.chart}
+														/>
+													))}
+												</>
+											);
+										})()}
+									</svg>
+								</div>
+								<div
+									className="grid mt-2"
+									style={{
+										paddingLeft: "10%",
+										paddingRight: "2%",
+										gridTemplateColumns: `repeat(${historiqueBudget.length || 4}, minmax(0, 1fr))`,
+									}}
 								>
-									{(() => {
-										if (!historiqueBudget.length) return null;
-										const maxVal = Math.max(
-											...historiqueBudget.map((h) =>
-												Math.max(h.Budget ?? 0, h.Actual ?? 0)
-											),
-											1
-										);
-										const bp = historiqueBudget.map((h, i) => {
-											const x =
-												(i / (historiqueBudget.length - 1)) *
-												350 +
-												25;
-											const y =
-												90 - ((h.Budget ?? 0) / maxVal) * 70;
-											return `${x},${y}`;
-										});
-										const ap = historiqueBudget.map((h, i) => {
-											const x =
-												(i / (historiqueBudget.length - 1)) *
-												350 +
-												25;
-											const y =
-												90 - ((h.Actual ?? 0) / maxVal) * 70;
-											return `${x},${y}`;
-										});
-										return (
-											<>
-												{[25, 50, 75].map((pct) => (
-													<line
-														key={pct}
-														x1="20"
-														y1={90 - pct * 0.7}
-														x2="380"
-														y2={90 - pct * 0.7}
-														stroke="#f1f5f9"
-														strokeWidth="1"
-													/>
-												))}
-												<polyline
-													points={bp.join(" ")}
-													fill="none"
-													stroke="#cbd5e1"
-													strokeLinecap="round"
-													strokeWidth="1.5"
-												/>
-												<polyline
-													points={ap.join(" ")}
-													fill="none"
-													stroke="#043f76"
-													strokeLinecap="round"
-													strokeWidth="1.5"
-												/>
-												{historiqueBudget.map((h, i) => {
-													const x =
-														(i / (historiqueBudget.length - 1)) *
-														350 +
-														25;
-													const y =
-														90 - ((h.Budget ?? 0) / maxVal) * 70;
-													return (
-														<circle
-															key={i}
-															cx={x}
-															cy={y}
-															r="2"
-															fill="#cbd5e1"
-														/>
-													);
-												})}
-												{historiqueBudget.map((h, i) => {
-													const x =
-														(i / (historiqueBudget.length - 1)) *
-														350 +
-														25;
-													const y =
-														90 - ((h.Actual ?? 0) / maxVal) * 70;
-													return (
-														<circle
-															key={i}
-															cx={x}
-															cy={y}
-															r="2"
-															fill="#043f76"
-														/>
-													);
-												})}
-											</>
-										);
-									})()}
-								</svg>
-								<div className="flex justify-between mt-2 text-xs font-bold text-slate-400">
 									{historiqueBudget.length
-										? historiqueBudget.map((h, i) => (
-											<span
-												key={`${h.Mois}-${h.Annee}`}
-												className={i === historiqueBudget.length - 1 ? "text-primary font-black" : ""}
+										? historiqueBudget.map((h) => {
+											const status = getBudgetPercentageStatus(
+												h.Actual,
+												h.Budget
+											);
+											const isSelected =
+												h.Mois === selectedBudgetMonth?.Mois &&
+												h.Annee === selectedBudgetMonth?.Annee;
+											return (
+												<div
+													key={`${h.Mois}-${h.Annee}`}
+													className="flex flex-col items-center gap-1"
+												>
+													<span className={`text-base leading-none font-black ${status.text}`}>
+														{status.percentage}%
+													</span>
+													<span
+														className={`text-xs font-bold ${isSelected ? "text-primary font-black" : "text-slate-400"}`}
+													>
+														{(h.Label ?? "").toUpperCase()}
+													</span>
+												</div>
+											);
+										})
+										: ["JAN", "FEB", "MAR", "APR"].map((label) => (
+											<div
+												key={label}
+												className="flex flex-col items-center gap-1 text-slate-300"
 											>
-												{(h.Label ?? "").toUpperCase()}
-											</span>
-										))
-										: ["JAN", "FEB", "MAR", "APR"].map((l) => (
-											<span key={l}>{l}</span>
+												<span className="text-base leading-none font-black">—</span>
+												<span className="text-xs font-bold">{label}</span>
+											</div>
 										))}
 								</div>
 							</div>
@@ -1494,7 +1582,7 @@ export default function ProgramsPage() {
 				</section>
 			</div>
 		);
-	}, [monthlyData]);
+	}, [monthlyData, period, year]);
 
 	if (loading) {
 		return (
