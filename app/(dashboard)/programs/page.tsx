@@ -1041,87 +1041,90 @@ export default function ProgramsPage() {
 											const chartRight = 392;
 											const chartTop = 12;
 											const chartBottom = 88;
-											const percentageToY = (percentage: number) => {
-												const clampedPercentage = Math.min(
-													100,
-													Math.max(percentage, 0)
-												);
+											const maxValue = Math.max(
+												...historiqueBudget.map((h) =>
+													Math.max(h.Budget ?? 0, h.Actual ?? 0)
+												),
+												1
+											);
+											const valueToY = (value: number) => {
+												const normalizedValue = Math.max(value, 0) / maxValue;
 												return (
 													chartBottom -
-													(clampedPercentage / 100) * (chartBottom - chartTop)
+													normalizedValue * (chartBottom - chartTop)
 												);
 											};
-											const actualPoints = historiqueBudget.map((h, i) => {
-												const status = getBudgetPercentageStatus(
-													h.Actual,
-													h.Budget
-												);
+											const valuePoints = historiqueBudget.map((h, i) => {
 												const x =
 													chartLeft +
 													((i + 0.5) / historiqueBudget.length) *
 														(chartRight - chartLeft);
 												return {
 													x,
-													y: percentageToY(status.percentage),
-													status,
+													budgetY: valueToY(h.Budget ?? 0),
+													actualY: valueToY(h.Actual ?? 0),
+													status: getBudgetPercentageStatus(
+														h.Actual,
+														h.Budget
+													),
 												};
 											});
-											const budgetY = percentageToY(100);
+											const scaleValues = [0, maxValue / 2, maxValue];
 											return (
 												<>
-													{[0, 50, 100].map((percentage) => {
-														const y = percentageToY(percentage);
+													{scaleValues.map((value, i) => {
+														const y = valueToY(value);
 														return (
-															<g key={percentage}>
+															<g key={value}>
 																<line
 																	x1={chartLeft}
 																	y1={y}
 																	x2={chartRight}
 																	y2={y}
-																	stroke={percentage === 100 ? "#94a3b8" : "#e2e8f0"}
-																	strokeWidth={percentage === 100 ? "1.5" : "1"}
+																	stroke={i === scaleValues.length - 1 ? "#cbd5e1" : "#e2e8f0"}
+																	strokeWidth={i === scaleValues.length - 1 ? "1.5" : "1"}
 																/>
-																<text
-																	x="4"
-																	y={y + 3}
-																	fill="#64748b"
-																	fontSize="8"
-																	fontWeight="700"
-																>
-																	{percentage}%
-																</text>
 															</g>
 														);
 													})}
-													{actualPoints.map((point, i) => (
+													<polyline
+														points={valuePoints
+															.map((point) => `${point.x},${point.budgetY}`)
+															.join(" ")}
+														fill="none"
+														stroke="#94a3b8"
+														strokeLinecap="round"
+														strokeWidth="1.5"
+													/>
+													{valuePoints.map((point, i) => (
 														<circle
 															key={`budget-${historiqueBudget[i].Mois}-${historiqueBudget[i].Annee}`}
 															cx={point.x}
-															cy={budgetY}
+															cy={point.budgetY}
 															r="2"
 															fill="#94a3b8"
 														/>
 													))}
-													{actualPoints.slice(1).map((point, i) => {
-														const previousPoint = actualPoints[i];
+													{valuePoints.slice(1).map((point, i) => {
+														const previousPoint = valuePoints[i];
 														return (
 															<line
 																key={`actual-${historiqueBudget[i + 1].Mois}-${historiqueBudget[i + 1].Annee}`}
 																x1={previousPoint.x}
-																y1={previousPoint.y}
+																y1={previousPoint.actualY}
 																x2={point.x}
-																y2={point.y}
+																y2={point.actualY}
 																stroke={point.status.chart}
 																strokeLinecap="round"
 																strokeWidth="2"
 															/>
 														);
 													})}
-													{actualPoints.map((point, i) => (
+													{valuePoints.map((point, i) => (
 														<circle
 															key={`actual-point-${historiqueBudget[i].Mois}-${historiqueBudget[i].Annee}`}
 															cx={point.x}
-															cy={point.y}
+															cy={point.actualY}
 															r="3.25"
 															fill={point.status.chart}
 														/>
