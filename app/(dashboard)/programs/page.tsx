@@ -76,6 +76,44 @@ function getBudgetPercentageStatus(actual?: number, budget?: number) {
 	return { percentage, ...BUDGET_PERCENTAGE_STYLES[level] };
 }
 
+const APQP_STATUS_STYLES = {
+	red: {
+		text: "text-red-700",
+		bg: "bg-red-50",
+		border: "border-red-400",
+		dot: "bg-red-500",
+		shadow: "shadow-red-100",
+		chart: "#ef4444",
+		label: "AT RISK",
+	},
+	orange: {
+		text: "text-amber-700",
+		bg: "bg-amber-50",
+		border: "border-amber-400",
+		dot: "bg-amber-500",
+		shadow: "shadow-amber-100",
+		chart: "#f59e0b",
+		label: "AT RISK",
+	},
+	green: {
+		text: "text-emerald-700",
+		bg: "bg-emerald-50",
+		border: "border-emerald-400",
+		dot: "bg-emerald-500",
+		shadow: "shadow-emerald-100",
+		chart: "#10b981",
+		label: "ON TRACK",
+	},
+} as const;
+
+function getApqpStatus(value?: number) {
+	const percentage =
+		value === undefined || !Number.isFinite(value) ? 0 : Math.round(value);
+	const level = percentage < 85 ? "red" : percentage < 90 ? "orange" : "green";
+
+	return { percentage, ...APQP_STATUS_STYLES[level] };
+}
+
 function StatusPill({ status }: { status: string }) {
 	const cfg = {
 		green: {
@@ -858,6 +896,12 @@ export default function ProgramsPage() {
 			selectedBudgetMonth?.Actual,
 			selectedBudgetMonth?.Budget
 		);
+		const apqpHistory = apqp?.Historique_4_Mois ?? [];
+		const selectedApqpMonth =
+			apqpHistory.find(
+				(h) => h.Mois === period && h.Annee === year
+			) ?? apqpHistory[apqpHistory.length - 1];
+		const apqpCurrentStatus = getApqpStatus(apqp?.Valeur_Mois_Courant);
 
 		return (
 			<div className="space-y-6">
@@ -1195,18 +1239,14 @@ export default function ProgramsPage() {
 								</h2>
 								<p className="text-xs text-slate-500">
 									Current:{" "}
-									<strong>{apqp?.Valeur_Mois_Courant ?? "—"}%</strong>{" "}
+									<strong className={apqpCurrentStatus.text}>
+										{apqpCurrentStatus.percentage}%
+									</strong>{" "}
 									&middot; Health:{" "}
 									<strong
-										className={
-											apqp?.Current_Health === "On Track"
-												? "text-emerald-600"
-												: apqp?.Current_Health === "At Risk"
-													? "text-amber-600"
-													: "text-slate-600"
-										}
+										className={apqpCurrentStatus.text}
 									>
-										{apqp?.Current_Health ?? "—"}
+										{apqpCurrentStatus.label}
 									</strong>
 								</p>
 							</div>
@@ -1218,42 +1258,34 @@ export default function ProgramsPage() {
 								Milestone Adherence
 							</p>
 							<div className="flex justify-between items-center gap-2 px-2">
-								{(apqp?.Historique_4_Mois ?? []).length
-									? (apqp?.Historique_4_Mois ?? []).map(
-										(h: ProgramHistoriqueMois, i: number) => {
-											const isLast =
-												i ===
-												(apqp?.Historique_4_Mois?.length ?? 1) -
-												1;
-											const val = h.Valeur ?? 0;
-											const st = getPercentStatusColor(val, 100);
-											const borderCls =
-												st === "green"
-													? "border-emerald-400"
-													: st === "orange"
-														? "border-amber-400"
-														: "border-red-400";
+								{apqpHistory.length
+									? apqpHistory.map(
+										(h: ProgramHistoriqueMois) => {
+											const isSelected =
+												h.Mois === selectedApqpMonth?.Mois &&
+												h.Annee === selectedApqpMonth?.Annee;
+											const status = getApqpStatus(h.Valeur);
 											return (
 												<div
 													key={`apqp-${h.Mois}-${h.Annee}`}
 													className="flex flex-col items-center gap-1"
 												>
-													<span className={`text-xs font-semibold ${isLast ? "text-violet-600" : "text-slate-400"}`}>
+													<span className={`text-xs font-semibold ${isSelected ? "text-violet-600" : "text-slate-400"}`}>
 														T: 100%
 													</span>
 													<div
-														className={`rounded-full border-2 flex items-center justify-center transition-all ${
-															isLast
-																? "w-20 h-20 border-violet-500 bg-violet-50 shadow-md shadow-violet-100"
-																: `w-14 h-14 ${borderCls}`
+														className={`rounded-full border-2 flex items-center justify-center transition-all ${status.border} ${status.bg} ${
+															isSelected
+																? `w-20 h-20 shadow-md ${status.shadow}`
+																: "w-14 h-14"
 														}`}
 													>
-														<span className={`font-bold ${isLast ? "text-sm text-violet-700" : "text-xs text-slate-600"}`}>
-															{Math.round(val)}%
+														<span className={`font-bold ${status.text} ${isSelected ? "text-sm" : "text-xs"}`}>
+															{status.percentage}%
 														</span>
 													</div>
 													<p
-														className={`text-xs font-bold ${isLast ? "text-violet-600" : "text-slate-500"}`}
+														className={`text-xs font-bold ${isSelected ? "text-violet-600" : "text-slate-500"}`}
 													>
 														{(h.Label ?? "").toUpperCase()}
 													</p>
@@ -1297,101 +1329,144 @@ export default function ProgramsPage() {
 										TARGET
 									</span>
 									<span className="flex items-center gap-1.5 text-xs font-bold text-slate-500">
-										<span className="w-3 h-0.5 bg-red-400 inline-block rounded-full" />
+										<span className="inline-flex w-4 h-0.5 overflow-hidden rounded-full">
+											<span className="flex-1 bg-red-500" />
+											<span className="flex-1 bg-amber-500" />
+											<span className="flex-1 bg-emerald-500" />
+										</span>
 										ACTUAL
 									</span>
 								</div>
 							</div>
-							<div className="h-44">
-								<svg
-									className="w-full h-full overflow-visible"
-									viewBox="0 0 400 100"
-									preserveAspectRatio="none"
-								>
-									{(() => {
-										const history = apqp?.Historique_4_Mois ?? [];
-										if (!history.length) return null;
-										const maxVal = Math.max(
-											...history.map((h) => h.Valeur ?? 0),
-											100
-										);
-										const minVal = Math.min(
-											...history.map((h) => h.Valeur ?? 0),
-											0
-										);
-										const range = maxVal - minVal || 1;
-										const targetY =
-											90 - ((100 - minVal) / range) * 70;
-										const pts = history.map((h, i) => {
-											const x =
-												(i / (history.length - 1)) * 350 + 25;
-											const y =
-												90 -
-												(((h.Valeur ?? 0) - minVal) / range) * 70;
-											return `${x},${y}`;
-										});
-										return (
-											<>
-												{[25, 50, 75].map((pct) => (
+							<div>
+								<div className="h-44">
+									<svg
+										className="w-full h-full overflow-visible"
+										viewBox="0 0 400 100"
+										preserveAspectRatio="none"
+									>
+										{(() => {
+											if (!apqpHistory.length) return null;
+											const chartLeft = 40;
+											const chartRight = 392;
+											const chartTop = 12;
+											const chartBottom = 88;
+											const maxVal = Math.max(
+												...apqpHistory.map((h) => h.Valeur ?? 0),
+												100
+											);
+											const minVal = Math.min(
+												...apqpHistory.map((h) => h.Valeur ?? 0),
+												0
+											);
+											const range = maxVal - minVal || 1;
+											const valueToY = (value: number) =>
+												chartBottom -
+												((value - minVal) / range) * (chartBottom - chartTop);
+											const points = apqpHistory.map((h, i) => {
+												const status = getApqpStatus(h.Valeur);
+												const x =
+													chartLeft +
+													((i + 0.5) / apqpHistory.length) *
+														(chartRight - chartLeft);
+												return {
+													x,
+													y: valueToY(status.percentage),
+													status,
+												};
+											});
+											return (
+												<>
+													{[25, 50, 75].map((percentage) => {
+														const y = valueToY(percentage);
+														return (
+															<line
+																key={percentage}
+																x1={chartLeft}
+																y1={y}
+																x2={chartRight}
+																y2={y}
+																stroke="#f1f5f9"
+																strokeWidth="1"
+															/>
+														);
+													})}
 													<line
-														key={pct}
-														x1="20"
-														y1={90 - (pct / 100) * 70}
-														x2="380"
-														y2={90 - (pct / 100) * 70}
-														stroke="#f1f5f9"
-														strokeWidth="1"
+														x1={chartLeft}
+														y1={valueToY(100)}
+														x2={chartRight}
+														y2={valueToY(100)}
+														stroke="#cbd5e1"
+														strokeWidth="1.5"
+														strokeDasharray="5 3"
 													/>
-												))}
-												<line
-													x1="25"
-													y1={targetY}
-													x2="375"
-													y2={targetY}
-													stroke="#cbd5e1"
-													strokeWidth="1.5"
-													strokeDasharray="5 3"
-												/>
-												<polyline
-													points={pts.join(" ")}
-													fill="none"
-													stroke="#ef4444"
-													strokeLinecap="round"
-													strokeWidth="2.5"
-												/>
-												{history.map((h, i) => {
-													const x =
-														(i / (history.length - 1)) * 350 + 25;
-													const y =
-														90 -
-														(((h.Valeur ?? 0) - minVal) / range) *
-														70;
-													return (
+													{points.slice(1).map((point, i) => {
+														const previousPoint = points[i];
+														return (
+															<line
+																key={`apqp-line-${apqpHistory[i + 1].Mois}-${apqpHistory[i + 1].Annee}`}
+																x1={previousPoint.x}
+																y1={previousPoint.y}
+																x2={point.x}
+																y2={point.y}
+																stroke={point.status.chart}
+																strokeLinecap="round"
+																strokeWidth="2.5"
+															/>
+														);
+													})}
+													{points.map((point, i) => (
 														<circle
-															key={i}
-															cx={x}
-															cy={y}
+															key={`apqp-point-${apqpHistory[i].Mois}-${apqpHistory[i].Annee}`}
+															cx={point.x}
+															cy={point.y}
 															r="4"
-															fill="#ef4444"
+															fill={point.status.chart}
 														/>
-													);
-												})}
-											</>
-										);
-									})()}
-								</svg>
-								<div className="flex justify-between mt-2 text-xs font-bold text-slate-400">
-									{(apqp?.Historique_4_Mois ?? []).length
-										? (apqp?.Historique_4_Mois ?? []).map((h, i) => (
-											<span
-												key={`apqp-lbl-${h.Mois}-${h.Annee}`}
-												className={i === (apqp?.Historique_4_Mois?.length ?? 1) - 1 ? "text-violet-600 font-black" : ""}
+													))}
+												</>
+											);
+										})()}
+									</svg>
+								</div>
+								<div
+									className="grid mt-2"
+									style={{
+										paddingLeft: "10%",
+										paddingRight: "2%",
+										gridTemplateColumns: `repeat(${apqpHistory.length || 4}, minmax(0, 1fr))`,
+									}}
+								>
+									{apqpHistory.length
+										? apqpHistory.map((h) => {
+											const status = getApqpStatus(h.Valeur);
+											const isSelected =
+												h.Mois === selectedApqpMonth?.Mois &&
+												h.Annee === selectedApqpMonth?.Annee;
+											return (
+												<div
+													key={`apqp-label-${h.Mois}-${h.Annee}`}
+													className="flex flex-col items-center gap-1"
+												>
+													<span className={`text-base leading-none font-black ${status.text}`}>
+														{status.percentage}%
+													</span>
+													<span
+														className={`text-xs font-bold ${isSelected ? "text-violet-600 font-black" : "text-slate-400"}`}
+													>
+														{(h.Label ?? "").toUpperCase()}
+													</span>
+												</div>
+											);
+										})
+										: ["JAN", "FEB", "MAR", "APR"].map((label) => (
+											<div
+												key={label}
+												className="flex flex-col items-center gap-1 text-slate-300"
 											>
-												{(h.Label ?? "").toUpperCase()}
-											</span>
-										))
-										: ["JAN", "FEB", "MAR", "APR"].map((l) => (
-											<span key={l}>{l}</span>
+												<span className="text-base leading-none font-black">—</span>
+												<span className="text-xs font-bold">{label}</span>
+											</div>
 										))}
 								</div>
 							</div>
