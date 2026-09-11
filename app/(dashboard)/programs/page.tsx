@@ -62,7 +62,7 @@ function getBudgetPercentage(actual?: number, budget?: number): number {
 		return 0;
 	}
 
-	return Math.round((actual / budget) * 100);
+	return Math.round((1 - actual / budget) * 100);
 }
 
 function getBudgetPercentageStatus(actual?: number, budget?: number) {
@@ -1331,11 +1331,6 @@ export default function ProgramsPage() {
 											</p>
 										</div>
 									))}
-							</div>
-							<div className="p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs text-slate-500">
-								{apqp
-									? `Delta: ${(apqp.Delta_Pts_Vs_M_1 ?? 0) >= 0 ? "+" : ""}${apqp.Delta_Pts_Vs_M_1 ?? 0} pts vs M-1`
-									: "No data available."}
 							</div>
 						</div>
 						<div className="col-span-12 lg:col-span-7 border-l border-slate-100 lg:pl-8">
