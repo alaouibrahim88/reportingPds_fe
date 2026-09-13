@@ -15,7 +15,6 @@ import type {
 	ProgramApiResponse,
 	ProgramHistoriqueMois,
 	ProgramHistoriqueSemaine,
-	TrendHebdoMois,
 } from "@/types";
 
 type TabType = "weekly" | "monthly";
@@ -921,7 +920,6 @@ export default function ProgramsPage() {
 		const documentationCurrentStatus = getDocumentationStatus(
 			documentation?.Readiness_Mois_Courant
 		);
-		const documentationTrend = documentation?.Trend_Hebdo_Mois ?? [];
 
 		return (
 			<div className="space-y-6">
@@ -1579,9 +1577,9 @@ export default function ProgramsPage() {
 								<p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
 									Approval Growth Trend
 								</p>
-								<span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+								{/* <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
 									{documentation?.Average_Hebdo_Mois ?? "—"}% Avg
-								</span>
+								</span> */}
 							</div>
 							<div className="h-44 relative rounded-xl bg-slate-50 border border-slate-100 overflow-hidden">
 								<svg
@@ -1590,7 +1588,7 @@ export default function ProgramsPage() {
 									preserveAspectRatio="none"
 								>
 									{(() => {
-										const trend = documentationTrend;
+										const trend = documentationHistory;
 										if (!trend.length) return null;
 										const chartLeft = 40;
 										const chartRight = 392;
@@ -1649,7 +1647,7 @@ export default function ProgramsPage() {
 													const previousPoint = pts[i];
 													return (
 														<line
-															key={`doc-line-${trend[i + 1].Semaine}-${trend[i + 1].Annee}`}
+															key={`doc-line-${trend[i + 1].Mois}-${trend[i + 1].Annee}`}
 															x1={previousPoint.x}
 															y1={previousPoint.y}
 															x2={point.x}
@@ -1662,7 +1660,7 @@ export default function ProgramsPage() {
 												})}
 												{pts.map((p, i) => (
 													<circle
-														key={`doc-point-${trend[i].Semaine}-${trend[i].Annee}`}
+														key={`doc-point-${trend[i].Mois}-${trend[i].Annee}`}
 														cx={p.x}
 														cy={p.y}
 														r="4"
@@ -1679,27 +1677,32 @@ export default function ProgramsPage() {
 								style={{
 									paddingLeft: "10%",
 									paddingRight: "2%",
-									gridTemplateColumns: `repeat(${documentationTrend.length || 5}, minmax(0, 1fr))`,
+									gridTemplateColumns: `repeat(${documentationHistory.length || 4}, minmax(0, 1fr))`,
 								}}
 							>
-								{documentationTrend.length
-									? documentationTrend.map((t: TrendHebdoMois) => {
-										const status = getDocumentationStatus(t.Valeur);
+								{documentationHistory.length
+									? documentationHistory.map((h: ProgramHistoriqueMois) => {
+										const status = getDocumentationStatus(h.Valeur);
+										const isSelected =
+											h.Mois === selectedDocumentationMonth?.Mois &&
+											h.Annee === selectedDocumentationMonth?.Annee;
 										return (
 											<div
-												key={`doc-label-${t.Semaine}-${t.Annee}`}
+												key={`doc-label-${h.Mois}-${h.Annee}`}
 												className="flex flex-col items-center gap-1"
 											>
 												<span className={`text-base leading-none font-black ${status.text}`}>
 													{status.percentage}%
 												</span>
-												<span className="text-xs font-bold text-slate-400">
-													{t.Label?.toUpperCase() ?? ""}
+												<span
+													className={`text-xs font-bold ${isSelected ? "text-emerald-600 font-black" : "text-slate-400"}`}
+												>
+													{(h.Label ?? "").toUpperCase()}
 												</span>
 											</div>
 										);
 									})
-									: ["W14", "W15", "W16", "W17", "W18"].map((label) => (
+									: ["JAN", "FEB", "MAR", "APR"].map((label) => (
 										<div
 											key={label}
 											className="flex flex-col items-center gap-1 text-slate-300"
