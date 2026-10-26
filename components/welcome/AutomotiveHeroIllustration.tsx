@@ -1,18 +1,3 @@
-// Holographic supercar seen from the front three-quarter (nose pointing left). Each panel is reused for the fill, the mesh clip and the neon outline.
-const CAR_PANELS = {
-  face: "M58 430C56 418 58 410 66 404L178 392C184 404 186 420 184 442L90 452C76 450 62 442 58 430Z",
-  hood: "M66 404L178 392C200 378 220 360 234 349L146 361C112 367 84 384 66 404Z",
-  windshield: "M146 361L234 349L300 323C272 320 246 323 226 329C196 337 166 349 146 361Z",
-  side: "M178 392C200 378 220 360 234 349L300 323C340 321 372 329 394 340C416 351 438 363 450 377C458 389 458 404 453 418L441 433L428 434C428 413 418 397 404 397C390 397 380 412 380 432L276 439C276 413 266 395 251 395C236 395 226 413 226 443L185 446C187 424 186 404 178 392Z",
-};
-
-const CAR_PANEL_PATHS = Object.values(CAR_PANELS);
-
-const CAR_WHEELS = [
-  { cx: 251, cy: 421, sx: 0.86, sy: 1.08 },
-  { cx: 404, cy: 417, sx: 0.74, sy: 0.96 },
-];
-
 export function AutomotiveHeroIllustration() {
   return (
     <svg
@@ -56,54 +41,6 @@ export function AutomotiveHeroIllustration() {
           <stop stopColor="#2857A5" />
           <stop offset="1" stopColor="#0B214E" />
         </linearGradient>
-        <linearGradient id="car-holo-body" x1="300" x2="300" y1="322" y2="446" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#9BEBFF" stopOpacity="0.62" />
-          <stop offset="0.38" stopColor="#3C9BFF" stopOpacity="0.42" />
-          <stop offset="1" stopColor="#1A3FC4" stopOpacity="0.3" />
-        </linearGradient>
-        <linearGradient id="car-holo-glass" x1="230" x2="380" y1="346" y2="378" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#CFF6FF" stopOpacity="0.5" />
-          <stop offset="0.5" stopColor="#4FB4FF" stopOpacity="0.22" />
-          <stop offset="1" stopColor="#1E4FC8" stopOpacity="0.3" />
-        </linearGradient>
-        <linearGradient id="car-streak" x1="20" x2="660" y1="0" y2="0" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#5FD8FF" stopOpacity="0" />
-          <stop offset="0.25" stopColor="#7FE3FF" stopOpacity="0.9" />
-          <stop offset="0.7" stopColor="#3D8CFF" stopOpacity="0.55" />
-          <stop offset="1" stopColor="#3D8CFF" stopOpacity="0" />
-        </linearGradient>
-        <radialGradient id="car-holo-halo" cx="0" cy="0" r="1" gradientTransform="translate(248 356) scale(236 104)" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#FFFFFF" stopOpacity="0.95" />
-          <stop offset="0.45" stopColor="#B9EEFF" stopOpacity="0.45" />
-          <stop offset="1" stopColor="#B9EEFF" stopOpacity="0" />
-        </radialGradient>
-        <radialGradient id="car-floor-glow" cx="0" cy="0" r="1" gradientTransform="translate(262 450) scale(232 22)" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#7FE6FF" stopOpacity="0.75" />
-          <stop offset="0.5" stopColor="#2F8BFF" stopOpacity="0.3" />
-          <stop offset="1" stopColor="#2F8BFF" stopOpacity="0" />
-        </radialGradient>
-        <pattern id="car-mesh" width="16" height="12" patternUnits="userSpaceOnUse">
-          <path d="M0 0H16M0 0L8 12L16 0M0 12H16" fill="none" stroke="#C9F4FF" strokeOpacity="0.32" strokeWidth="0.6" />
-          <circle cx="0" cy="0" r="0.9" fill="#E9FBFF" />
-          <circle cx="8" cy="12" r="0.9" fill="#E9FBFF" />
-          <circle cx="16" cy="0" r="0.9" fill="#E9FBFF" />
-        </pattern>
-        <filter id="car-neon" x="-20%" y="-40%" width="140%" height="180%" colorInterpolationFilters="sRGB">
-          <feGaussianBlur stdDeviation="3.2" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-        <filter id="car-soft" x="-30%" y="-60%" width="160%" height="220%" colorInterpolationFilters="sRGB">
-          <feGaussianBlur stdDeviation="14" />
-        </filter>
-        <clipPath id="car-body-clip">
-          {CAR_PANEL_PATHS.map((d) => (
-            <path d={d} key={d} />
-          ))}
-        </clipPath>
         <linearGradient id="shared-floor" x1="114" x2="644" y1="535" y2="564" gradientUnits="userSpaceOnUse">
           <stop stopColor="#2B7CFF" stopOpacity="0" />
           <stop offset="0.28" stopColor="#39BDFF" stopOpacity="0.2" />
@@ -129,6 +66,14 @@ export function AutomotiveHeroIllustration() {
         <filter id="light-glow" x="-80%" y="-150%" width="260%" height="400%" colorInterpolationFilters="sRGB">
           <feGaussianBlur stdDeviation="5" result="glow" />
           <feComposite in="SourceGraphic" in2="glow" operator="over" />
+        </filter>
+        <filter id="hero-car-glow" x="-10%" y="-20%" width="120%" height="140%" colorInterpolationFilters="sRGB">
+          <feGaussianBlur stdDeviation="2.5" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
         </filter>
         <clipPath id="screen-clip">
           <rect x="148" y="82" width="514" height="313" rx="24" />
@@ -196,83 +141,8 @@ export function AutomotiveHeroIllustration() {
       <path d="M149 395H661" stroke="#C5F2FF" strokeLinecap="round" strokeOpacity="0.48" strokeWidth="2" />
       <path d="M149 399H661" stroke="#4BCBFF" strokeLinecap="round" strokeOpacity="0.18" strokeWidth="5" filter="url(#light-glow)" />
 
-      {/* Holographic wireframe sports car */}
-      <g>
-        <ellipse cx="248" cy="356" rx="236" ry="104" fill="url(#car-holo-halo)" />
-
-        <g fill="none" stroke="url(#car-streak)" strokeLinecap="round" filter="url(#car-neon)">
-          <path d="M6 486C120 462 300 448 660 420" strokeWidth="2.6" />
-          <path d="M24 502C170 482 360 468 640 446" strokeWidth="1.5" strokeOpacity="0.85" />
-          <path d="M60 520C220 506 400 494 600 478" strokeWidth="1.1" strokeOpacity="0.65" />
-          <path d="M100 538C260 528 420 518 560 508" strokeWidth="0.9" strokeOpacity="0.5" />
-          <path d="M452 392H640M456 410H668M446 428H612" strokeWidth="1.3" strokeOpacity="0.7" />
-          <path d="M0 452H48M4 470H56" strokeWidth="1.2" strokeOpacity="0.55" />
-        </g>
-
-        <ellipse cx="262" cy="450" rx="232" ry="22" fill="url(#car-floor-glow)" />
-        <g fill="#3FB6FF" fillOpacity="0.45" filter="url(#car-soft)">
-          {CAR_PANEL_PATHS.map((d) => (
-            <path d={d} key={d} />
-          ))}
-        </g>
-
-        <path d={CAR_PANELS.side} fill="url(#car-holo-body)" />
-        <path d={CAR_PANELS.face} fill="#2A7BFF" fillOpacity="0.42" />
-        <path d={CAR_PANELS.hood} fill="#8FE4FF" fillOpacity="0.45" />
-        <path d={CAR_PANELS.windshield} fill="url(#car-holo-glass)" />
-
-        <g clipPath="url(#car-body-clip)">
-          <rect x="50" y="316" width="414" height="140" fill="url(#car-mesh)" />
-          <g fill="none" stroke="#BFF1FF" strokeOpacity="0.42" strokeWidth="0.9">
-            <path d="M206 364C200 390 200 420 206 446M236 352C228 384 228 420 234 444M290 334C282 372 282 412 288 440M330 330C322 368 322 404 328 438M366 334C360 366 360 396 364 412M420 354C414 380 414 404 420 432" />
-            <path d="M180 392C260 370 360 360 452 386M182 408C270 390 360 382 454 400M184 424C230 414 300 408 380 410M300 412C340 404 400 404 452 414" />
-            <path d="M62 418L180 404M64 432L182 418M100 400L104 450M136 396L142 446" />
-            <path d="M98 384L190 366M124 372L212 356M160 356L250 340M190 344L278 330" />
-          </g>
-          <ellipse cx="246" cy="346" rx="120" ry="18" fill="#FFFFFF" fillOpacity="0.32" filter="url(#light-glow)" />
-        </g>
-
-        <path d="M240 354L300 330C336 328 364 334 386 345L402 358C350 354 292 355 240 362Z" fill="url(#car-holo-glass)" stroke="#D6F7FF" strokeOpacity="0.75" strokeWidth="1.2" />
-        <path d="M334 331L338 356" stroke="#D6F7FF" strokeOpacity="0.6" strokeWidth="1.2" />
-
-        <g fill="none" stroke="#9EEBFF" strokeLinecap="round" strokeLinejoin="round" filter="url(#car-neon)">
-          {CAR_PANEL_PATHS.map((d) => (
-            <path d={d} key={d} strokeWidth="1.6" />
-          ))}
-          <path d="M184 384C260 362 360 352 450 380" strokeWidth="1.2" strokeOpacity="0.8" />
-          <path d="M290 414C320 404 350 402 372 406" strokeWidth="1.2" strokeOpacity="0.7" />
-        </g>
-
-        <path d="M66 412L104 406L106 412L70 420Z" fill="#F2FDFF" filter="url(#car-neon)" />
-        <path d="M140 400L176 395L177 402L142 407Z" fill="#F2FDFF" filter="url(#car-neon)" />
-        <path d="M92 426L162 417L164 434L96 444Z" fill="#0B2A66" fillOpacity="0.6" stroke="#9EEBFF" strokeOpacity="0.7" />
-        <path d="M444 376L456 388L455 402L447 396Z" fill="#7CC7FF" filter="url(#car-neon)" />
-
-        {CAR_WHEELS.map(({ cx, cy, sx, sy }) => (
-          <g key={cx} transform={`translate(${cx} ${cy}) scale(${sx} ${sy})`}>
-            <circle r="30" fill="#061A44" fillOpacity="0.82" stroke="#7FDFFF" strokeOpacity="0.85" strokeWidth="2" filter="url(#car-neon)" />
-            <circle r="20" fill="#0E3A8A" fillOpacity="0.55" stroke="#C9F4FF" strokeOpacity="0.8" strokeWidth="1.2" />
-            <g stroke="#C9F4FF" strokeOpacity="0.75" strokeWidth="1.4" strokeLinecap="round">
-              <path d="M0 -6V-19" />
-              <path d="M0 -6V-19" transform="rotate(72)" />
-              <path d="M0 -6V-19" transform="rotate(144)" />
-              <path d="M0 -6V-19" transform="rotate(216)" />
-              <path d="M0 -6V-19" transform="rotate(288)" />
-            </g>
-            <circle r="5" fill="#E6FBFF" />
-          </g>
-        ))}
-
-        <g fill="#E9FBFF">
-          <circle cx="110" cy="360" r="1.6" fillOpacity="0.8" />
-          <circle cx="178" cy="334" r="1.2" fillOpacity="0.7" />
-          <circle cx="352" cy="310" r="1.4" fillOpacity="0.75" />
-          <circle cx="430" cy="340" r="1.1" fillOpacity="0.6" />
-          <circle cx="486" cy="380" r="1.5" fillOpacity="0.7" />
-          <circle cx="40" cy="420" r="1.2" fillOpacity="0.6" />
-          <circle cx="250" cy="312" r="1" fillOpacity="0.6" />
-        </g>
-      </g>
+      {/* Neon car artwork (public/hero-car.png); its dark background is keyed out so it blends into the scene */}
+      <image href="/hero-car.png" x="-60" y="283" width="640" height="325" filter="url(#hero-car-glow)" />
 
       <rect x="637" y="415" width="26" height="7" rx="3.5" fill="#72D7FF" fillOpacity="0.7" />
 
