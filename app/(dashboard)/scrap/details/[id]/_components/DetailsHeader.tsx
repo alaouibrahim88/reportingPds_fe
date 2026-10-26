@@ -1,7 +1,7 @@
 import { useState } from "react";
 import React from "react";
 import { FolderIcon } from "lucide-react";
-import { FaFileExcel, FaSearch } from 'react-icons/fa';
+import { FaFileExcel } from 'react-icons/fa';
 import { Button } from "@/components/ui/button";
 
 import {
@@ -40,9 +40,7 @@ interface ControlsProps {
   setViewMode: (mode: "price" | "Qty") => void;
   selectedYear: number;
   setSelectedYear: (year: number) => void;
-  selectedMonth: string;  
-  selectedCell: string;  
-  setSelectedCell: (cell: string) => void;
+  selectedMonth: string;
   setSelectedMonth: (month: string) => void;
 }
 
@@ -56,24 +54,10 @@ const Controls: React.FC<ControlsProps> = ({
   selectedYear,
   setSelectedYear,
   selectedMonth,
-  selectedCell,
-  setSelectedCell,
   setSelectedMonth,
 }) => {
   return (
     <>
-      <div className="relative w-[180px]">
-        <input
-        type="text"
-       // value={selectedCell}
-        value=''
-        onChange={(e) => setSelectedCell(e.target.value)}
-        placeholder="        Recherche Cellule..."
-        className="w-[180px] h-8 text-xs bg-gray-60 border border-gray-200 rounded-md"
-        />
-        <FaSearch className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 scale-75" />
-     </div>
-
       {/* Year Selector */}
       <Select
         value={selectedYear.toString()}

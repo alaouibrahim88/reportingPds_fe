@@ -10,6 +10,7 @@ type ZoneItem  = {
   weeksPerMonth: Record<string, number[]>;
   cells: CellItem[];
   totals: number[][];  // [monthIndex][weekIndex..., monthTotal]
+  isSelection?: boolean;  // narrowed to some cells: totals cover only those cells
 };
 
 type DetailedMonth = { weeks: Record<string, number>; total: number };
@@ -367,7 +368,7 @@ export function exportZoneDetailToExcel(
       border:    THICK_BOTTOM_BORDER,
     };
     setCell(ws, r, 0, "", totalStyle);
-    setCell(ws, r, 1, "TOTAL", {
+    setCell(ws, r, 1, zone.isSelection ? "TOTAL sélection" : "TOTAL", {
       ...totalStyle,
       alignment: { horizontal: "left", vertical: "center" },
     });
@@ -401,7 +402,9 @@ export function exportZoneDetailToExcel(
         serieTotal = serieCell?.months[mi]?.total ?? 0;
       }
 
-      const correctMonthTotal = projetTotal + serieTotal;
+      const correctMonthTotal = zone.isSelection
+        ? monthTotals[monthWeeks.length] ?? 0
+        : projetTotal + serieTotal;
 
       setCell(ws, r, colMap[`${m}_total`], fmt(correctMonthTotal), {
         ...totalStyle,

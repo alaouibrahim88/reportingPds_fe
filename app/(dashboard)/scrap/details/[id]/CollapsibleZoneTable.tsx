@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { Minus, Plus, Users2 } from "lucide-react";
-import { getZoneDetails, getDetailsPerZone } from "@/actions/scrap";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { Loader2, Minus, Plus, SearchX, Users2 } from "lucide-react";
+import { getZoneDetails, getDetailsPerZone, fetchCellByZone } from "@/actions/scrap";
+import ZoneFilterBar from "./_components/ZoneFilterBar";
 import { z } from "zod";
 import { FaFileExcel } from "react-icons/fa";
 import { GetZoneDetails, getZoneSubDetails } from "@/actions/scrap/details";
@@ -130,6 +131,75 @@ function flattenDetailedData(input: any) {
   return rows;
 }
 
+const toNumber = (value: unknown) => {
+  if (typeof value === "number") return value;
+  if (typeof value === "string") {
+    return Number(value.replace(",", ".")) || 0;
+  }
+
+  return 0;
+};
+
+const processDetailedData = (zonesDetails: any[]) => {
+  const result: Record<string, any> = {};
+
+  zonesDetails.forEach((item) => {
+    const zoneName = item.zone;
+    result[zoneName] = {
+      cells: {},
+    };
+
+    const detailsArrayTab = Array.isArray(item?.details)
+      ? item?.details
+      : [item?.details];
+    detailsArrayTab.forEach((detail: any) => {
+      const cellName = detail?.cellule;
+      const cellType = detail?.typeCell;
+
+      if (!result[zoneName]?.cells[cellName]) {
+        result[zoneName].cells[cellName] = {
+          type: cellType,
+          months: {},
+        };
+      }
+
+      if (!result[zoneName].cells[cellName].months[detail?.mois]) {
+        result[zoneName].cells[cellName].months[detail?.mois] = {
+          weeks: {},
+          total: toNumber(detail?.total_mois),
+        };
+      }
+
+      result[zoneName].cells[cellName].months[detail?.mois].weeks[
+        detail?.semaine
+      ] = toNumber(detail?.couts);
+    });
+  });
+
+  return result;
+};
+
+// Case- and accent-insensitive form used for search matching ("Matière" matches "matiere")
+const normalizeText = (value: string) =>
+  value.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+
+// Highlights the first case-insensitive occurrence of the search query
+const Highlight = ({ text, query }: { text: string; query: string }) => {
+  const q = query.trim();
+  const index = q ? text.toLowerCase().indexOf(q.toLowerCase()) : -1;
+  if (index < 0) return <>{text}</>;
+
+  return (
+    <>
+      {text.slice(0, index)}
+      <mark className="rounded-sm bg-yellow-200/80 px-0.5 text-inherit dark:bg-yellow-500/30">
+        {text.slice(index, index + q.length)}
+      </mark>
+      {text.slice(index + q.length)}
+    </>
+  );
+};
+
 const CollapsibleZoneTable = ({
   viewMode,
   year,
@@ -147,7 +217,21 @@ const CollapsibleZoneTable = ({
   const [months, setMonths] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
+  // Search & filters (kept when the period or view mode changes)
+  const [searchQuery, setSearchQuery] = useState("");
+  const [zoneFilter, setZoneFilter] = useState<string[]>([]);
+  const [cellFilter, setCellFilter] = useState<string[]>([]);
+  // Cell names per zone (GetListCell), used for cell search and the Cellule filter
+  const [cellsByZone, setCellsByZone] = useState<Record<string, string[]>>({});
+  const requestedCellZones = useRef(new Set<string>());
+
+  // Guards zone detail requests against period changes and duplicate loads
+  const period = `${year}-${month}-${viewMode}`;
+  const periodRef = useRef(period);
+  const loadingZoneDetails = useRef(new Set<string>());
+
   useEffect(() => {
+    periodRef.current = `${year}-${month}-${viewMode}`;
     setDetailedData({});
     setExpandedZones(initialExpandedZones);
   }, [year, month, viewMode]);
@@ -180,53 +264,123 @@ const CollapsibleZoneTable = ({
     processData();
   }, [data]);
 
-  const toNumber = (value: unknown) => {
-    if (typeof value === "number") return value;
-    if (typeof value === "string") {
-      return Number(value.replace(",", ".")) || 0;
-    }
+  // Loads the per-cell rows of a zone for the current period (once per zone and period)
+  const loadZoneDetails = useCallback(
+    async (zone: string) => {
+      const requestKey = `${period}:${zone}`;
+      if (loadingZoneDetails.current.has(requestKey)) return;
+      loadingZoneDetails.current.add(requestKey);
 
-    return 0;
-  };
+      try {
+        const detailsResponse = await getZoneSubDetails(year, viewMode, month, zone);
 
-  const processDetailedData = (zonesDetails: any[]) => {
-    const result: Record<string, any> = {};
-
-    zonesDetails.forEach((item) => {
-      const zoneName = item.zone;
-      result[zoneName] = {
-        cells: {},
-      };
-
-      const detailsArrayTab = Array.isArray(item?.details)
-        ? item?.details
-        : [item?.details];
-      detailsArrayTab.forEach((detail: any) => {
-        const cellName = detail?.cellule;
-        const cellType = detail?.typeCell;
-
-        if (!result[zoneName]?.cells[cellName]) {
-          result[zoneName].cells[cellName] = {
-            type: cellType,
-            months: {},
-          };
+        if (detailsResponse && periodRef.current === period) {
+          const processedDetails = processDetailedData(Object.values(detailsResponse));
+          setDetailedData((prev) => ({
+            ...prev,
+            ...processedDetails,
+          }));
         }
+      } catch (error) {
+        console.error(`Error loading details for zone ${zone}:`, error);
+      } finally {
+        loadingZoneDetails.current.delete(requestKey);
+      }
+    },
+    [period, year, viewMode, month]
+  );
 
-        if (!result[zoneName].cells[cellName].months[detail?.mois]) {
-          result[zoneName].cells[cellName].months[detail?.mois] = {
-            weeks: {},
-            total: toNumber(detail?.total_mois),
-          };
-        }
+  // Fetch each zone's cell list once, for cell search and the Cellule filter
+  useEffect(() => {
+    const missing = zonesData
+      .map((zone) => zone.key as string)
+      .filter((zone) => !requestedCellZones.current.has(zone));
+    if (missing.length === 0) return;
 
-        result[zoneName].cells[cellName].months[detail?.mois].weeks[
-          detail?.semaine
-        ] = toNumber(detail?.couts);
+    missing.forEach((zone) => requestedCellZones.current.add(zone));
+    Promise.allSettled(missing.map((zone) => fetchCellByZone(zone))).then((results) => {
+      setCellsByZone((prev) => {
+        const next = { ...prev };
+        results.forEach((result, index) => {
+          next[missing[index]] =
+            result.status === "fulfilled" ? result.value.map((cell) => cell.libelle) : [];
+        });
+        return next;
       });
     });
+  }, [zonesData]);
 
-    return result;
+  const query = normalizeText(searchQuery);
+  const matchesQuery = useCallback(
+    (value: string) => normalizeText(value).includes(query),
+    [query]
+  );
+
+  // Known cells of a zone: its cell list plus any cells already loaded in its details
+  const cellsOfZone = useCallback(
+    (zone: string) =>
+      Array.from(
+        new Set([...(cellsByZone[zone] ?? []), ...Object.keys(detailedData[zone]?.cells ?? {})])
+      ),
+    [cellsByZone, detailedData]
+  );
+
+  const hasFilters = query !== "" || zoneFilter.length > 0 || cellFilter.length > 0;
+
+  const visibleZones = useMemo(
+    () =>
+      zonesData.filter((zone) => {
+        const cells = cellsOfZone(zone.key);
+        if (zoneFilter.length > 0 && !zoneFilter.includes(zone.key)) return false;
+        if (cellFilter.length > 0 && !cells.some((cell) => cellFilter.includes(cell))) return false;
+        if (query && !matchesQuery(zone.key) && !cells.some(matchesQuery)) return false;
+        return true;
+      }),
+    [zonesData, zoneFilter, cellFilter, query, matchesQuery, cellsOfZone]
+  );
+
+  // A zone is narrowed to some of its cells when a cell is selected, or when the
+  // search matches its cells rather than its name
+  const isCellFiltered = useCallback(
+    (zone: string) => cellFilter.length > 0 || (query !== "" && !matchesQuery(zone)),
+    [cellFilter, query, matchesQuery]
+  );
+
+  const isCellVisible = (zone: string, cell: string) =>
+    (cellFilter.length === 0 || cellFilter.includes(cell)) &&
+    (query === "" || matchesQuery(zone) || matchesQuery(cell));
+
+  // Cell-filtered zones open automatically on their cell rows
+  const autoExpandedZones = useMemo(
+    () => visibleZones.filter((zone) => isCellFiltered(zone.key)).map((zone) => zone.key as string),
+    [visibleZones, isCellFiltered]
+  );
+
+  // One automatic load per zone and period, so a failed or mismatched response can't loop
+  const autoLoadedZones = useRef(new Set<string>());
+  useEffect(() => {
+    autoExpandedZones.forEach((zone) => {
+      const attemptKey = `${period}:${zone}`;
+      if (detailedData[zone] || autoLoadedZones.current.has(attemptKey)) return;
+      autoLoadedZones.current.add(attemptKey);
+      loadZoneDetails(zone);
+    });
+  }, [autoExpandedZones, detailedData, loadZoneDetails, period]);
+
+  const isZoneExpanded = (zone: string) =>
+    !!expandedZones[zone as ZoneKey] || autoExpandedZones.includes(zone);
+
+  const resetFilters = () => {
+    setSearchQuery("");
+    setZoneFilter([]);
+    setCellFilter([]);
   };
+
+  // Cellule filter options, grouped by zone (limited to the selected zones)
+  const cellGroups = zonesData
+    .filter((zone) => zoneFilter.length === 0 || zoneFilter.includes(zone.key))
+    .map((zone) => ({ heading: zone.key as string, options: cellsOfZone(zone.key).sort() }));
+  const cellsLoading = zonesData.some((zone) => !(zone.key in cellsByZone));
 
   const toggleZone = async (zone: ZoneKey) => {
     const shouldExpand = !expandedZones[zone];
@@ -237,21 +391,7 @@ const CollapsibleZoneTable = ({
     }));
 
     if (shouldExpand && !detailedData[zone]) {
-      const detailsResponse = await getZoneSubDetails(
-        year,
-        viewMode,
-        month,
-        zone
-      );
-
-      if (detailsResponse) {
-        const zonesDetailsArray = Object.values(detailsResponse);
-        const processedDetails = processDetailedData(zonesDetailsArray);
-        setDetailedData((prev) => ({
-          ...prev,
-          ...processedDetails,
-        }));
-      }
+      await loadZoneDetails(zone);
     }
   };
 
@@ -261,6 +401,28 @@ const CollapsibleZoneTable = ({
 
   const formatValue = (value: number) => {
     return viewMode === "price" ? `${value} €` : value;
+  };
+
+  const headerWeeksPerMonth = zonesData.length > 0 ? zonesData[0].weeksPerMonth : {};
+  const totalColumns =
+    2 + months.reduce((sum, m) => sum + (headerWeeksPerMonth[m]?.length || 0) + 1, 0);
+
+  const visibleCellNames = (zone: string) =>
+    Object.keys(detailedData[zone]?.cells ?? {}).filter((cell) => isCellVisible(zone, cell));
+
+  // Per month: week sums of the given cells, then the sum of their month totals
+  const computeSelectionTotals = (zone: ZoneData, cellNames: string[]) => {
+    const cells = detailedData[zone.key]?.cells ?? {};
+    return months.map((m) => {
+      const weekSums = (zone.weeksPerMonth[m] || []).map((weekNum) =>
+        cellNames.reduce((sum, name) => sum + (cells[name]?.months[m]?.weeks[weekNum] || 0), 0)
+      );
+      const monthTotal = cellNames.reduce(
+        (sum, name) => sum + (cells[name]?.months[m]?.total || 0),
+        0
+      );
+      return [...weekSums, monthTotal];
+    });
   };
 
   // Component for table header
@@ -395,7 +557,7 @@ const CollapsibleZoneTable = ({
 
   // Component for a zone row
   const ZoneRow = ({ zone }: { zone: ZoneData }) => {
-    const isExpanded = expandedZones[zone.key];
+    const isExpanded = isZoneExpanded(zone.key);
     const weeksPerMonth = zone.weeksPerMonth || {};
 
     const projetCell = zone.cells.find((cell) => cell.type === "Projet");
@@ -406,7 +568,7 @@ const CollapsibleZoneTable = ({
           className="border p-1 cursor-pointer text-xs text-muted-foreground"
           onClick={() => toggleZone(zone.key)}
         >
-          {isExpanded ? "▼" : "+"} {zone.key}
+          {isExpanded ? "▼" : "+"} <Highlight text={zone.key} query={searchQuery} />
         </td>
         <td className="border p-1 text-xs text-muted-foreground">Projet</td>
         {months.map((month) => {
@@ -523,12 +685,38 @@ const CollapsibleZoneTable = ({
   }) => {
     const zoneDetails = data[zone.key];
     const weeksPerMonth = zone.weeksPerMonth || {};
+    const cellFiltered = isCellFiltered(zone.key);
 
     if (!zoneDetails) {
+      if (cellFiltered) {
+        return (
+          <tr>
+            <td colSpan={totalColumns} className="border p-3 text-center text-xs text-muted-foreground">
+              <span className="inline-flex items-center gap-2">
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                Chargement des cellules de {zone.key}…
+              </span>
+            </td>
+          </tr>
+        );
+      }
       return <CollapsedZoneSummary zone={zone} />;
     }
 
-    const cellNames = Object.keys(zoneDetails.cells);
+    const cellNames = visibleCellNames(zone.key);
+
+    if (cellFiltered && cellNames.length === 0) {
+      return (
+        <tr>
+          <td colSpan={totalColumns} className="border p-3 text-center text-xs text-muted-foreground">
+            Aucune cellule de {zone.key} ne correspond aux filtres.
+          </td>
+        </tr>
+      );
+    }
+
+    // Narrowed to some cells: TOTAL sums the cells shown instead of the whole zone
+    const selectionTotals = cellFiltered ? computeSelectionTotals(zone, cellNames) : null;
 
     // Find Projet and Serie cells for correct total calculation
     const projetKey = cellNames.find(
@@ -548,7 +736,7 @@ const CollapsibleZoneTable = ({
               className="hover:bg-muted/50 transition-colors"
             >
               <td className="border p-1 text-xs text-muted-foreground">
-                {cellName}
+                <Highlight text={cellName} query={searchQuery} />
               </td>
               <td className="border p-1 text-xs text-muted-foreground">
                 {cellData.type}
@@ -581,11 +769,15 @@ const CollapsibleZoneTable = ({
         {/* TOTAL row — bold and standing out */}
         <tr className="bg-blue-100 border-b-2 border-blue-300">
           <ScrapTypesToggleCell zoneKey={zone.key} />
-          <td className="border p-1 text-xs font-bold text-blue-900">TOTAL</td>
+          <td className="border p-1 text-xs font-bold text-blue-900">
+            {selectionTotals ? "TOTAL sélection" : "TOTAL"}
+          </td>
           {months.map((month) => {
             const actualMonthIndex = months.indexOf(month);
             const monthWeeks = weeksPerMonth[month] || [];
-            const totalValues = zone.totals[actualMonthIndex];
+            const totalValues = selectionTotals
+              ? selectionTotals[actualMonthIndex]
+              : zone.totals[actualMonthIndex];
 
             // Fix: sum Projet + Serie month totals from detailed data
             const projetTotal =
@@ -596,7 +788,9 @@ const CollapsibleZoneTable = ({
               serieKey
                 ? zoneDetails.cells[serieKey]?.months[month]?.total || 0
                 : 0;
-            const correctMonthTotal = projetTotal + serieTotal;
+            const correctMonthTotal = selectionTotals
+              ? selectionTotals[actualMonthIndex][monthWeeks.length]
+              : projetTotal + serieTotal;
 
             return (
               <React.Fragment key={`${zone.key}-total-${month}`}>
@@ -631,13 +825,39 @@ const CollapsibleZoneTable = ({
   }
 
   const handleExport = () => {
+    // Export what is on screen: filtered zones, the cells shown and their selection totals
+    const exportZones = visibleZones.map((zone) =>
+      isCellFiltered(zone.key) && detailedData[zone.key]
+        ? {
+            ...zone,
+            totals: computeSelectionTotals(zone, visibleCellNames(zone.key)),
+            isSelection: true,
+          }
+        : zone
+    );
+    const exportDetails = Object.fromEntries(
+      visibleZones
+        .filter((zone) => detailedData[zone.key])
+        .map((zone) => [
+          zone.key,
+          {
+            cells: Object.fromEntries(
+              visibleCellNames(zone.key).map((name) => [name, detailedData[zone.key].cells[name]])
+            ),
+          },
+        ])
+    );
+    const exportExpanded = Object.fromEntries(
+      visibleZones.map((zone) => [zone.key, isZoneExpanded(zone.key)])
+    );
+
     exportZoneDetailToExcel(
-        zonesData,
+        exportZones,
         viewMode,
         {
           fileName: `zoneDetail_${new Date().toISOString().slice(0, 10)}.xlsx`,
-          expandedZones,
-          detailedData,
+          expandedZones: exportExpanded,
+          detailedData: exportDetails,
           months,
         }
     );
@@ -663,21 +883,54 @@ const CollapsibleZoneTable = ({
         </div>
       </div>
 
+      <ZoneFilterBar
+        search={searchQuery}
+        onSearchChange={setSearchQuery}
+        zones={zonesData.map((zone) => zone.key as string)}
+        zoneFilter={zoneFilter}
+        onZoneFilterChange={setZoneFilter}
+        cellGroups={cellGroups}
+        cellFilter={cellFilter}
+        onCellFilterChange={setCellFilter}
+        cellsLoading={cellsLoading}
+        visibleZones={visibleZones.length}
+        totalZones={zonesData.length}
+        onReset={resetFilters}
+      />
+
       <div className="p-3 transition-all hover:border-primary/20">
         <div className="overflow-x-auto w-full">
           <table className="w-full border-collapse">
             <TableHeader />
             <tbody>
-              {zonesData.map((zone) => (
+              {visibleZones.map((zone) => (
                 <React.Fragment key={zone.key}>
                   <ZoneRow zone={zone} />
-                  {expandedZones[zone.key] ? (
+                  {isZoneExpanded(zone.key) ? (
                     <ExpandedZoneDetails zone={zone} data={detailedData} />
                   ) : (
                     <CollapsedZoneSummary zone={zone} />
                   )}
                 </React.Fragment>
               ))}
+              {visibleZones.length === 0 && hasFilters && (
+                <tr>
+                  <td colSpan={totalColumns} className="border px-4 py-10 text-center">
+                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                      <SearchX className="h-8 w-8 text-muted-foreground/50" />
+                      <p className="text-sm font-medium text-foreground">Aucun résultat</p>
+                      <p className="text-xs">Aucune zone ni cellule ne correspond à ces filtres.</p>
+                      <button
+                        type="button"
+                        onClick={resetFilters}
+                        className="mt-1 rounded-md border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+                      >
+                        Réinitialiser les filtres
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
