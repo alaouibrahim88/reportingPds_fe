@@ -50,6 +50,13 @@
   min-height: calc(100svh - 82px);
 }
 
+/* Desktop: cap the illustration by the viewport height (82px header + hero padding) so the page fits without scrolling */
+@media (min-width: 1024px) {
+  .heroGrid .visualFit {
+    width: min(100%, calc((100svh - 82px - 2 * clamp(12px, 14vh - 75px, 40px)) * 760 / 560));
+  }
+}
+
 .copyReveal {
   animation: copy-enter 800ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }

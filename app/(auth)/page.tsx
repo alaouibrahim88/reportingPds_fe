@@ -135,10 +135,10 @@ export default function WelcomePage() {
       <main>
         <section
           aria-labelledby="hero-title"
-          className={`mx-auto grid w-full max-w-[1440px] items-center gap-10 px-5 pb-12 pt-10 sm:px-8 sm:pb-16 sm:pt-14 lg:grid-cols-[minmax(0,0.86fr)_minmax(520px,1.14fr)] lg:gap-8 lg:px-12 lg:py-10 xl:gap-12 ${styles.heroGrid}`}
+          className={`mx-auto grid w-full max-w-[1440px] items-center gap-10 px-5 pb-12 pt-10 sm:px-8 sm:pb-16 sm:pt-14 lg:grid-cols-[minmax(0,0.86fr)_minmax(520px,1.14fr)] lg:gap-8 lg:px-12 lg:py-[clamp(12px,14vh_-_75px,40px)] xl:gap-12 ${styles.heroGrid}`}
         >
           <div className={`relative z-10 max-w-[650px] ${styles.copyReveal}`}>
-            <div className="mb-6 inline-flex max-w-full items-center gap-3 rounded-full border border-cyan-200/20 bg-cyan-100/[0.06] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-100 sm:text-xs sm:tracking-[0.2em]">
+            <div className="mb-6 inline-flex max-w-full lg:mb-[clamp(12px,6vh_-_25px,24px)] items-center gap-3 rounded-full border border-cyan-200/20 bg-cyan-100/[0.06] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-100 sm:text-xs sm:tracking-[0.2em]">
               <span className={`h-2 w-2 rounded-full bg-cyan-300 ${styles.eyebrowDot}`} />
               <span className="xs:hidden">Automotive intelligence</span>
               <span className="hidden xs:inline">Automotive interiors intelligence</span>
@@ -154,11 +154,11 @@ export default function WelcomePage() {
               </span>
             </h1>
 
-            <p className="mt-6 max-w-[610px] text-base leading-7 text-blue-100/78 sm:mt-7 sm:text-lg sm:leading-8 lg:text-xl">
+            <p className="mt-6 max-w-[610px] text-base leading-7 text-blue-100/78 sm:mt-7 sm:text-lg sm:leading-8 lg:mt-[clamp(12px,8vh_-_38px,28px)] lg:text-xl">
               Connect scrap, cost, executive, and global operations reporting across interior trim, seating components, and complete vehicle assemblies.
             </p>
 
-            <div className="mt-8 flex flex-col gap-3 xs:flex-row sm:mt-9">
+            <div className="mt-8 flex flex-col gap-3 xs:flex-row sm:mt-9 lg:mt-[clamp(16px,10vh_-_46px,36px)]">
               <Button
                 asChild
                 className={`h-[54px] w-full rounded-2xl border-0 px-6 text-sm font-bold text-white transition duration-300 hover:-translate-y-0.5 xs:w-auto sm:px-7 ${styles.primaryCta}`}
@@ -177,7 +177,7 @@ export default function WelcomePage() {
               </Button>
             </div>
 
-            <div aria-label="Core manufacturing capabilities" className="mt-8 grid grid-cols-3 gap-2 sm:mt-10 sm:gap-3">
+            <div aria-label="Core manufacturing capabilities" className="mt-8 grid grid-cols-3 gap-2 sm:mt-10 sm:gap-3 lg:mt-[clamp(16px,12vh_-_58px,40px)]">
               {capabilities.map(({ label, detail, Icon }) => (
                 <div
                   className={`group rounded-2xl border border-white/[0.11] p-3 transition duration-300 hover:-translate-y-0.5 hover:border-cyan-200/25 sm:p-4 ${styles.capability}`}
@@ -193,7 +193,7 @@ export default function WelcomePage() {
             </div>
           </div>
 
-          <div className={`relative mx-auto w-full max-w-[760px] lg:-mr-3 ${styles.visualReveal}`}>
+          <div className={`relative mx-auto w-full max-w-[760px] lg:-mr-3 ${styles.visualReveal} ${styles.visualFit}`}>
             <div className={styles.visualHalo} />
             <div className={styles.visualFloat}>
               <AutomotiveHeroIllustration />

@@ -19,7 +19,7 @@ export function AutomotiveHeroIllustration() {
       aria-hidden="true"
       className="h-auto w-full"
       focusable="false"
-      viewBox="0 0 760 620"
+      viewBox="0 40 760 560"
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
