@@ -348,7 +348,7 @@ const CollapsibleZoneTable = ({
         {SCRAP_TYPES.map((scrapType) => (
           <tr key={`${zone.key}-${scrapType}`}>
             <td className="border p-1 text-xs text-muted-foreground/40"></td>
-            <td className="border p-1 text-xs text-muted-foreground/40 italic">
+            <td className="border p-1 text-xs font-medium italic text-blue-900 dark:text-blue-200">
               {scrapType}
             </td>
             {months.map((month) => {
