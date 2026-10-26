@@ -1,25 +1,36 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import Link from "next/link";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  ArrowUpRight,
+  Boxes,
+  Factory,
+  FolderKanban,
+  SearchX,
+  Sigma,
+  Wrench,
+} from "lucide-react";
+import { FaFileExcel } from "react-icons/fa";
+
 import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  FolderIcon,
-  ListCollapse,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { TableFilter } from "./TableFilter";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { exportToExcel } from "@/utils/excel";
+import { zoneBarChartColors } from "@/constants/zoneBarChartColors";
 import { Filters } from "@/actions/scrap/dashboard";
+import { MONTHS_FR, TableFilter } from "./TableFilter";
 
 export interface YearlyZoneDataType {
   zone: string;
@@ -31,431 +42,476 @@ export interface YearlyZoneDataType {
 }
 
 export interface TableZoneProps {
+  // undefined while loading
   data: YearlyZoneDataType[] | undefined;
   filters: Filters;
   onFilterChange: (type: string, value: string) => void;
 }
 
-interface ScrapMetricTotal {
+interface ScrapMetric {
   pcs: number;
   euro: number;
-  hasEuro: boolean;
 }
 
-interface YearlyZoneTotals {
-  projetEuro: number;
-  serieEuro: number;
-  process: ScrapMetricTotal;
-  matiere: ScrapMetricTotal;
+interface ZoneRow {
+  zone: string;
+  projet: number;
+  serie: number;
+  process: ScrapMetric;
+  matiere: ScrapMetric;
+  total: number;
 }
 
-const numberFormatter = new Intl.NumberFormat("fr-FR", {
-  maximumFractionDigits: 2,
-});
+type SortKey = "zone" | "projet" | "serie" | "process" | "matiere" | "total";
+type Sort = { key: SortKey; direction: "asc" | "desc" } | null;
 
-const monthNames = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
+const PROCESS_COLOR = "#6366F1";
+const MATIERE_COLOR = "#F59E0B";
+const PROJET_COLOR = "#0EA5E9";
+const SERIE_COLOR = "#14B8A6";
+
+const euroFormatter = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
+const formatEuro = (value: number) => `${euroFormatter.format(Number.isFinite(value) ? value : 0)} €`;
+const formatPcs = (value: number) => `${euroFormatter.format(Number.isFinite(value) ? value : 0)} pcs`;
+const percent = (part: number, whole: number) => (whole > 0 ? (part / whole) * 100 : 0);
 
 function parseNumberValue(value: number | string): number {
-  if (typeof value === "number") {
-    return Number.isFinite(value) ? value : 0;
-  }
-
-  const normalized = value
-    .replace(/\s/g, "")
-    .replace(",", ".")
-    .replace(/[^\d.-]/g, "");
-
-  const parsed = Number(normalized);
+  if (typeof value === "number") return Number.isFinite(value) ? value : 0;
+  const parsed = Number(value.replace(/\s/g, "").replace(",", ".").replace(/[^\d.-]/g, ""));
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
-function extractNumbers(value: string): number[] {
-  return (
-    value
-      .match(/-?\d[\d\s.,]*/g)
-      ?.map(parseNumberValue)
-      .filter((item) => Number.isFinite(item)) ?? []
-  );
+// "858 Pcs - 1 611 €" → { pcs: 858, euro: 1611 }
+function parseScrapMetric(value: number | string): ScrapMetric {
+  if (typeof value === "number") return { pcs: Number.isFinite(value) ? value : 0, euro: 0 };
+  const numbers = value.match(/-?\d[\d\s.,]*/g)?.map(parseNumberValue) ?? [];
+  return { pcs: numbers[0] ?? 0, euro: numbers[1] ?? 0 };
 }
 
-function parseScrapMetric(value: number | string): ScrapMetricTotal {
-  if (typeof value === "number") {
-    return {
-      pcs: Number.isFinite(value) ? value : 0,
-      euro: 0,
-      hasEuro: false,
-    };
-  }
-
-  const numbers = extractNumbers(value);
-
+function toZoneRow(item: YearlyZoneDataType): ZoneRow {
+  const process = parseScrapMetric(item.process);
+  const matiere = parseScrapMetric(item.matiere);
   return {
-    pcs: numbers[0] ?? 0,
-    euro: numbers[1] ?? 0,
-    hasEuro: numbers.length > 1 || value.includes("€"),
+    zone: item.zone,
+    projet: parseNumberValue(item.projetEuro),
+    serie: parseNumberValue(item.serieEuro),
+    process,
+    matiere,
+    total: process.euro + matiere.euro,
   };
 }
 
-function formatNumber(value: number): string {
-  return numberFormatter.format(Number.isFinite(value) ? value : 0);
-}
-
-function formatCurrency(value: number): string {
-  return `${formatNumber(value)} €`;
-}
-
-function formatScrapMetric(metric: ScrapMetricTotal): string {
-  if (metric.hasEuro) {
-    return `${formatNumber(metric.pcs)} Pcs - ${formatCurrency(metric.euro)}`;
-  }
-
-  return formatNumber(metric.pcs);
-}
-
-function formatSelectedPeriod(
-  selectedYear: number,
-  selectedMonth: string,
-  fallbackPeriod: number | string
-): string {
-  const monthNumber = Number(selectedMonth);
-
-  if (!Number.isInteger(monthNumber) || monthNumber < 1 || monthNumber > 12) {
-    return fallbackPeriod.toString();
-  }
-
-  return `${monthNames[monthNumber - 1]}, ${selectedYear}`;
-}
-
-function calculateTotals(data: YearlyZoneDataType[]): YearlyZoneTotals {
-  return data.reduce<YearlyZoneTotals>(
-    (totals, item) => {
-      const process = parseScrapMetric(item.process);
-      const matiere = parseScrapMetric(item.matiere);
-
-      return {
-        projetEuro: totals.projetEuro + parseNumberValue(item.projetEuro),
-        serieEuro: totals.serieEuro + parseNumberValue(item.serieEuro),
-        process: {
-          pcs: totals.process.pcs + process.pcs,
-          euro: totals.process.euro + process.euro,
-          hasEuro: totals.process.hasEuro || process.hasEuro,
-        },
-        matiere: {
-          pcs: totals.matiere.pcs + matiere.pcs,
-          euro: totals.matiere.euro + matiere.euro,
-          hasEuro: totals.matiere.hasEuro || matiere.hasEuro,
-        },
-      };
-    },
-    {
-      projetEuro: 0,
-      serieEuro: 0,
-      process: { pcs: 0, euro: 0, hasEuro: false },
-      matiere: { pcs: 0, euro: 0, hasEuro: false },
-    }
+function sumRows(rows: ZoneRow[]) {
+  return rows.reduce(
+    (totals, row) => ({
+      projet: totals.projet + row.projet,
+      serie: totals.serie + row.serie,
+      process: { pcs: totals.process.pcs + row.process.pcs, euro: totals.process.euro + row.process.euro },
+      matiere: { pcs: totals.matiere.pcs + row.matiere.pcs, euro: totals.matiere.euro + row.matiere.euro },
+      total: totals.total + row.total,
+    }),
+    { projet: 0, serie: 0, process: { pcs: 0, euro: 0 }, matiere: { pcs: 0, euro: 0 }, total: 0 }
   );
 }
 
-export default function TableZone({ data = [], filters, onFilterChange }: TableZoneProps) {
-  const [openRows, setOpenRows] = useState<number[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+const sortValue = (row: ZoneRow, key: SortKey): number | string =>
+  key === "zone" ? row.zone : key === "process" ? row.process.euro : key === "matiere" ? row.matiere.euro : row[key];
 
-  const totals = useMemo(() => calculateTotals(data), [data]);
-  const totalPages = Math.ceil(data.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentData = data?.slice(startIndex, endIndex);
+// Case- and accent-insensitive form used for search matching
+const normalizeText = (value: string) =>
+  value.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
 
-  const toggleRow = (index: number) => {
-    setOpenRows((prev) =>
-      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+const Highlight = ({ text, query }: { text: string; query: string }) => {
+  const q = query.trim();
+  const index = q ? text.toLowerCase().indexOf(q.toLowerCase()) : -1;
+  if (index < 0) return <>{text}</>;
+  return (
+    <>
+      {text.slice(0, index)}
+      <mark className="rounded-sm bg-yellow-200/80 px-0.5 text-inherit dark:bg-yellow-500/30">
+        {text.slice(index, index + q.length)}
+      </mark>
+      {text.slice(index + q.length)}
+    </>
+  );
+};
+
+export default function TableZone({ data, filters, onFilterChange }: TableZoneProps) {
+  const [search, setSearch] = useState("");
+  const [zoneFilter, setZoneFilter] = useState<string[]>([]);
+  const [sort, setSort] = useState<Sort>(null);
+
+  const isLoading = data === undefined;
+  const rows = useMemo(() => (data ?? []).map(toZoneRow), [data]);
+  const zones = useMemo(() => rows.map((row) => row.zone), [rows]);
+
+  const visibleRows = useMemo(() => {
+    const query = normalizeText(search);
+    const filtered = rows.filter(
+      (row) =>
+        (zoneFilter.length === 0 || zoneFilter.includes(row.zone)) &&
+        (query === "" || normalizeText(row.zone).includes(query))
+    );
+    if (!sort) return filtered;
+    return [...filtered].sort((a, b) => {
+      const x = sortValue(a, sort.key);
+      const y = sortValue(b, sort.key);
+      const order = typeof x === "string" ? x.localeCompare(y as string) : x - (y as number);
+      return sort.direction === "asc" ? order : -order;
+    });
+  }, [rows, search, zoneFilter, sort]);
+
+  const totals = useMemo(() => sumRows(visibleRows), [visibleRows]);
+  const monthNumber = Number(filters.month);
+  const period =
+    filters.month !== "" && monthNumber >= 1 && monthNumber <= 12
+      ? `${MONTHS_FR[monthNumber - 1]} ${filters.year}`
+      : `Année ${filters.year}`;
+
+  const toggleSort = (key: SortKey) =>
+    setSort((current) =>
+      current?.key === key
+        ? { key, direction: current.direction === "asc" ? "desc" : "asc" }
+        : { key, direction: key === "zone" ? "asc" : "desc" }
+    );
+
+  const resetFilters = () => {
+    setSearch("");
+    setZoneFilter([]);
+    onFilterChange("month", "");
+  };
+
+  const handleExport = () => {
+    exportToExcel(
+      visibleRows.map((row) => ({
+        Zone: row.zone,
+        Période: period,
+        "Projet (€)": Math.round(row.projet),
+        "Série (€)": Math.round(row.serie),
+        "Process (pcs)": row.process.pcs,
+        "Process (€)": row.process.euro,
+        "Matière (pcs)": row.matiere.pcs,
+        "Matière (€)": row.matiere.euro,
+        "Total (€)": row.total,
+      })),
+      `detailParZone_${filters.year}${filters.month ? `-${filters.month.padStart(2, "0")}` : ""}.xlsx`
     );
   };
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    setOpenRows([]); // Reset open rows when changing pages
-  };
-
   return (
-    <div className="bg-background/50 dark:bg-background/5">
-      <TableHeaderSection
-        data={currentData}
-        filters={filters}
-        totals={totals}
-        onFilterChange={onFilterChange}
-      />
-      <div className="p-4">
-        <Table>
-          <TableColumns />
-          <TableContent
-            data={currentData}
-            totals={totals}
-            selectedYear={filters.year}
-            selectedMonth={filters.month}
-            openRows={openRows}
-            toggleRow={toggleRow}
-          />
-        </Table>
-        <TablePagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          startIndex={startIndex}
-          endIndex={endIndex}
-          totalItems={data.length}
-          onPageChange={handlePageChange}
-        />
-      </div>
-    </div>
-  );
-}
-
-function TableHeaderSection({
-  data,
-  filters,
-  totals,
-  onFilterChange,
-}: {
-  data: any;
-  filters: Filters;
-  totals: YearlyZoneTotals;
-  onFilterChange: (type: string, value: string) => void;
-}) {
-  return (
-    <div className="p-4 border-b border-muted">
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        <div className="flex flex-col xl:flex-row xl:items-center gap-4 min-w-0 flex-1">
-          <div className="shrink-0">
-            <div className="flex items-center gap-2 mb-1">
-              <FolderIcon className="w-5 h-5 text-primary" />
-              <h2 className="font-medium">Détail Par Zone (Encours)</h2>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Track and manage production issues and scrap reports
+    <div className="space-y-3 p-3 sm:p-4">
+      {/* Title and actions */}
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <Factory className="h-[18px] w-[18px]" />
+          </div>
+          <div>
+            <h2 className="text-sm font-semibold sm:text-base">Détail par zone (encours)</h2>
+            <p className="text-xs text-muted-foreground">
+              Scrap Process / Matière et Projet / Série par zone · {period}
             </p>
           </div>
-          <TotalsSummary totals={totals} />
         </div>
-        <div className="flex shrink-0 items-center gap-2">
-          <TableFilter data={data} filters={filters} onFilterChange={onFilterChange} />
-          <Link href={`/scrap/details/1`}>
-            <Button variant="outline" className="flex items-center gap-2">
-              <ListCollapse />
-              <span className="hidden sm:inline">Details</span>
-            </Button>
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function TotalsSummary({ totals }: { totals: YearlyZoneTotals }) {
-  const totalCombined = totals.process.euro + totals.matiere.euro;
-
-  return (
-      <div className="grid w-full max-w-[840px] grid-cols-3 overflow-hidden rounded-md border border-primary/20 bg-primary/5">
-        <div className="border-r border-primary/20 px-4 py-2">
-          <p className="text-xs font-medium text-muted-foreground">Total Process</p>
-          <p className="mt-1 text-sm font-semibold text-foreground">
-            {formatCurrency(totals.process.euro)}
-          </p>
-        </div>
-        <div className="border-r border-primary/20 px-4 py-2">
-          <p className="text-xs font-medium text-muted-foreground">Total Matière</p>
-          <p className="mt-1 text-sm font-semibold text-foreground">
-            {formatCurrency(totals.matiere.euro)}
-          </p>
-        </div>
-        <div className="px-4 py-2">
-          <p className="text-xs font-medium text-muted-foreground">Total (Process + Matière)</p>
-          <p className="mt-1 text-sm font-semibold text-foreground">
-            {formatCurrency(totalCombined)}
-          </p>
-        </div>
-      </div>
-  );
-}
-
-function TableColumns() {
-  return (
-    <TableHeader>
-      <TableRow className="hover:bg-muted/50 dark:hover:bg-muted/10">
-        <TableHead className="text-xs text-muted-foreground hidden md:table-cell">
-          Zone
-        </TableHead>
-        <TableHead className="text-xs text-muted-foreground">Periode</TableHead>
-        <TableHead className="text-xs text-muted-foreground hidden lg:table-cell">
-          Projet (€)
-        </TableHead>
-        <TableHead className="text-xs text-muted-foreground">Serie (€)</TableHead>
-        <TableHead className="text-xs text-muted-foreground">Process (Psc)</TableHead>
-        <TableHead className="text-xs text-muted-foreground">Matière (Psc)</TableHead>
-      </TableRow>
-    </TableHeader>
-  );
-}
-
-interface TableContentProps {
-  data: YearlyZoneDataType[];
-  totals: YearlyZoneTotals;
-  selectedYear: number;
-  selectedMonth: string;
-  openRows: number[];
-  toggleRow: (index: number) => void;
-}
-
-function TableContent({
-  data,
-  totals,
-  selectedYear,
-  selectedMonth,
-  openRows,
-  toggleRow,
-}: TableContentProps) {
-  const totalPeriod = formatSelectedPeriod(selectedYear, selectedMonth, selectedYear);
-
-  return (
-    <TableBody>
-      {data.map((item, index) => (
-        <React.Fragment key={index}>
-          <TableRow
-            className={cn(
-              "cursor-pointer transition-colors",
-              "hover:bg-muted/50 dark:hover:bg-muted/10",
-              openRows.includes(index) && "bg-muted/30 dark:bg-muted/5"
-            )}
-            onClick={() => toggleRow(index)}
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExport}
+            disabled={visibleRows.length === 0}
+            className="h-8 gap-2 text-xs"
           >
-            <TableCell className="text-xs py-2 text-foreground hidden md:table-cell">
-              {item.zone}
-            </TableCell>
-            <TableCell className="font-medium text-xs py-2 text-foreground">
-              {formatSelectedPeriod(selectedYear, selectedMonth, item.periode)}
-            </TableCell>
-            <TableCell className="text-xs py-2 text-foreground hidden lg:table-cell">
-              <span className="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/20 px-2 py-0.5 text-xs font-medium text-primary">
-                {item.projetEuro}
-              </span>
-            </TableCell>
-            <TableCell className="py-2">
-              <span className="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/20 px-2 py-0.5 text-xs font-medium text-primary">
-                {item.serieEuro}
-              </span>
-            </TableCell>
-            <TableCell className="py-2">{item.process}</TableCell>
-            <TableCell className="py-2">{item.matiere}</TableCell>
-          </TableRow>
-        </React.Fragment>
-      ))}
-      {data.length > 0 && (
-        <TableRow className="bg-muted/40 font-semibold hover:bg-muted/50 dark:bg-muted/10 dark:hover:bg-muted/20">
-          <TableCell className="text-xs py-3 text-foreground hidden md:table-cell">
-            Total
-          </TableCell>
-          <TableCell className="text-xs py-3 text-foreground">
-            {totalPeriod}
-          </TableCell>
-          <TableCell className="text-xs py-3 text-foreground hidden lg:table-cell">
-            <span className="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/20 px-2 py-0.5 text-xs font-medium text-primary">
-              {formatNumber(totals.projetEuro)}
-            </span>
-          </TableCell>
-          <TableCell className="py-3">
-            <span className="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/20 px-2 py-0.5 text-xs font-medium text-primary">
-              {formatNumber(totals.serieEuro)}
-            </span>
-          </TableCell>
-          <TableCell className="py-3">
-            {formatScrapMetric(totals.process)}
-          </TableCell>
-          <TableCell className="py-3">
-            {formatScrapMetric(totals.matiere)}
-          </TableCell>
-        </TableRow>
+            <FaFileExcel className="h-3.5 w-3.5 text-green-600" />
+            Exporter
+          </Button>
+          <Button asChild size="sm" className="h-8 gap-2 text-xs shadow-sm">
+            <Link href="/scrap/details/1">
+              <FolderKanban className="h-3.5 w-3.5" />
+              Détail par cellule
+              <ArrowUpRight className="h-3.5 w-3.5 opacity-80" />
+            </Link>
+          </Button>
+        </div>
+      </div>
+
+      {/* Totals of the zones shown */}
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
+        <KpiCard
+          label="Total scrap"
+          value={formatEuro(totals.total)}
+          detail={`${formatPcs(totals.process.pcs + totals.matiere.pcs)} · ${visibleRows.length} zone${visibleRows.length > 1 ? "s" : ""}`}
+          icon={Sigma}
+          highlight
+          loading={isLoading}
+        />
+        <KpiCard
+          label="Process"
+          value={formatEuro(totals.process.euro)}
+          detail={`${formatPcs(totals.process.pcs)} · ${percent(totals.process.euro, totals.total).toFixed(0)} % du total`}
+          icon={Wrench}
+          bar={[{ value: percent(totals.process.euro, totals.total), color: PROCESS_COLOR }]}
+          loading={isLoading}
+        />
+        <KpiCard
+          label="Matière"
+          value={formatEuro(totals.matiere.euro)}
+          detail={`${formatPcs(totals.matiere.pcs)} · ${percent(totals.matiere.euro, totals.total).toFixed(0)} % du total`}
+          icon={Boxes}
+          bar={[{ value: percent(totals.matiere.euro, totals.total), color: MATIERE_COLOR }]}
+          loading={isLoading}
+        />
+        <KpiCard
+          label="Projet / Série"
+          value={`${formatEuro(totals.projet)} / ${formatEuro(totals.serie)}`}
+          detail={`Projet ${percent(totals.projet, totals.projet + totals.serie).toFixed(0)} % · Série ${percent(totals.serie, totals.projet + totals.serie).toFixed(0)} %`}
+          icon={FolderKanban}
+          bar={[
+            { value: percent(totals.projet, totals.projet + totals.serie), color: PROJET_COLOR },
+            { value: percent(totals.serie, totals.projet + totals.serie), color: SERIE_COLOR },
+          ]}
+          loading={isLoading}
+        />
+      </div>
+
+      <TableFilter
+        search={search}
+        onSearchChange={setSearch}
+        zones={zones}
+        zoneFilter={zoneFilter}
+        onZoneFilterChange={setZoneFilter}
+        year={filters.year}
+        month={filters.month}
+        onYearChange={(year) => {
+          onFilterChange("year", year);
+          onFilterChange("month", "");
+        }}
+        onMonthChange={(month) => onFilterChange("month", month)}
+        visibleZones={visibleRows.length}
+        totalZones={rows.length}
+        onReset={resetFilters}
+      />
+
+      <div className="overflow-hidden rounded-lg border">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-muted/50 hover:bg-muted/50">
+              <SortableHead label="Zone" sortKey="zone" sort={sort} onSort={toggleSort} align="left" />
+              <TableHead className="h-9 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                Période
+              </TableHead>
+              <SortableHead label="Projet (€)" sortKey="projet" sort={sort} onSort={toggleSort} className="hidden lg:table-cell" />
+              <SortableHead label="Série (€)" sortKey="serie" sort={sort} onSort={toggleSort} />
+              <SortableHead label="Process" sortKey="process" sort={sort} onSort={toggleSort} />
+              <SortableHead label="Matière" sortKey="matiere" sort={sort} onSort={toggleSort} />
+              <SortableHead label="Total (€)" sortKey="total" sort={sort} onSort={toggleSort} />
+            </TableRow>
+          </TableHeader>
+
+          <TableBody>
+            {isLoading &&
+              Array.from({ length: 4 }, (_, index) => (
+                <TableRow key={`loading-${index}`}>
+                  <TableCell colSpan={7} className="py-3">
+                    <div className="h-4 w-full animate-pulse rounded bg-muted" />
+                  </TableCell>
+                </TableRow>
+              ))}
+
+            {!isLoading &&
+              visibleRows.map((row) => {
+                const isEmpty = row.total === 0 && row.projet === 0 && row.serie === 0;
+                return (
+                  <TableRow key={row.zone} className={cn("hover:bg-muted/40", isEmpty && "text-muted-foreground")}>
+                    <TableCell className="py-2.5">
+                      <span className="flex items-center gap-2 text-xs font-medium">
+                        <span
+                          className="h-2.5 w-2.5 shrink-0 rounded-full"
+                          style={{ backgroundColor: zoneBarChartColors[row.zone] || "#8E98F5" }}
+                        />
+                        <Highlight text={row.zone} query={search} />
+                      </span>
+                    </TableCell>
+                    <TableCell className="py-2.5 text-xs text-muted-foreground">{period}</TableCell>
+                    <TableCell className="hidden py-2.5 text-right text-xs tabular-nums lg:table-cell">
+                      {formatEuro(row.projet)}
+                    </TableCell>
+                    <TableCell className="py-2.5 text-right text-xs tabular-nums">{formatEuro(row.serie)}</TableCell>
+                    <MetricCell metric={row.process} />
+                    <MetricCell metric={row.matiere} />
+                    <TableCell className="py-2.5 text-right">
+                      <div className="text-xs font-semibold tabular-nums">{formatEuro(row.total)}</div>
+                      <ShareBar
+                        segments={[
+                          { value: percent(row.process.euro, totals.total), color: PROCESS_COLOR },
+                          { value: percent(row.matiere.euro, totals.total), color: MATIERE_COLOR },
+                        ]}
+                        title={`${percent(row.total, totals.total).toFixed(1)} % du total`}
+                      />
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+
+            {!isLoading && visibleRows.length === 0 && (
+              <TableRow className="hover:bg-transparent">
+                <TableCell colSpan={7} className="py-10 text-center">
+                  <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                    <SearchX className="h-7 w-7 text-muted-foreground/50" />
+                    <p className="text-sm font-medium text-foreground">Aucune zone</p>
+                    <p className="text-xs">
+                      {rows.length === 0 ? `Pas de scrap pour ${period}.` : "Aucune zone ne correspond à ces filtres."}
+                    </p>
+                    {rows.length > 0 && (
+                      <Button variant="outline" size="sm" className="mt-1 h-8 text-xs" onClick={resetFilters}>
+                        Réinitialiser les filtres
+                      </Button>
+                    )}
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+
+          {!isLoading && visibleRows.length > 0 && (
+            <TableFooter className="border-t-2 bg-muted/60">
+              <TableRow className="hover:bg-muted/60">
+                <TableCell className="py-2.5 text-xs font-semibold">
+                  Total{visibleRows.length < rows.length ? " sélection" : ""}
+                </TableCell>
+                <TableCell className="py-2.5 text-xs text-muted-foreground">{period}</TableCell>
+                <TableCell className="hidden py-2.5 text-right text-xs font-semibold tabular-nums lg:table-cell">
+                  {formatEuro(totals.projet)}
+                </TableCell>
+                <TableCell className="py-2.5 text-right text-xs font-semibold tabular-nums">
+                  {formatEuro(totals.serie)}
+                </TableCell>
+                <MetricCell metric={totals.process} bold />
+                <MetricCell metric={totals.matiere} bold />
+                <TableCell className="py-2.5 text-right text-xs font-bold tabular-nums text-primary">
+                  {formatEuro(totals.total)}
+                </TableCell>
+              </TableRow>
+            </TableFooter>
+          )}
+        </Table>
+      </div>
+
+      {/* Legend of the share bars */}
+      {!isLoading && visibleRows.length > 0 && (
+        <div className="flex items-center justify-end gap-4 text-[11px] text-muted-foreground">
+          <span className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-sm" style={{ backgroundColor: PROCESS_COLOR }} /> Process
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-sm" style={{ backgroundColor: MATIERE_COLOR }} /> Matière
+          </span>
+          <span>Barre : part de la zone dans le total</span>
+        </div>
       )}
-    </TableBody>
+    </div>
   );
 }
 
-interface TablePaginationProps {
-  currentPage: number;
-  totalPages: number;
-  startIndex: number;
-  endIndex: number;
-  totalItems: number;
-  onPageChange: (page: number) => void;
+function KpiCard({
+  label,
+  value,
+  detail,
+  icon: Icon,
+  bar,
+  highlight,
+  loading,
+}: {
+  label: string;
+  value: string;
+  detail: string;
+  icon: React.ComponentType<{ className?: string }>;
+  bar?: { value: number; color: string }[];
+  highlight?: boolean;
+  loading?: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+        "rounded-lg border p-3",
+        highlight ? "border-primary/30 bg-primary/5" : "bg-card"
+      )}
+    >
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-medium text-muted-foreground">{label}</span>
+        <Icon className={cn("h-4 w-4", highlight ? "text-primary" : "text-muted-foreground/70")} />
+      </div>
+      {loading ? (
+        <div className="mt-2 h-5 w-24 animate-pulse rounded bg-muted" />
+      ) : (
+        <div className={cn("mt-1 text-base font-semibold tabular-nums", highlight && "text-primary")}>{value}</div>
+      )}
+      <div className="mt-0.5 text-[11px] text-muted-foreground">{loading ? " " : detail}</div>
+      {bar && <ShareBar segments={loading ? [] : bar} className="mt-2 h-1.5" />}
+    </div>
+  );
 }
 
-function TablePagination({
-  currentPage,
-  totalPages,
-  startIndex,
-  endIndex,
-  totalItems,
-  onPageChange,
-}: TablePaginationProps) {
+function ShareBar({
+  segments,
+  title,
+  className,
+}: {
+  segments: { value: number; color: string }[];
+  title?: string;
+  className?: string;
+}) {
   return (
-    <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-4 px-2">
-      <div className="text-sm text-muted-foreground order-2 sm:order-1">
-        Showing {startIndex + 1} to {Math.min(endIndex, totalItems)} of{" "}
-        {totalItems} entries
-      </div>
-      <div className="flex items-center gap-2 order-1 sm:order-2">
-        <button
-          onClick={() => onPageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-          className={cn(
-            "p-2 rounded-lg hover:bg-muted/70 dark:hover:bg-muted/20 transition-colors",
-            currentPage === 1 && "opacity-50 cursor-not-allowed"
-          )}
-        >
-          <ChevronLeftIcon className="h-4 w-4 text-muted-foreground" />
-        </button>
-        <div className="hidden sm:flex items-center gap-2">
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i}
-              onClick={() => onPageChange(i + 1)}
-              className={cn(
-                "w-8 h-8 rounded-lg text-sm transition-colors",
-                currentPage === i + 1
-                  ? "bg-primary/80 dark:bg-primary/20 text-primary-foreground"
-                  : "hover:bg-muted/70 dark:hover:bg-muted/20 text-muted-foreground"
-              )}
-            >
-              {i + 1}
-            </button>
-          ))}
-        </div>
-        <div className="sm:hidden text-sm text-muted-foreground">
-          Page {currentPage} of {totalPages}
-        </div>
-        <button
-          onClick={() => onPageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          className={cn(
-            "p-2 rounded-lg hover:bg-muted/70 dark:hover:bg-muted/20 transition-colors",
-            currentPage === totalPages && "opacity-50 cursor-not-allowed"
-          )}
-        >
-          <ChevronRightIcon className="h-4 w-4 text-muted-foreground" />
-        </button>
-      </div>
+    <div title={title} className={cn("mt-1 ml-auto flex h-1 w-full max-w-[120px] overflow-hidden rounded-full bg-muted", className, className && "max-w-none")}>
+      {segments.map((segment, index) => (
+        <div
+          key={index}
+          className="h-full"
+          style={{ width: `${Math.min(100, Math.max(0, segment.value))}%`, backgroundColor: segment.color }}
+        />
+      ))}
     </div>
+  );
+}
+
+function MetricCell({ metric, bold }: { metric: ScrapMetric; bold?: boolean }) {
+  return (
+    <TableCell className="py-2.5 text-right">
+      <div className={cn("text-xs tabular-nums", bold ? "font-semibold" : "font-medium")}>{formatEuro(metric.euro)}</div>
+      <div className="text-[11px] tabular-nums text-muted-foreground">{formatPcs(metric.pcs)}</div>
+    </TableCell>
+  );
+}
+
+function SortableHead({
+  label,
+  sortKey,
+  sort,
+  onSort,
+  align = "right",
+  className,
+}: {
+  label: string;
+  sortKey: SortKey;
+  sort: Sort;
+  onSort: (key: SortKey) => void;
+  align?: "left" | "right";
+  className?: string;
+}) {
+  const active = sort?.key === sortKey;
+  const Icon = !active ? ArrowUpDown : sort.direction === "asc" ? ArrowUp : ArrowDown;
+  return (
+    <TableHead className={cn("h-9", align === "right" && "text-right", className)}>
+      <button
+        type="button"
+        onClick={() => onSort(sortKey)}
+        className={cn(
+          "inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide transition-colors hover:text-foreground",
+          active ? "text-foreground" : "text-muted-foreground"
+        )}
+      >
+        {label}
+        <Icon className={cn("h-3 w-3", !active && "opacity-50")} />
+      </button>
+    </TableHead>
   );
 }
