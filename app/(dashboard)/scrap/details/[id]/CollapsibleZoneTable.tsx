@@ -272,9 +272,10 @@ const CollapsibleZoneTable = ({
 
     return (
       <thead>
-        <tr>
+        {/* Month banner — tinted and bold so each month block is easy to spot */}
+        <tr className="bg-blue-50 dark:bg-blue-950/40">
           <th
-            className="border p-1 text-xs font-medium text-muted-foreground"
+            className="border p-1.5 text-xs font-semibold tracking-wide text-blue-900 dark:text-blue-100"
             colSpan={2}
           >
             NATURE
@@ -282,7 +283,7 @@ const CollapsibleZoneTable = ({
           {months.map((month) => (
             <th
               key={month}
-              className="border p-1 text-center text-xs font-medium text-muted-foreground bg-muted/30"
+              className="border p-1.5 text-center text-xs font-semibold uppercase tracking-wide text-blue-900 dark:text-blue-100"
               colSpan={(weeksPerMonth[month]?.length || 0) + 1}
             >
               {month}
