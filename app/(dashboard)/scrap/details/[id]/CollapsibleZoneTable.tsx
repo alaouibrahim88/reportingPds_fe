@@ -865,7 +865,7 @@ const CollapsibleZoneTable = ({
 
   return (
     <div className="rounded-md border shadow-sm hover:shadow-md transition-all">
-      <div className="flex items-center gap-2 mb-1 py-3 px-4 bg-muted/30 rounded-t-md">
+      <div className="flex items-center gap-2 py-2 px-3 bg-muted/30 rounded-t-md">
         <div className="flex items-center gap-2">
           <Users2 className="w-4 h-4 text-primary" />
           <h3 className="font-medium text-sm">Zone Details</h3>
@@ -898,7 +898,7 @@ const CollapsibleZoneTable = ({
         onReset={resetFilters}
       />
 
-      <div className="p-3 transition-all hover:border-primary/20">
+      <div className="px-3 pb-3 pt-2 transition-all hover:border-primary/20">
         <div className="overflow-x-auto w-full">
           <table className="w-full border-collapse">
             <TableHeader />

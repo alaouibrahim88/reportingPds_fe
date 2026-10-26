@@ -153,9 +153,9 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="py-2 px-4">
-      {/* Title Section */}
-      <div className="flex items-center justify-between mb-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10 py-4">
+    <div className="pb-2 px-4">
+      {/* Title Section — compact to leave room for the table */}
+      <div className="flex items-center justify-between mb-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10 py-2">
         <div className="flex items-center gap-4">
           <Link href="/">
             <Button
@@ -183,7 +183,7 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
       </div>
 
       {/* Details Overview */}
-      <div className="space-y-8">
+      <div className="space-y-4">
         {/* First Table */}
         <CollapsibleZoneTable
           viewMode={viewMode}

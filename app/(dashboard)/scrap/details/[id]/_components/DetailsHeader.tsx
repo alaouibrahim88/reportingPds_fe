@@ -109,7 +109,7 @@ const Controls: React.FC<ControlsProps> = ({
       </Select>
 
       {/* View Mode Switch */}
-      <div className="flex items-center gap-3 px-4 py-2 rounded-lg border bg-muted/30">
+      <div className="flex h-8 items-center gap-2 px-3 rounded-md border bg-muted/30">
         <span className="text-xs font-medium text-muted-foreground">Price</span>
         <Switch
           checked={viewMode === "Qty"}

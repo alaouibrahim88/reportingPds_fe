@@ -55,7 +55,7 @@ const MultiSelectFilter = ({
           variant="outline"
           size="sm"
           className={cn(
-            "h-9 gap-2 border-dashed text-xs font-medium",
+            "h-8 gap-2 border-dashed text-xs font-medium",
             selected.length > 0 &&
               "border-solid border-primary/40 bg-primary/5 text-primary hover:bg-primary/10"
           )}
@@ -213,7 +213,7 @@ const ZoneFilterBar = ({
   }, []);
 
   return (
-    <div className="mx-3 mt-3 rounded-lg border bg-gradient-to-r from-blue-50/80 via-background to-background p-3 shadow-sm dark:from-blue-950/30">
+    <div className="mx-3 mt-2 rounded-lg border bg-gradient-to-r from-blue-50/80 via-background to-background p-2 shadow-sm dark:from-blue-950/30">
       <div className="flex flex-wrap items-center gap-2">
         <div className="relative min-w-[240px] max-w-md flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -227,7 +227,7 @@ const ZoneFilterBar = ({
             }}
             placeholder="Rechercher une zone ou une cellule…"
             aria-label="Rechercher une zone ou une cellule"
-            className="h-9 w-full rounded-md border border-input bg-background pl-9 pr-16 text-xs shadow-sm outline-none transition placeholder:text-muted-foreground focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/20 [&::-webkit-search-cancel-button]:hidden"
+            className="h-8 w-full rounded-md border border-input bg-background pl-9 pr-16 text-xs shadow-sm outline-none transition placeholder:text-muted-foreground focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/20 [&::-webkit-search-cancel-button]:hidden"
           />
           {search ? (
             <button
@@ -271,7 +271,7 @@ const ZoneFilterBar = ({
             variant="ghost"
             size="sm"
             onClick={onReset}
-            className="h-9 gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+            className="h-8 gap-1.5 text-xs text-muted-foreground hover:text-foreground"
           >
             <RotateCcw className="h-3.5 w-3.5" />
             Réinitialiser
@@ -284,7 +284,7 @@ const ZoneFilterBar = ({
       </div>
 
       {hasFilters && (
-        <div className="mt-2 flex flex-wrap items-center gap-1.5 border-t pt-2">
+        <div className="mt-1.5 flex flex-wrap items-center gap-1.5 border-t pt-1.5">
           <span className="mr-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
             Filtres actifs
           </span>
