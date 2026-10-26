@@ -115,8 +115,7 @@ export const MixBarChart = ({ data }: MixBarChartProps) => {
   const zoneKeys = zoneNames(data);
 
   return (
-    <div className="bg-card dark:bg-card/50 p-2 sm:p-4 rounded-lg shadow-sm w-full">
-      <div className="mb-2 sm:mb-6"></div>
+    <div className="bg-card dark:bg-card/50 px-1 pt-1 sm:px-2 rounded-lg w-full">
       <div className="h-[250px] sm:h-[300px] md:h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
@@ -176,7 +175,7 @@ export const MixBarChart = ({ data }: MixBarChartProps) => {
         </ResponsiveContainer>
       </div>
       {/* ZONE LIST POINTS */}
-      <div className="flex flex-wrap gap-2 justify-center sm:justify-start mt-2 sm:mt-6 px-1">
+      <div className="flex flex-wrap gap-2 justify-center sm:justify-start mt-1 sm:mt-2 px-1">
         {zoneKeys.map((zoneKey) => (
           <div
             key={zoneKey}

@@ -110,7 +110,7 @@ export function WeeklyTrendChart({ data, year, scope, inProgressWeek }: WeeklyTr
   const isEmpty = !isLoading && points.length === 0;
 
   return (
-    <div className="mt-3 border-t border-border pt-3 sm:mt-4 sm:pt-4">
+    <div className="mt-2 border-t border-border pt-2 sm:mt-3 sm:pt-3">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <div className="flex items-center gap-1.5 sm:gap-2">
@@ -152,7 +152,7 @@ export function WeeklyTrendChart({ data, year, scope, inProgressWeek }: WeeklyTr
       </div>
 
       {/* Key figures of the curve shown */}
-      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
         <div className="rounded-lg bg-muted p-2">
           <div className="text-xs text-muted-foreground">Total sur la période</div>
           <div className="text-sm font-medium text-foreground">{formatEuro(total)}</div>
@@ -191,7 +191,7 @@ export function WeeklyTrendChart({ data, year, scope, inProgressWeek }: WeeklyTr
         </div>
       </div>
 
-      <div className="mt-3 h-[220px] sm:h-[260px]">
+      <div className="mt-2 h-[220px] sm:h-[260px]">
         {isLoading || isEmpty ? (
           <div className="flex h-full items-center justify-center text-xs text-muted-foreground">
             {isLoading ? "Chargement…" : "Aucune donnée de scrap pour cette période."}

@@ -151,11 +151,11 @@ function Container() {
 
   return (
     <div className="min-h-screen">
-      <div className="flex flex-col gap-2 sm:gap-4 p-2 sm:p-4 max-w-[2000px] mx-auto">
+      <div className="flex flex-col gap-2 sm:gap-3 p-2 sm:p-3 max-w-[2000px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-3">
-          <div className="lg:col-span-3 xl:col-span-4 bg-card rounded-lg p-3 sm:p-4 shadow-sm border border-border">
+          <div className="lg:col-span-3 xl:col-span-4 bg-card rounded-lg p-3 sm:px-4 sm:py-3 shadow-sm border border-border">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
+              <div className="flex items-center gap-1.5 sm:gap-2">
                 <ChartBar className="w-[18px] h-[18px] sm:w-5 sm:h-5 text-primary transition-all duration-200" />
                 <h2 className="font-medium text-sm sm:text-base">
                   Synthèse Globale Scrap (€)
@@ -163,7 +163,7 @@ function Container() {
               </div>
               <button className="text-muted-foreground text-sm">•••</button>
             </div>
-            <div className="flex items-center justify-between gap-2 text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-2 mb-2 sm:mb-4">
+            <div className="flex items-center justify-between gap-2 text-xs sm:text-sm text-muted-foreground mt-1 mb-1">
               <div className="flex items-center gap-2 flex-1">
                 <div className="flex items-center gap-2">
                   <svg className="w-3 h-3 sm:w-4 sm:h-4" viewBox="0 0 24 24">
@@ -179,7 +179,7 @@ function Container() {
                 <div className="flex items-center justify-center flex-1">
                   <div className="flex items-center justify-center border rounded-md overflow-hidden">
                     <div
-                      className="flex items-center px-3 py-1.5 cursor-pointer hover:bg-accent"
+                      className="flex items-center px-3 py-1 cursor-pointer hover:bg-accent"
                       onClick={() => handleCheckboxChange("zone")}
                       style={{
                         backgroundColor: selectedType === 'zone'
@@ -191,7 +191,7 @@ function Container() {
                       <span className="text-xs sm:text-sm">Total</span>
                     </div>
                     <div
-                      className="flex items-center px-3 py-1.5 cursor-pointer hover:bg-accent"
+                      className="flex items-center px-3 py-1 cursor-pointer hover:bg-accent"
                       onClick={() => handleCheckboxChange("projet")}
                       style={{
                         backgroundColor: selectedType === 'projet'
@@ -203,7 +203,7 @@ function Container() {
                       <span className="text-xs sm:text-sm">Projet</span>
                     </div>
                     <div
-                      className="flex items-center px-3 py-1.5 cursor-pointer hover:bg-accent"
+                      className="flex items-center px-3 py-1 cursor-pointer hover:bg-accent"
                       onClick={() => handleCheckboxChange("serie")}
                       style={{
                         backgroundColor: selectedType === 'serie'
@@ -220,7 +220,7 @@ function Container() {
 
               <div className="flex gap-2">
                 <Select defaultValue={year} onValueChange={setYear}>
-                  <SelectTrigger className="w-[120px] h-9 bg-background">
+                  <SelectTrigger className="w-[120px] h-8 bg-background">
                     <SelectValue placeholder="Select year" />
                   </SelectTrigger>
                   <SelectContent>
@@ -234,7 +234,7 @@ function Container() {
                 </Select>
 
                 <Select defaultValue={month} onValueChange={setMonth}>
-                  <SelectTrigger className="w-[120px] h-9 bg-background">
+                  <SelectTrigger className="w-[120px] h-8 bg-background">
                     <SelectValue placeholder="Select month" />
                   </SelectTrigger>
                   <SelectContent>

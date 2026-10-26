@@ -2,7 +2,6 @@
 
 import BreadCrumbHeader from "@/components/BreadCrumbHeader"
 import DesktopSidebar from "@/components/Sidebar"
-import { ModeToggle } from "@/components/ThemeModeToggle"
 import { Separator } from "@/components/ui/separator"
 import { CategoryNavigationHeader } from "@/components/CategoryNavigationHeader"
 import { usePathname } from "next/navigation"
@@ -73,12 +72,12 @@ export default function DashboardLayout({
 		<div className="flex h-screen">
 			<DesktopSidebar />
 			<div className="flex flex-col flex-1 min-h-screen">
-				<header className="flex items-center justify-between px-4 sm:px-6 py-3 bg-background">
-					<div className="flex flex-row justify-between w-full">
+				{/* Compact bar: breadcrumb + logout (the theme toggle stays on the category pages) */}
+				<header className="flex items-center justify-between px-4 sm:px-6 py-1.5 bg-background">
+					<div className="flex flex-row items-center justify-between w-full">
 						<BreadCrumbHeader />
 						<div className="gap-2 sm:gap-4 flex items-center">
-							<ModeToggle />
-							{isAuthenticated && <LogoutButton />}
+							{isAuthenticated && <LogoutButton className="h-8 px-3 text-sm" />}
 						</div>
 					</div>
 				</header>
