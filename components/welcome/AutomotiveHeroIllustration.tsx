@@ -75,6 +75,15 @@ export function AutomotiveHeroIllustration() {
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
+        {/* Fades the light trails in from the left so they don't stop hard at the illustration edge */}
+        <linearGradient id="hero-car-fade-ramp" x1="0" x2="190" y1="0" y2="0" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#FFFFFF" stopOpacity="0" />
+          <stop offset="0.55" stopColor="#FFFFFF" stopOpacity="0.55" />
+          <stop offset="1" stopColor="#FFFFFF" />
+        </linearGradient>
+        <mask id="hero-car-fade" maskUnits="userSpaceOnUse" x="-60" y="283" width="640" height="325">
+          <rect x="-60" y="283" width="640" height="325" fill="url(#hero-car-fade-ramp)" />
+        </mask>
         <clipPath id="screen-clip">
           <rect x="148" y="82" width="514" height="313" rx="24" />
         </clipPath>
@@ -142,7 +151,9 @@ export function AutomotiveHeroIllustration() {
       <path d="M149 399H661" stroke="#4BCBFF" strokeLinecap="round" strokeOpacity="0.18" strokeWidth="5" filter="url(#light-glow)" />
 
       {/* Neon car artwork (public/hero-car.png); its dark background is keyed out so it blends into the scene */}
-      <image href="/hero-car.png" x="-60" y="283" width="640" height="325" filter="url(#hero-car-glow)" />
+      <g mask="url(#hero-car-fade)">
+        <image href="/hero-car.png" x="-60" y="283" width="640" height="325" filter="url(#hero-car-glow)" />
+      </g>
 
       <rect x="637" y="415" width="26" height="7" rx="3.5" fill="#72D7FF" fillOpacity="0.7" />
 
