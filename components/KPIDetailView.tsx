@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, TrendingUp, TrendingDown } from "lucide-react";
 import { getIconComponent } from "@/components/IconComponent";
-import { CategoryData } from "@/lib/kpi-data";
+import type { CategoryData } from "@/types";
 import { CategoryHeader } from "@/components/CategoryHeader";
 
 interface KPIDetailViewProps {
