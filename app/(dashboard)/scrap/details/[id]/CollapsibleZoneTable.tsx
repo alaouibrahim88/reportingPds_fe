@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Users2 } from "lucide-react";
+import { Minus, Plus, Users2 } from "lucide-react";
 import { getZoneDetails, getDetailsPerZone } from "@/actions/scrap";
 import { z } from "zod";
 import { FaFileExcel } from "react-icons/fa";
 import { GetZoneDetails, getZoneSubDetails } from "@/actions/scrap/details";
-import { exportZoneDetailToExcel} from "@/app/(dashboard)/scrap/details/[id]/_utils/exportZoneDetail";
+import { exportZoneDetailToExcel, SCRAP_TYPES } from "@/app/(dashboard)/scrap/details/[id]/_utils/exportZoneDetail";
 import { Endpoints } from "@/constants/api";
 import { getCookieValue } from "@/lib/storage";
 
@@ -139,6 +139,9 @@ const CollapsibleZoneTable = ({
   const [expandedZones, setExpandedZones] =
     useState<ZoneState>(initialExpandedZones);
 
+  // Zones whose Process / Matière / Machine / Démarrage rows are shown (hidden by default)
+  const [visibleTypes, setVisibleTypes] = useState<Partial<ZoneState>>({});
+
   const [zonesData, setZonesData] = useState<ZoneData[]>([]);
   const [detailedData, setDetailedData] = useState<Record<string, any>>({});
   const [months, setMonths] = useState<string[]>([]);
@@ -252,6 +255,10 @@ const CollapsibleZoneTable = ({
     }
   };
 
+  const toggleTypes = (zone: ZoneKey) => {
+    setVisibleTypes((prev) => ({ ...prev, [zone]: !prev[zone] }));
+  };
+
   const formatValue = (value: number) => {
     return viewMode === "price" ? `${value} €` : value;
   };
@@ -330,6 +337,60 @@ const CollapsibleZoneTable = ({
       {formatValue(value)}
     </td>
   );
+
+  // Process / Matière / Machine / Démarrage rows — discreet, above TOTAL
+  const ScrapTypeRows = ({ zone }: { zone: ZoneData }) => {
+    const weeksPerMonth = zone.weeksPerMonth || {};
+
+    return (
+      <>
+        {SCRAP_TYPES.map((scrapType) => (
+          <tr key={`${zone.key}-${scrapType}`}>
+            <td className="border p-1 text-xs text-muted-foreground/40"></td>
+            <td className="border p-1 text-xs text-muted-foreground/40 italic">
+              {scrapType}
+            </td>
+            {months.map((month) => {
+              const monthWeeks = weeksPerMonth[month] || [];
+              return (
+                <React.Fragment key={`${zone.key}-${scrapType}-${month}`}>
+                  {monthWeeks.map((_, i) => (
+                    <td
+                      key={`${zone.key}-${scrapType}-${month}-${i}`}
+                      className="border p-1 text-center text-xs text-muted-foreground/40"
+                    />
+                  ))}
+                  <td className="border p-1 text-center text-xs text-muted-foreground/40">
+                    —
+                  </td>
+                </React.Fragment>
+              );
+            })}
+          </tr>
+        ))}
+      </>
+    );
+  };
+
+  // First cell of a zone's TOTAL row: + / − button that shows or hides its scrap type rows
+  const ScrapTypesToggleCell = ({ zoneKey }: { zoneKey: ZoneKey }) => {
+    const isVisible = !!visibleTypes[zoneKey];
+
+    return (
+      <td className="border p-1 text-xs font-bold text-blue-900">
+        <button
+          type="button"
+          onClick={() => toggleTypes(zoneKey)}
+          aria-expanded={isVisible}
+          aria-label={`${isVisible ? "Masquer" : "Afficher"} Process, Matière, Machine et Démarrage (${zoneKey})`}
+          title={isVisible ? "Masquer les types" : "Afficher Process, Matière, Machine, Démarrage"}
+          className="inline-flex h-5 w-5 items-center justify-center rounded border border-blue-300 bg-white text-blue-700 transition-colors hover:bg-blue-50"
+        >
+          {isVisible ? <Minus className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
+        </button>
+      </td>
+    );
+  };
 
   // Component for a zone row
   const ZoneRow = ({ zone }: { zone: ZoneData }) => {
@@ -410,57 +471,11 @@ const CollapsibleZoneTable = ({
           })}
         </tr>
 
-        {/* Process row — discreet, above TOTAL */}
-        <tr>
-          <td className="border p-1 text-xs text-muted-foreground/40"></td>
-          <td className="border p-1 text-xs text-muted-foreground/40 italic">
-            Process
-          </td>
-          {months.map((month) => {
-            const monthWeeks = weeksPerMonth[month] || [];
-            return (
-              <React.Fragment key={`summary-process-${month}`}>
-                {monthWeeks.map((_, i) => (
-                  <td
-                    key={`summary-process-${month}-${i}`}
-                    className="border p-1 text-center text-xs text-muted-foreground/40"
-                  />
-                ))}
-                <td className="border p-1 text-center text-xs text-muted-foreground/40">
-                  —
-                </td>
-              </React.Fragment>
-            );
-          })}
-        </tr>
-
-        {/* Matière row — discreet, above TOTAL */}
-        <tr>
-          <td className="border p-1 text-xs text-muted-foreground/40"></td>
-          <td className="border p-1 text-xs text-muted-foreground/40 italic">
-            Matière
-          </td>
-          {months.map((month) => {
-            const monthWeeks = weeksPerMonth[month] || [];
-            return (
-              <React.Fragment key={`summary-matiere-${month}`}>
-                {monthWeeks.map((_, i) => (
-                  <td
-                    key={`summary-matiere-${month}-${i}`}
-                    className="border p-1 text-center text-xs text-muted-foreground/40"
-                  />
-                ))}
-                <td className="border p-1 text-center text-xs text-muted-foreground/40">
-                  —
-                </td>
-              </React.Fragment>
-            );
-          })}
-        </tr>
+        {visibleTypes[zone.key] && <ScrapTypeRows zone={zone} />}
 
         {/* TOTAL row — bold and standing out */}
         <tr className="bg-blue-100 border-b-2 border-blue-300">
-          <td className="border p-1 text-xs font-bold text-blue-900"></td>
+          <ScrapTypesToggleCell zoneKey={zone.key} />
           <td className="border p-1 text-xs font-bold text-blue-900">TOTAL</td>
           {months.map((month) => {
             const actualMonthIndex = months.indexOf(month);
@@ -560,57 +575,11 @@ const CollapsibleZoneTable = ({
           );
         })}
 
-        {/* Process row — discreet, above TOTAL */}
-        <tr>
-          <td className="border p-1 text-xs text-muted-foreground/40"></td>
-          <td className="border p-1 text-xs text-muted-foreground/40 italic">
-            Process
-          </td>
-          {months.map((month) => {
-            const monthWeeks = weeksPerMonth[month] || [];
-            return (
-              <React.Fragment key={`${zone.key}-process-${month}`}>
-                {monthWeeks.map((_, i) => (
-                  <td
-                    key={`${zone.key}-process-${month}-${i}`}
-                    className="border p-1 text-center text-xs text-muted-foreground/40"
-                  />
-                ))}
-                <td className="border p-1 text-center text-xs text-muted-foreground/40">
-                  —
-                </td>
-              </React.Fragment>
-            );
-          })}
-        </tr>
-
-        {/* Matière row — discreet, above TOTAL */}
-        <tr>
-          <td className="border p-1 text-xs text-muted-foreground/40"></td>
-          <td className="border p-1 text-xs text-muted-foreground/40 italic">
-            Matière
-          </td>
-          {months.map((month) => {
-            const monthWeeks = weeksPerMonth[month] || [];
-            return (
-              <React.Fragment key={`${zone.key}-matiere-${month}`}>
-                {monthWeeks.map((_, i) => (
-                  <td
-                    key={`${zone.key}-matiere-${month}-${i}`}
-                    className="border p-1 text-center text-xs text-muted-foreground/40"
-                  />
-                ))}
-                <td className="border p-1 text-center text-xs text-muted-foreground/40">
-                  —
-                </td>
-              </React.Fragment>
-            );
-          })}
-        </tr>
+        {visibleTypes[zone.key] && <ScrapTypeRows zone={zone} />}
 
         {/* TOTAL row — bold and standing out */}
         <tr className="bg-blue-100 border-b-2 border-blue-300">
-          <td className="border p-1 text-xs font-bold text-blue-900"></td>
+          <ScrapTypesToggleCell zoneKey={zone.key} />
           <td className="border p-1 text-xs font-bold text-blue-900">TOTAL</td>
           {months.map((month) => {
             const actualMonthIndex = months.indexOf(month);

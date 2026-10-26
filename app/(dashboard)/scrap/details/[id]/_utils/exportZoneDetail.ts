@@ -16,6 +16,9 @@ type DetailedMonth = { weeks: Record<string, number>; total: number };
 type DetailedCell  = { type: "Projet" | "Serie"; months: Record<string, DetailedMonth> };
 type DetailedZone  = { cells: Record<string, DetailedCell> };
 
+// Scrap types listed under each zone, above its TOTAL row (no data yet, shown as "—")
+export const SCRAP_TYPES = ["Process", "Matière", "Machine", "Démarrage"] as const;
+
 // ─── Cell style type ──────────────────────────────────────────────────────────
 type CellStyle = {
   fill?:      { patternType: string; fgColor: { rgb: string } };  // rgb not argb
@@ -338,37 +341,23 @@ export function exportZoneDetailToExcel(
       }
     }
 
-    // Process row
-    setCell(ws, r, 0, "", mutedCell);
-    setCell(ws, r, 1, "Process", {
-      ...mutedCell,
-      font:      argbFont("94A3B8", false, 9, true),
-      alignment: { horizontal: "left", vertical: "center" },
-    });
-    months.forEach((m) => {
-      const monthWeeks = weeksPerMonth[m] || [];
-      monthWeeks.forEach((weekNum) => {
-        setCell(ws, r, colMap[`${m}_${weekNum}`], "", mutedCell);
+    // Process / Matière / Machine / Démarrage rows
+    SCRAP_TYPES.forEach((scrapType) => {
+      setCell(ws, r, 0, "", mutedCell);
+      setCell(ws, r, 1, scrapType, {
+        ...mutedCell,
+        font:      argbFont("94A3B8", false, 9, true),
+        alignment: { horizontal: "left", vertical: "center" },
       });
-      setCell(ws, r, colMap[`${m}_total`], "—", mutedCell);
-    });
-    r++;
-
-    // Matière row
-    setCell(ws, r, 0, "", mutedCell);
-    setCell(ws, r, 1, "Matière", {
-      ...mutedCell,
-      font:      argbFont("94A3B8", false, 9, true),
-      alignment: { horizontal: "left", vertical: "center" },
-    });
-    months.forEach((m) => {
-      const monthWeeks = weeksPerMonth[m] || [];
-      monthWeeks.forEach((weekNum) => {
-        setCell(ws, r, colMap[`${m}_${weekNum}`], "", mutedCell);
+      months.forEach((m) => {
+        const monthWeeks = weeksPerMonth[m] || [];
+        monthWeeks.forEach((weekNum) => {
+          setCell(ws, r, colMap[`${m}_${weekNum}`], "", mutedCell);
+        });
+        setCell(ws, r, colMap[`${m}_total`], "—", mutedCell);
       });
-      setCell(ws, r, colMap[`${m}_total`], "—", mutedCell);
+      r++;
     });
-    r++;
 
     // TOTAL row
     const totalStyle: CellStyle = {
