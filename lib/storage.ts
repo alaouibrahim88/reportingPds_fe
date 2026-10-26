@@ -17,7 +17,8 @@ export async function setCookieValue(
 	cookieStore.set(key, value, {
 		maxAge: options?.maxAge || 60 * 60 * 24 * 30, // 30 days by default
 		path: options?.path || '/',
-		secure: options?.secure !== undefined ? options.secure : process.env.NODE_ENV === 'production',
+		// Only mark cookies secure when the site is served over HTTPS (set COOKIE_SECURE=true), otherwise browsers drop them
+		secure: options?.secure !== undefined ? options.secure : process.env.COOKIE_SECURE === 'true',
 		httpOnly: options?.httpOnly !== undefined ? options.httpOnly : true,
 	})
 
