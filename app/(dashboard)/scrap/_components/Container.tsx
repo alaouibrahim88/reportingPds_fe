@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { MixBarChart, RawData } from "./MixBarChart";
+import { WeeklyTrendChart } from "./WeeklyTrendChart";
 import TableZone, { YearlyZoneDataType } from "./TableZone";
 import { ZoneDataType, dashboardData } from "./data/dashboardData";
 import { ZoneActivity } from "./ZoneActivity";
@@ -157,7 +158,7 @@ function Container() {
               <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
                 <ChartBar className="w-[18px] h-[18px] sm:w-5 sm:h-5 text-primary transition-all duration-200" />
                 <h2 className="font-medium text-sm sm:text-base">
-                  Synthèse Globale Scrap (PCS)
+                  Synthèse Globale Scrap (€)
                 </h2>
               </div>
               <button className="text-muted-foreground text-sm">•••</button>
@@ -255,6 +256,13 @@ function Container() {
             </div>
 
             <MixBarChart data={globalData} />
+            {/* Same weekly data as the bar chart, as one curve: all zones or the selected zone */}
+            <WeeklyTrendChart
+              data={globalData}
+              year={Number(year)}
+              scope={selectedType}
+              inProgressWeek={Number(year) === currentYear ? currentWeek : undefined}
+            />
           </div>
           <ZoneActivity
             week={week}

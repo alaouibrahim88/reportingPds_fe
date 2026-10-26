@@ -5,4 +5,6 @@ export const zoneBarChartColors: Record<string, string> = {
   BOOT: "#00CCCB",
   GAINAGE: "#357AB7",
   INJECTION: "#8B5CF6",
+  KNITTING: "#F472B6",
+  CUTTING: "#FB923C",
 };
