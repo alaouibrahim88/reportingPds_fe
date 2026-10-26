@@ -2,7 +2,8 @@
   min-height: 100svh;
   position: relative;
   isolation: isolate;
-  overflow-x: hidden;
+  /* Clip decorative glows on both axes; overflow-x alone turns .page into a second vertical scroller */
+  overflow: hidden;
   color: #f7faff;
   background:
     radial-gradient(circle at 82% 16%, rgba(121, 77, 255, 0.5), transparent 29%),
