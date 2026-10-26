@@ -5,7 +5,15 @@ import ZoneFilterBar from "./_components/ZoneFilterBar";
 import { z } from "zod";
 import { FaFileExcel } from "react-icons/fa";
 import { GetZoneDetails, getZoneSubDetails } from "@/actions/scrap/details";
-import { exportZoneDetailToExcel, SCRAP_TYPES } from "@/app/(dashboard)/scrap/details/[id]/_utils/exportZoneDetail";
+import {
+  exportZoneDetailToExcel,
+  SCRAP_TYPES,
+  SCRAP_TYPE_FIELDS,
+  type ScrapType,
+  type ScrapTypeMonthField,
+  type ScrapTypeTotals,
+  type ScrapTypeWeekField,
+} from "@/app/(dashboard)/scrap/details/[id]/_utils/exportZoneDetail";
 import { Endpoints } from "@/constants/api";
 import { getCookieValue } from "@/lib/storage";
 
@@ -42,6 +50,8 @@ type ZoneData = {
   projectValue: number;
   cells: CellData[];
   totals: number[][];
+  // Process / Matière / Machine / Démarrage, laid out like totals
+  typeTotals: ScrapTypeTotals;
   weeksPerMonth: Record<string, number[]>;
 };
 
@@ -53,7 +63,7 @@ type ApiZoneDetail = {
   annee: number;
   couts: number;
   total_mois: number;
-};
+} & Partial<Record<ScrapTypeWeekField | ScrapTypeMonthField, number>>;
 
 type ApiZoneType = {
   zone: string;
@@ -167,12 +177,23 @@ const processDetailedData = (zonesDetails: any[]) => {
         result[zoneName].cells[cellName].months[detail?.mois] = {
           weeks: {},
           total: toNumber(detail?.total_mois),
+          // Same week / total split per scrap type
+          types: Object.fromEntries(
+            SCRAP_TYPES.map((scrapType) => [
+              scrapType,
+              { weeks: {}, total: toNumber(detail?.[SCRAP_TYPE_FIELDS[scrapType].month]) },
+            ])
+          ),
         };
       }
 
-      result[zoneName].cells[cellName].months[detail?.mois].weeks[
-        detail?.semaine
-      ] = toNumber(detail?.couts);
+      const monthData = result[zoneName].cells[cellName].months[detail?.mois];
+      monthData.weeks[detail?.semaine] = toNumber(detail?.couts);
+      SCRAP_TYPES.forEach((scrapType) => {
+        monthData.types[scrapType].weeks[detail?.semaine] = toNumber(
+          detail?.[SCRAP_TYPE_FIELDS[scrapType].week]
+        );
+      });
     });
   });
 
@@ -411,19 +432,26 @@ const CollapsibleZoneTable = ({
     Object.keys(detailedData[zone]?.cells ?? {}).filter((cell) => isCellVisible(zone, cell));
 
   // Per month: week sums of the given cells, then the sum of their month totals
-  const computeSelectionTotals = (zone: ZoneData, cellNames: string[]) => {
+  // (overall, or for one scrap type)
+  const computeSelectionTotals = (zone: ZoneData, cellNames: string[], scrapType?: ScrapType) => {
     const cells = detailedData[zone.key]?.cells ?? {};
     return months.map((m) => {
+      const monthOf = (name: string) => {
+        const monthData = cells[name]?.months[m];
+        return scrapType ? monthData?.types?.[scrapType] : monthData;
+      };
       const weekSums = (zone.weeksPerMonth[m] || []).map((weekNum) =>
-        cellNames.reduce((sum, name) => sum + (cells[name]?.months[m]?.weeks[weekNum] || 0), 0)
+        cellNames.reduce((sum, name) => sum + (monthOf(name)?.weeks[weekNum] || 0), 0)
       );
-      const monthTotal = cellNames.reduce(
-        (sum, name) => sum + (cells[name]?.months[m]?.total || 0),
-        0
-      );
+      const monthTotal = cellNames.reduce((sum, name) => sum + (monthOf(name)?.total || 0), 0);
       return [...weekSums, monthTotal];
     });
   };
+
+  const computeSelectionTypeTotals = (zone: ZoneData, cellNames: string[]) =>
+    Object.fromEntries(
+      SCRAP_TYPES.map((scrapType) => [scrapType, computeSelectionTotals(zone, cellNames, scrapType)])
+    ) as ScrapTypeTotals;
 
   // Component for table header
   const TableHeader = () => {
@@ -462,7 +490,8 @@ const CollapsibleZoneTable = ({
           {months.flatMap((month) => [
             ...(weeksPerMonth[month] || []).map((weekNum) => (
               <th
-                key={`wk${weekNum}`}
+                // A week straddling two months (e.g. WK40) appears under both
+                key={`${month}-wk${weekNum}`}
                 className="border p-1 text-center text-xs font-medium text-muted-foreground"
               >
                 WK{weekNum}
@@ -501,30 +530,33 @@ const CollapsibleZoneTable = ({
     </td>
   );
 
-  // Process / Matière / Machine / Démarrage rows — discreet, above TOTAL
-  const ScrapTypeRows = ({ zone }: { zone: ZoneData }) => {
+  // Process / Matière / Machine / Démarrage rows — discreet, above TOTAL, which they add up to
+  const ScrapTypeRows = ({ zone, typeTotals }: { zone: ZoneData; typeTotals: ScrapTypeTotals }) => {
     const weeksPerMonth = zone.weeksPerMonth || {};
 
     return (
       <>
         {SCRAP_TYPES.map((scrapType) => (
-          <tr key={`${zone.key}-${scrapType}`}>
+          <tr key={`${zone.key}-${scrapType}`} className="bg-blue-50/30 dark:bg-blue-950/10">
             <td className="border p-1 text-xs text-muted-foreground/40"></td>
             <td className="border p-1 text-xs font-medium italic text-blue-900 dark:text-blue-200">
               {scrapType}
             </td>
-            {months.map((month) => {
+            {months.map((month, monthIndex) => {
               const monthWeeks = weeksPerMonth[month] || [];
+              const values = typeTotals[scrapType]?.[monthIndex] ?? [];
               return (
                 <React.Fragment key={`${zone.key}-${scrapType}-${month}`}>
                   {monthWeeks.map((_, i) => (
                     <td
                       key={`${zone.key}-${scrapType}-${month}-${i}`}
-                      className="border p-1 text-center text-xs text-muted-foreground/40"
-                    />
+                      className="border p-1 text-center text-xs text-muted-foreground"
+                    >
+                      {formatValue(values[i] || 0)}
+                    </td>
                   ))}
-                  <td className="border p-1 text-center text-xs text-muted-foreground/40">
-                    —
+                  <td className="border p-1 text-center text-xs font-medium text-blue-900/80 bg-blue-50 dark:text-blue-200 dark:bg-blue-950/30">
+                    {formatValue(values[monthWeeks.length] || 0)}
                   </td>
                 </React.Fragment>
               );
@@ -634,7 +666,7 @@ const CollapsibleZoneTable = ({
           })}
         </tr>
 
-        {visibleTypes[zone.key] && <ScrapTypeRows zone={zone} />}
+        {visibleTypes[zone.key] && <ScrapTypeRows zone={zone} typeTotals={zone.typeTotals} />}
 
         {/* TOTAL row — bold and standing out */}
         <tr className="bg-blue-100 border-b-2 border-blue-300">
@@ -715,16 +747,13 @@ const CollapsibleZoneTable = ({
       );
     }
 
-    // Narrowed to some cells: TOTAL sums the cells shown instead of the whole zone
+    // Narrowed to some cells: TOTAL (and the type rows) sum the cells shown instead of the whole zone
     const selectionTotals = cellFiltered ? computeSelectionTotals(zone, cellNames) : null;
+    const typeTotals = cellFiltered ? computeSelectionTypeTotals(zone, cellNames) : zone.typeTotals;
 
-    // Find Projet and Serie cells for correct total calculation
-    const projetKey = cellNames.find(
-      (k) => zoneDetails.cells[k].type === "Projet"
-    );
-    const serieKey = cellNames.find(
-      (k) => zoneDetails.cells[k].type === "Serie"
-    );
+    // Whole zone: same Projet + Serie month totals as the collapsed view
+    const projetCell = zone.cells.find((cell) => cell.type === "Projet");
+    const serieCell = zone.cells.find((cell) => cell.type === "Serie");
 
     return (
       <>
@@ -764,7 +793,7 @@ const CollapsibleZoneTable = ({
           );
         })}
 
-        {visibleTypes[zone.key] && <ScrapTypeRows zone={zone} />}
+        {visibleTypes[zone.key] && <ScrapTypeRows zone={zone} typeTotals={typeTotals} />}
 
         {/* TOTAL row — bold and standing out */}
         <tr className="bg-blue-100 border-b-2 border-blue-300">
@@ -779,15 +808,8 @@ const CollapsibleZoneTable = ({
               ? selectionTotals[actualMonthIndex]
               : zone.totals[actualMonthIndex];
 
-            // Fix: sum Projet + Serie month totals from detailed data
-            const projetTotal =
-              projetKey
-                ? zoneDetails.cells[projetKey]?.months[month]?.total || 0
-                : 0;
-            const serieTotal =
-              serieKey
-                ? zoneDetails.cells[serieKey]?.months[month]?.total || 0
-                : 0;
+            const projetTotal = projetCell?.months[actualMonthIndex]?.total || 0;
+            const serieTotal = serieCell?.months[actualMonthIndex]?.total || 0;
             const correctMonthTotal = selectionTotals
               ? selectionTotals[actualMonthIndex][monthWeeks.length]
               : projetTotal + serieTotal;
@@ -831,6 +853,7 @@ const CollapsibleZoneTable = ({
         ? {
             ...zone,
             totals: computeSelectionTotals(zone, visibleCellNames(zone.key)),
+            typeTotals: computeSelectionTypeTotals(zone, visibleCellNames(zone.key)),
             isSelection: true,
           }
         : zone
@@ -1050,6 +1073,30 @@ const transformApiDataToZonesData = (apiData: ApiResponse): ZoneData[] => {
       return [...weekTotals, monthTotal];
     });
 
+    // Per scrap type: week sums over Projet + Serie, and month total as Projet + Serie (like TOTAL)
+    const typeTotals = Object.fromEntries(
+      SCRAP_TYPES.map((scrapType) => {
+        const { week, month } = SCRAP_TYPE_FIELDS[scrapType];
+        return [
+          scrapType,
+          uniqueMonths.map((monthName) => {
+            const monthDetails = zoneType.details.filter((detail) => detail.mois === monthName);
+            const weekValues = (weeksPerMonth[monthName] || []).map((weekNum) =>
+              monthDetails
+                .filter((detail) => detail.semaine === weekNum)
+                .reduce((sum, detail) => sum + toNumber(detail[week]), 0)
+            );
+            const monthTotal = cellTypes.reduce(
+              (sum, cellType) =>
+                sum + toNumber(monthDetails.find((detail) => detail.typeCell === cellType)?.[month]),
+              0
+            );
+            return [...weekValues, monthTotal];
+          }),
+        ];
+      })
+    ) as ScrapTypeTotals;
+
     const projectCell = cells.find((cell) => cell.type === "Projet");
     const projectValue = projectCell?.months[0]?.weeks[0]?.value || 0;
 
@@ -1058,6 +1105,7 @@ const transformApiDataToZonesData = (apiData: ApiResponse): ZoneData[] => {
       projectValue,
       cells,
       totals,
+      typeTotals,
       weeksPerMonth,
     };
   });

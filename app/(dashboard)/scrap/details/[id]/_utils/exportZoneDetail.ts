@@ -5,20 +5,36 @@ import { saveAs } from "file-saver";
 type WeekItem  = { weekNum?: number; value: number };
 type MonthItem = { name: string; weeks: WeekItem[]; total: number };
 type CellItem  = { name: string; type: "Projet" | "Serie"; months: MonthItem[] };
+// Scrap types listed under each zone, above its TOTAL row; together they add up to TOTAL
+export const SCRAP_TYPES = ["Process", "Matière", "Machine", "Démarrage"] as const;
+export type ScrapType = (typeof SCRAP_TYPES)[number];
+
+export type ScrapTypeWeekField = "process" | "matiere" | "machine" | "demarrage";
+export type ScrapTypeMonthField = `total_mois_${ScrapTypeWeekField}`;
+
+// API fields of each type: weekly value (next to couts) and month total (next to total_mois)
+export const SCRAP_TYPE_FIELDS: Record<ScrapType, { week: ScrapTypeWeekField; month: ScrapTypeMonthField }> = {
+  Process:   { week: "process",   month: "total_mois_process" },
+  Matière:   { week: "matiere",   month: "total_mois_matiere" },
+  Machine:   { week: "machine",   month: "total_mois_machine" },
+  Démarrage: { week: "demarrage", month: "total_mois_demarrage" },
+};
+
+// Per type, same layout as ZoneItem.totals
+export type ScrapTypeTotals = Record<ScrapType, number[][]>;
+
 type ZoneItem  = {
   key: string;
   weeksPerMonth: Record<string, number[]>;
   cells: CellItem[];
   totals: number[][];  // [monthIndex][weekIndex..., monthTotal]
+  typeTotals?: ScrapTypeTotals;
   isSelection?: boolean;  // narrowed to some cells: totals cover only those cells
 };
 
 type DetailedMonth = { weeks: Record<string, number>; total: number };
 type DetailedCell  = { type: "Projet" | "Serie"; months: Record<string, DetailedMonth> };
 type DetailedZone  = { cells: Record<string, DetailedCell> };
-
-// Scrap types listed under each zone, above its TOTAL row (no data yet, shown as "—")
-export const SCRAP_TYPES = ["Process", "Matière", "Machine", "Démarrage"] as const;
 
 // ─── Cell style type ──────────────────────────────────────────────────────────
 type CellStyle = {
@@ -344,18 +360,24 @@ export function exportZoneDetailToExcel(
 
     // Process / Matière / Machine / Démarrage rows
     SCRAP_TYPES.forEach((scrapType) => {
+      const typeTotals = zone.typeTotals?.[scrapType];
       setCell(ws, r, 0, "", mutedCell);
       setCell(ws, r, 1, scrapType, {
         ...mutedCell,
-        font:      argbFont("94A3B8", false, 9, true),
+        font:      argbFont(C.WEEK_FG, false, 9, true),
         alignment: { horizontal: "left", vertical: "center" },
       });
-      months.forEach((m) => {
+      const valueCell: CellStyle = { ...mutedCell, font: argbFont("475569") };
+      months.forEach((m, mi) => {
         const monthWeeks = weeksPerMonth[m] || [];
-        monthWeeks.forEach((weekNum) => {
-          setCell(ws, r, colMap[`${m}_${weekNum}`], "", mutedCell);
+        const monthValues = typeTotals?.[mi] ?? [];
+        monthWeeks.forEach((weekNum, wi) => {
+          setCell(ws, r, colMap[`${m}_${weekNum}`], fmt(monthValues[wi] ?? 0), valueCell);
         });
-        setCell(ws, r, colMap[`${m}_total`], "—", mutedCell);
+        setCell(ws, r, colMap[`${m}_total`], fmt(monthValues[monthWeeks.length] ?? 0), {
+          ...valueCell,
+          fill: argbFill(C.PROJET_BG),
+        });
       });
       r++;
     });
@@ -380,27 +402,9 @@ export function exportZoneDetailToExcel(
         setCell(ws, r, colMap[`${m}_${wk}`], fmt(monthTotals[wi] ?? 0), totalStyle);
       });
 
-      let projetTotal = 0;
-      let serieTotal = 0;
-
-      if (isExpanded && zoneDetails) {
-        const cellNames = Object.keys(zoneDetails.cells);
-        const projetKey = cellNames.find(
-          (k) => zoneDetails.cells[k].type === "Projet"
-        );
-        const serieKey = cellNames.find(
-          (k) => zoneDetails.cells[k].type === "Serie"
-        );
-        projetTotal = projetKey
-          ? zoneDetails.cells[projetKey]?.months[m]?.total || 0
-          : 0;
-        serieTotal = serieKey
-          ? zoneDetails.cells[serieKey]?.months[m]?.total || 0
-          : 0;
-      } else {
-        projetTotal = projetCell?.months[mi]?.total ?? 0;
-        serieTotal = serieCell?.months[mi]?.total ?? 0;
-      }
+      // Whole zone, expanded or not: zone-level Projet + Serie month totals
+      const projetTotal = projetCell?.months[mi]?.total ?? 0;
+      const serieTotal = serieCell?.months[mi]?.total ?? 0;
 
       const correctMonthTotal = zone.isSelection
         ? monthTotals[monthWeeks.length] ?? 0
