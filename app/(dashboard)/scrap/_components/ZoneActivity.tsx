@@ -8,6 +8,25 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { zoneBarChartColors } from "@/constants/zoneBarChartColors";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight, Loader2, Zap } from "lucide-react";
+
+const shortDate = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", timeZone: "UTC" });
+
+// Monday of an ISO week (week 1 is the one containing 4 January)
+function isoWeekMonday(year: number, week: number): Date {
+  const jan4 = new Date(Date.UTC(year, 0, 4));
+  const monday = new Date(jan4);
+  monday.setUTCDate(jan4.getUTCDate() - ((jan4.getUTCDay() || 7) - 1) + (week - 1) * 7);
+  return monday;
+}
+
+function weekRange(year: number, week: number): string {
+  const monday = isoWeekMonday(year, week);
+  const sunday = new Date(monday);
+  sunday.setUTCDate(monday.getUTCDate() + 6);
+  return `${shortDate.format(monday)} – ${shortDate.format(sunday)} ${sunday.getUTCFullYear()}`;
+}
 
 
 
@@ -50,55 +69,56 @@ export function ZoneActivity({
 
   return (
     <div className="bg-card rounded-lg shadow-sm p-2 sm:p-3">
-     <div className="flex items-center justify-between gap-3 mb-3">
-  <h3 className="text-sm font-semibold text-foreground">
-    {"⚡️ Weekly Zone Activity "}
-  </h3>
-  <span className="text-xs text-primary">
-    {/* {metrics.efficiency}% efficiency */}
-    {/* lorem ipsum */}
-  </span>
-</div>
-      <div className="flex items-start gap-2 text-xs text-muted-foreground mb-2">
-        <svg className="w-3 h-3" viewBox="0 0 24 24">
-          <path
-            fill="currentColor"
-            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <span>Year :</span>
-            <Select value={year.toString()} onValueChange={(value) => onYearChange(Number(value))}>
-              <SelectTrigger className="w-[98px] h-7 text-xs">
-                <SelectValue placeholder="Select year" />
-              </SelectTrigger>
-              <SelectContent>
-                {availableYears.map((yearOption) => (
-                  <SelectItem key={yearOption} value={yearOption.toString()}>
-                    {yearOption}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center gap-2">
-            <span>Current Week :</span>
-            <Select value={week.toString()} onValueChange={(value) => onWeekChange(Number(value))}>
-              <SelectTrigger className="w-[98px] h-7 text-xs">
-                <SelectValue placeholder="Select week" />
-              </SelectTrigger>
-              <SelectContent>
-                {availableWeeks.map((weekOption) => (
-                  <SelectItem key={weekOption} value={weekOption.toString()}>
-                    W-{weekOption.toString().padStart(2, "0")}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {loading && <span className="text-[11px] text-muted-foreground">Loading...</span>}
-          </div>
+      <div className="mb-2 flex items-center gap-2.5">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-600 dark:bg-amber-500/15">
+          <Zap className="h-4 w-4" />
         </div>
+        <div className="min-w-0">
+          <h3 className="text-sm font-semibold text-foreground">Activité hebdomadaire</h3>
+          <p className="text-xs text-muted-foreground">
+            S{week.toString().padStart(2, "0")} · {weekRange(year, week)}
+          </p>
+        </div>
+      </div>
+
+      {/* Week picker with previous / next. No year choice: GetCurrDataWeekScrap
+          (pr_Scrap_PARCURENTWEEK) only takes the week and always reads the current year */}
+      <div className="mb-3 flex items-center gap-1.5 rounded-lg border bg-gradient-to-r from-blue-50/80 via-background to-background p-1.5 shadow-sm dark:from-blue-950/30">
+        <div className="flex min-w-0 flex-1 items-center gap-1">
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8 shrink-0"
+            onClick={() => onWeekChange(week - 1)}
+            disabled={week <= (availableWeeks[0] ?? 1)}
+            aria-label="Semaine précédente"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Select value={week.toString()} onValueChange={(value) => onWeekChange(Number(value))}>
+            <SelectTrigger className="h-8 flex-1 bg-background text-xs" aria-label="Semaine">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="max-h-72">
+              {[...availableWeeks].reverse().map((weekOption) => (
+                <SelectItem key={weekOption} value={weekOption.toString()} className="text-xs">
+                  S{weekOption.toString().padStart(2, "0")} · {shortDate.format(isoWeekMonday(year, weekOption))}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8 shrink-0"
+            onClick={() => onWeekChange(week + 1)}
+            disabled={week >= (availableWeeks[availableWeeks.length - 1] ?? week)}
+            aria-label="Semaine suivante"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+        {loading && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" aria-label="Chargement" />}
       </div>
 
       {/* Quick Stats */}

@@ -6,7 +6,7 @@ import { WeeklyTrendChart } from "./WeeklyTrendChart";
 import TableZone, { YearlyZoneDataType } from "./TableZone";
 import { ZoneDataType, dashboardData } from "./data/dashboardData";
 import { ZoneActivity } from "./ZoneActivity";
-import { ChartBar, Calendar } from "lucide-react";
+import { CalendarDays, ChartBar } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -17,6 +17,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Endpoints } from "@/constants/api";
 import { scrapType } from "@/types";
+import { cn } from "@/lib/utils";
 import { fetchGlobalScrap, fetchWeeklyScrap, fetchYearlyScrap } from "@/actions/scrap/dashboard";
 
 function getCurrentIsoWeekInfo(): { week: number; year: number } {
@@ -51,6 +52,13 @@ function getIsoWeeksInYear(year: number): number {
   );
 }
 
+// Scope of the global summary (Total = Projet + Série)
+const SCOPES: { value: scrapType; label: string }[] = [
+  { value: "zone", label: "Total" },
+  { value: "projet", label: "Projet" },
+  { value: "serie", label: "Série" },
+];
+
 function Container() {
   const { stats, zoneData, chartData } = dashboardData;
   const [globalData, setGlobalData] = useState<RawData | undefined>();
@@ -59,7 +67,8 @@ function Container() {
     YearlyZoneDataType[] | undefined
   >();
   const [selectedType, setSelectedType] = useState<scrapType>("zone");
-  const [month, setMonth] = useState((new Date().getMonth() + 1).toString());
+  // GetDataWeekZone returns the whole year week by week; the month it is sent has no effect
+  const month = (new Date().getMonth() + 1).toString();
   const [year, setYear] = useState(new Date().getFullYear().toString());
   const currentIso = getCurrentIsoWeekInfo();
   const currentYear = currentIso.year;
@@ -78,17 +87,17 @@ function Container() {
     [currentYear]
   );
 
+  const globalWeeks = globalData?.weekDataZn?.length ?? 0;
+  const globalZones = new Set(
+    (globalData?.weekDataZn ?? []).flatMap((week) => week.detailQte.map((detail) => detail.libelle))
+  ).size;
+
   const availableWeeks = useMemo(() => {
     const maxWeek =
       weeklyYear === currentYear ? currentWeek : getIsoWeeksInYear(weeklyYear);
     return Array.from({ length: maxWeek }, (_, index) => index + 1);
   }, [weeklyYear, currentYear, currentWeek]);
 
-  const handleCheckboxChange = (
-    type: "zone" | "projet" | "serie"
-  ) => {
-    setSelectedType(type);
-  };
 
   const handleFilterChange = (type: string, value: string) => {
     switch (type) {
@@ -154,105 +163,66 @@ function Container() {
       <div className="flex flex-col gap-2 sm:gap-3 p-2 sm:p-3 max-w-[2000px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-3">
           <div className="lg:col-span-3 xl:col-span-4 bg-card rounded-lg p-3 sm:px-4 sm:py-3 shadow-sm border border-border">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <ChartBar className="w-[18px] h-[18px] sm:w-5 sm:h-5 text-primary transition-all duration-200" />
-                <h2 className="font-medium text-sm sm:text-base">
-                  Synthèse Globale Scrap (€)
-                </h2>
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <ChartBar className="h-[18px] w-[18px]" />
               </div>
-              <button className="text-muted-foreground text-sm">•••</button>
+              <div>
+                <h2 className="text-sm font-semibold sm:text-base">Synthèse Globale Scrap (€)</h2>
+                <p className="text-xs text-muted-foreground">
+                  Coût du scrap par semaine et par zone · {SCOPES.find((scope) => scope.value === selectedType)?.label} · {year}
+                </p>
+              </div>
             </div>
-            <div className="flex items-center justify-between gap-2 text-xs sm:text-sm text-muted-foreground mt-1 mb-1">
-              <div className="flex items-center gap-2 flex-1">
-                <div className="flex items-center gap-2">
-                  <svg className="w-3 h-3 sm:w-4 sm:h-4" viewBox="0 0 24 24">
-                    <path
-                      fill="currentColor"
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <span>
-                    Track and manage production issues and scrap reports
-                  </span>
-                </div>
-                <div className="flex items-center justify-center flex-1">
-                  <div className="flex items-center justify-center border rounded-md overflow-hidden">
-                    <div
-                      className="flex items-center px-3 py-1 cursor-pointer hover:bg-accent"
-                      onClick={() => handleCheckboxChange("zone")}
-                      style={{
-                        backgroundColor: selectedType === 'zone'
-                          ? "hsl(var(--primary))"
-                          : "transparent",
-                        color: selectedType === 'zone' ? "white" : "inherit",
-                      }}
-                    >
-                      <span className="text-xs sm:text-sm">Total</span>
-                    </div>
-                    <div
-                      className="flex items-center px-3 py-1 cursor-pointer hover:bg-accent"
-                      onClick={() => handleCheckboxChange("projet")}
-                      style={{
-                        backgroundColor: selectedType === 'projet'
-                          ? "hsl(var(--primary))"
-                          : "transparent",
-                        color: selectedType === 'projet' ? "white" : "inherit",
-                      }}
-                    >
-                      <span className="text-xs sm:text-sm">Projet</span>
-                    </div>
-                    <div
-                      className="flex items-center px-3 py-1 cursor-pointer hover:bg-accent"
-                      onClick={() => handleCheckboxChange("serie")}
-                      style={{
-                        backgroundColor: selectedType === 'serie'
-                          ? "hsl(var(--primary))"
-                          : "transparent",
-                        color: selectedType === 'serie' ? "white" : "inherit",
-                      }}
-                    >
-                      <span className="text-xs sm:text-sm">Serie</span>
-                    </div>
-                  </div>
-                </div>
+
+            {/* Filters: scope and year (the data covers the whole year, week by week) */}
+            <div className="mt-2 flex flex-wrap items-center gap-2 rounded-lg border bg-gradient-to-r from-blue-50/80 via-background to-background p-2 shadow-sm dark:from-blue-950/30">
+              <div role="tablist" aria-label="Périmètre" className="inline-flex h-8 items-center rounded-md bg-muted p-0.5">
+                {SCOPES.map((scope) => (
+                  <button
+                    key={scope.value}
+                    type="button"
+                    role="tab"
+                    aria-selected={selectedType === scope.value}
+                    onClick={() => setSelectedType(scope.value)}
+                    className={cn(
+                      "h-7 rounded px-3 text-xs font-medium transition-colors",
+                      selectedType === scope.value
+                        ? "bg-background text-primary shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {scope.label}
+                  </button>
+                ))}
               </div>
 
-              <div className="flex gap-2">
-                <Select defaultValue={year} onValueChange={setYear}>
-                  <SelectTrigger className="w-[120px] h-8 bg-background">
-                    <SelectValue placeholder="Select year" />
+              <div className="flex items-center gap-1.5">
+                <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" />
+                <Select value={year} onValueChange={setYear}>
+                  <SelectTrigger className="h-8 w-[88px] bg-background text-xs" aria-label="Année">
+                    <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="2022">2022</SelectItem>
-                    <SelectItem value="2023">2023</SelectItem>
-                    <SelectItem value="2024">2024</SelectItem>
-                    <SelectItem value="2025">2025</SelectItem>
-                    <SelectItem value="2026">2026</SelectItem>
-                    <SelectItem value="2027">2027</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Select defaultValue={month} onValueChange={setMonth}>
-                  <SelectTrigger className="w-[120px] h-8 bg-background">
-                    <SelectValue placeholder="Select month" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">January</SelectItem>
-                    <SelectItem value="2">February</SelectItem>
-                    <SelectItem value="3">March</SelectItem>
-                    <SelectItem value="4">April</SelectItem>
-                    <SelectItem value="5">May</SelectItem>
-                    <SelectItem value="6">June</SelectItem>
-                    <SelectItem value="7">July</SelectItem>
-                    <SelectItem value="8">August</SelectItem>
-                    <SelectItem value="9">September</SelectItem>
-                    <SelectItem value="10">October</SelectItem>
-                    <SelectItem value="11">November</SelectItem>
-                    <SelectItem value="12">December</SelectItem>
+                    {availableYears.map((option) => (
+                      <SelectItem key={option} value={option.toString()} className="text-xs">
+                        {option}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
+
+              <span className="ml-auto text-xs text-muted-foreground">
+                {globalData ? (
+                  <>
+                    <span className="font-semibold text-foreground">{globalWeeks}</span> semaines ·{" "}
+                    <span className="font-semibold text-foreground">{globalZones}</span> zones
+                  </>
+                ) : (
+                  "Chargement…"
+                )}
+              </span>
             </div>
 
             <MixBarChart data={globalData} />
