@@ -116,9 +116,9 @@ function toNum(v: Num | undefined): number | null {
 	return Number.isFinite(n) ? n : null
 }
 
-/** "5.72%", or "—" when there is no value */
+/** "5.7%" (one decimal), or "—" when there is no value */
 function fmt(n: number | null): string {
-	return n === null ? '—' : `${Math.round(n * 100) / 100}%`
+	return n === null ? '—' : `${n.toFixed(1)}%`
 }
 
 type Status = 'green' | 'yellow' | 'red' | 'none'
@@ -251,7 +251,7 @@ function RadialGauge({
 	const meets =
 		value !== null && target !== null && (lowerIsBetter ? value <= target : value >= target)
 	return (
-		<div className="relative flex h-14 w-14 [@media(min-height:760px)]:h-20 [@media(min-height:760px)]:w-20 [@media(min-height:900px)]:h-24 [@media(min-height:900px)]:w-24 flex-shrink-0 items-center justify-center">
+		<div className="relative flex h-16 w-16 [@media(min-height:760px)]:h-20 [@media(min-height:760px)]:w-20 [@media(min-height:900px)]:h-24 [@media(min-height:900px)]:w-24 flex-shrink-0 items-center justify-center">
 			<svg className="h-full w-full -rotate-90" viewBox="0 0 100 100">
 				<circle className="stroke-current text-slate-700" cx="50" cy="50" fill="none" r="45" strokeWidth="8" />
 				{value !== null && (
@@ -270,7 +270,7 @@ function RadialGauge({
 			</svg>
 			<div className="absolute inset-0 flex flex-col items-center justify-center">
 				<span className="text-[10px] [@media(min-height:760px)]:text-xs text-gray-400">Actuel</span>
-				<span className="text-xs [@media(min-height:760px)]:text-base font-black text-white tabular-nums">{fmt(value)}</span>
+				<span className="text-sm [@media(min-height:760px)]:text-lg font-black text-white tabular-nums">{fmt(value)}</span>
 			</div>
 		</div>
 	)
@@ -351,9 +351,9 @@ function HistoryCircles({
 				return (
 					<div key={item.label} className="flex min-w-0 flex-col items-center gap-0.5 [@media(min-height:760px)]:gap-1">
 						<div
-							className={`flex h-10 w-10 [@media(min-height:760px)]:h-12 [@media(min-height:760px)]:w-12 [@media(min-height:900px)]:h-14 [@media(min-height:900px)]:w-14 flex-shrink-0 items-center justify-center rounded-full border-2 ${cls.border} ${cls.bg}`}
+							className={`flex h-12 w-12 [@media(min-height:760px)]:h-14 [@media(min-height:760px)]:w-14 [@media(min-height:900px)]:h-16 [@media(min-height:900px)]:w-16 flex-shrink-0 items-center justify-center rounded-full border-2 ${cls.border} ${cls.bg}`}
 						>
-							<span className={`text-[11px] lg:text-xs font-bold leading-none tabular-nums ${cls.text}`}>
+							<span className={`text-xs [@media(min-height:760px)]:text-sm font-bold leading-none tabular-nums ${cls.text}`}>
 								{fmt(item.value)}
 							</span>
 						</div>
@@ -392,7 +392,7 @@ function KpiCard({
 		variation !== undefined && variation !== null && (lowerIsBetter ? variation <= 0 : variation >= 0)
 
 	return (
-		<section className="flex min-h-0 min-w-0 flex-col gap-1.5 overflow-hidden rounded-xl border border-white/10 bg-slate-800/90 backdrop-blur-sm p-3 [@media(min-height:760px)]:gap-2 [@media(min-height:760px)]:p-4 [@media(min-height:900px)]:gap-3 [@media(min-height:900px)]:p-5">
+		<section className="flex min-h-0 min-w-0 flex-col gap-1 overflow-hidden rounded-xl border border-white/10 bg-slate-800/90 backdrop-blur-sm p-3 [@media(min-height:760px)]:gap-2 [@media(min-height:760px)]:p-4 [@media(min-height:900px)]:gap-3 [@media(min-height:900px)]:p-5">
 			<h2 className="flex items-center gap-1.5 text-sm lg:text-base font-semibold text-gray-200">
 				{title}
 				{missesTarget && <span className="text-yellow-400">⚠️</span>}
@@ -484,9 +484,9 @@ export default function OperationsPage() {
 
 	return (
 		// From tablet width, the page takes exactly the height under the header (no scroll)
-		<main className="flex flex-col p-3 sm:p-4 lg:p-5 md:h-full md:min-h-[440px]">
+		<main className="flex flex-col p-3 sm:p-4 [@media(min-height:760px)]:lg:p-5 md:h-full md:min-h-[440px]">
 			{/* Header */}
-			<div className="mb-3 flex shrink-0 flex-wrap justify-between items-center gap-3">
+			<div className="mb-2 [@media(min-height:760px)]:mb-3 flex shrink-0 flex-wrap justify-between items-center gap-3">
 				<div className="flex items-center gap-2">
 					<span className="w-1 h-8 rounded-full bg-white block" />
 					<span className="text-xs lg:text-sm font-bold uppercase tracking-widest text-white">
@@ -519,7 +519,7 @@ export default function OperationsPage() {
 			) : (
 				<>
 					{noData && (
-						<div className="mb-3 shrink-0 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-200">
+						<div className="mb-2 shrink-0 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-sm text-amber-200 [@media(min-height:760px)]:mb-3 [@media(min-height:760px)]:py-2">
 							Aucune donnée pour {periodLabel} : le fichier{' '}
 							{isWeekly ? 'Operation Weekly' : 'Operation Monthly'} de cette période n&apos;a
 							pas encore été importé (page Importation).
