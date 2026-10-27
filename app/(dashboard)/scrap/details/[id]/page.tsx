@@ -98,34 +98,27 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
           viewMode
         );
 
-        if (
-          data &&
-          data.getDataStockCodeCell &&
-          data.getDataStockCodeCell.length > 0
-        ) {
-          setOperatorData(data.getDataStockCodeCell);
+        const articles: any[] = Array.isArray(data?.getDataStockCodeCell)
+          ? data.getDataStockCodeCell
+          : [];
 
-          // Extract unique week numbers and organize by month
-          const weeks: number[] = [];
-          const months: { [key: string]: string[] } = {};
-
-          data.getDataStockCodeCell[0].details.forEach((detail: any) => {
-            if (!weeks.includes(detail.semaine)) {
-              weeks.push(detail.semaine);
-            }
-
-            if (!months[detail.mois]) {
-              months[detail.mois] = [];
-            }
-
+        // Weeks and months of every article (not only the first one), in the order received;
+        // a cell without data clears the previous cell's rows
+        const weeks: number[] = [];
+        const months: { [key: string]: string[] } = {};
+        articles.forEach((article) =>
+          (article.details ?? []).forEach((detail: any) => {
+            if (!weeks.includes(detail.semaine)) weeks.push(detail.semaine);
+            if (!months[detail.mois]) months[detail.mois] = [];
             if (!months[detail.mois].includes(`wk${detail.semaine}`)) {
               months[detail.mois].push(`wk${detail.semaine}`);
             }
-          });
+          })
+        );
 
-          setWeekNumbers(weeks.sort((a, b) => a - b));
-          setMonthData(months);
-        }
+        setOperatorData(articles);
+        setWeekNumbers(weeks);
+        setMonthData(months);
       } catch (error) {
         console.error("Error fetching operator data:", error);
       } finally {
@@ -195,6 +188,7 @@ export default function DetailsPage({ params }: { params: { id: string } }) {
         {/* Operator Details Table */}
         <OperatorDetailsTable
           key={selectedYear}
+          viewMode={viewMode}
           allZones={allZones}
           allCells={allCells}
           selectedZone={selectedZone}
