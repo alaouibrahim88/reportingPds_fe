@@ -103,7 +103,9 @@ export interface CellCalculRefDetailApiResponse {
 }
 
 export interface CellDetail {
-    id: string;
+    // GetDetailCoutCell sends the cell name, not an id
+    cell_name?: string;
+    id?: string;
     semaine: string;
     mois: string;
     mois_num: number;

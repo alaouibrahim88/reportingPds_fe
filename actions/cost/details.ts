@@ -12,7 +12,7 @@ export const fetchCellDetails = async (
     const url = new URL(`${process.env.NEXT_PUBLIC_API_ENDPOINT}${Endpoints.cost.detailCell}`);
     
     // Add parameters as query parameters
-    url.searchParams.append('CellId', zoneId.toString());
+    url.searchParams.append('zoneid', zoneId.toString());
     url.searchParams.append('moisEntree', month.toString());
     url.searchParams.append('Annee', year.toString());
     

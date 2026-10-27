@@ -339,7 +339,7 @@ export default function WorkflowDetailsPage({
   // Filter cells based on search query
   const filteredCells = Array.isArray(cellDetails?.details)
     ? cellDetails.details?.filter((cell) => {
-        const matchesSearch = cell.id
+        const matchesSearch = (cell.cell_name ?? cell.id ?? "")
           .toLowerCase()
           .includes(cellSearchQuery.toLowerCase());
         return matchesSearch;
@@ -569,7 +569,7 @@ export default function WorkflowDetailsPage({
                       </button>
                     </TableCell>
                     <TableCell className="text-xs font-medium py-2">
-                      {cell.id}
+                      {cell.cell_name ?? cell.id}
                     </TableCell>
                     <TableCell className="text-xs py-2">
                       <span
@@ -640,7 +640,7 @@ export default function WorkflowDetailsPage({
                         <div className="overflow-x-auto p-4">
                           {(() => {
                             const cellIdNum = parseInt(
-                              cell.id.replace("C", ""),
+                              (cell.id ?? "").replace("C", ""),
                               10
                             );
                             return loadingZones.has(cellIdNum) ? (
