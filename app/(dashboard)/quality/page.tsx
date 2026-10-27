@@ -2,29 +2,53 @@
 
 import React, { ReactElement, useEffect, useState } from "react";
 import { PeriodSelector } from "@/components/ui/PeriodSelector";
-import { createGetSemaineLabel } from "@/lib/week-labels";
 import { TabSelector } from "@/components/ui/TabSelector";
 import { useKpiPeriod } from "@/hooks/use-kpi-period";
-import { FaBug,FaFreeCodeCamp,FaMapMarked,FaChartBar,FaCheckDouble,FaChartArea,FaFileExport,FaHotjar  } from "react-icons/fa";
+import { FaBug, FaFreeCodeCamp, FaMapMarked, FaChartBar, FaCheckDouble, FaChartArea, FaFileExport, FaHotjar } from "react-icons/fa";
 
-type TabType = "weekly" | "monthly";
+// The API sends the numbers as strings, and null for a period that was not imported
+type Num = string | number | null | undefined;
 
-const calculateStrokeDashOffset = (
-	percentage: number,
-	circumference: number = 283
-) => {
-	return circumference - (percentage / 100) * circumference;
-};
+const MONTH_NAMES = ["Jan", "Fév", "Mar", "Avr", "Mai", "Jun", "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc"];
+const MONTH_FULL_NAMES = [
+	"janvier", "février", "mars", "avril", "mai", "juin",
+	"juillet", "août", "septembre", "octobre", "novembre", "décembre",
+];
 
-const mapValueToY = (
-	value: number,
-	minVal: number,
-	maxVal: number,
-	minY: number,
-	maxY: number
-) => {
-	return maxY - ((value - minVal) / (maxVal - minVal)) * (maxY - minY);
-};
+const progressColors = ["#3b82f6", "#8b5cf6", "#06b6d4", "#10b981"];
+const zoneKeys = ["Boot", "HeadRest", "Gainage", "Volant", "Net"];
+const zoneColors = ["#8b5cf6", "#3b82f6", "#06b6d4", "#10b981", "#f59e0b"];
+
+// Card padding and gaps grow with the screen height; the page itself never scrolls from tablet width
+const cardClass =
+	"flex min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-gray-900/60 backdrop-blur-sm p-3 transition-all hover:border-gray-600 [@media(min-height:760px)]:p-4 [@media(min-height:900px)]:p-5";
+const circleSize =
+	"h-12 w-12 [@media(min-height:760px)]:h-16 [@media(min-height:760px)]:w-16 [@media(min-height:900px)]:h-20 [@media(min-height:900px)]:w-20";
+const ringSize =
+	"h-14 w-14 [@media(min-height:760px)]:h-20 [@media(min-height:760px)]:w-20 [@media(min-height:900px)]:h-24 [@media(min-height:900px)]:w-24";
+const bigValue =
+	"text-4xl [@media(min-height:760px)]:text-5xl [@media(min-height:900px)]:text-6xl font-black text-white leading-none tabular-nums";
+
+function toNum(v: Num): number | null {
+	if (v === null || v === undefined || v === "") return null;
+	const n = typeof v === "number" ? v : parseFloat(v);
+	return Number.isFinite(n) ? n : null;
+}
+
+/** Number with the given decimals, or "—" when there is no value */
+function fmt(n: number | null, decimals = 0, suffix = ""): string {
+	return n === null ? "—" : `${n.toFixed(decimals)}${suffix}`;
+}
+
+function fmtSigned(n: number | null, decimals = 0, suffix = ""): string {
+	return n === null ? "—" : `${n > 0 ? "+" : ""}${n.toFixed(decimals)}${suffix}`;
+}
+
+/** Oldest → newest, also across the year change (S52 2025 before S1 2026) */
+function chrono(items: any[] | null | undefined): any[] {
+	const key = (i: any) => (toNum(i.Annee) ?? 0) * 100 + (toNum(i.Semaine) ?? toNum(i.Mois) ?? 0);
+	return [...(items ?? [])].sort((a, b) => key(a) - key(b));
+}
 
 function SectionHeader({
 	icon,
@@ -36,26 +60,14 @@ function SectionHeader({
 	accent?: string;
 }) {
 	return (
-		<div
-			className="flex items-center gap-3 mb-5 pb-4 border-b"
-			style={{ borderColor: "rgba(255,255,255,0.08)" }}
-		>
+		<div className="mb-2 flex shrink-0 items-center gap-2.5 border-b border-white/[0.08] pb-2 [@media(min-height:900px)]:mb-3 [@media(min-height:900px)]:pb-3">
 			<div
-				className="w-9 h-9 rounded-lg flex items-center justify-center"
-				style={{ background: `${accent}22` }}
+				className="flex h-7 w-7 items-center justify-center rounded-lg text-sm [@media(min-height:900px)]:h-8 [@media(min-height:900px)]:w-8"
+				style={{ background: `${accent}22`, color: accent }}
 			>
-				<span
-					className="material-symbols-outlined text-lg"
-					style={{ color: accent }}
-				>
-					{icon}
-				</span>
+				{icon}
 			</div>
-			<h2
-				className="text-base font-semibold text-white"
-			>
-				{title}
-			</h2>
+			<h2 className="text-sm font-semibold text-white lg:text-base">{title}</h2>
 		</div>
 	);
 }
@@ -64,21 +76,239 @@ function StatusChip({
 	value,
 	target,
 	lowerIsBetter = false,
+	decimals = 1,
 }: {
-	value: number;
-	target: number;
+	value: number | null;
+	target: number | null;
 	lowerIsBetter?: boolean;
+	decimals?: number;
 }) {
-	const isGood = lowerIsBetter ? value <= target : value >= target;
+	if (value === null || target === null) return null;
 	const delta = lowerIsBetter ? target - value : value - target;
-	const sign = delta >= 0 ? "+" : "";
+	const isGood = delta >= 0;
 	return (
 		<span
-			className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full ${isGood ? "bg-emerald-500/15 text-emerald-400" : "bg-red-500/15 text-red-400"}`}
+			className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${isGood ? "bg-emerald-500/15 text-emerald-400" : "bg-red-500/15 text-red-400"}`}
 		>
-			{isGood ? "▲" : "▼"} {sign}
-			{delta.toFixed(1)} vs Target
+			{isGood ? "▲ +" : "▼ "}
+			{Math.abs(delta).toFixed(decimals)} vs Target
 		</span>
+	);
+}
+
+function Variation({
+	value,
+	lowerIsBetter = false,
+	decimals = 0,
+	suffix = "",
+	label,
+}: {
+	value: number | null;
+	lowerIsBetter?: boolean;
+	decimals?: number;
+	suffix?: string;
+	label: string;
+}) {
+	if (value === null) return null;
+	const isGood = lowerIsBetter ? value <= 0 : value >= 0;
+	return (
+		<div className={`text-sm font-medium ${isGood ? "text-emerald-400" : "text-red-400"}`}>
+			{fmtSigned(value, decimals, suffix)} {label}
+		</div>
+	);
+}
+
+/** Filled circle with a count (réclamations) */
+function CountCircle({ label, value, target, color }: { label: string; value: number | null; target: number | null; color: string }) {
+	return (
+		<div className="flex min-w-0 flex-col items-center gap-0.5 [@media(min-height:760px)]:gap-1">
+			<span className="text-xs text-gray-400 font-medium lg:text-sm">{label}</span>
+			<div
+				className={`${circleSize} rounded-full flex items-center justify-center shadow-lg`}
+				style={{ background: `${color}22`, border: `2px solid ${color}66` }}
+			>
+				<span className="text-lg [@media(min-height:760px)]:text-2xl font-black tabular-nums" style={{ color }}>
+					{fmt(value)}
+				</span>
+			</div>
+			<span className="text-xs font-bold text-[#fcd34d] lg:text-sm">T: {fmt(target)}</span>
+		</div>
+	);
+}
+
+/** Progress ring with a percentage (efficience); the text scales with the ring */
+function RingCircle({
+	value,
+	color,
+	sizeClass,
+}: {
+	value: number | null;
+	color: string;
+	sizeClass: string;
+}) {
+	return (
+		<svg className={`${sizeClass} shrink-0`} viewBox="0 0 120 120">
+			<circle cx="60" cy="60" r="45" fill="none" stroke="#1f2937" strokeWidth="10" />
+			{value !== null && (
+				<circle
+					cx="60"
+					cy="60"
+					r="45"
+					fill="none"
+					stroke={color}
+					strokeWidth="10"
+					strokeDasharray="283"
+					strokeDashoffset={283 - (Math.min(Math.max(value, 0), 100) / 100) * 283}
+					strokeLinecap="round"
+					transform="rotate(-90 60 60)"
+				/>
+			)}
+			{/* Slightly smaller text for 100% so it stays inside the ring */}
+			<text x="60" y="69" textAnchor="middle" fontSize={value !== null && value >= 100 ? 22 : 26} fontWeight="bold" className="fill-white">
+				{fmt(value, 1, "%")}
+			</text>
+		</svg>
+	);
+}
+
+/**
+ * Line chart whose points sit in the middle of equal columns, so it lines up with a row of
+ * circles above it. Labels are HTML (they keep their size when the chart stretches).
+ */
+function ColumnLineChart({
+	values,
+	color,
+	format,
+	target = null,
+	labels,
+	pointLabel,
+}: {
+	values: (number | null)[];
+	color: string;
+	format: (n: number) => string;
+	target?: number | null;
+	labels?: string[];
+	pointLabel?: (i: number) => string;
+}) {
+	const n = values.length;
+	const known = values.filter((v): v is number => v !== null);
+	if (known.length < 2) {
+		return (
+			<div className="flex min-h-[48px] flex-1 items-center justify-center text-xs text-gray-500 md:min-h-0 lg:text-sm">
+				Pas d&apos;historique sur la période
+			</div>
+		);
+	}
+	const domain = target !== null ? [...known, target] : known;
+	const min = Math.min(...domain);
+	const max = Math.max(...domain);
+	const range = max - min || 1;
+	// Top padding leaves room for the value labels above the points
+	const y = (v: number) => 30 + (1 - (v - min) / range) * 58;
+	const x = (i: number) => ((i + 0.5) / n) * 100;
+	const points = values
+		.map((v, i) => (v === null ? null : `${x(i)},${y(v)}`))
+		.filter(Boolean)
+		.join(" ");
+	return (
+		<div className="flex min-h-[72px] flex-1 flex-col md:min-h-0">
+			<div className="relative min-h-0 flex-1">
+				<svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+					<line x1="0" y1="96" x2="100" y2="96" stroke="#374151" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+					{target !== null && (
+						<line
+							x1="0"
+							y1={y(target)}
+							x2="100"
+							y2={y(target)}
+							stroke="#f59e0b"
+							strokeWidth="1.5"
+							strokeDasharray="5 3"
+							vectorEffect="non-scaling-stroke"
+						/>
+					)}
+					<polyline
+						points={points}
+						fill="none"
+						stroke={color}
+						strokeWidth="2.5"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						vectorEffect="non-scaling-stroke"
+					/>
+				</svg>
+				{values.map((v, i) =>
+					v === null ? null : (
+						<div
+							key={i}
+							className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
+							style={{ left: `${x(i)}%`, top: `${y(v)}%` }}
+						>
+							<span className="mb-1 -mt-5 whitespace-nowrap text-xs font-bold text-[#f59e0b] tabular-nums lg:text-sm">
+								{pointLabel ? pointLabel(i) : format(v)}
+							</span>
+							<span className="h-2 w-2 rounded-full border" style={{ background: color, borderColor: color }} />
+						</div>
+					)
+				)}
+			</div>
+			{labels && (
+				<div className="mt-1 grid shrink-0 text-center text-xs text-gray-400" style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}>
+					{labels.map((l, i) => (
+						<span key={i}>{l}</span>
+					))}
+				</div>
+			)}
+		</div>
+	);
+}
+
+/** Vertical bars with value on top, optional dashed target, label below */
+function Bars({
+	items,
+	highlightLast = false,
+}: {
+	items: { label: string; value: number | null; target?: number | null; color: string; top?: string }[];
+	highlightLast?: boolean;
+}) {
+	const max = Math.max(1, ...items.flatMap((i) => [i.value ?? 0, i.target ?? 0]));
+	return (
+		<div className="flex min-h-[96px] flex-1 items-stretch gap-2 md:min-h-0">
+			{items.map((item, i) => (
+				<div key={item.label} className="flex min-w-0 flex-1 flex-col items-center">
+					<span className="shrink-0 whitespace-nowrap text-xs font-bold text-[#fcd34d] tabular-nums lg:text-sm">
+						{item.top ?? fmt(item.value)}
+					</span>
+					<div className="relative mt-1 w-full max-w-[48px] min-h-0 flex-1">
+						{item.value !== null && (
+							<div
+								className="absolute bottom-0 w-full rounded-t"
+								style={{
+									height: `${Math.max((item.value / max) * 100, 2)}%`,
+									background: item.color,
+									opacity: highlightLast && i < items.length - 1 ? 0.5 : 1,
+								}}
+							/>
+						)}
+						{item.target !== undefined && item.target !== null && (
+							<div
+								className="absolute -left-[10%] w-[120%] border-t-2 border-dashed border-amber-500/80"
+								style={{ bottom: `${(item.target / max) * 100}%` }}
+							/>
+						)}
+					</div>
+					<span className="mt-1 shrink-0 border-t border-gray-700 pt-0.5 text-xs font-semibold text-gray-300">{item.label}</span>
+				</div>
+			))}
+		</div>
+	);
+}
+
+function NoDataBanner({ children }: { children: React.ReactNode }) {
+	return (
+		<div className="mb-2 shrink-0 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-sm text-amber-200 [@media(min-height:760px)]:mb-3 [@media(min-height:760px)]:py-2">
+			{children}
+		</div>
 	);
 }
 
@@ -114,1299 +344,505 @@ export default function QualityPage() {
 	}, [activeTab, period, year]);
 
 	const WeeklyQuality = () => {
-		if (!data) return <div className="text-gray-400 p-8">Chargement...</div>;
+		const reclamations = data?.Reclamations_Clients;
+		const incidents = data?.Incidents;
+		const efficienceGlobale = data?.Efficience_Globale;
+		const efficienceParZone = data?.Efficience_Par_Zone;
 
-		const reclamations = data.Reclamations_Clients;
-		const incidents = data.Incidents;
-		const efficienceGlobale = data.Efficience_Globale;
-		const efficienceParZone = data.Efficience_Par_Zone;
+		// 4 weeks, oldest first; the last one is the selected week
+		const reclamationsSeries = chrono(reclamations?.Serie_4_Semaines);
+		const efficienceSeries = chrono(efficienceGlobale?.Serie_4_Semaines);
 
-		const reclamationsSeries = reclamations?.Serie_4_Semaines || [];
-		const efficienceSeries = efficienceGlobale?.Serie_4_Semaines || [];
+		const reclamationValue = toNum(reclamations?.Valeur_Actuelle);
+		const reclamationTarget = toNum(reclamations?.Target_Actuelle);
+		const incidentsValue = toNum(incidents?.Valeur_Actuelle);
+		const incidentsTarget = toNum(incidents?.Target_Actuelle);
+		const efficienceValue = toNum(efficienceGlobale?.Valeur_Actuelle);
+		const efficienceTarget = toNum(efficienceGlobale?.Target_Actuelle);
 
-		const getWeekNum = (item: any) => {
-			const str = String(item.Label || item.Semaine || '')
-			const num = parseInt(str.replace(/\D/g, ''))
-			return isNaN(num) ? 0 : num
-		}
-
-		const sortedReclamationsSeries = [...reclamationsSeries].sort(
-			(a: any, b: any) => getWeekNum(a) - getWeekNum(b)
-		)
-
-		const incidentsSeries = incidents?.Serie_4_Semaines || []
-		const sortedIncidentsSeries = [...incidentsSeries].sort(
-			(a: any, b: any) => getWeekNum(a) - getWeekNum(b)
-		)
-
-		const sortedEfficienceSeries = [...efficienceSeries].sort(
-			(a: any, b: any) => getWeekNum(a) - getWeekNum(b)
-		)
-
-		const getSemaineLabel = createGetSemaineLabel(
-			data?.Semaine_Reference ?? period,
-			4
-		)
-
-		const progressColors = ["#3b82f6", "#8b5cf6", "#06b6d4", "#10b981"];
-
-		const zoneKeys = ["Boot", "HeadRest", "Gainage", "Volant", "Net"];
-		const zoneColors = [
-			"#8b5cf6",
-			"#3b82f6",
-			"#06b6d4",
-			"#10b981",
-			"#f59e0b",
-		];
-		const incidentsParZoneArray = incidents?.Incidents_Par_Zone || [];
+		const incidentsParZoneArray: any[] = incidents?.Incidents_Par_Zone || [];
 		const incidentsParZone = incidents?.Par_Zone || {};
-
-		const getZoneValue = (zone: string) => {
-			const fromArray = incidentsParZoneArray.find(
-				(item: any) => item.Zone === zone
-			);
-			if (fromArray) return Number(fromArray.Valeur) || 0;
-			return Number(incidentsParZone[zone]) || 0;
+		const zoneIncident = (zone: string, field: "Valeur" | "Target") => {
+			const fromArray = incidentsParZoneArray.find((item: any) => item.Zone === zone);
+			if (fromArray) return toNum(fromArray[field]);
+			return toNum(incidentsParZone[field === "Valeur" ? zone : `Target_${zone}`]);
 		};
+		const zones = efficienceParZone?.Zones || {};
 
-		const getZoneTarget = (zone: string) => {
-			const fromArray = incidentsParZoneArray.find(
-				(item: any) => item.Zone === zone
-			);
-			if (fromArray) return Number(fromArray.Target) || 0;
-			return Number(incidentsParZone[`Target_${zone}`]) || 0;
-		};
-
-		const reclamationsChartValues = [...sortedReclamationsSeries];
-		const maxReclamation = Math.max(
-			...reclamationsChartValues.map((s: any) => Number(s.Valeur)),
-			1
-		);
-		const reclamationsPoints = reclamationsChartValues
-			.map((s: any, i: number) => {
-				const x = 100 + i * 100;
-				const y = mapValueToY(Number(s.Valeur), 0, maxReclamation, 15, 85);
-				return `${x},${y}`;
-			})
-			.join(" ");
-
-		const efficienceChartValues = [...sortedEfficienceSeries];
-		const efficiencePoints = efficienceChartValues
-			.map((s: any, i: number) => {
-				const x = 100 + i * 100;
-				const y = mapValueToY(Number(s.Valeur), 80, 100, 25, 170);
-				return `${x},${y}`;
-			})
-			.join(" ");
-
-		const variationReclamation =
-			Number(reclamations?.Variation_Vs_Semaine_Precedente) || 0;
-		const variationReclamationColor =
-			variationReclamation > 0 ? "text-red-400" : "text-emerald-400";
-
-		const variationEfficience =
-			Number(efficienceGlobale?.Variation_Vs_Semaine_Precedente) || 0;
-		const variationEfficienceColor =
-			variationEfficience >= 0 ? "text-emerald-400" : "text-red-400";
-
-		const efficienceValue = Number(efficienceGlobale?.Valeur_Actuelle) || 0;
-		const efficienceTarget =
-			Number(efficienceGlobale?.Target_Actuelle) || 90;
-
-		const reclamationValue = Number(reclamations?.Valeur_Actuelle) || 0;
-		const reclamationTarget = Number(reclamations?.Target_Actuelle) || 10;
+		const noData =
+			reclamationValue === null &&
+			incidentsValue === null &&
+			efficienceValue === null &&
+			zoneKeys.every((z) => toNum(zones[z]) === null);
 
 		return (
-			<div className="space-y-5">
-				{/* Réclamations Clients */}
-				<div className="rounded-2xl border bg-gray-900/60 backdrop-blur-sm p-6 transition-all hover:border-gray-600"
-					style={{ borderColor: "rgba(255,255,255,0.08)" }}>
-					<SectionHeader
-						icon={<FaBug />}
-						title="Réclamations Clients"
-						accent="#06b6d4"
-					/>
-					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-						{/* Left */}
-						<div className="flex items-start gap-8">
-							<div className="text-center">
-								<div className="text-6xl md:text-7xl font-black text-white mb-2 leading-none tabular-nums">
-									{reclamationValue}
-								</div>
-								<div
-									className={`text-sm ${variationReclamationColor} font-medium mb-2`}
-								>
-									{variationReclamation >= 0 ? "+" : ""}
-									{variationReclamation} vs Sem. Préc.
-								</div>
-							<div className="flex flex-col items-center gap-1">
-								<span className="text-sm font-bold text-[#fcd34d]">
-									T: {reclamationTarget}
-								</span>
-							</div>
-							</div>
-							
-
-						{/* Weekly circles */}
-						<div className="flex flex-row items-center justify-between w-full">
-							{sortedReclamationsSeries.map((week: any, index: number) => (
-								<div
-									key={index}
-									className="flex flex-col items-center gap-1.5"
-								>
-									<span className="text-sm text-gray-400 font-medium">
-										{getSemaineLabel(index)}
-									</span>
-									<div
-										className="w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center shadow-lg"
-										style={{
-											background: `${progressColors[index % progressColors.length]}22`,
-											border: `2px solid ${progressColors[index % progressColors.length]}66`,
-										}}
-									>
-										<span
-											className="text-2xl md:text-3xl font-black"
-											style={{
-												color: progressColors[
-													index % progressColors.length
-												],
-											}}
-										>
-											{Number(week.Valeur)}
-										</span>
-									</div>
-									{week.Target != null && (
-										<span className="text-sm font-bold text-[#fcd34d]">
-											T: {Number(week.Target)}
-										</span>
-									)}
-								</div>
-							))}
-						</div>
-						</div>
-
-						{/* Right: Chart */}
-						<div
-							className="border-l pl-8"
-							style={{ borderColor: "rgba(255,255,255,0.06)" }}
-						>
-							<p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-								Suivi des Réclamations
-							</p>
-							<svg viewBox="0 0 450 120" className="w-full max-w-3xl min-h-[160px] h-auto">
-								<line
-									x1="50"
-									y1="105"
-									x2="420"
-									y2="105"
-									stroke="#374151"
-									strokeWidth="1"
+			<>
+				{noData && (
+					<NoDataBanner>
+						Aucune donnée pour la semaine {period} de {year} : le fichier Quality Weekly de cette
+						période n&apos;a pas encore été importé (page Importation).
+					</NoDataBanner>
+				)}
+				<div className="grid min-h-0 flex-1 grid-cols-1 gap-3 md:grid-cols-2 md:grid-rows-2 [@media(min-height:900px)]:gap-4">
+					{/* Réclamations Clients */}
+					<section className={cardClass}>
+						<SectionHeader icon={<FaBug />} title="Réclamations Clients" accent="#06b6d4" />
+						<div className="flex shrink-0 items-center gap-4">
+							<div className="w-28 shrink-0 text-center lg:w-32">
+								<div className={bigValue}>{fmt(reclamationValue)}</div>
+								<Variation
+									value={toNum(reclamations?.Variation_Vs_Semaine_Precedente)}
+									lowerIsBetter
+									label="vs Sem. Préc."
 								/>
-								{[35, 70].map((y) => (
-									<line
-										key={y}
-										x1="50"
-										y1={y}
-										x2="420"
-										y2={y}
-										stroke="#1f2937"
-										strokeWidth="1"
-										strokeDasharray="4 4"
+								<div className="text-sm font-bold text-[#fcd34d]">T: {fmt(reclamationTarget)}</div>
+							</div>
+							<div className="grid min-w-0 flex-1 grid-cols-4 gap-1">
+								{reclamationsSeries.map((week: any, index: number) => (
+									<CountCircle
+										key={index}
+										label={`S${week.Semaine}`}
+										value={toNum(week.Valeur)}
+										target={toNum(week.Target)}
+										color={progressColors[index % progressColors.length]}
 									/>
 								))}
-								<polyline
-									points={reclamationsPoints}
-									fill="none"
-									stroke="#06b6d4"
-									strokeWidth="2.5"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-								/>
-								{reclamationsChartValues.map((s: any, i: number) => {
-									const x = 100 + i * 100;
-									const y = mapValueToY(
-										Number(s.Valeur),
-										0,
-										maxReclamation,
-										15,
-										85
-									);
-									const val = Number(s.Valeur);
-									const tgt = s.Target != null ? Number(s.Target) : reclamationTarget;
-									const labelY = Math.max(y - 14, 8);
-									return (
-										<g key={i}>
-											<text x={x} y={labelY} textAnchor="middle" dominantBaseline="middle">
-												<tspan fill="#f59e0b" fontSize="13" fontWeight="700">{val}</tspan>
-											</text>
-											<circle cx={x} cy={y} r="3" fill="#06b6d4" stroke="#0e7490" strokeWidth="1" />
-											<text
-												x={x}
-												y="100"
-												textAnchor="middle"
-												fontSize="12"
-												fill="#FFF"
-											>
-												{getSemaineLabel(i)}
-											</text>
-										</g>
-									);
-								})}
-							</svg>
-						</div>
-					</div>
-				</div>
-
-				{/* Incidents */}
-				{incidents && (
-					<div
-						className="rounded-2xl border bg-gray-900/60 backdrop-blur-sm p-6 transition-all hover:border-gray-600"
-						style={{ borderColor: "rgba(255,255,255,0.08)" }}
-					>
-					<SectionHeader
-						icon={<FaBug/>}
-						title="Incidents"
-						accent="#f59e0b"
-					/>
-						<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-						{/* Left */}
-						<div className="flex items-start gap-8">
-							<div className="text-center">
-								<div className="text-6xl md:text-7xl font-black text-white mb-5 leading-none tabular-nums">
-									{Number(incidents?.Valeur_Actuelle) || 0}
-								</div>
-								<div className="flex flex-col items-center gap-1">
-									<span className="text-xs text-gray-400">
-										T: {Number(incidents?.Target_Actuelle) || 0}
-									</span>
-									<StatusChip
-										value={Number(incidents?.Valeur_Actuelle || 0)}
-										target={Number(incidents?.Target_Actuelle || 0)}
-										lowerIsBetter
-									/>
-								</div>
 							</div>
+						</div>
+						<div className="mt-2 flex min-h-0 flex-1">
+							<div className="w-28 shrink-0 self-center text-xs font-semibold uppercase tracking-wider text-gray-400 lg:w-32">
+								Suivi des réclamations
+							</div>
+							<div className="ml-4 flex min-w-0 flex-1">
+								<ColumnLineChart
+									values={reclamationsSeries.map((w: any) => toNum(w.Valeur))}
+									color="#06b6d4"
+									format={(v) => fmt(v)}
+								/>
+							</div>
+						</div>
+					</section>
 
-							{/* Weekly circles */}
-							<div className="flex flex-row items-center justify-between w-full">
-							{sortedReclamationsSeries.map((week: any, index: number) => (
-								<div
-									key={index}
-									className="flex flex-col items-center gap-1.5"
-								>
-									<span className="text-sm text-gray-400 font-medium">
-										{getSemaineLabel(index)}
-									</span>
-									<div
-										className="w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center shadow-lg"
-										style={{
-											background: `${progressColors[index % progressColors.length]}22`,
-											border: `2px solid ${progressColors[index % progressColors.length]}66`,
-										}}
-									>
-										<span
-											className="text-2xl md:text-3xl font-black"
-											style={{
-												color: progressColors[
-													index % progressColors.length
-												],
-											}}
-										>
-											{/*Number(week.Valeur)*/}
-											-
+					{/* Incidents */}
+					<section className={cardClass}>
+						<SectionHeader icon={<FaBug />} title="Incidents" accent="#f59e0b" />
+						<div className="flex min-h-0 flex-1 gap-4">
+							<div className="flex w-28 shrink-0 flex-col items-center justify-center gap-1.5 text-center lg:w-32">
+								<div className={bigValue}>{fmt(incidentsValue)}</div>
+								<span className="text-sm font-bold text-[#fcd34d]">T: {fmt(incidentsTarget)}</span>
+								<StatusChip value={incidentsValue} target={incidentsTarget} lowerIsBetter decimals={0} />
+							</div>
+							<div className="flex min-w-0 flex-1 flex-col border-l border-white/[0.06] pl-4">
+								<p className="mb-1 shrink-0 text-xs font-semibold uppercase tracking-wider text-gray-400">
+									Incidents par zone
+								</p>
+								<Bars
+									items={zoneKeys.map((zone, i) => {
+										const value = zoneIncident(zone, "Valeur");
+										const target = zoneIncident(zone, "Target");
+										return {
+											label: zone,
+											value,
+											target,
+											color: zoneColors[i],
+											top: `${fmt(value)} · T${fmt(target)}`,
+										};
+									})}
+								/>
+							</div>
+						</div>
+					</section>
+
+					{/* Efficience Globale */}
+					<section className={cardClass}>
+						<SectionHeader icon={<FaFreeCodeCamp />} title="Suivi de l'Efficience (par semaine)" accent="#10b981" />
+						<div className="flex shrink-0 items-center gap-4">
+							<div className="w-28 shrink-0 text-center lg:w-32">
+								<div className="text-3xl [@media(min-height:760px)]:text-4xl [@media(min-height:900px)]:text-5xl font-black text-white leading-none tabular-nums">
+									{fmt(efficienceValue, 1, "%")}
+								</div>
+								<Variation
+									value={toNum(efficienceGlobale?.Variation_Vs_Semaine_Precedente)}
+									decimals={1}
+									suffix="%"
+									label="vs Sem. Préc."
+								/>
+								<div className="text-sm font-bold text-[#fcd34d]">T: {fmt(efficienceTarget, 1, "%")}</div>
+							</div>
+							<div className="grid min-w-0 flex-1 grid-cols-4 gap-1">
+								{efficienceSeries.map((week: any, index: number) => (
+									<div key={index} className="flex min-w-0 flex-col items-center gap-0.5 [@media(min-height:760px)]:gap-1">
+										<span className="text-xs text-gray-400 font-medium lg:text-sm">S{week.Semaine}</span>
+										<RingCircle
+											value={toNum(week.Valeur)}
+											color={progressColors[index % progressColors.length]}
+											sizeClass={ringSize}
+										/>
+										<span className="text-xs font-bold text-[#fcd34d] lg:text-sm">
+											T: {fmt(toNum(week.Target) ?? efficienceTarget, 1, "%")}
 										</span>
 									</div>
-									{week.Target != null && (
-										<span className="text-sm font-bold text-[#fcd34d]">
-											T: {Number(week.Target)}
-										</span>
-									)}
-								</div>
-							))}
-						</div>
-						</div>
-
-							{/* Right: Zone Bar Chart */}
-							<div
-								className="border-l pl-8"
-								style={{ borderColor: "rgba(255,255,255,0.06)" }}
-							>
-								<p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-									Incidents par Zone
-								</p>
-								<svg viewBox="0 0 550 150" className="w-full max-w-3xl min-h-[200px] h-auto">
-									{zoneKeys.map((zone, i) => {
-										const value = getZoneValue(zone);
-										const target = getZoneTarget(zone);
-										const maxZoneVal = Math.max(
-											...zoneKeys.map((z) => getZoneValue(z)),
-											...zoneKeys.map((z) => getZoneTarget(z)),
-											1
-										);
-										const valueHeight = (value / maxZoneVal) * 80;
-										const targetHeight = (target / maxZoneVal) * 80;
-										const y = 120 - valueHeight;
-										const targetY = 120 - targetHeight;
-										const x = 50 + i * 100;
-										const isAboveTarget = value > target;
-										return (
-											<React.Fragment key={zone}>
-												<line
-													x1={x}
-													y1={targetY}
-													x2={x + 50}
-													y2={targetY}
-													stroke="#f59e0b"
-													strokeWidth="2"
-													strokeDasharray="4"
-													opacity="0.8"
-												/>
-												<rect
-													x={x + 5}
-													y={y}
-													width="40"
-													height={valueHeight}
-													fill={zoneColors[i]}
-													rx="4"
-													opacity={isAboveTarget ? 1 : 0.75}
-												/>
-												<rect
-													x={x}
-													y={y - 28}
-													width="50"
-													height="22"
-													rx="11"
-													fill="rgba(245,158,11,0.2)"
-													stroke="rgba(245,158,11,0.5)"
-													strokeWidth="1"
-												/>
-												<text x={x + 25} y={y - 14} textAnchor="middle">
-													<tspan fill="#fef3c7" fontSize="12" fontWeight="700">T{target}</tspan>
-												    <tspan fill="#94a3b8" fontSize="11"> </tspan>
-													<tspan fill="#fcd34d" fontSize="13" fontWeight="800">{value}</tspan>
-												</text>
-											</React.Fragment>
-										);
-									})}
-									<line
-										x1="40"
-										y1="120"
-										x2="540"
-										y2="120"
-										stroke="#374151"
-										strokeWidth="1.5"
-									/>
-									{zoneKeys.map((zone, i) => (
-										<text
-											key={zone}
-											x={75 + i * 100}
-											y="138"
-											textAnchor="middle"
-											fontSize="11"
-											fontWeight="600"
-											fill="#d1d5db"
-										>
-											{zone}
-										</text>
-									))}
-								</svg>
+								))}
 							</div>
 						</div>
-					</div>
-				)}
-
-				{/* Efficience Globale */}
-				<div
-					className="rounded-2xl border bg-gray-900/60 backdrop-blur-sm p-6 transition-all hover:border-gray-600"
-					style={{ borderColor: "rgba(255,255,255,0.08)" }}
-				>
-					<SectionHeader
-						icon={<FaFreeCodeCamp />}
-						title="Suivi de l'Efficience (par semaine)"
-						accent="#10b981"
-					/>
-					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-						{/* Left */}
-						<div className="flex flex-col gap-4">
-							<div className="text-center">
-								<div className="text-6xl md:text-7xl font-black text-white mb-2 leading-none tabular-nums">
-									{efficienceGlobale?.Valeur_Actuelle || 0}%
-								</div>
-								<div
-									className={`text-sm ${variationEfficienceColor} font-medium mb-2`}
-								>
-									{variationEfficience >= 0 ? "+" : ""}
-									{variationEfficience}% vs Sem. Préc.
-								</div>
-								<div className="flex flex-col items-center gap-1">
-									<span className="text-sm font-bold text-[#fcd34d]">
-										T: {efficienceTarget}%
-									</span>
-								</div>
+						<div className="mt-2 flex min-h-0 flex-1">
+							<div className="w-28 shrink-0 self-center text-xs font-semibold uppercase tracking-wider text-gray-400 lg:w-32">
+								Tendance hebdomadaire
 							</div>
-
-							{/* Weekly progress circles — horizontal */}
-							<div className="flex flex-row items-end justify-between gap-2">
-								{sortedEfficienceSeries.map((week: any, index: number) => {
-									const val = Number(week.Valeur);
-									const tgt =
-										week.Target != null
-											? Number(week.Target)
-											: efficienceTarget;
-									const strokeDashOffset = calculateStrokeDashOffset(val);
-									return (
-										<div
-											key={index}
-											className="flex flex-col items-center gap-1.5"
-										>
-											<span className="text-sm text-gray-400 font-medium">
-												{getSemaineLabel(index)}
-											</span>
-											<svg
-												className="w-20 h-20 md:w-24 md:h-24"
-												viewBox="0 0 120 120"
-											>
-												<circle
-													cx="60"
-													cy="60"
-													r="45"
-													fill="none"
-													stroke="#1f2937"
-													strokeWidth="10"
-												/>
-												<circle
-													cx="60"
-													cy="60"
-													r="45"
-													fill="none"
-													stroke={
-														progressColors[
-															index % progressColors.length
-														]
-													}
-													strokeWidth="10"
-													strokeDasharray="283"
-													strokeDashoffset={strokeDashOffset}
-													strokeLinecap="round"
-													transform="rotate(-90 60 60)"
-												/>
-												<text
-													x="60"
-													y="68"
-													textAnchor="middle"
-													fontSize="24"
-													fontWeight="bold"
-													className="fill-white"
-												>
-													{val}%
-												</text>
-											</svg>
-											<span className="text-sm font-bold text-[#fcd34d]">
-												T: {tgt}%
-											</span>
-										</div>
-									);
-								})}
+							<div className="ml-4 flex min-w-0 flex-1">
+								<ColumnLineChart
+									values={efficienceSeries.map((w: any) => toNum(w.Valeur))}
+									color="#10b981"
+									format={(v) => fmt(v, 1, "%")}
+									target={efficienceTarget}
+								/>
 							</div>
 						</div>
+					</section>
 
-						{/* Right: Line Chart */}
-						<div
-							className="border-l pl-8 flex items-center"
-							style={{ borderColor: "rgba(255,255,255,0.06)" }}
-						>
-							<div className="w-full">
-								<p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-									Tendance hebdomadaire
-								</p>
-								<svg viewBox="0 0 450 230" className="w-full max-w-3xl min-h-[300px] h-auto">
-									<line
-										x1="50"
-										y1="195"
-										x2="420"
-										y2="195"
-										stroke="#374151"
-										strokeWidth="1"
-									/>
-									{[80, 140].map((y) => (
-										<line
-											key={y}
-											x1="50"
-											y1={y}
-											x2="420"
-											y2={y}
-											stroke="#1f2937"
-											strokeWidth="1"
-											strokeDasharray="4 4"
-										/>
-									))}
-									<polyline
-										points={efficiencePoints}
-										fill="none"
-										stroke="#10b981"
-										strokeWidth="3"
-										strokeLinecap="round"
-										strokeLinejoin="round"
-									/>
-									{efficienceChartValues.map((s: any, i: number) => {
-										const x = 100 + i * 100;
-										const y = mapValueToY(
-											Number(s.Valeur),
-											80,
-											100,
-											25,
-											170
-										);
-										const val = Number(s.Valeur);
-										const tgt =
-											s.Target != null
-												? Number(s.Target)
-												: efficienceTarget;
-										const labelY = Math.max(y - 18, 20);
-										return (
-											<g key={i}>
-												
-												<text x={x} y={labelY} textAnchor="middle" dominantBaseline="middle">
-													<tspan fill="#d1fae5" fontSize="13" fontWeight="700">T {tgt}%</tspan>
-													<tspan fill="#94a3b8" fontSize="12"> / </tspan>
-													<tspan fill="#fcd34d" fontSize="15" fontWeight="800">{val}%</tspan>
-
-												</text>
-												<circle cx={x} cy={y} r="3" fill="#10b981" stroke="#047857" strokeWidth="1.5" />
-												<text
-													x={x}
-													y="190"
-													textAnchor="middle"
-													fontSize="12"
-													fill="#9ca3af"
-												>
-													{getSemaineLabel(i)}
-												</text>
-											</g>
-										);
-									})}
-								</svg>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				{/* Efficience Par Zone */}
-				{efficienceParZone && efficienceParZone.Zones && (
-					<div
-						className="rounded-2xl border bg-gray-900/60 backdrop-blur-sm p-6 transition-all hover:border-gray-600"
-						style={{ borderColor: "rgba(255,255,255,0.08)" }}
-					>
-						<SectionHeader
-							icon={<FaMapMarked />}
-							title="Efficience par Zone"
-							accent="#8b5cf6"
-						/>
-						<div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+					{/* Efficience Par Zone */}
+					<section className={cardClass}>
+						<SectionHeader icon={<FaMapMarked />} title="Efficience par Zone" accent="#8b5cf6" />
+						<div className="grid min-h-0 flex-1 grid-cols-5 content-center gap-2">
 							{zoneKeys.map((zone, index) => {
-								const zoneVal =
-									Number(efficienceParZone.Zones[zone]) || 0;
-								const zoneTgt =
-									Number(
-										efficienceParZone.Zones[`Target_${zone}`]
-									) || 95;
-								const vsTarget = zoneVal - zoneTgt;
-								const vsTargetColor =
-									vsTarget >= 0
-										? "text-emerald-400"
-										: "text-red-400";
-								const strokeDashOffset =
-									calculateStrokeDashOffset(zoneVal);
+								const zoneVal = toNum(zones[zone]);
+								const zoneTgt = toNum(zones[`Target_${zone}`]);
+								const vsTarget = zoneVal !== null && zoneTgt !== null ? zoneVal - zoneTgt : null;
 								return (
-									<div
-										key={zone}
-										className="flex flex-col items-center gap-2"
-									>
-										<span className="text-sm text-gray-200 font-semibold">
-											{zone}
-										</span>
-										<svg className="w-24 h-24" viewBox="0 0 120 120">
-											<circle
-												cx="60"
-												cy="60"
-												r="45"
-												fill="none"
-												stroke="#1f2937"
-												strokeWidth="10"
-											/>
-											<circle
-												cx="60"
-												cy="60"
-												r="45"
-												fill="none"
-												stroke={
-													progressColors[
-														index % progressColors.length
-													]
-												}
-												strokeWidth="10"
-												strokeDasharray="283"
-												strokeDashoffset={strokeDashOffset}
-												strokeLinecap="round"
-												transform="rotate(-90 60 60)"
-											/>
-											<text
-												x="60"
-												y="65"
-												textAnchor="middle"
-												fontSize="18"
-												fontWeight="bold"
-												className="fill-white"
-											>
-												{zoneVal.toFixed(1)}%
-											</text>
-										</svg>
-										<div className="text-center">
-											<div
-												className={`text-xs ${vsTargetColor} font-semibold`}
-											>
-												{vsTarget >= 0 ? "▲" : "▼"}{" "}
-												{Math.abs(vsTarget).toFixed(1)}%
+									<div key={zone} className="flex min-w-0 flex-col items-center gap-1">
+										<span className="text-sm text-gray-200 font-semibold">{zone}</span>
+										<RingCircle
+											value={zoneVal}
+											color={progressColors[index % progressColors.length]}
+											sizeClass={ringSize}
+										/>
+										{vsTarget !== null && (
+											<div className={`text-xs font-semibold lg:text-sm ${vsTarget >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+												{vsTarget >= 0 ? "▲" : "▼"} {Math.abs(vsTarget).toFixed(1)}%
 											</div>
-											<div className="text-sm font-semibold text-[#fcd34d] mt-1">
-												T: {zoneTgt}%
-											</div>
-										</div>
+										)}
+										<div className="text-xs font-semibold text-[#fcd34d] lg:text-sm">T: {fmt(zoneTgt, 1, "%")}</div>
 									</div>
 								);
 							})}
 						</div>
-					</div>
-				)}
-			</div>
+					</section>
+				</div>
+			</>
 		);
 	};
 
 	const MonthlyQuality = () => {
-		if (!data) {
-			return (
-				<div className="text-gray-400 p-8">
-					Aucune donnée disponible
-				</div>
-			);
-		}
+		const ppmScrapClient = data?.PPM_Scrap_Client;
+		const tauxConformite = data?.Taux_Conformite_Audits;
+		const incidents = data?.Incidents_Accidents_Travail;
+		const efficienceMensuelle = data?.Efficience_Mensuelle;
+		const scorecards = data?.Scorecards_Clients;
 
-		const ppmScrapClient = data.PPM_Scrap_Client;
-		const tauxConformite = data.Taux_Conformite_Audits;
-		const incidents = data.Incidents_Accidents_Travail;
-		const efficienceMensuelle = data.Efficience_Mensuelle;
-		const scorecards = data.Scorecards_Clients;
-
-		if (
-			!ppmScrapClient &&
-			!tauxConformite &&
-			!incidents &&
-			!efficienceMensuelle &&
-			!scorecards
-		) {
+		if (!ppmScrapClient && !tauxConformite && !incidents && !efficienceMensuelle && !scorecards) {
 			return (
 				<div className="rounded-2xl border border-yellow-800/50 bg-yellow-900/20 p-6">
-					<div className="text-yellow-400 font-semibold mb-2">
-						Structure de données inattendue
-					</div>
+					<div className="text-yellow-400 font-semibold mb-2">Structure de données inattendue</div>
 					<div className="text-sm text-gray-300 mb-4">
 						Les données reçues ne correspondent pas à la structure attendue.
 					</div>
 					<div className="text-xs text-gray-400 font-mono bg-gray-900 p-3 rounded overflow-auto">
-						<div>Clés: {Object.keys(data).join(", ") || "Aucune"}</div>
+						<div>Clés: {Object.keys(data ?? {}).join(", ") || "Aucune"}</div>
 					</div>
 				</div>
 			);
 		}
 
-		const ppmValue = Number(ppmScrapClient?.PPM_Mois_Courant) || 0;
-		const ppmVariation =
-			Number(ppmScrapClient?.Variation_PPM_Vs_Mois_Precedent) || 0;
-		const ppmVariationColor =
-			ppmVariation <= 0 ? "text-emerald-400" : "text-red-400";
-
-		const scrapValue = Number(ppmScrapClient?.Scrap_Mois_Courant) || 0;
-		const scrapSeries = ppmScrapClient?.Suivi_Scrap_4_Mois || [];
-		const scrapVariationProvided =
-			ppmScrapClient?.Variation_Scrap_Vs_Mois_Precedent;
+		const ppmValue = toNum(ppmScrapClient?.PPM_Mois_Courant);
+		const ppmTarget = toNum(ppmScrapClient?.Target_PPM_Mois_Courant);
+		const ppmSeries = chrono(ppmScrapClient?.Suivi_PPM_4_Mois);
+		const scrapValue = toNum(ppmScrapClient?.Scrap_Mois_Courant);
+		const scrapTarget = toNum(ppmScrapClient?.Target_Scrap_Mois_Courant);
+		const scrapSeries = chrono(ppmScrapClient?.Suivi_Scrap_4_Mois);
 		const scrapVariation =
-			scrapVariationProvided !== undefined
-				? Number(scrapVariationProvided)
-				: (() => {
-						const prev =
-							Number(scrapSeries[scrapSeries.length - 2]?.Valeur) || 0;
-						return prev ? scrapValue - prev : 0;
-					})();
-		const scrapVariationColor =
-			scrapVariation <= 0 ? "text-emerald-400" : "text-red-400";
-
-		const ppmSeries = ppmScrapClient?.Suivi_PPM_4_Mois || [];
-		const ppmChartValues = [...ppmSeries].reverse();
-		const maxPpm = Math.max(
-			...ppmChartValues.map((s: any) => Number(s.Valeur)),
-			1
-		);
-		const ppmPoints = ppmChartValues
-			.map((s: any, i: number) => {
-				const x = 10 + i * 40;
-				const y = mapValueToY(Number(s.Valeur), 0, maxPpm, 15, 60);
-				return `${x},${y}`;
-			})
-			.join(" ");
-
-		const scrapChartValues = [...scrapSeries].reverse();
-		const maxScrap = Math.max(
-			...scrapChartValues.map((s: any) => Number(s.Valeur)),
-			1
-		);
+			toNum(ppmScrapClient?.Variation_Scrap_Vs_Mois_Precedent) ??
+			(() => {
+				const prev = toNum(scrapSeries[scrapSeries.length - 1]?.Valeur);
+				return scrapValue !== null && prev !== null ? scrapValue - prev : null;
+			})();
 
 		const completion = tauxConformite?.Completion;
 		const compliance = tauxConformite?.Compliance;
-		const completionValue = Number(completion?.Valeur_Mois_Courant) || 0;
-		const complianceValue = Number(compliance?.Valeur_Mois_Courant) || 0;
-		const completionVariation =
-			Number(completion?.Variation_Vs_Mois_Precedent)?.toFixed(1) || "0";
-		const complianceVariation =
-			Number(compliance?.Variation_Vs_Mois_Precedent)?.toFixed(1) || "0";
 
-		const circumference = 251.33;
-		const completionOffset =
-			circumference - (completionValue / 100) * circumference;
-		const complianceOffset =
-			circumference - (complianceValue / 100) * circumference;
-
-		const clientValues = scorecards?.Clients || [];
+		const clientValues: any[] = scorecards?.Clients || [];
 		const avgScore =
 			clientValues.length > 0
-				? (
-						clientValues.reduce(
-							(sum: number, c: any) => sum + Number(c.Valeur),
-							0
-						) / clientValues.length
-					).toFixed(1)
-				: scorecards?.Score_Global || "0";
+				? clientValues.reduce((sum: number, c: any) => sum + (toNum(c.Valeur) ?? 0), 0) / clientValues.length
+				: toNum(scorecards?.Score_Global);
 
-		const incidentsValue = Number(incidents?.Valeur_Mois_Courant) || 0;
-		const incidentsSeries = incidents?.Serie_4_Mois || [];
-		const incidentsPrevValue =
-			Number(incidentsSeries[incidentsSeries.length - 2]?.Valeur) || 0;
-		const incidentsVariation = incidentsValue - incidentsPrevValue;
-		const incidentsVariationColor =
-			incidentsVariation <= 0
-				? "bg-emerald-500/15 text-emerald-400"
-				: "bg-red-500/15 text-red-400";
+		// Serie_4_Mois ends with the selected month
+		const incidentsValue = toNum(incidents?.Valeur_Mois_Courant);
+		const incidentsSeries = chrono(incidents?.Serie_4_Mois);
+		const incidentsPrev = toNum(incidentsSeries[incidentsSeries.length - 2]?.Valeur);
+		const incidentsVariation =
+			toNum(incidents?.Variation_Vs_Mois_Precedent) ??
+			(incidentsValue !== null && incidentsPrev !== null ? incidentsValue - incidentsPrev : null);
+		const joursPerdus = incidentsSeries.map((s: any) => toNum(s.Jours_Perdus));
 
-		const incidentsChartValues = [...incidentsSeries];
-		const maxIncidents = Math.max(
-			...incidentsChartValues.map((s: any) => Number(s.Valeur)),
-			1
-		);
+		// Suivi_4_Mois holds the 4 months before the selected one
+		const efficienceValue = toNum(efficienceMensuelle?.Valeur_Mois_Courant);
+		const efficienceTarget = toNum(efficienceMensuelle?.Target_Mois_Courant);
+		const efficienceSeries = chrono(efficienceMensuelle?.Suivi_4_Mois);
+		const efficienceVariation =
+			toNum(efficienceMensuelle?.Variation_Vs_Mois_Precedent) ??
+			(() => {
+				const prev = toNum(efficienceSeries[efficienceSeries.length - 1]?.Valeur);
+				return efficienceValue !== null && prev !== null ? efficienceValue - prev : null;
+			})();
 
-		const efficienceValue =
-			Number(efficienceMensuelle?.Valeur_Mois_Courant) || 0;
-		const efficienceTarget =
-			Number(efficienceMensuelle?.Target_Mois_Courant) || 90;
-		const efficienceSeries = efficienceMensuelle?.Suivi_4_Mois || [];
-		const efficiencePrevValue =
-			Number(efficienceSeries[efficienceSeries.length - 2]?.Valeur) ||
-			efficienceValue;
-		const efficienceVariation = (efficienceValue - efficiencePrevValue).toFixed(
-			1
-		);
-		const efficienceVsTarget = (efficienceValue - efficienceTarget).toFixed(1);
+		const monthLabel = (s: any) => s.Label && !String(s.Label).startsWith("M-") ? s.Label : MONTH_NAMES[(toNum(s.Mois) ?? 1) - 1];
 
-		const efficienceChartValues = [...efficienceSeries];
-		const minEff = 85;
-		const maxEff = 100;
-		const efficiencePoints = efficienceChartValues.map((s: any, i: number) => {
-			const x = 60 + i * 93.33;
-			const val = Number(s.Valeur);
-			const y = mapValueToY(val, minEff, maxEff, 10, 90);
-			return { x, y, value: val, label: s.Label || `M-${4 - i}` };
-		});
-
-		const borderStyle = { borderColor: "rgba(255,255,255,0.08)" };
+		const noData =
+			ppmValue === null &&
+			scrapValue === null &&
+			toNum(completion?.Valeur_Mois_Courant) === null &&
+			toNum(compliance?.Valeur_Mois_Courant) === null &&
+			avgScore === null &&
+			incidentsValue === null &&
+			efficienceValue === null;
 
 		return (
-			<div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-				{/* PPM & Scrap */}
-				<div
-					className="rounded-2xl border bg-gray-900/60 backdrop-blur-sm p-6 transition-all hover:border-gray-600"
-					style={borderStyle}
-				>
-					<SectionHeader
-						icon={<FaFileExport/>}
-						title="PPM & Scrap Client"
-						accent="#2563eb"
-					/>
-					<div className="flex items-start justify-between mb-4">
-						<div>
-							<div className="flex items-baseline gap-2 mb-1">
-								<div className="text-4xl font-black text-white tabular-nums">
-									{ppmValue.toFixed(2)}
+			<>
+				{noData && (
+					<NoDataBanner>
+						Aucune donnée pour {MONTH_FULL_NAMES[period - 1] ?? ""} {year} : le fichier Quality Monthly de
+						cette période n&apos;a pas encore été importé (page Importation).
+					</NoDataBanner>
+				)}
+				<div className="grid min-h-0 flex-1 grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 lg:grid-rows-2 [@media(min-height:900px)]:gap-4">
+					{/* PPM & Scrap */}
+					<section className={cardClass}>
+						<SectionHeader icon={<FaFileExport />} title="PPM & Scrap Client" accent="#2563eb" />
+						{/* PPM and Scrap side by side, each with its 4-month trend */}
+						<div className="grid min-h-0 flex-1 grid-cols-2 gap-3">
+							<div className="flex min-h-0 min-w-0 flex-col">
+								<p className="text-[10px] text-gray-500 uppercase tracking-wider">PPM</p>
+								<div className="flex flex-wrap items-baseline gap-x-2">
+									<div className="text-3xl [@media(min-height:900px)]:text-4xl font-black text-white tabular-nums">
+										{fmt(ppmValue, 1)}
+									</div>
+									<Variation
+										value={toNum(ppmScrapClient?.Variation_PPM_Vs_Mois_Precedent)}
+										lowerIsBetter
+										decimals={1}
+										label="vs M-1"
+									/>
 								</div>
-								<div className="text-sm text-gray-400">PPM</div>
-							</div>
-							<div className="flex items-center gap-2 mb-1">
-								<span className="text-xs text-gray-400">
-									T: {Number(ppmScrapClient?.Target_PPM_Mois_Courant) || 0}
-								</span>
-								<StatusChip
-									value={ppmValue}
-									target={Number(ppmScrapClient?.Target_PPM_Mois_Courant || 0)}
-									lowerIsBetter
-								/>
-							</div>
-							<div className="mt-3 pt-3 border-t" style={borderStyle}>
-								<div className="flex items-center gap-2 mb-1">
-									<span className="text-sm text-gray-300">
-										Scrap: {scrapValue.toLocaleString()}
-									</span>
-									<span className={`${scrapVariationColor} text-sm font-bold`}>
-										{Number(scrapVariation) > 0 ? "↑" : "↓"}{" "}
-										{scrapVariation >= 0 ? "+" : ""}
-										{scrapVariation} vs M-1
-									</span>
+								<div className="mt-0.5 mb-1 flex flex-wrap items-center gap-1.5">
+									<span className="text-xs text-gray-400">T: {fmt(ppmTarget, 1)}</span>
+									<StatusChip value={ppmValue} target={ppmTarget} lowerIsBetter />
 								</div>
-								<StatusChip
-									value={scrapValue}
-									target={Number(ppmScrapClient?.Target_Scrap_Mois_Courant || 0)}
-									lowerIsBetter
+								<ColumnLineChart
+									values={ppmSeries.map((s: any) => toNum(s.Valeur))}
+									color="#2563eb"
+									format={(v) => fmt(v, 1)}
+									labels={ppmSeries.map(monthLabel)}
+								/>
+							</div>
+							<div className="flex min-h-0 min-w-0 flex-col border-l border-white/[0.06] pl-3">
+								<p className="text-[10px] text-gray-500 uppercase tracking-wider">Scrap</p>
+								<div className="flex flex-wrap items-baseline gap-x-2">
+									<div className="text-3xl [@media(min-height:900px)]:text-4xl font-black text-white tabular-nums">
+										{scrapValue === null ? "—" : scrapValue.toLocaleString()}
+									</div>
+									<Variation value={scrapVariation} lowerIsBetter label="vs M-1" />
+								</div>
+								<div className="mt-0.5 mb-1 flex flex-wrap items-center gap-1.5">
+									<span className="text-xs text-gray-400">T: {scrapTarget === null ? "—" : scrapTarget.toLocaleString()}</span>
+									<StatusChip value={scrapValue} target={scrapTarget} lowerIsBetter decimals={0} />
+								</div>
+								<Bars
+									items={scrapSeries.map((s: any) => ({
+										label: monthLabel(s),
+										value: toNum(s.Valeur),
+										color: "rgba(59,130,246,0.7)",
+									}))}
 								/>
 							</div>
 						</div>
-						<div className="text-right">
-							<div className={`${ppmVariationColor} font-bold text-xl`}>
-								{ppmVariation >= 0 ? "+" : ""}
-								{ppmVariation}
-							</div>
-							<div className="text-xs text-gray-500 mt-1">
-								vs M-1
-							</div>
+					</section>
+
+					{/* Conformité Audits */}
+					<section className={cardClass}>
+						<SectionHeader icon={<FaChartBar />} title="Taux de Conformité aux Audits" accent="#10b981" />
+						<div className="flex min-h-0 flex-1 items-center justify-center gap-8">
+							{[
+								{ label: "Completion", kpi: completion, color: "#10b981" },
+								{ label: "Compliance", kpi: compliance, color: "#f97316" },
+							].map((item) => (
+								<div key={item.label} className="flex flex-col items-center gap-1">
+									<RingCircle
+										value={toNum(item.kpi?.Valeur_Mois_Courant)}
+										color={item.color}
+										sizeClass="h-20 w-20 [@media(min-height:760px)]:h-24 [@media(min-height:760px)]:w-24 [@media(min-height:900px)]:h-32 [@media(min-height:900px)]:w-32"
+									/>
+									<span className="text-sm text-gray-300 font-medium">{item.label}</span>
+									<Variation
+										value={toNum(item.kpi?.Variation_Vs_Mois_Precedent)}
+										decimals={1}
+										suffix="%"
+										label="vs M-1"
+									/>
+								</div>
+							))}
 						</div>
-					</div>
-					<div className="flex items-end gap-4 mt-6">
-						<div className="flex-1">
-							<p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">
-								PPM Trend
-							</p>
-							<svg viewBox="0 0 160 80" className="w-full h-16">
-								<line
-									x1="0"
-									y1="70"
-									x2="160"
-									y2="70"
-									stroke="#374151"
-									strokeWidth="1"
-								/>
-								<polyline
-									points={ppmPoints}
-									fill="none"
-									stroke="#2563eb"
-									strokeWidth="2"
-									strokeLinecap="round"
-								/>
-								{ppmChartValues.map((s: any, i: number) => {
-									const x = 10 + i * 40;
-									const y = mapValueToY(Number(s.Valeur), 0, maxPpm, 15, 60);
-									return (
-										<circle key={i} cx={x} cy={y} r="4" fill="#2563eb" />
-									);
-								})}
-							</svg>
+					</section>
+
+					{/* Score Cards Clients */}
+					<section className={cardClass}>
+						<SectionHeader icon={<FaCheckDouble />} title="Score Cards Clients" accent="#f59e0b" />
+						<div className="mb-2 flex shrink-0 items-baseline gap-3">
+							<span className="text-3xl [@media(min-height:900px)]:text-4xl font-black text-white tabular-nums">
+								{fmt(avgScore, 1, "%")}
+							</span>
+							<span className="bg-emerald-500/20 text-emerald-400 text-xs font-bold px-2 py-0.5 rounded-full">
+								Moyenne
+							</span>
 						</div>
-						<div className="flex items-end gap-1.5 h-20">
-							{scrapChartValues.map((s: any, i: number) => {
-								const val = Number(s.Valeur);
-								const height = Math.max((val / maxScrap) * 55, 16);
+						{/* A long client list scrolls inside the card instead of growing the page */}
+						<div className="min-h-0 flex-1 space-y-1.5 overflow-y-auto pr-1 [@media(min-height:900px)]:space-y-3">
+							{clientValues.length === 0 && (
+								<p className="text-xs text-gray-500 lg:text-sm">Aucun score client pour ce mois</p>
+							)}
+							{clientValues.map((client: any, index: number) => {
+								const value = toNum(client.Valeur);
+								const target = toNum(client.Target);
+								const isAbove = value !== null && target !== null && value >= target;
+								// One line per client: name, bar with the target marker, score and target
 								return (
-									<div key={i} className="flex flex-col items-center">
-										<span className="text-[10px] text-gray-400 mb-1">
-											{val}
-										</span>
-										<div
-											className="w-7 bg-blue-500/70 rounded-t"
-											style={{ height: `${height}px` }}
-										/>
-										<span className="text-[9px] text-gray-500 mt-1">
-											{s.Label || `M${i + 1}`}
-										</span>
+									<div key={index} className="grid grid-cols-[5.5rem_1fr_auto] items-center gap-2">
+										<span className="truncate text-xs text-gray-300 font-medium lg:text-sm">{client.Client}</span>
+										<div className="h-2 bg-gray-800 rounded-full overflow-hidden relative">
+											{target !== null && (
+												<div className="absolute top-0 bottom-0 w-0.5 bg-yellow-400 z-10" style={{ left: `${target}%` }} />
+											)}
+											<div
+												className={`h-full ${isAbove ? "bg-blue-500" : "bg-red-500"} rounded-full transition-all duration-500`}
+												style={{ width: `${value ?? 0}%` }}
+											/>
+										</div>
+										<div className="flex items-baseline gap-1.5 whitespace-nowrap tabular-nums">
+											<span className={`text-xs font-bold lg:text-sm ${isAbove ? "text-emerald-400" : "text-red-400"}`}>
+												{fmt(value, 1, "%")}
+											</span>
+											<span className="text-xs text-gray-500">T:{fmt(target, 1, "%")}</span>
+										</div>
 									</div>
 								);
 							})}
 						</div>
-					</div>
-				</div>
+					</section>
 
-				{/* Conformité Audits */}
-				<div
-					className="rounded-2xl border bg-gray-900/60 backdrop-blur-sm p-6 transition-all hover:border-gray-600"
-					style={borderStyle}
-				>
-					<SectionHeader
-						icon={<FaChartBar/>}
-						title="Taux de Conformité aux Audits"
-						accent="#10b981"
-					/>
-					<div className="flex justify-center gap-8 mt-4">
-						{[
-							{
-								label: "Completion",
-								value: completionValue,
-								offset: completionOffset,
-								color: "#10b981",
-								variation: completionVariation,
-							},
-							{
-								label: "Compliance",
-								value: complianceValue,
-								offset: complianceOffset,
-								color: "#f97316",
-								variation: complianceVariation,
-							},
-						].map((item) => (
-							<div key={item.label} className="flex flex-col items-center">
-								<div className="relative w-28 h-28">
-									<svg
-										className="w-full h-full -rotate-90"
-										viewBox="0 0 100 100"
-									>
-										<circle
-											cx="50"
-											cy="50"
-											r="40"
-											fill="none"
-											stroke="#1f2937"
-											strokeWidth="9"
-										/>
-										<circle
-											cx="50"
-											cy="50"
-											r="40"
-											fill="none"
-											stroke={item.color}
-											strokeWidth="9"
-											strokeDasharray={circumference}
-											strokeDashoffset={item.offset}
-											strokeLinecap="round"
-										/>
-									</svg>
-									<div className="absolute inset-0 flex flex-col items-center justify-center">
+					{/* Incidents Accidents */}
+					<section className={cardClass}>
+						<SectionHeader icon={<FaHotjar />} title="Incidents / Accidents de Travail" accent="#ef4444" />
+						{/* Count on the left, monthly bars and lost days on the right */}
+						<div className="flex min-h-0 flex-1 gap-4">
+							<div className="flex w-20 shrink-0 flex-col items-center justify-center gap-1.5 text-center">
+								<span className="text-4xl [@media(min-height:900px)]:text-5xl font-black text-white tabular-nums">
+									{fmt(incidentsValue)}
+								</span>
+								{incidentsVariation !== null && (
+									<div>
 										<span
-											className="text-xl font-black text-white"
+											className={`${incidentsVariation <= 0 ? "bg-emerald-500/15 text-emerald-400" : "bg-red-500/15 text-red-400"} text-sm font-bold px-2 py-0.5 rounded-full`}
 										>
-											{item.value}%
+											{fmtSigned(incidentsVariation)}
 										</span>
+										<div className="text-xs text-gray-500 mt-1">vs M-1</div>
 									</div>
-								</div>
-								<span className="text-sm text-gray-300 mt-3 font-medium">
-									{item.label}
-								</span>
-								<span
-									className={`${Number(item.variation) >= 0 ? "text-emerald-400" : "text-red-400"} text-sm font-bold mt-1`}
-								>
-									{Number(item.variation) >= 0 ? "+" : ""}
-									{item.variation}%
-								</span>
-								<span className="text-xs text-gray-500">vs M-1</span>
+								)}
 							</div>
-						))}
-					</div>
-				</div>
-
-				{/* Score Cards Clients */}
-				<div
-					className="rounded-2xl border bg-gray-900/60 backdrop-blur-sm p-6 transition-all hover:border-gray-600"
-					style={borderStyle}
-				>
-					<SectionHeader
-						icon={<FaCheckDouble />}
-						title="Score Cards Clients"
-						accent="#f59e0b"
-					/>
-					<div className="flex items-baseline gap-3 mb-4">
-						<span className="text-4xl font-black text-white tabular-nums">
-							{avgScore}%
-						</span>
-						<span className="bg-emerald-500/20 text-emerald-400 text-xs font-bold px-2 py-0.5 rounded-full">
-							Moyenne
-						</span>
-					</div>
-					<div className="space-y-3">
-						{clientValues.map((client: any, index: number) => {
-							const value = Number(client.Valeur);
-							const target = Number(client.Target);
-							const isAbove = value >= target;
-							return (
-								<div key={index}>
-									<div className="flex items-center justify-between mb-1">
-										<span className="text-xs text-gray-300 font-medium">
-											{client.Client}
-										</span>
-										<div className="flex items-center gap-2">
-											<span className="text-xs text-gray-500">
-												T:{target}%
-											</span>
-											<span
-												className={`text-xs font-bold ${isAbove ? "text-emerald-400" : "text-red-400"}`}
-											>
-												{value}%
-											</span>
-										</div>
+							<div className="flex min-w-0 flex-1 flex-col border-l border-white/[0.06] pl-4">
+								<Bars
+									highlightLast
+									items={incidentsSeries.map((s: any) => ({
+										label: monthLabel(s),
+										value: toNum(s.Valeur),
+										color: "#3b82f6",
+									}))}
+								/>
+								{joursPerdus.filter((j) => j !== null).length >= 2 && (
+									<div className="mt-1 flex h-14 shrink-0 items-stretch gap-2 border-t border-white/[0.08] pt-1 [@media(min-height:900px)]:h-20">
+										<span className="w-12 shrink-0 self-center text-xs text-gray-400 font-medium leading-tight">Jours Perdus</span>
+										<ColumnLineChart values={joursPerdus} color="#f59e0b" format={(v) => fmt(v)} />
 									</div>
-									<div className="h-2 bg-gray-800 rounded-full overflow-hidden relative">
-										{/* Target marker */}
-										<div
-											className="absolute top-0 bottom-0 w-0.5 bg-yellow-400 z-10"
-											style={{ left: `${target}%` }}
-										/>
-										<div
-											className={`h-full ${isAbove ? "bg-blue-500" : "bg-red-500"} rounded-full transition-all duration-500`}
-											style={{ width: `${value}%` }}
-										/>
-									</div>
-								</div>
-							);
-						})}
-					</div>
-				</div>
-
-				{/* Incidents Accidents */}
-				<div
-					className="rounded-2xl border bg-gray-900/60 backdrop-blur-sm p-6 transition-all hover:border-gray-600 lg:col-span-1"
-					style={borderStyle}
-				>
-					<SectionHeader
-						icon={<FaHotjar/>}
-						title="Incidents / Accidents de Travail"
-						accent="#ef4444"
-					/>
-					<div className="flex items-start gap-4 mb-4">
-						<span className="text-5xl font-black text-white tabular-nums">
-							{incidentsValue}
-						</span>
-						<div className="mt-1">
-							<span
-								className={`${incidentsVariationColor} text-sm font-bold px-2 py-0.5 rounded-full`}
-							>
-								{incidentsVariation >= 0 ? "+" : ""}
-								{incidentsVariation}
-							</span>
-							<div className="text-xs text-gray-500 mt-1">vs M-1</div>
+								)}
+							</div>
 						</div>
-					</div>
-					<div className="flex items-end justify-between gap-3 mb-4 px-1">
-						{incidentsChartValues.map((s: any, i: number) => {
-							const val = Number(s.Valeur);
-							const height = Math.max((val / maxIncidents) * 60, 16);
-							const isLatest = i === incidentsChartValues.length - 1;
-							return (
-								<div key={i} className="flex flex-col items-center flex-1">
-									<div
-										className={`w-full rounded-t-lg flex items-center justify-center font-bold text-sm text-white py-1 ${isLatest ? "bg-blue-500" : "bg-blue-500/50"}`}
-										style={{ height: `${height}px` }}
+					</section>
+
+					{/* Efficience Mensuelle */}
+					<section className={`${cardClass} md:col-span-2`}>
+						<SectionHeader icon={<FaChartArea />} title="Suivi de l'Efficience (mensuelle)" accent="#2563eb" />
+						<div className="mb-1 flex shrink-0 flex-wrap items-center gap-x-4 gap-y-1">
+							<span className="text-4xl [@media(min-height:900px)]:text-5xl font-black text-white tabular-nums">
+								{fmt(efficienceValue, 1, "%")}
+							</span>
+							{efficienceVariation !== null && (
+								<div className="flex items-center gap-2">
+									<span
+										className={`${efficienceVariation >= 0 ? "bg-emerald-500/15 text-emerald-400" : "bg-red-500/15 text-red-400"} text-sm font-bold px-2 py-0.5 rounded-full`}
 									>
-										{val}
-									</div>
-									<span className="text-[10px] text-gray-500 mt-1.5">
-										{s.Label || s.Mois}
+										{fmtSigned(efficienceVariation, 1, "%")}
 									</span>
+									<span className="text-xs text-gray-400">vs M-1</span>
 								</div>
-							);
-						})}
-					</div>
-					{incidentsChartValues.some(
-						(s: any) => s.Jours_Perdus != null && s.Jours_Perdus !== ""
-					) && (
-						<div
-							className="mt-3 pt-3 border-t"
-							style={borderStyle}
-						>
-							<span className="text-xs text-gray-400 font-medium mb-2 block">
-								Jours Perdus
-							</span>
-							<svg viewBox="0 0 200 70" className="w-full h-14">
-								{(() => {
-									const joursData = incidentsChartValues
-										.filter(
-											(s: any) =>
-												s.Jours_Perdus != null && s.Jours_Perdus !== ""
-										)
-										.map((s: any) => Number(s.Jours_Perdus));
-									if (joursData.length < 2) return null;
-									const maxJ = Math.max(...joursData, 1);
-									const pts = joursData
-										.map((val, i) => {
-											const x =
-												20 + (i / (joursData.length - 1)) * 150;
-											const y = 55 - (val / maxJ) * 45;
-											return `${x},${y}`;
-										})
-										.join(" ");
-									return (
-										<>
-											<polyline
-												points={pts}
-												fill="none"
-												stroke="#f59e0b"
-												strokeWidth="2"
-												strokeLinecap="round"
-											/>
-											{joursData.map((val, i) => {
-												const x =
-													20 + (i / (joursData.length - 1)) * 150;
-												const y = 55 - (val / maxJ) * 45;
-												return (
-													<React.Fragment key={i}>
-														<circle cx={x} cy={y} r="4" fill="#f59e0b" />
-														<text
-															x={x}
-															y={y - 7}
-															textAnchor="middle"
-															fill="#f59e0b"
-															fontSize="10"
-															fontWeight="600"
-														>
-															{val}
-														</text>
-													</React.Fragment>
-												);
-											})}
-										</>
-									);
-								})()}
-							</svg>
-						</div>
-					)}
-				</div>
-
-				{/* Efficience Mensuelle */}
-				<div
-					className="rounded-2xl border bg-gray-900/60 backdrop-blur-sm p-6 transition-all hover:border-gray-600 lg:col-span-2"
-					style={borderStyle}
-				>
-					<SectionHeader
-						icon={<FaChartArea/>}
-						title="Suivi de l'Efficience (mensuelle)"
-						accent="#2563eb"
-					/>
-					<div className="flex flex-wrap items-start gap-4 mb-3">
-						<span className="text-5xl font-black text-white tabular-nums">
-							{efficienceValue}%
-						</span>
-						<div className="flex flex-wrap gap-3 mt-2">
+							)}
 							<div className="flex items-center gap-2">
-								<span
-									className={`${Number(efficienceVariation) >= 0 ? "bg-emerald-500/15 text-emerald-400" : "bg-red-500/15 text-red-400"} text-sm font-bold px-2 py-0.5 rounded-full`}
-								>
-									{Number(efficienceVariation) >= 0 ? "+" : ""}
-									{efficienceVariation}%
-								</span>
-								<span className="text-xs text-gray-400">vs M-1</span>
+								<span className="text-sm text-gray-400">T: {fmt(efficienceTarget, 1, "%")}</span>
+								<StatusChip value={efficienceValue} target={efficienceTarget} />
 							</div>
 						</div>
-					</div>
-					<div className="flex items-center gap-2 mb-5">
-						<span className="text-sm text-gray-400">
-							T: {efficienceTarget}%
-						</span>
-						<StatusChip
-							value={efficienceValue}
+						<ColumnLineChart
+							values={efficienceSeries.map((s: any) => toNum(s.Valeur))}
+							color="#2563eb"
+							format={(v) => fmt(v, 1, "%")}
 							target={efficienceTarget}
+							labels={efficienceSeries.map(monthLabel)}
 						/>
-					</div>
-					<svg viewBox="0 0 400 120" className="w-full h-28">
-						<line
-							x1="40"
-							y1="100"
-							x2="380"
-							y2="100"
-							stroke="#374151"
-							strokeWidth="1"
-						/>
-						{[60, 20].map((y) => (
-							<line
-								key={y}
-								x1="40"
-								y1={y}
-								x2="380"
-								y2={y}
-								stroke="#1f2937"
-								strokeWidth="1"
-								strokeDasharray="4 4"
-							/>
-						))}
-						<polyline
-							points={efficiencePoints
-								.map((p) => `${p.x},${p.y}`)
-								.join(" ")}
-							fill="none"
-							stroke="#2563eb"
-							strokeWidth="2.5"
-							strokeLinecap="round"
-							strokeLinejoin="round"
-						/>
-						{efficiencePoints.map((p, i) => (
-							<React.Fragment key={i}>
-								<circle cx={p.x} cy={p.y} r="5" fill="#2563eb" />
-								<text
-									x={p.x}
-									y={p.y - 10}
-									textAnchor="middle"
-									fill="#ffffff"
-									fontSize="11"
-									fontWeight="600"
-								>
-									{p.value}%
-								</text>
-								<text
-									x={p.x}
-									y="115"
-									textAnchor="middle"
-									fill="#6b7280"
-									fontSize="11"
-								>
-									{p.label}
-								</text>
-							</React.Fragment>
-						))}
-					</svg>
+					</section>
 				</div>
-			</div>
+			</>
 		);
 	};
 
 	return (
-		<main className="flex-1 overflow-hidden p-4 md:p-6">
+		// From tablet width, the page takes exactly the height under the header (no scroll)
+		<main className="flex flex-col p-3 sm:p-4 [@media(min-height:760px)]:lg:p-5 md:h-full md:min-h-[460px]">
 			{/* Header */}
-			<div className="mx-auto mb-6 flex justify-between items-start gap-4">
-				<div className="flex flex-wrap items-center gap-2 mt-2">
-							<span className="w-1 h-8 rounded-full bg-white block" />
-							<span className="text-xs font-bold uppercase tracking-widest text-white-400">
-								Quality KPI
-							</span>
-						</div>
+			<div className="mb-2 [@media(min-height:760px)]:mb-3 flex shrink-0 flex-wrap justify-between items-center gap-3">
+				<div className="flex items-center gap-2">
+					<span className="w-1 h-8 rounded-full bg-white block" />
+					<span className="text-xs lg:text-sm font-bold uppercase tracking-widest text-white">
+						Quality KPI
+					</span>
+				</div>
 				<div className="flex flex-wrap items-center gap-3">
-				<PeriodSelector
-					type={activeTab}
-					period={period}
-					year={year}
-					onPeriodChange={setPeriod}
-					onYearChange={setYear}
-				/>
-				<TabSelector activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab)} />
-			    </div>
+					<PeriodSelector
+						type={activeTab}
+						period={period}
+						year={year}
+						onPeriodChange={setPeriod}
+						onYearChange={setYear}
+					/>
+					<TabSelector activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab)} />
+				</div>
 			</div>
 
 			{error && (
 				<div className="rounded-2xl border border-red-800/50 bg-red-900/20 p-6 text-red-400 mb-5 flex items-center gap-3">
-					<span className="material-symbols-outlined">error</span>
 					{error}
 				</div>
 			)}
 
 			{loading && (
-				<div className="flex items-center justify-center py-20 gap-3 text-gray-400">
+				<div className="flex flex-1 items-center justify-center py-20 gap-3 text-gray-400">
 					<div className="w-8 h-8 rounded-full border-4 border-blue-500 border-t-transparent animate-spin" />
 					Chargement...
 				</div>
