@@ -37,14 +37,13 @@ export function CategoryNavigationHeader({
 			<div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
 				{/* Logo */}
 				<div className="flex items-center gap-8">
-					<Link href="/" className="flex items-center gap-2">
-						<div className="flex items-center">
-							<Logo height={100} />
-						</div>
-					</Link>
+					{/* Logo already links to the home page: no outer Link (nested <a> broke hydration) */}
+					<div className="flex items-center gap-2">
+						<Logo height={100} />
+					</div>
 
 					{/* Navigation Tabs */}
-					<nav className="hidden md:flex items-center gap-1">
+					<nav className="hidden lg:flex items-center gap-1">
 						{CATEGORY_NAVIGATION.map((item) => {
 							const isActive = pathname === item.href
 							return (
@@ -102,7 +101,7 @@ export function CategoryNavigationHeader({
 
 			{/* Mobile Navigation */}
 			<div
-				className={`md:hidden border-t overflow-x-auto ${
+				className={`lg:hidden border-t overflow-x-auto ${
 					isLight
 						? "border-slate-200 bg-white"
 						: "border-slate-700/50 bg-slate-900"

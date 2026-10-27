@@ -61,7 +61,8 @@ const routes = [
    },
 ];
 
-function DesktopSidebar() {
+// matchDarkPage: on the dark category pages, the dark theme uses the page colors (slate-900)
+function DesktopSidebar({ matchDarkPage = false }: { matchDarkPage?: boolean }) {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(true);
   const activeRoute =
@@ -75,13 +76,18 @@ function DesktopSidebar() {
     <div
     className={cn(
       "relative hidden h-screen border-r bg-background lg:block transition-all duration-300 shrink-0 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
-      isCollapsed ? "w-[60px]" : "w-[220px]"
+      isCollapsed ? "w-[60px]" : "w-[220px]",
+      matchDarkPage && "dark:border-slate-700/50 dark:bg-slate-900"
     )}
     >
       <Button
         variant="ghost"
         size="icon"
-        className="absolute right-1 top-6 z-10 h-8 w-8 rounded-full border bg-background shadow-sm"
+        className={cn(
+          "absolute right-1 top-6 z-10 h-8 w-8 rounded-full border bg-background shadow-sm",
+          matchDarkPage &&
+            "dark:border-slate-700 dark:bg-slate-800 dark:text-gray-300 dark:hover:bg-slate-700 dark:hover:text-white"
+        )}
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
         {isCollapsed ? (
@@ -92,7 +98,12 @@ function DesktopSidebar() {
       </Button>
 
       {/* Header */}
-      <div className="flex h-16 items-center border-b px-4">
+      <div
+        className={cn(
+          "flex h-16 items-center border-b px-4",
+          matchDarkPage && "dark:border-slate-700/50"
+        )}
+      >
         <div
           className={cn(
             "overflow-hidden transition-all duration-300",
@@ -112,24 +123,35 @@ function DesktopSidebar() {
             className={cn(
               "group relative flex h-12 items-center px-4 transition-colors hover:bg-accent/50",
               pathname === `/${route.href}` && "bg-accent",
-              isCollapsed && "justify-center px-0"
+              isCollapsed && "justify-center px-0",
+              matchDarkPage && "dark:hover:bg-slate-800",
+              matchDarkPage && pathname === `/${route.href}` && "dark:bg-slate-800"
             )}
           >
             {pathname === `/${route.href}` && (
-              <div className="absolute left-0 h-full w-1 bg-primary" />
+              <div
+                className={cn(
+                  "absolute left-0 h-full w-1 bg-primary",
+                  matchDarkPage && "dark:bg-blue-500"
+                )}
+              />
             )}
             <route.icon
               size={20}
               className={cn(
                 "shrink-0 text-muted-foreground transition-colors",
+                matchDarkPage && "dark:text-gray-400 dark:group-hover:text-white",
                 pathname === `/${route.href}` && "text-primary",
+                matchDarkPage && pathname === `/${route.href}` && "dark:text-blue-400",
                 !isCollapsed && "mr-2"
               )}
             />
             <span
               className={cn(
                 "text-sm font-medium text-muted-foreground transition-all duration-300",
+                matchDarkPage && "dark:text-gray-300",
                 pathname === `/${route.href}` && "text-foreground",
+                matchDarkPage && pathname === `/${route.href}` && "dark:text-white",
                 isCollapsed && "w-0 opacity-0"
               )}
             >

@@ -48,7 +48,7 @@ export default function DashboardLayout({
 	if (isCategoryPage) {
 		return (
 			<div className="flex h-screen">
-				<DesktopSidebar />
+				<DesktopSidebar matchDarkPage={!isProgramsPage} />
 				<div
 					className={`flex flex-col flex-1 min-h-screen ${
 						isProgramsPage ? "bg-slate-50" : "bg-slate-900"
@@ -56,8 +56,9 @@ export default function DashboardLayout({
 				>
 					<CategoryNavigationHeader variant={isProgramsPage ? "light" : "dark"} />
 					<div className="flex-1 overflow-auto">
+						{/* Full height, so a page can fit the screen without scrolling */}
 						<div
-							className={isProgramsPage ? "text-slate-900" : "text-white"}
+							className={`h-full ${isProgramsPage ? "text-slate-900" : "text-white"}`}
 						>
 							{children}
 						</div>
