@@ -4,7 +4,7 @@ import React, { ReactElement, useEffect, useState } from "react";
 import { PeriodSelector } from "@/components/ui/PeriodSelector";
 import { TabSelector } from "@/components/ui/TabSelector";
 import { useKpiPeriod } from "@/hooks/use-kpi-period";
-import { FaBug, FaFreeCodeCamp, FaMapMarked, FaChartBar, FaCheckDouble, FaChartArea, FaFileExport, FaHotjar } from "react-icons/fa";
+import { FaBug, FaFreeCodeCamp, FaMapMarked, FaChartBar, FaCheckDouble, FaChartArea, FaFileExport, FaUsers, FaExclamationTriangle, FaUserInjured } from "react-icons/fa";
 
 // The API sends the numbers as strings, and null for a period that was not imported
 type Num = string | number | null | undefined;
@@ -533,13 +533,15 @@ export default function QualityPage() {
 	};
 
 	const MonthlyQuality = () => {
-		const ppmScrapClient = data?.PPM_Scrap_Client;
+		const ppmClients: any[] = data?.PPM_Clients || [];
+		const dnClient = data?.DN_Client;
 		const tauxConformite = data?.Taux_Conformite_Audits;
-		const incidents = data?.Incidents_Accidents_Travail;
+		const incidentsTravail = data?.Incidents_Travail;
+		const accidentsTravail = data?.Accidents_Travail;
 		const efficienceMensuelle = data?.Efficience_Mensuelle;
 		const scorecards = data?.Scorecards_Clients;
 
-		if (!ppmScrapClient && !tauxConformite && !incidents && !efficienceMensuelle && !scorecards) {
+		if (!dnClient && !tauxConformite && !incidentsTravail && !accidentsTravail && !efficienceMensuelle && !scorecards) {
 			return (
 				<div className="rounded-2xl border border-yellow-800/50 bg-yellow-900/20 p-6">
 					<div className="text-yellow-400 font-semibold mb-2">Structure de données inattendue</div>
@@ -553,18 +555,18 @@ export default function QualityPage() {
 			);
 		}
 
-		const ppmValue = toNum(ppmScrapClient?.PPM_Mois_Courant);
-		const ppmTarget = toNum(ppmScrapClient?.Target_PPM_Mois_Courant);
-		const ppmSeries = chrono(ppmScrapClient?.Suivi_PPM_4_Mois);
-		const scrapValue = toNum(ppmScrapClient?.Scrap_Mois_Courant);
-		const scrapTarget = toNum(ppmScrapClient?.Target_Scrap_Mois_Courant);
-		const scrapSeries = chrono(ppmScrapClient?.Suivi_Scrap_4_Mois);
-		const scrapVariation =
-			toNum(ppmScrapClient?.Variation_Scrap_Vs_Mois_Precedent) ??
-			(() => {
-				const prev = toNum(scrapSeries[scrapSeries.length - 1]?.Valeur);
-				return scrapValue !== null && prev !== null ? scrapValue - prev : null;
-			})();
+		// PPM: one value and one target per client (lower is better)
+		const ppmStatus = (c: any) => {
+			const value = toNum(c.Valeur);
+			const target = toNum(c.Target);
+			return value === null || target === null ? "none" : value <= target ? "good" : "bad";
+		};
+		const ppmWithTarget = ppmClients.filter((c) => ppmStatus(c) !== "none").length;
+		const ppmInTarget = ppmClients.filter((c) => ppmStatus(c) === "good").length;
+
+		const dnValue = toNum(dnClient?.Valeur_Mois_Courant);
+		const dnTarget = toNum(dnClient?.Target_Mois_Courant);
+		const dnSeries = chrono(dnClient?.Suivi_4_Mois);
 
 		const completion = tauxConformite?.Completion;
 		const compliance = tauxConformite?.Compliance;
@@ -574,15 +576,6 @@ export default function QualityPage() {
 			clientValues.length > 0
 				? clientValues.reduce((sum: number, c: any) => sum + (toNum(c.Valeur) ?? 0), 0) / clientValues.length
 				: toNum(scorecards?.Score_Global);
-
-		// Serie_4_Mois ends with the selected month
-		const incidentsValue = toNum(incidents?.Valeur_Mois_Courant);
-		const incidentsSeries = chrono(incidents?.Serie_4_Mois);
-		const incidentsPrev = toNum(incidentsSeries[incidentsSeries.length - 2]?.Valeur);
-		const incidentsVariation =
-			toNum(incidents?.Variation_Vs_Mois_Precedent) ??
-			(incidentsValue !== null && incidentsPrev !== null ? incidentsValue - incidentsPrev : null);
-		const joursPerdus = incidentsSeries.map((s: any) => toNum(s.Jours_Perdus));
 
 		// Suivi_4_Mois holds the 4 months before the selected one
 		const efficienceValue = toNum(efficienceMensuelle?.Valeur_Mois_Courant);
@@ -598,79 +591,149 @@ export default function QualityPage() {
 		const monthLabel = (s: any) => s.Label && !String(s.Label).startsWith("M-") ? s.Label : MONTH_NAMES[(toNum(s.Mois) ?? 1) - 1];
 
 		const noData =
-			ppmValue === null &&
-			scrapValue === null &&
+			ppmClients.length === 0 &&
+			dnValue === null &&
 			toNum(completion?.Valeur_Mois_Courant) === null &&
 			toNum(compliance?.Valeur_Mois_Courant) === null &&
 			avgScore === null &&
-			incidentsValue === null &&
+			toNum(incidentsTravail?.Valeur_Mois_Courant) === null &&
+			toNum(accidentsTravail?.Valeur_Mois_Courant) === null &&
 			efficienceValue === null;
+
+		// Incidents and accidents de travail: same card, each with its own target
+		const workSafetyCard = (title: string, icon: ReactElement, accent: string, kpi: any) => {
+			const value = toNum(kpi?.Valeur_Mois_Courant);
+			const target = toNum(kpi?.Target_Mois_Courant);
+			// Serie_4_Mois ends with the selected month
+			const series = chrono(kpi?.Serie_4_Mois);
+			const prev = toNum(series[series.length - 2]?.Valeur);
+			const variation =
+				toNum(kpi?.Variation_Vs_Mois_Precedent) ?? (value !== null && prev !== null ? value - prev : null);
+			return (
+				<section className={cardClass}>
+					<SectionHeader icon={icon} title={title} accent={accent} />
+					<div className="flex min-h-0 flex-1 gap-3">
+						<div className="flex w-20 shrink-0 flex-col items-center justify-center gap-1 text-center">
+							<span
+								className={`text-4xl [@media(min-height:900px)]:text-5xl font-black tabular-nums ${value !== null && target !== null && value > target ? "text-red-400" : "text-white"}`}
+							>
+								{fmt(value)}
+							</span>
+							<span className="text-sm font-bold text-[#fcd34d]">T: {fmt(target)}</span>
+							{variation !== null && (
+								<div>
+									<span
+										className={`${variation <= 0 ? "bg-emerald-500/15 text-emerald-400" : "bg-red-500/15 text-red-400"} text-sm font-bold px-2 py-0.5 rounded-full`}
+									>
+										{fmtSigned(variation)}
+									</span>
+									<div className="text-xs text-gray-500 mt-1">vs M-1</div>
+								</div>
+							)}
+						</div>
+						<div className="flex min-w-0 flex-1 flex-col border-l border-white/[0.06] pl-3">
+							<Bars
+								highlightLast
+								items={series.map((s: any) => ({
+									label: monthLabel(s),
+									value: toNum(s.Valeur),
+									target: toNum(s.Target),
+									color: accent,
+								}))}
+							/>
+						</div>
+					</div>
+				</section>
+			);
+		};
 
 		return (
 			<>
 				{noData && (
 					<NoDataBanner>
-						Aucune donnée pour {MONTH_FULL_NAMES[period - 1] ?? ""} {year} : le fichier Quality Monthly de
-						cette période n&apos;a pas encore été importé (page Importation).
+						Aucune donnée pour {MONTH_FULL_NAMES[period - 1] ?? ""} {year} : les fichiers Quality Monthly de
+						cette période n&apos;ont pas encore été importés (page Importation).
 					</NoDataBanner>
 				)}
-				<div className="grid min-h-0 flex-1 grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 lg:grid-rows-2 [@media(min-height:900px)]:gap-4">
-					{/* PPM & Scrap */}
+				<div className="grid min-h-0 flex-1 grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2 [@media(min-height:900px)]:gap-4">
+					{/* PPM par client */}
 					<section className={cardClass}>
-						<SectionHeader icon={<FaFileExport />} title="PPM & Scrap Client" accent="#2563eb" />
-						{/* PPM and Scrap side by side, each with its 4-month trend */}
-						<div className="grid min-h-0 flex-1 grid-cols-2 gap-3">
-							<div className="flex min-h-0 min-w-0 flex-col">
-								<p className="text-[10px] text-gray-500 uppercase tracking-wider">PPM</p>
-								<div className="flex flex-wrap items-baseline gap-x-2">
-									<div className="text-3xl [@media(min-height:900px)]:text-4xl font-black text-white tabular-nums">
-										{fmt(ppmValue, 1)}
-									</div>
-									<Variation
-										value={toNum(ppmScrapClient?.Variation_PPM_Vs_Mois_Precedent)}
-										lowerIsBetter
-										decimals={1}
-										label="vs M-1"
-									/>
-								</div>
-								<div className="mt-0.5 mb-1 flex flex-wrap items-center gap-1.5">
-									<span className="text-xs text-gray-400">T: {fmt(ppmTarget, 1)}</span>
-									<StatusChip value={ppmValue} target={ppmTarget} lowerIsBetter />
-								</div>
-								<ColumnLineChart
-									values={ppmSeries.map((s: any) => toNum(s.Valeur))}
-									color="#2563eb"
-									format={(v) => fmt(v, 1)}
-									labels={ppmSeries.map(monthLabel)}
-								/>
-							</div>
-							<div className="flex min-h-0 min-w-0 flex-col border-l border-white/[0.06] pl-3">
-								<p className="text-[10px] text-gray-500 uppercase tracking-wider">Scrap</p>
-								<div className="flex flex-wrap items-baseline gap-x-2">
-									<div className="text-3xl [@media(min-height:900px)]:text-4xl font-black text-white tabular-nums">
-										{scrapValue === null ? "—" : scrapValue.toLocaleString()}
-									</div>
-									<Variation value={scrapVariation} lowerIsBetter label="vs M-1" />
-								</div>
-								<div className="mt-0.5 mb-1 flex flex-wrap items-center gap-1.5">
-									<span className="text-xs text-gray-400">T: {scrapTarget === null ? "—" : scrapTarget.toLocaleString()}</span>
-									<StatusChip value={scrapValue} target={scrapTarget} lowerIsBetter decimals={0} />
-								</div>
-								<Bars
-									items={scrapSeries.map((s: any) => ({
-										label: monthLabel(s),
-										value: toNum(s.Valeur),
-										color: "rgba(59,130,246,0.7)",
-									}))}
-								/>
-							</div>
+						<SectionHeader icon={<FaUsers />} title="PPM par Client" accent="#2563eb" />
+						<div className="mb-2 flex shrink-0 items-baseline gap-2">
+							<span className="text-3xl [@media(min-height:900px)]:text-4xl font-black text-white tabular-nums">
+								{ppmWithTarget > 0 ? `${ppmInTarget}/${ppmWithTarget}` : "—"}
+							</span>
+							<span className="text-xs text-gray-400 lg:text-sm">clients dans la cible</span>
 						</div>
+						{/* A long client list scrolls inside the card instead of growing the page */}
+						<div className="min-h-0 flex-1 space-y-1.5 overflow-y-auto pr-1 [@media(min-height:900px)]:space-y-3">
+							{ppmClients.length === 0 && (
+								<p className="text-xs text-gray-500 lg:text-sm">Aucun PPM client pour ce mois</p>
+							)}
+							{ppmClients.map((client: any, index: number) => {
+								const value = toNum(client.Valeur);
+								const target = toNum(client.Target);
+								const variation = toNum(client.Variation_Vs_Mois_Precedent);
+								const status = ppmStatus(client);
+								// Bar scale: the larger of value and target, with some room for the marker
+								const scale = Math.max(value ?? 0, target ?? 0, 1) * 1.15;
+								return (
+									<div
+										key={index}
+										className="grid grid-cols-[minmax(0,6.5rem)_1fr_auto] items-center gap-2"
+										title={variation === null ? undefined : `${fmtSigned(variation, 1)} vs M-1`}
+									>
+										<span className="truncate text-xs text-gray-300 font-medium lg:text-sm">{client.Client}</span>
+										<div className="h-2 bg-gray-800 rounded-full overflow-hidden relative">
+											{target !== null && (
+												<div className="absolute top-0 bottom-0 w-0.5 bg-yellow-400 z-10" style={{ left: `${(target / scale) * 100}%` }} />
+											)}
+											<div
+												className={`h-full ${status === "bad" ? "bg-red-500" : status === "good" ? "bg-blue-500" : "bg-slate-500"} rounded-full transition-all duration-500`}
+												style={{ width: `${((value ?? 0) / scale) * 100}%` }}
+											/>
+										</div>
+										<div className="flex items-baseline gap-1.5 whitespace-nowrap tabular-nums">
+											<span
+												className={`text-xs font-bold lg:text-sm ${status === "bad" ? "text-red-400" : status === "good" ? "text-emerald-400" : "text-gray-300"}`}
+											>
+												{fmt(value, 1)}
+											</span>
+											<span className="text-xs text-gray-500">T:{fmt(target, 1)}</span>
+										</div>
+									</div>
+								);
+							})}
+						</div>
+					</section>
+
+					{/* DN Client */}
+					<section className={cardClass}>
+						<SectionHeader icon={<FaFileExport />} title="DN Client" accent="#3b82f6" />
+						<div className="flex shrink-0 flex-wrap items-baseline gap-x-2">
+							<div className="text-3xl [@media(min-height:900px)]:text-4xl font-black text-white tabular-nums">
+								{dnValue === null ? "—" : dnValue.toLocaleString()}
+							</div>
+							<Variation value={toNum(dnClient?.Variation_Vs_Mois_Precedent)} lowerIsBetter label="vs M-1" />
+						</div>
+						<div className="mt-0.5 mb-1 flex shrink-0 flex-wrap items-center gap-1.5">
+							<span className="text-xs text-gray-400">T: {dnTarget === null ? "—" : dnTarget.toLocaleString()}</span>
+							<StatusChip value={dnValue} target={dnTarget} lowerIsBetter decimals={0} />
+						</div>
+						<Bars
+							items={dnSeries.map((s: any) => ({
+								label: monthLabel(s),
+								value: toNum(s.Valeur),
+								target: toNum(s.Target),
+								color: "rgba(59,130,246,0.7)",
+							}))}
+						/>
 					</section>
 
 					{/* Conformité Audits */}
 					<section className={cardClass}>
 						<SectionHeader icon={<FaChartBar />} title="Taux de Conformité aux Audits" accent="#10b981" />
-						<div className="flex min-h-0 flex-1 items-center justify-center gap-8">
+						<div className="flex min-h-0 flex-1 items-center justify-center gap-6">
 							{[
 								{ label: "Completion", kpi: completion, color: "#10b981" },
 								{ label: "Compliance", kpi: compliance, color: "#f97316" },
@@ -715,7 +778,7 @@ export default function QualityPage() {
 								const isAbove = value !== null && target !== null && value >= target;
 								// One line per client: name, bar with the target marker, score and target
 								return (
-									<div key={index} className="grid grid-cols-[5.5rem_1fr_auto] items-center gap-2">
+									<div key={index} className="grid grid-cols-[minmax(0,6.5rem)_1fr_auto] items-center gap-2">
 										<span className="truncate text-xs text-gray-300 font-medium lg:text-sm">{client.Client}</span>
 										<div className="h-2 bg-gray-800 rounded-full overflow-hidden relative">
 											{target !== null && (
@@ -738,44 +801,8 @@ export default function QualityPage() {
 						</div>
 					</section>
 
-					{/* Incidents Accidents */}
-					<section className={cardClass}>
-						<SectionHeader icon={<FaHotjar />} title="Incidents / Accidents de Travail" accent="#ef4444" />
-						{/* Count on the left, monthly bars and lost days on the right */}
-						<div className="flex min-h-0 flex-1 gap-4">
-							<div className="flex w-20 shrink-0 flex-col items-center justify-center gap-1.5 text-center">
-								<span className="text-4xl [@media(min-height:900px)]:text-5xl font-black text-white tabular-nums">
-									{fmt(incidentsValue)}
-								</span>
-								{incidentsVariation !== null && (
-									<div>
-										<span
-											className={`${incidentsVariation <= 0 ? "bg-emerald-500/15 text-emerald-400" : "bg-red-500/15 text-red-400"} text-sm font-bold px-2 py-0.5 rounded-full`}
-										>
-											{fmtSigned(incidentsVariation)}
-										</span>
-										<div className="text-xs text-gray-500 mt-1">vs M-1</div>
-									</div>
-								)}
-							</div>
-							<div className="flex min-w-0 flex-1 flex-col border-l border-white/[0.06] pl-4">
-								<Bars
-									highlightLast
-									items={incidentsSeries.map((s: any) => ({
-										label: monthLabel(s),
-										value: toNum(s.Valeur),
-										color: "#3b82f6",
-									}))}
-								/>
-								{joursPerdus.filter((j) => j !== null).length >= 2 && (
-									<div className="mt-1 flex h-14 shrink-0 items-stretch gap-2 border-t border-white/[0.08] pt-1 [@media(min-height:900px)]:h-20">
-										<span className="w-12 shrink-0 self-center text-xs text-gray-400 font-medium leading-tight">Jours Perdus</span>
-										<ColumnLineChart values={joursPerdus} color="#f59e0b" format={(v) => fmt(v)} />
-									</div>
-								)}
-							</div>
-						</div>
-					</section>
+					{workSafetyCard("Incidents de Travail", <FaExclamationTriangle />, "#f59e0b", incidentsTravail)}
+					{workSafetyCard("Accidents de Travail", <FaUserInjured />, "#ef4444", accidentsTravail)}
 
 					{/* Efficience Mensuelle */}
 					<section className={`${cardClass} md:col-span-2`}>
