@@ -79,13 +79,17 @@ export function lastWeekOfMonth(year: number, month: number): number {
   return 1;
 }
 
-// Week n weeks before (handles the change of year)
+// Week n weeks before (n < 0: after), across the change of year (52 or 53 ISO weeks)
 export function weekBefore(year: number, week: number, n: number) {
   let y = year;
   let w = week - n;
   while (w < 1) {
     y -= 1;
     w += isoWeeksInYear(y);
+  }
+  while (w > isoWeeksInYear(y)) {
+    w -= isoWeeksInYear(y);
+    y += 1;
   }
   return { year: y, week: w };
 }

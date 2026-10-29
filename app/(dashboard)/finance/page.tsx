@@ -102,7 +102,7 @@ export default function FinancePage() {
     const monthWeeks: any[] = ca?.Semaine_Du_Mois ?? []
     // Weeks of the month up to the selected one have an actual value, the next ones a forecast
     const lastPast = monthWeeks.reduce((last, s, i) => (s?.Prevision_MEUR === undefined || s?.Prevision_MEUR === null ? i : last), -1)
-    const monthLabels = monthWeeks.map((_, i) => (i <= lastPast ? weekLabel(lastPast - i) : `S${pad(week + (i - lastPast))}`))
+    const monthLabels = monthWeeks.map((_, i) => weekLabel(lastPast - i))
     const last4: any[] = ca?.Dernieres_4_Semaines ?? []
     const last4Values = last4.map((s) => toNum(s?.Valeur_MEUR))
     const last4Labels = last4.map((_, i) => weekLabel(last4.length - 1 - i))
