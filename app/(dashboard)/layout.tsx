@@ -19,6 +19,8 @@ const CATEGORY_PAGES = [
 	"/supplychain",
 ]
 
+const LIGHT_CATEGORY_PAGES = ["/programs", "/rh"]
+
 export default function DashboardLayout({
 	children,
 }: {
@@ -29,7 +31,8 @@ export default function DashboardLayout({
 
 	// Check if current page is a category page
 	const isCategoryPage = CATEGORY_PAGES.some((page) => pathname === page)
-	const isProgramsPage = pathname === "/programs"
+	// White category pages (the others are dark)
+	const isLightPage = LIGHT_CATEGORY_PAGES.includes(pathname)
 
 	useEffect(() => {
 		const checkAuthentication = async () => {
@@ -48,19 +51,19 @@ export default function DashboardLayout({
 	if (isCategoryPage) {
 		return (
 			<div className="flex h-screen">
-				{/* Sidebar in the page colours: dark pages, or white for Programs */}
-				<DesktopSidebar tone={isProgramsPage ? "light" : "dark"} />
+				{/* Sidebar in the page colours: dark pages, or white for Programs and RH */}
+				<DesktopSidebar tone={isLightPage ? "light" : "dark"} />
 				{/* min-w-0: the column keeps the screen width, the category tabs scroll instead (mobile) */}
 				<div
 					className={`flex flex-col flex-1 min-w-0 min-h-screen ${
-						isProgramsPage ? "bg-slate-50" : "bg-slate-900"
+						isLightPage ? "bg-slate-50" : "bg-slate-900"
 					}`}
 				>
-					<CategoryNavigationHeader variant={isProgramsPage ? "light" : "dark"} />
+					<CategoryNavigationHeader variant={isLightPage ? "light" : "dark"} />
 					<div className="flex-1 overflow-auto">
 						{/* Full height, so a page can fit the screen without scrolling */}
 						<div
-							className={`h-full ${isProgramsPage ? "text-slate-900" : "text-white"}`}
+							className={`h-full ${isLightPage ? "text-slate-900" : "text-white"}`}
 						>
 							{children}
 						</div>
