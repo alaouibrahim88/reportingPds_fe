@@ -2,1786 +2,838 @@
 import { PeriodSelector } from "@/components/ui/PeriodSelector";
 import { TabSelector } from "@/components/ui/TabSelector";
 import { useKpiPeriod } from "@/hooks/use-kpi-period";
-import React, { useState, useEffect, useCallback } from "react";
-import {
-	FaTruck,
-	FaCogs,
-	FaUserPlus,
-	FaMoneyBillWave,
-	FaSitemap,
-	FaBook,
-} from "react-icons/fa";
-import type {
-	ProgramApiResponse,
-	ProgramHistoriqueMois,
-	ProgramHistoriqueSemaine,
-} from "@/types";
+import React, { useEffect, useState } from "react";
+import type { IconType } from "react-icons";
+import { FaBook, FaCogs, FaMoneyBillWave, FaSitemap, FaTruck, FaUserPlus } from "react-icons/fa";
 
-type TabType = "weekly" | "monthly";
+type Status = "green" | "orange" | "red";
 
-function getPercentStatusColor(value: number, target: number): string {
+const MONTH_NAMES = ["Jan", "Fév", "Mar", "Avr", "Mai", "Jun", "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc"];
+const MONTH_FULL_NAMES = [
+	"janvier", "février", "mars", "avril", "mai", "juin",
+	"juillet", "août", "septembre", "octobre", "novembre", "décembre",
+];
+
+const STATUS_STYLES = {
+	green: { text: "text-emerald-700", bg: "bg-emerald-50", border: "border-emerald-400", dot: "bg-emerald-500", chart: "#10b981" },
+	orange: { text: "text-amber-700", bg: "bg-amber-50", border: "border-amber-400", dot: "bg-amber-500", chart: "#f59e0b" },
+	red: { text: "text-red-700", bg: "bg-red-50", border: "border-red-400", dot: "bg-red-500", chart: "#ef4444" },
+} as const;
+
+// Accent of each card: top border, icon, selected period
+const ACCENTS = {
+	blue: { border: "border-t-blue-600", icon: "bg-blue-50 text-blue-600", pill: "bg-blue-600", ring: "ring-blue-500/30", color: "#2563eb" },
+	violet: { border: "border-t-violet-500", icon: "bg-violet-50 text-violet-600", pill: "bg-violet-600", ring: "ring-violet-500/30", color: "#7c3aed" },
+	emerald: { border: "border-t-emerald-500", icon: "bg-emerald-50 text-emerald-600", pill: "bg-emerald-600", ring: "ring-emerald-500/30", color: "#10b981" },
+} as const;
+type Accent = (typeof ACCENTS)[keyof typeof ACCENTS];
+
+// Sizes grow with the screen height, so the page fits without scrolling from 650 px up
+const cardClass =
+	"flex min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 border-t-4 bg-white p-3 shadow-sm [@media(min-height:760px)]:p-4";
+const bigValue =
+	"text-3xl [@media(min-height:760px)]:text-4xl [@media(min-height:900px)]:text-5xl font-black leading-none text-slate-900 tabular-nums";
+const sectionLabel = "text-[10px] font-bold uppercase tracking-widest text-slate-400";
+
+const nf1 = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 1 });
+
+function toNum(v: unknown): number | null {
+	if (v === null || v === undefined || v === "") return null;
+	const n = Number(v);
+	return Number.isFinite(n) ? n : null;
+}
+
+const fmtPct = (n: number | null) => (n === null ? "—" : `${nf1.format(n)} %`);
+
+function fmtSigned(n: number | null, suffix: string): string | null {
+	if (n === null) return null;
+	return `${n > 0 ? "+" : ""}${nf1.format(n)}${suffix}`;
+}
+
+function fmtMoney(n: number | null): string {
+	if (n === null) return "—";
+	const abs = Math.abs(n);
+	if (abs >= 1_000_000) return `$${nf1.format(abs / 1_000_000)}M`;
+	return `$${Math.round(abs / 1000)}k`;
+}
+
+/* ---------------- Statuses (same rules as before) ---------------- */
+
+// OTD / equipment: value compared with the target
+function percentStatus(value: number | null, target: number): Status | null {
+	if (value === null) return null;
 	const pct = target ? (value / target) * 100 : 0;
-	if (pct >= 90) return "green";
-	if (pct >= 70) return "orange";
-	return "red";
+	return pct >= 90 ? "green" : pct >= 70 ? "orange" : "red";
 }
 
-const BUDGET_PERCENTAGE_STYLES = {
-	zero: {
-		text: "text-red-700",
-		bg: "bg-red-50",
-		dot: "bg-red-500",
-		chart: "#ef4444",
-		label: "AT RISK",
-	},
-	atRisk: {
-		text: "text-amber-700",
-		bg: "bg-amber-50",
-		dot: "bg-amber-500",
-		chart: "#f59e0b",
-		label: "AT RISK",
-	},
-	onTrack: {
-		text: "text-emerald-700",
-		bg: "bg-emerald-50",
-		dot: "bg-emerald-500",
-		chart: "#10b981",
-		label: "ON TRACK",
-	},
-} as const;
+function recruitmentStatus(pct: number | null): Status | null {
+	if (pct === null) return null;
+	return pct >= 90 ? "green" : pct >= 70 ? "orange" : "red";
+}
 
-function getBudgetPercentage(actual?: number, budget?: number): number {
-	if (
-		budget === undefined ||
-		budget <= 0 ||
-		!Number.isFinite(budget) ||
-		actual === undefined ||
-		!Number.isFinite(actual)
-	) {
-		return 0;
+// Budget: share of the budget not spent (1 - actual / budget)
+function budgetStatus(actual: number | null, budget: number | null) {
+	if (actual === null || budget === null || budget <= 0) return null;
+	const percentage = Math.round((1 - actual / budget) * 100);
+	const level: Status = percentage <= 0 ? "red" : percentage < 40 ? "orange" : "green";
+	return { percentage, level, label: level === "green" ? "ON TRACK" : "AT RISK" };
+}
+
+// APQP milestones and documentation readiness
+function readinessStatus(value: number | null) {
+	if (value === null) return null;
+	const percentage = Math.round(value);
+	const level: Status = percentage < 85 ? "red" : percentage < 90 ? "orange" : "green";
+	return { percentage, level, label: level === "green" ? "ON TRACK" : "AT RISK" };
+}
+
+/* ---------------- Periods: the selected one and the 3 before ---------------- */
+
+function isoWeeksInYear(year: number): number {
+	// 28 December is always in the last ISO week of its year
+	const d = new Date(Date.UTC(year, 11, 28));
+	d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+	const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+	return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+}
+
+function lastFourWeeks(week: number, year: number) {
+	const slots: { year: number; week: number; label: string }[] = [];
+	let w = week;
+	let y = year;
+	for (let i = 0; i < 4; i++) {
+		slots.unshift({ year: y, week: w, label: `S${String(w).padStart(2, "0")}` });
+		w -= 1;
+		if (w < 1) {
+			y -= 1;
+			w = isoWeeksInYear(y);
+		}
 	}
-
-	return Math.round((1 - actual / budget) * 100);
+	return slots;
 }
 
-function getBudgetPercentageStatus(actual?: number, budget?: number) {
-	const percentage = getBudgetPercentage(actual, budget);
-	const level =
-		percentage <= 0
-			? "zero"
-			: percentage < 40
-				? "atRisk"
-				: "onTrack";
-
-	return { percentage, ...BUDGET_PERCENTAGE_STYLES[level] };
+function lastFourMonths(month: number, year: number) {
+	const slots: { year: number; month: number; label: string }[] = [];
+	let m = month;
+	let y = year;
+	for (let i = 0; i < 4; i++) {
+		slots.unshift({ year: y, month: m, label: MONTH_NAMES[m - 1] });
+		m -= 1;
+		if (m < 1) {
+			m = 12;
+			y -= 1;
+		}
+	}
+	return slots;
 }
 
-const APQP_STATUS_STYLES = {
-	red: {
-		text: "text-red-700",
-		bg: "bg-red-50",
-		border: "border-red-400",
-		dot: "bg-red-500",
-		shadow: "shadow-red-100",
-		chart: "#ef4444",
-		label: "AT RISK",
-	},
-	orange: {
-		text: "text-amber-700",
-		bg: "bg-amber-50",
-		border: "border-amber-400",
-		dot: "bg-amber-500",
-		shadow: "shadow-amber-100",
-		chart: "#f59e0b",
-		label: "AT RISK",
-	},
-	green: {
-		text: "text-emerald-700",
-		bg: "bg-emerald-50",
-		border: "border-emerald-400",
-		dot: "bg-emerald-500",
-		shadow: "shadow-emerald-100",
-		chart: "#10b981",
-		label: "ON TRACK",
-	},
-} as const;
+/* ---------------- Components ---------------- */
 
-function getApqpStatus(value?: number) {
-	const percentage =
-		value === undefined || !Number.isFinite(value) ? 0 : Math.round(value);
-	const level = percentage < 85 ? "red" : percentage < 90 ? "orange" : "green";
-
-	return { percentage, ...APQP_STATUS_STYLES[level] };
-}
-
-const DOCUMENTATION_STATUS_STYLES = APQP_STATUS_STYLES;
-
-function getDocumentationStatus(value?: number) {
-	const percentage =
-		value === undefined || !Number.isFinite(value) ? 0 : Math.round(value);
-	const level = percentage < 85 ? "red" : percentage < 90 ? "orange" : "green";
-
-	return { percentage, ...DOCUMENTATION_STATUS_STYLES[level] };
-}
-
-function StatusPill({ status }: { status: string }) {
-	const cfg = {
-		green: {
-			bg: "bg-emerald-50",
-			text: "text-emerald-700",
-			dot: "bg-emerald-500",
-			label: "On Track",
-		},
-		orange: {
-			bg: "bg-amber-50",
-			text: "text-amber-700",
-			dot: "bg-amber-500",
-			label: "At Risk",
-		},
-		red: {
-			bg: "bg-red-50",
-			text: "text-red-700",
-			dot: "bg-red-500",
-			label: "Behind",
-		},
-	}[status] ?? {
-		bg: "bg-slate-50",
-		text: "text-slate-600",
-		dot: "bg-slate-400",
-		label: "N/A",
-	};
+function StatusPill({ status, label }: { status: Status | null; label?: string }) {
+	if (!status) return null;
+	const style = STATUS_STYLES[status];
+	const text = label ?? (status === "green" ? "On Track" : status === "orange" ? "At Risk" : "Behind");
 	return (
-		<span
-			className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${cfg.bg} ${cfg.text}`}
-		>
-			<span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
-			{cfg.label}
+		<span className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-bold ${style.bg} ${style.text}`}>
+			<span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} />
+			{text}
 		</span>
 	);
 }
 
-function KpiCircle({
-					   value,
-					   label,
-					   isActive,
-					   status,
-					   target,
-				   }: {
-	value: string;
-	label: string;
-	isActive: boolean;
-	status: string;
-	target?: string;
+function CardHeader({
+	icon: Icon,
+	title,
+	subtitle,
+	accent,
+	right,
+}: {
+	icon: IconType;
+	title: string;
+	subtitle: string;
+	accent: Accent;
+	right?: React.ReactNode;
 }) {
-	const ring = isActive
-		? "ring-4 ring-primary/20 border-primary bg-primary/5"
-		: status === "green"
-			? "border-emerald-400 bg-emerald-50/50"
-			: status === "orange"
-				? "border-amber-400 bg-amber-50/50"
-				: "border-red-400 bg-red-50/50";
-
-	const textColor = isActive
-		? "text-primary font-black"
-		: status === "green"
-			? "text-emerald-700 font-bold"
-			: status === "orange"
-				? "text-amber-700 font-bold"
-				: "text-red-700 font-bold";
-
-	const labelColor = isActive ? "text-primary" : "text-slate-500";
-
 	return (
-		<div className="flex flex-col items-center gap-1">
-			{target !== undefined ? (
-				<span className="text-[10px] text-slate-400 font-semibold">
-					T: {target}
-				</span>
-			) : (
-				<span className="text-[10px] opacity-0 select-none">—</span>
-			)}
-			<div
-				className={`w-14 h-14 rounded-full border-2 flex items-center justify-center transition-all ${ring}`}
-			>
-				<span className={`text-xs ${textColor}`}>{value}</span>
+		// The status goes below the title when the card is narrow
+		<div className="flex shrink-0 flex-wrap items-start justify-between gap-x-2 gap-y-1">
+			<div className="flex min-w-[10rem] flex-1 items-center gap-2.5">
+				<div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg [@media(min-height:760px)]:h-9 [@media(min-height:760px)]:w-9 ${accent.icon}`}>
+					<Icon className="text-base" />
+				</div>
+				<div className="min-w-0">
+					<h2 className="line-clamp-2 text-sm font-bold leading-tight text-slate-900 lg:text-base" title={title}>
+						{title}
+					</h2>
+					<p className="truncate text-xs text-slate-500">{subtitle}</p>
+				</div>
 			</div>
-			<span
-				className={`text-[10px] font-bold uppercase tracking-widest ${labelColor}`}
-			>
-				{label}
-			</span>
+			{right}
 		</div>
 	);
 }
 
-const MOCK_PROGRAM_DATA: ProgramApiResponse = {
-	Program_Semaine: {
-		On_Time_Delivery: {
-			Annee: 2026,
-			Semaine_Actuelle: 18,
-			Valeur_Actuelle: 92,
-			Target_Actuelle: 90,
-			Valeur_Semaine_Precedente: 90,
-			Variation_Vs_Semaine_Precedente: 2,
-			Historique_4_Semaines: [
-				{ Label: "W15", Annee: 2026, Semaine: 15, Valeur: 88 },
-				{ Label: "W16", Annee: 2026, Semaine: 16, Valeur: 90 },
-				{ Label: "W17", Annee: 2026, Semaine: 17, Valeur: 91 },
-				{ Label: "W18", Annee: 2026, Semaine: 18, Valeur: 92 },
-			],
-		},
-		Critical_Equipment_Availability: {
-			Annee: 2026,
-			Semaine_Actuelle: 18,
-			Valeur_Actuelle: 86,
-			Target_Actuelle: 90,
-			Valeur_Semaine_Precedente: 85,
-			Variation_Vs_Semaine_Precedente: 1,
-			Historique_4_Semaines: [
-				{ Label: "W15", Annee: 2026, Semaine: 15, Valeur: 83 },
-				{ Label: "W16", Annee: 2026, Semaine: 16, Valeur: 84 },
-				{ Label: "W17", Annee: 2026, Semaine: 17, Valeur: 85 },
-				{ Label: "W18", Annee: 2026, Semaine: 18, Valeur: 86 },
-			],
-		},
-		Recruitment_Progress: {
-			Annee: 2026,
-			Semaine_Actuelle: 18,
-			Valeur_Actuelle_Reel: 24,
-			Valeur_Actuelle_Forecast: 30,
-			Valeur_Actuelle_Pct: 80,
-			Variation_Pct_Vs_Semaine_Precedente: 4,
-			Variation_Reel_Vs_Semaine_Precedente: 2,
-			Total_Hires_MTD: 48,
-			Total_Forecast_MTD: 60,
-			Target_Hebdo_Forecast: 30,
-			Historique_4_Semaines: [
-				{ Label: "W15", Annee: 2026, Semaine: 15, Reel: 20, Forecast: 28, Pct: 71 },
-				{ Label: "W16", Annee: 2026, Semaine: 16, Reel: 22, Forecast: 29, Pct: 76 },
-				{ Label: "W17", Annee: 2026, Semaine: 17, Reel: 23, Forecast: 30, Pct: 77 },
-				{ Label: "W18", Annee: 2026, Semaine: 18, Reel: 24, Forecast: 30, Pct: 80 },
-			],
-		},
-	},
-	Program_Mois: {
-		Budget_Vs_Actual: {
-			Variance_Mois_Courant: -18000,
-			Delta_Variance_Vs_M_1: -6000,
-			Target_Variance: 0,
-			Current_Health: "At Risk",
-			Historique_4_Mois: [
-				{ Label: "JAN", Mois: 1, Annee: 2026, Variance: -12000, Budget: 120000, Actual: 132000 },
-				{ Label: "FEB", Mois: 2, Annee: 2026, Variance: -8000, Budget: 118000, Actual: 126000 },
-				{ Label: "MAR", Mois: 3, Annee: 2026, Variance: -14000, Budget: 125000, Actual: 139000 },
-				{ Label: "APR", Mois: 4, Annee: 2026, Variance: -18000, Budget: 130000, Actual: 148000 },
-			],
-		},
-		APQP_Milestones: {
-			Valeur_Mois_Courant: 86,
-			Delta_Pts_Vs_M_1: 2,
-			Target: 100,
-			Current_Health: "At Risk",
-			Historique_4_Mois: [
-				{ Label: "JAN", Mois: 1, Annee: 2026, Valeur: 80, Target: 100 },
-				{ Label: "FEB", Mois: 2, Annee: 2026, Valeur: 82, Target: 100 },
-				{ Label: "MAR", Mois: 3, Annee: 2026, Valeur: 84, Target: 100 },
-				{ Label: "APR", Mois: 4, Annee: 2026, Valeur: 86, Target: 100 },
-			],
-		},
-		Documentation_Progress: {
-			Readiness_Mois_Courant: 78,
-			Delta_Pts_Vs_M_1: 3,
-			Target: 100,
-			Current_Health: "At Risk",
-			Plans: 82,
-			Procedures: 76,
-			Work_Inst: 74,
-			Historique_4_Mois: [
-				{ Label: "JAN", Mois: 1, Annee: 2026, Valeur: 70, Target: 100 },
-				{ Label: "FEB", Mois: 2, Annee: 2026, Valeur: 73, Target: 100 },
-				{ Label: "MAR", Mois: 3, Annee: 2026, Valeur: 75, Target: 100 },
-				{ Label: "APR", Mois: 4, Annee: 2026, Valeur: 78, Target: 100 },
-			],
-			Trend_Hebdo_Mois: [
-				{ Label: "W15", Annee: 2026, Semaine: 15, Valeur: 70 },
-				{ Label: "W16", Annee: 2026, Semaine: 16, Valeur: 74 },
-				{ Label: "W17", Annee: 2026, Semaine: 17, Valeur: 76 },
-				{ Label: "W18", Annee: 2026, Semaine: 18, Valeur: 78 },
-			],
-			Average_Hebdo_Mois: 4,
-		},
-	},
-};
+// Current value, its comparison and the status
+function ValueBlock({
+	value,
+	unit,
+	detail,
+	variation,
+	positiveIsGood = true,
+}: {
+	value: string;
+	unit?: string;
+	detail?: React.ReactNode;
+	variation?: { value: number | null; suffix: string; label: string };
+	positiveIsGood?: boolean;
+}) {
+	const v = variation?.value ?? null;
+	const signed = variation ? fmtSigned(v, variation.suffix) : null;
+	const good = v === null || v === 0 ? null : (v > 0) === positiveIsGood;
+	return (
+		<div className="mt-2 flex shrink-0 flex-wrap items-end justify-between gap-x-3 gap-y-1 [@media(min-height:760px)]:mt-3">
+			<div className="flex items-baseline gap-1.5">
+				<span className={bigValue}>{value}</span>
+				{unit && value !== "—" && <span className="text-lg font-bold text-slate-400">{unit}</span>}
+			</div>
+			<div className="text-right text-xs leading-snug">
+				{signed && (
+					<p className={`font-bold ${good === null ? "text-slate-500" : good ? "text-emerald-600" : "text-rose-600"}`}>
+						{signed} <span className="font-medium text-slate-400">{variation?.label}</span>
+					</p>
+				)}
+				{detail && <p className="text-slate-500">{detail}</p>}
+			</div>
+		</div>
+	);
+}
+
+/**
+ * The selected period (last circle, large, bold, highlighted) and the 3 before it.
+ * Missing values stay empty ("—") instead of showing 0.
+ */
+function HistoryRow({
+	slots,
+	accent,
+}: {
+	slots: { label: string; value: string | null; status: Status | null; target?: string; selected: boolean }[];
+	accent: Accent;
+}) {
+	return (
+		<div className="grid shrink-0 grid-cols-4 items-end gap-2">
+			{slots.map((slot) => {
+				const style = slot.status ? STATUS_STYLES[slot.status] : null;
+				// Square circles that never get wider than their column (narrow tablets)
+				const size = slot.selected
+					? "aspect-square w-full max-w-[3rem] border-[3px] ring-4 shadow-md [@media(min-height:760px)]:max-w-[4rem] [@media(min-height:900px)]:max-w-[5rem]"
+					: "aspect-square w-full max-w-[2.5rem] border-2 [@media(min-height:760px)]:max-w-[3rem] [@media(min-height:900px)]:max-w-[3.5rem]";
+				return (
+					<div key={slot.label} className="flex min-w-0 flex-col items-center gap-1">
+						<span className={`whitespace-nowrap text-[10px] font-semibold ${slot.selected ? "text-slate-600" : "text-slate-400"}`}>
+							{slot.target ? `T: ${slot.target}` : " "}
+						</span>
+						<div
+							className={`flex items-center justify-center rounded-full transition-all ${size} ${
+								style ? `${style.border} ${style.bg}` : "border-slate-200 bg-slate-50"
+							} ${slot.selected ? accent.ring : ""}`}
+						>
+							<span
+								className={`tabular-nums ${style ? style.text : "text-slate-400"} ${
+									slot.selected
+										? "text-sm font-black [@media(min-height:760px)]:text-base [@media(min-height:900px)]:text-lg"
+										: "text-[11px] font-bold [@media(min-height:900px)]:text-xs"
+								}`}
+							>
+								{slot.value ?? "—"}
+							</span>
+						</div>
+						<span
+							className={
+								slot.selected
+									? `rounded-full px-2 py-0.5 text-[11px] font-black text-white ${accent.pill}`
+									: "py-0.5 text-[11px] font-semibold text-slate-500"
+							}
+						>
+							{slot.label}
+						</span>
+					</div>
+				);
+			})}
+		</div>
+	);
+}
+
+type Series = { values: (number | null)[]; color: string; dashed?: boolean; name?: string; showValues?: boolean };
+
+/**
+ * Line chart whose points sit in the middle of 4 columns, under the circles of HistoryRow.
+ * Value labels are HTML (they keep their size when the chart stretches); gaps are not joined.
+ */
+function ColumnChart({
+	series,
+	format,
+	target = null,
+	labels,
+	selectedIndex,
+}: {
+	series: Series[];
+	format: (n: number) => string;
+	target?: number | null;
+	labels: React.ReactNode[];
+	selectedIndex: number;
+}) {
+	const n = labels.length;
+	const known = series.flatMap((s) => s.values).filter((v): v is number => v !== null);
+	const pointsWithData = series[0].values.filter((v) => v !== null).length;
+	if (pointsWithData < 2) {
+		return (
+			<div className="flex min-h-[72px] flex-1 items-center justify-center rounded-lg bg-slate-50 text-xs text-slate-400 md:min-h-0">
+				Pas d&apos;historique sur la période
+			</div>
+		);
+	}
+	const domain = target !== null ? [...known, target] : known;
+	const min = Math.min(...domain);
+	const max = Math.max(...domain);
+	const range = max - min || 1;
+	// Top padding leaves room for the value labels above the points
+	const y = (v: number) => 22 + (1 - (v - min) / range) * 66;
+	const x = (i: number) => ((i + 0.5) / n) * 100;
+	// One path per series, broken where a value is missing
+	const path = (values: (number | null)[]) =>
+		values
+			.map((v, i) => (v === null ? null : `${i > 0 && values[i - 1] !== null ? "L" : "M"}${x(i)},${y(v)}`))
+			.filter(Boolean)
+			.join(" ");
+	return (
+		<div className="flex min-h-[96px] flex-1 flex-col md:min-h-0">
+			<div className="relative min-h-0 flex-1">
+				{/* Selected period */}
+				<div
+					className="absolute inset-y-0 rounded-md bg-slate-100/80"
+					style={{ left: `${(selectedIndex / n) * 100}%`, width: `${100 / n}%` }}
+				/>
+				<svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+					<line x1="0" y1="96" x2="100" y2="96" stroke="#e2e8f0" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+					{target !== null && (
+						<line
+							x1="0"
+							y1={y(target)}
+							x2="100"
+							y2={y(target)}
+							stroke="#94a3b8"
+							strokeWidth="1.5"
+							strokeDasharray="5 3"
+							vectorEffect="non-scaling-stroke"
+						/>
+					)}
+					{series.map((s, si) => (
+						<path
+							key={si}
+							d={path(s.values)}
+							fill="none"
+							stroke={s.color}
+							strokeWidth={s.dashed ? 2 : 2.5}
+							strokeDasharray={s.dashed ? "6 4" : undefined}
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							vectorEffect="non-scaling-stroke"
+						/>
+					))}
+				</svg>
+				{series.map((s, si) =>
+					s.values.map((v, i) =>
+						v === null ? null : (
+							<div
+								key={`${si}-${i}`}
+								className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
+								style={{ left: `${x(i)}%`, top: `${y(v)}%` }}
+							>
+								{s.showValues !== false && (
+									<span
+										className={`-mt-5 mb-1 whitespace-nowrap tabular-nums text-slate-700 ${
+											i === selectedIndex ? "text-xs font-black lg:text-sm" : "text-[11px] font-bold lg:text-xs"
+										}`}
+									>
+										{format(v)}
+									</span>
+								)}
+								<span
+									className={`rounded-full border-2 border-white ${i === selectedIndex ? "h-3 w-3" : "h-2.5 w-2.5"}`}
+									style={{ background: s.color }}
+								/>
+							</div>
+						)
+					)
+				)}
+			</div>
+			<div className="mt-1 grid shrink-0 text-center text-[11px]" style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}>
+				{labels.map((label, i) => (
+					<span key={i} className={i === selectedIndex ? "font-black text-slate-800" : "font-semibold text-slate-400"}>
+						{label}
+					</span>
+				))}
+			</div>
+		</div>
+	);
+}
+
+function Legend({ items }: { items: { label: string; color: string; dashed?: boolean }[] }) {
+	return (
+		<div className="flex items-center gap-3">
+			{items.map((item) => (
+				<span key={item.label} className="flex items-center gap-1.5 text-[10px] font-bold uppercase text-slate-500">
+					<span
+						className="inline-block w-5 border-t-2"
+						style={{ borderColor: item.color, borderStyle: item.dashed ? "dashed" : "solid" }}
+					/>
+					{item.label}
+				</span>
+			))}
+		</div>
+	);
+}
+
+// Budget (grey) and actual (status colour) per month, selected month highlighted
+function BudgetBars({
+	slots,
+}: {
+	slots: { label: string; budget: number | null; actual: number | null; status: Status | null; selected: boolean }[];
+}) {
+	const max = Math.max(1, ...slots.flatMap((s) => [s.budget ?? 0, s.actual ?? 0]));
+	return (
+		<div className="grid min-h-[96px] flex-1 grid-cols-4 gap-2 md:min-h-0">
+			{slots.map((slot) => (
+				<div
+					key={slot.label}
+					className={`flex min-h-0 min-w-0 flex-col items-center rounded-lg px-1 pt-1 ${slot.selected ? "bg-slate-100/80" : ""}`}
+				>
+					<span className={`shrink-0 whitespace-nowrap tabular-nums text-slate-700 ${slot.selected ? "text-xs font-black" : "text-[11px] font-bold"}`}>
+						{fmtMoney(slot.actual)}
+					</span>
+					<div className="mt-1 flex min-h-0 w-full max-w-[64px] flex-1 items-end justify-center gap-1">
+						{slot.budget === null && slot.actual === null ? (
+							<div className="h-1 w-full rounded bg-slate-200" />
+						) : (
+							<>
+								<div className="w-1/2 rounded-t bg-slate-300" style={{ height: `${Math.max(((slot.budget ?? 0) / max) * 100, 2)}%` }} />
+								<div
+									className="w-1/2 rounded-t"
+									style={{
+										height: `${Math.max(((slot.actual ?? 0) / max) * 100, 2)}%`,
+										background: slot.status ? STATUS_STYLES[slot.status].chart : "#2563eb",
+									}}
+								/>
+							</>
+						)}
+					</div>
+					<span className="mt-1 shrink-0 whitespace-nowrap text-[10px] text-slate-400 tabular-nums">B {fmtMoney(slot.budget)}</span>
+				</div>
+			))}
+		</div>
+	);
+}
+
+function NoDataBanner({ children }: { children: React.ReactNode }) {
+	return (
+		<div className="mb-2 shrink-0 rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-sm text-amber-800 [@media(min-height:760px)]:mb-3 [@media(min-height:760px)]:py-2">
+			{children}
+		</div>
+	);
+}
+
+/* ---------------- Page ---------------- */
 
 export default function ProgramsPage() {
-	const { type: activeTab, setType: setActiveTab, period, setPeriod, year, setYear } =
-		useKpiPeriod('weekly');
-	const [programData, setProgramData] = useState<ProgramApiResponse | null>(
-		null
-	);
+	const { type: activeTab, setType: setActiveTab, period, setPeriod, year, setYear } = useKpiPeriod("weekly");
+	const [programData, setProgramData] = useState<any>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	const [useMockData, setUseMockData] = useState(false);
 
 	useEffect(() => {
-		if (useMockData) {
-			setProgramData(MOCK_PROGRAM_DATA);
-			setLoading(false);
-			setError(null);
-			return;
-		}
+		let cancelled = false;
 		async function fetchProgram() {
 			setLoading(true);
 			setError(null);
 			try {
-				const url = `/api/program?type=${activeTab}&period=${period}&year=${year}`;
-				const res = await fetch(url, { cache: "no-store" });
+				const res = await fetch(`/api/program?type=${activeTab}&period=${period}&year=${year}`, { cache: "no-store" });
 				if (!res.ok) throw new Error("Failed to fetch program data");
 				const json = await res.json();
-				const finalData = json?.data?.data ?? json?.data ?? json;
-				setProgramData(finalData);
+				if (!cancelled) setProgramData(json?.data?.data ?? json?.data ?? json);
 			} catch (err) {
-				setError(
-					err instanceof Error
-						? err.message
-						: "Failed to load program data"
-				);
+				if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load program data");
 			} finally {
-				setLoading(false);
+				if (!cancelled) setLoading(false);
 			}
 		}
 		fetchProgram();
-	}, [activeTab, period, year, useMockData]);
+		return () => {
+			cancelled = true;
+		};
+	}, [activeTab, period, year]);
 
-	const weeklyData = programData?.Program_Semaine ?? null;
-	const monthlyData = programData?.Program_Mois ?? null;
+	const renderWeekly = () => {
+		const data = programData?.Program_Semaine ?? {};
+		const otd = data.On_Time_Delivery;
+		const equipment = data.Critical_Equipment_Availability;
+		const recruitment = data.Recruitment_Progress;
+		const slots = lastFourWeeks(period, year);
+		const historyOf = (history: any[] | undefined) =>
+			slots.map((slot) => (history ?? []).find((h) => toNum(h.Semaine) === slot.week && toNum(h.Annee) === slot.year) ?? null);
+		const selectedIndex = slots.length - 1;
 
-	const WeeklyProgram = useCallback(() => {
-		const data = weeklyData;
-		const otd = data?.On_Time_Delivery;
-		const equipment = data?.Critical_Equipment_Availability;
-		const recruitment = data?.Recruitment_Progress;
+		const otdValue = toNum(otd?.Valeur_Actuelle);
+		const equipValue = toNum(equipment?.Valeur_Actuelle);
+		const recruitReel = toNum(recruitment?.Valeur_Actuelle_Reel);
+		const hasData = otdValue !== null || equipValue !== null || recruitReel !== null;
 
-		if (!data) {
-			return (
-				<div className="rounded-xl bg-slate-50 border border-slate-200 p-10 text-center">
-					<span className="material-symbols-outlined text-slate-300 text-5xl mb-3 block">
-						inbox
-					</span>
-					<p className="text-slate-500 font-medium">
-						Aucune donnée disponible pour la vue hebdomadaire
-					</p>
-				</div>
-			);
-		}
-
-		const renderTrendChart = (
-			history: ProgramHistoriqueSemaine[],
-			gradientId: string,
-			color: string
+		// OTD and critical equipment: value in %, target 90 %
+		const percentCard = (
+			kpi: any,
+			title: string,
+			icon: IconType,
+			accent: Accent,
+			key: string
 		) => {
-			if (history.length < 2) return null;
-			const maxVal = Math.max(...history.map((h) => h.Valeur ?? 0), 100);
-			const minVal = Math.min(...history.map((h) => h.Valeur ?? 0), 0);
-			const range = maxVal - minVal || 1;
-			const pts = history.map((h, i) => {
-				const x = (i / (history.length - 1)) * 440 + 30;
-				const y = 80 - (((h.Valeur ?? 0) - minVal) / range) * 60;
-				return { x, y };
-			});
-			const polyline = pts.map((p) => `${p.x},${p.y}`).join(" ");
-			const area = `M${pts.map((p) => `${p.x},${p.y}`).join("L")}L${pts[pts.length - 1].x},90 L${pts[0].x},90 Z`;
+			const target = toNum(kpi?.Target_Actuelle) ?? 90;
+			const value = toNum(kpi?.Valeur_Actuelle);
+			const history = historyOf(kpi?.Historique_4_Semaines);
+			const values = history.map((h) => toNum(h?.Valeur));
 			return (
-				<>
-					<defs>
-						<linearGradient
-							id={gradientId}
-							x1="0"
-							x2="0"
-							y1="0"
-							y2="1"
-						>
-							<stop
-								offset="0%"
-								stopColor={color}
-								stopOpacity="0.18"
-							/>
-							<stop
-								offset="100%"
-								stopColor={color}
-								stopOpacity="0"
-							/>
-						</linearGradient>
-					</defs>
-					{/* Grid lines */}
-					{[25, 50, 75].map((pct) => {
-						const gy =
-							80 - ((pct - minVal) / range) * 60;
-						return (
-							<line
-								key={pct}
-								x1="30"
-								y1={gy}
-								x2="470"
-								y2={gy}
-								stroke="#e2e8f0"
-								strokeWidth="1"
-								strokeDasharray="4 4"
-							/>
-						);
-					})}
-					<path d={area} fill={`url(#${gradientId})`} />
-					<polyline
-						points={polyline}
-						fill="none"
-						stroke={color}
-						strokeWidth="2.5"
-						strokeLinecap="round"
-						strokeLinejoin="round"
+				<section key={key} className={`${cardClass} ${accent.border}`}>
+					<CardHeader
+						icon={icon}
+						title={title}
+						subtitle={`Cible : ${nf1.format(target)} %`}
+						accent={accent}
+						right={<StatusPill status={percentStatus(value, target)} />}
 					/>
-					{pts.map((p, i) => (
-						<circle key={i} cx={p.x} cy={p.y} r="4" fill={color} />
-					))}
-				</>
+					<ValueBlock
+						value={value === null ? "—" : nf1.format(value)}
+						unit="%"
+						variation={{ value: toNum(kpi?.Variation_Vs_Semaine_Precedente), suffix: " pt", label: "vs S-1" }}
+					/>
+					<p className={`${sectionLabel} mt-3 mb-1 shrink-0 [@media(min-height:760px)]:mt-4`}>Historique 4 semaines</p>
+					<HistoryRow
+						accent={accent}
+						slots={slots.map((slot, i) => ({
+							label: slot.label,
+							value: values[i] === null ? null : `${nf1.format(values[i] as number)}%`,
+							status: percentStatus(values[i], target),
+							target: `${nf1.format(target)}%`,
+							selected: i === selectedIndex,
+						}))}
+					/>
+					<div className="mt-3 mb-1 flex shrink-0 items-center justify-between [@media(min-height:760px)]:mt-4">
+						<p className={sectionLabel}>Tendance</p>
+						<Legend items={[{ label: "Cible", color: "#94a3b8", dashed: true }]} />
+					</div>
+					<ColumnChart
+						series={[{ values, color: accent.color }]}
+						target={target}
+						format={(n) => `${nf1.format(n)}%`}
+						labels={slots.map((s) => s.label)}
+						selectedIndex={selectedIndex}
+					/>
+				</section>
 			);
 		};
 
-		const otdHistory = otd?.Historique_4_Semaines ?? [];
-		const equipHistory = equipment?.Historique_4_Semaines ?? [];
-		const recruitHistory = recruitment?.Historique_4_Semaines ?? [];
-
-		const otdStatus = getPercentStatusColor(
-			otd?.Valeur_Actuelle ?? 0,
-			90
-		);
-		const equipStatus = getPercentStatusColor(
-			equipment?.Valeur_Actuelle ?? 0,
-			90
-		);
+		const recruitHistory = historyOf(recruitment?.Historique_4_Semaines);
+		const reelValues = recruitHistory.map((h) => toNum(h?.Reel));
+		const forecastValues = recruitHistory.map((h) => toNum(h?.Forecast));
+		const recruitForecast = toNum(recruitment?.Valeur_Actuelle_Forecast);
+		const recruitPct = toNum(recruitment?.Valeur_Actuelle_Pct);
+		const hiresMtd = toNum(recruitment?.Total_Hires_MTD);
+		const forecastMtd = toNum(recruitment?.Total_Forecast_MTD);
 
 		return (
-			<div className="space-y-6">
-				{/* OTD Section */}
-				<section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-					<div className="border-l-4 border-primary pl-6 pr-6 pt-6 pb-0">
-						<div className="flex items-center justify-between mb-6">
-							<div className="flex items-center gap-3">
-								<div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-									<FaTruck className="text-primary text-xl" />
-								</div>
-								<div>
-									<h2 className="text-lg font-bold text-slate-900">
-										On Time Delivery (OTD)
-									</h2>
-									<p className="text-xs text-slate-500">
-										Target: 90%
-									</p>
-								</div>
-							</div>
-							<div className="flex items-center gap-4">
-								<StatusPill status={otdStatus} />
-								<div className="text-right">
-									<p className="text-4xl font-black text-slate-900 leading-none">
-										{otd?.Valeur_Actuelle ?? "—"}%
-									</p>
-									<p
-										className={`text-sm font-semibold mt-1 flex items-center justify-end gap-1 ${(otd?.Variation_Vs_Semaine_Precedente ?? 0) >= 0 ? "text-emerald-600" : "text-rose-600"}`}
-									>
-										{(otd?.Variation_Vs_Semaine_Precedente ?? 0) >= 0
-											? "+"
-											: ""}
-										{otd?.Variation_Vs_Semaine_Precedente ?? 0}% vs
-										S-1
-									</p>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div className="px-6 pb-6">
-						<div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mt-4">
-							<div className="lg:col-span-4">
-								<p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3">
-									4-Week History
-								</p>
-								<div className="flex justify-between">
-									{otdHistory.length
-										? otdHistory.map(
-											(
-												h: ProgramHistoriqueSemaine,
-												i: number
-											) => {
-												const isLast =
-													i === otdHistory.length - 1;
-												const val = h.Valeur ?? 0;
-												const st = getPercentStatusColor(
-													val,
-													90
-												);
-												return (
-													<KpiCircle
-														key={`otd-${h.Semaine}`}
-														value={`${val}%`}
-														label={
-															h.Label ??
-															`W${h.Semaine}`
-														}
-														isActive={isLast}
-														status={st}
-														target="90%"
-													/>
-												);
-											}
-										)
-										: [37, 38, 39, 40].map((w) => (
-											<KpiCircle
-												key={w}
-												value="—"
-												label={`W${w}`}
-												isActive={false}
-												status="green"
-												target="90%"
-											/>
-										))}
-								</div>
-							</div>
-							<div className="lg:col-span-8">
-								<p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">
-									Trend
-								</p>
-								<div className="h-36 relative">
-									<svg
-										className="w-full h-full"
-										viewBox="0 0 500 100"
-										preserveAspectRatio="none"
-									>
-										{renderTrendChart(
-											otdHistory,
-											"otd-grad",
-											"#0d7ff2"
-										)}
-									</svg>
-								</div>
-							</div>
-						</div>
-					</div>
-				</section>
+			<>
+				{!hasData && (
+					<NoDataBanner>
+						Aucune donnée pour la semaine {period} de {year} : le fichier Program hebdomadaire de cette période n&apos;a
+						pas encore été importé (page Importation).
+					</NoDataBanner>
+				)}
+				<div className="grid min-h-0 flex-1 grid-cols-1 gap-3 md:grid-cols-3 [@media(min-height:900px)]:gap-4">
+					{percentCard(otd, "On Time Delivery (OTD)", FaTruck, ACCENTS.blue, "otd")}
+					{percentCard(equipment, "Critical Equipment Availability", FaCogs, ACCENTS.violet, "equipment")}
 
-				{/* Critical Equipment */}
-				<section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-					<div className="border-l-4 border-violet-500 pl-6 pr-6 pt-6 pb-0">
-						<div className="flex items-center justify-between mb-6">
-							<div className="flex items-center gap-3">
-								<div className="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center">
-									<FaCogs className="text-violet-600 text-xl" />
-								</div>
-								<div>
-									<h2 className="text-lg font-bold text-slate-900">
-										Critical Equipment Availability
-									</h2>
-									<p className="text-xs text-slate-500">
-										Target: 90%
-									</p>
-								</div>
-							</div>
-							<div className="flex items-center gap-4">
-								<StatusPill status={equipStatus} />
-								<div className="text-right">
-									<p className="text-4xl font-black text-slate-900 leading-none">
-										{equipment?.Valeur_Actuelle ?? "—"}%
-									</p>
-									<p
-										className={`text-sm font-semibold mt-1 flex items-center justify-end gap-1 ${(equipment?.Variation_Vs_Semaine_Precedente ?? 0) >= 0 ? "text-emerald-600" : "text-rose-600"}`}
-									>
-										{(equipment?.Variation_Vs_Semaine_Precedente ??
-											0) >= 0
-											? "+"
-											: ""}
-										{equipment?.Variation_Vs_Semaine_Precedente ?? 0}%
-										vs S-1
-									</p>
-								</div>
-							</div>
+					<section className={`${cardClass} ${ACCENTS.emerald.border}`}>
+						<CardHeader
+							icon={FaUserPlus}
+							title="Recruitment Progress vs Forecast"
+							subtitle="Réel vs forecast (effectif)"
+							accent={ACCENTS.emerald}
+							right={<StatusPill status={recruitmentStatus(recruitPct)} />}
+						/>
+						<ValueBlock
+							value={recruitReel === null ? "—" : `${nf1.format(recruitReel)} / ${recruitForecast === null ? "—" : nf1.format(recruitForecast)}`}
+							variation={{ value: toNum(recruitment?.Variation_Reel_Vs_Semaine_Precedente), suffix: "", label: "vs S-1" }}
+							detail={
+								recruitReel === null ? null : (
+									<>
+										{fmtPct(recruitPct)} de réalisation · MTD {hiresMtd ?? "—"}/{forecastMtd ?? "—"}
+									</>
+								)
+							}
+						/>
+						<p className={`${sectionLabel} mt-3 mb-1 shrink-0 [@media(min-height:760px)]:mt-4`}>Historique 4 semaines</p>
+						<HistoryRow
+							accent={ACCENTS.emerald}
+							slots={slots.map((slot, i) => ({
+								label: slot.label,
+								value: reelValues[i] === null ? null : `${reelValues[i]}/${forecastValues[i] ?? "—"}`,
+								status: recruitmentStatus(toNum(recruitHistory[i]?.Pct)),
+								target: forecastValues[i] === null ? undefined : `${forecastValues[i]}`,
+								selected: i === selectedIndex,
+							}))}
+						/>
+						<div className="mt-3 mb-1 flex shrink-0 items-center justify-between [@media(min-height:760px)]:mt-4">
+							<p className={sectionLabel}>Réel vs forecast</p>
+							<Legend
+								items={[
+									{ label: "Réel", color: ACCENTS.emerald.color },
+									{ label: "Forecast", color: "#94a3b8", dashed: true },
+								]}
+							/>
 						</div>
-					</div>
-					<div className="px-6 pb-6">
-						<div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mt-4">
-							<div className="lg:col-span-4">
-								<p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3">
-									4-Week History
-								</p>
-								<div className="flex justify-between">
-									{equipHistory.length
-										? equipHistory.map(
-											(
-												h: ProgramHistoriqueSemaine,
-												i: number
-											) => {
-												const isLast =
-													i === equipHistory.length - 1;
-												const val = h.Valeur ?? 0;
-												const st = getPercentStatusColor(
-													val,
-													90
-												);
-												return (
-													<KpiCircle
-														key={`equip-${h.Semaine}`}
-														value={`${val}%`}
-														label={
-															h.Label ??
-															`W${h.Semaine}`
-														}
-														isActive={isLast}
-														status={st}
-														target="90%"
-													/>
-												);
-											}
-										)
-										: [37, 38, 39, 40].map((w) => (
-											<KpiCircle
-												key={w}
-												value="—"
-												label={`W${w}`}
-												isActive={false}
-												status="green"
-												target="90%"
-											/>
-										))}
-								</div>
-							</div>
-							<div className="lg:col-span-8">
-								<p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">
-									Trend
-								</p>
-								<div className="h-36 relative">
-									<svg
-										className="w-full h-full"
-										viewBox="0 0 500 100"
-										preserveAspectRatio="none"
-									>
-										{renderTrendChart(
-											equipHistory,
-											"equip-grad",
-											"#7c3aed"
-										)}
-									</svg>
-								</div>
-							</div>
-						</div>
-					</div>
-				</section>
-
-				{/* Recruitment Progress */}
-				<section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-					<div className="border-l-4 border-emerald-500 pl-6 pr-6 pt-6 pb-0">
-						<div className="flex items-center justify-between mb-6">
-							<div className="flex items-center gap-3">
-								<div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
-									<FaUserPlus className="text-emerald-600 text-xl" />
-								</div>
-								<div>
-									<h2 className="text-lg font-bold text-slate-900">
-										Recruitment Progress vs Forecast
-									</h2>
-									<p className="text-xs text-slate-500">
-										Actual vs Forecast headcount
-									</p>
-								</div>
-							</div>
-							<div className="text-right">
-								<p className="text-4xl font-black text-slate-900 leading-none">
-									{recruitment?.Valeur_Actuelle_Reel ?? "—"}{" "}
-									<span className="text-slate-400 text-2xl">/</span>{" "}
-									{recruitment?.Valeur_Actuelle_Forecast ?? "—"}
-								</p>
-								<p className="text-sm text-slate-500 mt-1">
-									{recruitment?.Valeur_Actuelle_Pct ?? "—"}%
-									achievement &middot;{" "}
-									{recruitment?.Total_Hires_MTD ?? "—"}/
-									{recruitment?.Total_Forecast_MTD ?? "—"} MTD
-								</p>
-							</div>
-						</div>
-					</div>
-					<div className="px-6 pb-6">
-						<div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mt-4">
-							<div className="lg:col-span-4">
-								<p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3">
-									4-Week History
-								</p>
-								<div className="flex justify-between">
-									{recruitHistory.length
-										? recruitHistory.map(
-											(h: any, i: number) => {
-												const isLast =
-													i === recruitHistory.length - 1;
-												const pct = h.Pct ?? 0;
-												const st =
-													pct >= 90
-														? "green"
-														: pct >= 70
-															? "orange"
-															: "red";
-												return (
-													<KpiCircle
-														key={`recruit-${h.Semaine}`}
-														value={`${h.Reel ?? 0}/${h.Forecast ?? 0}`}
-														label={
-															h.Label ??
-															`W${h.Semaine}`
-														}
-														isActive={isLast}
-														status={st}
-														target={`${h.Forecast ?? 0}`}
-													/>
-												);
-											}
-										)
-										: [37, 38, 39, 40].map((w) => (
-											<KpiCircle
-												key={w}
-												value="—"
-												label={`W${w}`}
-												isActive={false}
-												status="green"
-												target="—"
-											/>
-										))}
-								</div>
-							</div>
-							<div className="lg:col-span-8">
-								<p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">
-									Actual vs Forecast Trend
-								</p>
-								<div className="h-36 relative">
-									<svg
-										className="w-full h-full"
-										viewBox="0 0 500 100"
-										preserveAspectRatio="none"
-									>
-										{(() => {
-											if (recruitHistory.length < 2) return null;
-											const maxVal = Math.max(
-												...recruitHistory.map((h: any) =>
-													Math.max(
-														h.Reel ?? 0,
-														h.Forecast ?? 0
-													)
-												),
-												10
-											);
-											const ptsReel = recruitHistory.map(
-												(h: any, i: number) => {
-													const x =
-														(i /
-															(recruitHistory.length - 1)) *
-														440 +
-														30;
-													const y =
-														80 -
-														((h.Reel ?? 0) / maxVal) * 60;
-													return `${x},${y}`;
-												}
-											);
-											const ptsForecast = recruitHistory.map(
-												(h: any, i: number) => {
-													const x =
-														(i /
-															(recruitHistory.length - 1)) *
-														440 +
-														30;
-													const y =
-														80 -
-														((h.Forecast ?? 0) / maxVal) * 60;
-													return `${x},${y}`;
-												}
-											);
-											return (
-												<>
-													{[25, 50, 75].map((pct) => (
-														<line
-															key={pct}
-															x1="30"
-															y1={80 - pct * 0.6}
-															x2="470"
-															y2={80 - pct * 0.6}
-															stroke="#e2e8f0"
-															strokeWidth="1"
-															strokeDasharray="4 4"
-														/>
-													))}
-													<polyline
-														points={ptsForecast.join(" ")}
-														fill="none"
-														stroke="#cbd5e1"
-														strokeDasharray="6 3"
-														strokeWidth="2"
-													/>
-													<polyline
-														points={ptsReel.join(" ")}
-														fill="none"
-														stroke="#10b981"
-														strokeLinecap="round"
-														strokeWidth="2.5"
-													/>
-													{recruitHistory.map(
-														(h: any, i: number) => {
-															const x =
-																(i /
-																	(recruitHistory.length -
-																		1)) *
-																440 +
-																30;
-															const y =
-																80 -
-																((h.Reel ?? 0) / maxVal) *
-																60;
-															return (
-																<circle
-																	key={i}
-																	cx={x}
-																	cy={y}
-																	r="4"
-																	fill="#10b981"
-																/>
-															);
-														}
-													)}
-												</>
-											);
-										})()}
-									</svg>
-								</div>
-								<div className="flex items-center gap-4 mt-1">
-									<span className="flex items-center gap-1.5 text-[10px] text-slate-500 font-medium">
-										<span className="w-6 border-t-2 border-dashed border-slate-300 inline-block" />
-										Forecast
-									</span>
-									<span className="flex items-center gap-1.5 text-[10px] text-slate-500 font-medium">
-										<span className="w-6 border-t-2 border-emerald-400 inline-block" />
-										Actual
-									</span>
-								</div>
-							</div>
-						</div>
-					</div>
-				</section>
-			</div>
+						<ColumnChart
+							series={[
+								{ values: reelValues, color: ACCENTS.emerald.color },
+								{ values: forecastValues, color: "#94a3b8", dashed: true, showValues: false },
+							]}
+							format={(n) => nf1.format(n)}
+							labels={slots.map((s) => s.label)}
+							selectedIndex={selectedIndex}
+						/>
+					</section>
+				</div>
+			</>
 		);
-	}, [weeklyData]);
+	};
 
-	const MonthlyProgram = useCallback(() => {
-		const data = monthlyData;
-		const budget = data?.Budget_Vs_Actual;
-		const apqp = data?.APQP_Milestones;
-		const documentation = data?.Documentation_Progress;
+	const renderMonthly = () => {
+		const data = programData?.Program_Mois ?? {};
+		const budget = data.Budget_Vs_Actual;
+		const apqp = data.APQP_Milestones;
+		const documentation = data.Documentation_Progress;
+		const slots = lastFourMonths(period, year);
+		const historyOf = (history: any[] | undefined) =>
+			slots.map((slot) => (history ?? []).find((h) => toNum(h.Mois) === slot.month && toNum(h.Annee) === slot.year) ?? null);
+		const selectedIndex = slots.length - 1;
+		const labels = slots.map((s) => s.label);
 
-		const varianceToK = (v: number) =>
-			v >= 0
-				? `+$${Math.round(Math.abs(v) / 1000)}k`
-				: `-$${Math.round(Math.abs(v) / 1000)}k`;
+		const budgetHistory = historyOf(budget?.Historique_4_Mois);
+		const budgetSlots = slots.map((slot, i) => {
+			const b = toNum(budgetHistory[i]?.Budget);
+			const a = toNum(budgetHistory[i]?.Actual);
+			return { label: slot.label, budget: b, actual: a, status: budgetStatus(a, b)?.level ?? null, selected: i === selectedIndex };
+		});
+		const selectedBudget = budgetSlots[selectedIndex];
+		const selectedBudgetStatus = budgetStatus(selectedBudget.actual, selectedBudget.budget);
 
-		const moneyToK = (v: number) => `$${Math.round(Math.abs(v) / 1000)}k`;
+		const apqpValue = toNum(apqp?.Valeur_Mois_Courant);
+		const docValue = toNum(documentation?.Readiness_Mois_Courant);
+		const hasData = selectedBudget.actual !== null || apqpValue !== null || docValue !== null;
 
-		if (!data) {
+		// APQP milestones and documentation: % per month, target 100 %
+		const readinessCard = (
+			value: number | null,
+			delta: number | null,
+			history: any[] | undefined,
+			title: string,
+			chartTitle: string,
+			icon: IconType,
+			accent: Accent,
+			key: string
+		) => {
+			const status = readinessStatus(value);
+			const values = historyOf(history).map((h) => {
+				const v = toNum(h?.Valeur);
+				return v === null ? null : Math.round(v);
+			});
 			return (
-				<div className="rounded-xl bg-slate-50 border border-slate-200 p-10 text-center">
-					<span className="material-symbols-outlined text-slate-300 text-5xl mb-3 block">
-						inbox
-					</span>
-					<p className="text-slate-500 font-medium">
-						Aucune donnée disponible pour la vue mensuelle
-					</p>
-				</div>
+				<section key={key} className={`${cardClass} ${accent.border}`}>
+					<CardHeader
+						icon={icon}
+						title={title}
+						subtitle="Cible : 100 %"
+						accent={accent}
+						right={status && <StatusPill status={status.level} label={status.label} />}
+					/>
+					<ValueBlock
+						value={status ? String(status.percentage) : "—"}
+						unit="%"
+						variation={{ value: delta, suffix: " pt", label: "vs M-1" }}
+					/>
+					<p className={`${sectionLabel} mt-3 mb-1 shrink-0 [@media(min-height:760px)]:mt-4`}>Historique 4 mois</p>
+					<HistoryRow
+						accent={accent}
+						slots={slots.map((slot, i) => ({
+							label: slot.label,
+							value: values[i] === null ? null : `${values[i]}%`,
+							status: readinessStatus(values[i])?.level ?? null,
+							target: "100%",
+							selected: i === selectedIndex,
+						}))}
+					/>
+					<div className="mt-3 mb-1 flex shrink-0 items-center justify-between [@media(min-height:760px)]:mt-4">
+						<p className={sectionLabel}>{chartTitle}</p>
+						<Legend items={[{ label: "Cible", color: "#94a3b8", dashed: true }]} />
+					</div>
+					<ColumnChart
+						series={[{ values, color: accent.color }]}
+						target={100}
+						format={(n) => `${n}%`}
+						labels={labels}
+						selectedIndex={selectedIndex}
+					/>
+				</section>
 			);
-		}
-
-		const historiqueBudget = budget?.Historique_4_Mois ?? [];
-		const selectedBudgetMonth =
-			historiqueBudget.find(
-				(h) => h.Mois === period && h.Annee === year
-			) ?? historiqueBudget[historiqueBudget.length - 1];
-		const selectedBudgetStatus = getBudgetPercentageStatus(
-			selectedBudgetMonth?.Actual,
-			selectedBudgetMonth?.Budget
-		);
-		const apqpHistory = apqp?.Historique_4_Mois ?? [];
-		const selectedApqpMonth =
-			apqpHistory.find(
-				(h) => h.Mois === period && h.Annee === year
-			) ?? apqpHistory[apqpHistory.length - 1];
-		const apqpCurrentStatus = getApqpStatus(apqp?.Valeur_Mois_Courant);
-		const documentationHistory = documentation?.Historique_4_Mois ?? [];
-		const selectedDocumentationMonth =
-			documentationHistory.find(
-				(h) => h.Mois === period && h.Annee === year
-			) ?? documentationHistory[documentationHistory.length - 1];
-		const documentationCurrentStatus = getDocumentationStatus(
-			documentation?.Readiness_Mois_Courant
-		);
+		};
 
 		return (
-			<div className="space-y-6">
-				{/* Budget vs Actual */}
-				<section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-					<div className="border-l-4 border-primary px-6 pt-6">
-						<div className="flex items-center gap-3 mb-1">
-							<div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-								<FaMoneyBillWave className="text-primary text-xl" />
-							</div>
-							<div>
-								<h2 className="text-xl font-bold text-slate-900">
-									Budget vs Actual (CAPEX/OPEX)
-								</h2>
-								<div className="flex flex-wrap items-center gap-2 mt-0.5">
-									{/*{budget && (
-										<span className="text-sm text-slate-500">
-											Variance {varianceToK(budget.Variance_Mois_Courant ?? 0)}
-											{" "}
-											vs target {varianceToK(budget.Target_Variance ?? 0)}
-										</span>
-									)}*/}
-									<span
-										className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-sm font-bold ${selectedBudgetStatus.bg} ${selectedBudgetStatus.text}`}
-									>
+			<>
+				{!hasData && (
+					<NoDataBanner>
+						Aucune donnée pour {MONTH_FULL_NAMES[period - 1]} {year} : le fichier Program mensuel de cette période
+						n&apos;a pas encore été importé (page Importation).
+					</NoDataBanner>
+				)}
+				<div className="grid min-h-0 flex-1 grid-cols-1 gap-3 md:grid-cols-3 [@media(min-height:900px)]:gap-4">
+					<section className={`${cardClass} ${ACCENTS.blue.border}`}>
+						<CardHeader
+							icon={FaMoneyBillWave}
+							title="Budget vs Actual (CAPEX/OPEX)"
+							subtitle="Part du budget non consommée"
+							accent={ACCENTS.blue}
+							right={
+								selectedBudgetStatus && (
+									<StatusPill
+										status={selectedBudgetStatus.level}
+										label={`${selectedBudgetStatus.percentage}% ${selectedBudgetStatus.label}`}
+									/>
+								)
+							}
+						/>
+						<ValueBlock
+							value={fmtMoney(selectedBudget.actual)}
+							detail={selectedBudget.budget === null ? null : <>Budget {fmtMoney(selectedBudget.budget)}</>}
+						/>
+						<div className="mt-3 mb-1 flex shrink-0 items-center justify-between [@media(min-height:760px)]:mt-4">
+							<p className={sectionLabel}>Historique 4 mois</p>
+							<Legend
+								items={[
+									{ label: "Budget", color: "#cbd5e1" },
+									{ label: "Actual", color: ACCENTS.blue.color },
+								]}
+							/>
+						</div>
+						<BudgetBars slots={budgetSlots} />
+						<div className="mt-1 grid shrink-0 grid-cols-4 gap-2 text-center text-[11px]">
+							{budgetSlots.map((slot) => {
+								const st = budgetStatus(slot.actual, slot.budget);
+								// Month (highlighted when selected), then its budget status
+								return (
+									<div key={slot.label} className="flex flex-col items-center gap-0.5">
 										<span
-											className={`w-1.5 h-1.5 rounded-full ${selectedBudgetStatus.dot}`}
-										/>
-										{selectedBudgetStatus.percentage}%
-										{selectedBudgetStatus.label && ` ${selectedBudgetStatus.label}`}
-									</span>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div className="grid grid-cols-12 gap-6 p-6">
-						<div className="col-span-12 lg:col-span-5 space-y-6">
-							<p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-								Historical Performance
-							</p>
-							<div className="flex justify-between items-center gap-2 px-2">
-								{historiqueBudget.length
-									? historiqueBudget.map(
-										(h: ProgramHistoriqueMois, i: number) => {
-											const isLast =
-												i === historiqueBudget.length - 1;
-											const labelCls = isLast
-												? "text-primary font-black"
-												: "text-slate-500";
-											const budgetVal = moneyToK(h.Budget ?? 0);
-											const actualVal = moneyToK(h.Actual ?? 0);
-											const percentageStatus = getBudgetPercentageStatus(
-												h.Actual,
-												h.Budget
-											);
-											const maxMonthVal = Math.max(
-												h.Budget ?? 0,
-												h.Actual ?? 0,
-												1
-											);
-											const maxBarHeight = isLast ? 52 : 40;
-											const budgetHeight = Math.max(
-												8,
-												Math.round(((h.Budget ?? 0) / maxMonthVal) * maxBarHeight)
-											);
-											const actualHeight = Math.max(
-												8,
-												Math.round(((h.Actual ?? 0) / maxMonthVal) * maxBarHeight)
-											);
-											return (
-												<div
-													key={`${h.Mois}-${h.Annee}`}
-													className="flex flex-col items-center gap-1"
-												>
-													<span className={`text-xs font-semibold ${isLast ? "text-primary" : "text-slate-400"}`}>
-														T: $0k
-													</span>
-													<div
-														className={`rounded-xl flex items-end justify-center transition-all ${
-															isLast
-																? "w-32 h-24 bg-primary/5 shadow-md shadow-primary/10"
-																: "w-24 h-20"
-														}`}
-													>
-														<div className="flex items-end gap-3 pb-1">
-															<div className="flex flex-col items-center gap-1">
-																<div
-																	className={`rounded-sm ${isLast ? "w-12 bg-slate-400" : "w-12 bg-slate-300"}`}
-																	style={{ height: budgetHeight }}
-																/>
-																<span className={`font-bold text-slate-600 ${isLast ? "text-xs" : "text-[11px]"}`}>
-																	{budgetVal}
-																</span>
-															</div>
-															<div className="flex flex-col items-center gap-1">
-																<div
-																	className="rounded-sm bg-primary w-12"
-																	style={{ height: actualHeight }}
-																/>
-																<span className={`font-bold ${isLast ? "text-xs text-primary" : "text-[11px] text-slate-600"}`}>
-																	{actualVal}
-																</span>
-															</div>
-														</div>
-													</div>
-													<p
-														className={`text-xs font-bold ${labelCls}`}
-													>
-														{(h.Label ?? "").toUpperCase()}
-													</p>
-													<span
-												className={`w-2.5 h-2.5 rounded-full ${percentageStatus.dot}`}
-												role="img"
-												aria-label={`${percentageStatus.percentage}% ${percentageStatus.label}`}
-											/>
-												</div>
-											)
-										}
-									)
-									: [1, 2, 3, 4].map((i) => (
-										<div
-											key={i}
-											className="flex flex-col items-center gap-1"
+											className={
+												slot.selected
+													? `whitespace-nowrap rounded-full px-2 py-0.5 font-black text-white ${ACCENTS.blue.pill}`
+													: "py-0.5 font-semibold text-slate-500"
+											}
 										>
-											<span className="text-xs text-slate-300 font-semibold">
-												T: $0k
-											</span>
-											<div className="w-24 h-20 rounded-xl flex items-end justify-center">
-												<div className="flex items-end gap-3 pb-1">
-													<div className="flex flex-col items-center gap-1">
-														<div className="w-6 h-8 rounded-sm bg-slate-200" />
-														<span className="text-[11px] font-bold text-slate-300">
-															—
-														</span>
-													</div>
-													<div className="flex flex-col items-center gap-1">
-														<div className="w-6 h-8 rounded-sm bg-slate-200" />
-														<span className="text-[11px] font-bold text-slate-300">
-															—
-														</span>
-													</div>
-												</div>
-											</div>
-											<p className="text-xs font-bold text-slate-300">
-												—
-											</p>
-										</div>
-									))}
-							</div>
-						</div>
-						<div className="col-span-12 lg:col-span-7 border-l border-slate-100 lg:pl-8">
-							<div className="flex items-center justify-between mb-3">
-								<p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-									Monthly Spend Trend
-								</p>
-								<div className="flex gap-4">
-									<span className="flex items-center gap-1.5 text-xs font-bold text-slate-500">
-										<span className="w-3 h-0.5 border-t border-slate-400 inline-block" />
-										BUDGET
-									</span>
-									<span className="flex items-center gap-1.5 text-xs font-bold text-slate-500">
-										<span className="inline-flex w-4 h-0.5 overflow-hidden rounded-full">
-											<span className="flex-1 bg-red-500" />
-											<span className="flex-1 bg-amber-500" />
-											<span className="flex-1 bg-emerald-500" />
+											{slot.label}
 										</span>
-										ACTUAL
-									</span>
-								</div>
-							</div>
-							<div>
-								<div className="h-36">
-									<svg
-										className="w-full h-full overflow-visible"
-										viewBox="0 0 400 100"
-										preserveAspectRatio="none"
-									>
-										{(() => {
-											if (!historiqueBudget.length) return null;
-											const chartLeft = 40;
-											const chartRight = 392;
-											const chartTop = 12;
-											const chartBottom = 88;
-											const maxValue = Math.max(
-												...historiqueBudget.map((h) =>
-													Math.max(h.Budget ?? 0, h.Actual ?? 0)
-												),
-												1
-											);
-											const valueToY = (value: number) => {
-												const normalizedValue = Math.max(value, 0) / maxValue;
-												return (
-													chartBottom -
-													normalizedValue * (chartBottom - chartTop)
-												);
-											};
-											const valuePoints = historiqueBudget.map((h, i) => {
-												const x =
-													chartLeft +
-													((i + 0.5) / historiqueBudget.length) *
-														(chartRight - chartLeft);
-												return {
-													x,
-													budgetY: valueToY(h.Budget ?? 0),
-													actualY: valueToY(h.Actual ?? 0),
-													status: getBudgetPercentageStatus(
-														h.Actual,
-														h.Budget
-													),
-												};
-											});
-											const scaleValues = [0, maxValue / 2, maxValue];
-											return (
-												<>
-													{scaleValues.map((value, i) => {
-														const y = valueToY(value);
-														return (
-															<g key={value}>
-																<line
-																	x1={chartLeft}
-																	y1={y}
-																	x2={chartRight}
-																	y2={y}
-																	stroke={i === scaleValues.length - 1 ? "#cbd5e1" : "#e2e8f0"}
-																	strokeWidth={i === scaleValues.length - 1 ? "1.5" : "1"}
-																/>
-															</g>
-														);
-													})}
-													<polyline
-														points={valuePoints
-															.map((point) => `${point.x},${point.budgetY}`)
-															.join(" ")}
-														fill="none"
-														stroke="#94a3b8"
-														strokeLinecap="round"
-														strokeWidth="1.5"
-													/>
-													{valuePoints.map((point, i) => (
-														<circle
-															key={`budget-${historiqueBudget[i].Mois}-${historiqueBudget[i].Annee}`}
-															cx={point.x}
-															cy={point.budgetY}
-															r="2"
-															fill="#94a3b8"
-														/>
-													))}
-													{valuePoints.slice(1).map((point, i) => {
-														const previousPoint = valuePoints[i];
-														return (
-															<line
-																key={`actual-${historiqueBudget[i + 1].Mois}-${historiqueBudget[i + 1].Annee}`}
-																x1={previousPoint.x}
-																y1={previousPoint.actualY}
-																x2={point.x}
-																y2={point.actualY}
-																stroke={point.status.chart}
-																strokeLinecap="round"
-																strokeWidth="2"
-															/>
-														);
-													})}
-													{valuePoints.map((point, i) => (
-														<circle
-															key={`actual-point-${historiqueBudget[i].Mois}-${historiqueBudget[i].Annee}`}
-															cx={point.x}
-															cy={point.actualY}
-															r="3.25"
-															fill={point.status.chart}
-														/>
-													))}
-												</>
-											);
-										})()}
-									</svg>
-								</div>
-								<div
-									className="grid mt-2"
-									style={{
-										paddingLeft: "10%",
-										paddingRight: "2%",
-										gridTemplateColumns: `repeat(${historiqueBudget.length || 4}, minmax(0, 1fr))`,
-									}}
-								>
-									{historiqueBudget.length
-										? historiqueBudget.map((h) => {
-											const status = getBudgetPercentageStatus(
-												h.Actual,
-												h.Budget
-											);
-											const isSelected =
-												h.Mois === selectedBudgetMonth?.Mois &&
-												h.Annee === selectedBudgetMonth?.Annee;
-											return (
-												<div
-													key={`${h.Mois}-${h.Annee}`}
-													className="flex flex-col items-center gap-1"
-												>
-													<span className={`text-base leading-none font-black ${status.text}`}>
-														{status.percentage}%
-													</span>
-													<span
-														className={`text-xs font-bold ${isSelected ? "text-primary font-black" : "text-slate-400"}`}
-													>
-														{(h.Label ?? "").toUpperCase()}
-													</span>
-												</div>
-											);
-										})
-										: ["JAN", "FEB", "MAR", "APR"].map((label) => (
-											<div
-												key={label}
-												className="flex flex-col items-center gap-1 text-slate-300"
-											>
-												<span className="text-base leading-none font-black">—</span>
-												<span className="text-xs font-bold">{label}</span>
-											</div>
-										))}
-								</div>
-							</div>
-						</div>
-					</div>
-				</section>
-
-				{/* APQP Milestones */}
-				<section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-					<div className="border-l-4 border-violet-500 px-6 pt-6">
-						<div className="flex items-center gap-3 mb-4">
-							<div className="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center">
-								<FaSitemap className="text-violet-600 text-xl" />
-							</div>
-							<div>
-								<h2 className="text-xl font-bold text-slate-900">
-									Planning vs Forecast (APQP Milestones)
-								</h2>
-								<p className="text-xs text-slate-500">
-									Current:{" "}
-									<strong className={apqpCurrentStatus.text}>
-										{apqpCurrentStatus.percentage}%
-									</strong>{" "}
-									&middot; Health:{" "}
-									<strong
-										className={apqpCurrentStatus.text}
-									>
-										{apqpCurrentStatus.label}
-									</strong>
-								</p>
-							</div>
-						</div>
-					</div>
-					<div className="grid grid-cols-12 gap-6 p-6">
-						<div className="col-span-12 lg:col-span-5 space-y-6">
-							<p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-								Milestone Adherence
-							</p>
-							<div className="flex justify-between items-center gap-2 px-2">
-								{apqpHistory.length
-									? apqpHistory.map(
-										(h: ProgramHistoriqueMois) => {
-											const isSelected =
-												h.Mois === selectedApqpMonth?.Mois &&
-												h.Annee === selectedApqpMonth?.Annee;
-											const status = getApqpStatus(h.Valeur);
-											return (
-												<div
-													key={`apqp-${h.Mois}-${h.Annee}`}
-													className="flex flex-col items-center gap-1"
-												>
-													<span className={`text-xs font-semibold ${isSelected ? "text-violet-600" : "text-slate-400"}`}>
-														T: 100%
-													</span>
-													<div
-														className={`rounded-full border-2 flex items-center justify-center transition-all ${status.border} ${status.bg} ${
-															isSelected
-																? `w-20 h-20 shadow-md ${status.shadow}`
-																: "w-14 h-14"
-														}`}
-													>
-														<span className={`font-bold ${status.text} ${isSelected ? "text-sm" : "text-xs"}`}>
-															{status.percentage}%
-														</span>
-													</div>
-													<p
-														className={`text-xs font-bold ${isSelected ? "text-violet-600" : "text-slate-500"}`}
-													>
-														{(h.Label ?? "").toUpperCase()}
-													</p>
-												</div>
-											);
-										}
-									)
-									: [1, 2, 3, 4].map((i) => (
-										<div
-											key={i}
-											className="flex flex-col items-center gap-1"
-										>
-											<span className="text-xs text-slate-300 font-semibold">
-												T: 100%
-											</span>
-											<div className="w-14 h-14 rounded-full border-2 border-slate-200 flex items-center justify-center">
-												<span className="text-xs font-bold text-slate-300">
-													—
-												</span>
-											</div>
-											<p className="text-xs font-bold text-slate-300">
-												—
-											</p>
-										</div>
-									))}
-							</div>
-						</div>
-						<div className="col-span-12 lg:col-span-7 border-l border-slate-100 lg:pl-8">
-							<div className="flex items-center justify-between mb-3">
-								<p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-									Completion Rate
-								</p>
-								<div className="flex gap-4">
-									<span className="flex items-center gap-1.5 text-xs font-bold text-slate-500">
-										<span className="w-3 h-0.5 border-t border-dashed border-slate-400 inline-block" />
-										TARGET
-									</span>
-									<span className="flex items-center gap-1.5 text-xs font-bold text-slate-500">
-										<span className="inline-flex w-4 h-0.5 overflow-hidden rounded-full">
-											<span className="flex-1 bg-red-500" />
-											<span className="flex-1 bg-amber-500" />
-											<span className="flex-1 bg-emerald-500" />
+										<span className={`text-[10px] font-bold ${st ? STATUS_STYLES[st.level].text : "text-slate-300"}`}>
+											{st ? `${st.percentage}%` : "—"}
 										</span>
-										ACTUAL
-									</span>
-								</div>
-							</div>
-							<div>
-								<div className="h-44">
-									<svg
-										className="w-full h-full overflow-visible"
-										viewBox="0 0 400 100"
-										preserveAspectRatio="none"
-									>
-										{(() => {
-											if (!apqpHistory.length) return null;
-											const chartLeft = 40;
-											const chartRight = 392;
-											const chartTop = 12;
-											const chartBottom = 88;
-											const maxVal = Math.max(
-												...apqpHistory.map((h) => h.Valeur ?? 0),
-												100
-											);
-											const minVal = Math.min(
-												...apqpHistory.map((h) => h.Valeur ?? 0),
-												0
-											);
-											const range = maxVal - minVal || 1;
-											const valueToY = (value: number) =>
-												chartBottom -
-												((value - minVal) / range) * (chartBottom - chartTop);
-											const points = apqpHistory.map((h, i) => {
-												const status = getApqpStatus(h.Valeur);
-												const x =
-													chartLeft +
-													((i + 0.5) / apqpHistory.length) *
-														(chartRight - chartLeft);
-												return {
-													x,
-													y: valueToY(status.percentage),
-													status,
-												};
-											});
-											return (
-												<>
-													{[25, 50, 75].map((percentage) => {
-														const y = valueToY(percentage);
-														return (
-															<line
-																key={percentage}
-																x1={chartLeft}
-																y1={y}
-																x2={chartRight}
-																y2={y}
-																stroke="#f1f5f9"
-																strokeWidth="1"
-															/>
-														);
-													})}
-													<line
-														x1={chartLeft}
-														y1={valueToY(100)}
-														x2={chartRight}
-														y2={valueToY(100)}
-														stroke="#cbd5e1"
-														strokeWidth="1.5"
-														strokeDasharray="5 3"
-													/>
-													{points.slice(1).map((point, i) => {
-														const previousPoint = points[i];
-														return (
-															<line
-																key={`apqp-line-${apqpHistory[i + 1].Mois}-${apqpHistory[i + 1].Annee}`}
-																x1={previousPoint.x}
-																y1={previousPoint.y}
-																x2={point.x}
-																y2={point.y}
-																stroke={point.status.chart}
-																strokeLinecap="round"
-																strokeWidth="2.5"
-															/>
-														);
-													})}
-													{points.map((point, i) => (
-														<circle
-															key={`apqp-point-${apqpHistory[i].Mois}-${apqpHistory[i].Annee}`}
-															cx={point.x}
-															cy={point.y}
-															r="4"
-															fill={point.status.chart}
-														/>
-													))}
-												</>
-											);
-										})()}
-									</svg>
-								</div>
-								<div
-									className="grid mt-2"
-									style={{
-										paddingLeft: "10%",
-										paddingRight: "2%",
-										gridTemplateColumns: `repeat(${apqpHistory.length || 4}, minmax(0, 1fr))`,
-									}}
-								>
-									{apqpHistory.length
-										? apqpHistory.map((h) => {
-											const status = getApqpStatus(h.Valeur);
-											const isSelected =
-												h.Mois === selectedApqpMonth?.Mois &&
-												h.Annee === selectedApqpMonth?.Annee;
-											return (
-												<div
-													key={`apqp-label-${h.Mois}-${h.Annee}`}
-													className="flex flex-col items-center gap-1"
-												>
-													<span className={`text-base leading-none font-black ${status.text}`}>
-														{status.percentage}%
-													</span>
-													<span
-														className={`text-xs font-bold ${isSelected ? "text-violet-600 font-black" : "text-slate-400"}`}
-													>
-														{(h.Label ?? "").toUpperCase()}
-													</span>
-												</div>
-											);
-										})
-										: ["JAN", "FEB", "MAR", "APR"].map((label) => (
-											<div
-												key={label}
-												className="flex flex-col items-center gap-1 text-slate-300"
-											>
-												<span className="text-base leading-none font-black">—</span>
-												<span className="text-xs font-bold">{label}</span>
-											</div>
-										))}
-								</div>
-							</div>
+									</div>
+								);
+							})}
 						</div>
-					</div>
-				</section>
+						<div className="mt-3 mb-1 flex shrink-0 items-center justify-between [@media(min-height:760px)]:mt-4">
+							<p className={sectionLabel}>Dépenses mensuelles</p>
+							<Legend
+								items={[
+									{ label: "Budget", color: "#94a3b8", dashed: true },
+									{ label: "Actual", color: ACCENTS.blue.color },
+								]}
+							/>
+						</div>
+						<ColumnChart
+							series={[
+								{ values: budgetSlots.map((s) => s.actual), color: ACCENTS.blue.color },
+								{ values: budgetSlots.map((s) => s.budget), color: "#94a3b8", dashed: true, showValues: false },
+							]}
+							format={(n) => fmtMoney(n)}
+							labels={labels}
+							selectedIndex={selectedIndex}
+						/>
+					</section>
 
-				{/* Documentation Progress */}
-				<section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-					<div className="border-l-4 border-emerald-500 px-6 pt-6">
-						<div className="flex items-center gap-3 mb-4">
-							<div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
-								<FaBook className="text-emerald-600 text-xl" />
-							</div>
-							<div>
-								<h2 className="text-xl font-bold text-slate-900">
-									Documentation Progress
-								</h2>
-								<p className="text-xs text-slate-500">
-									Current:{" "}
-									<strong className={documentationCurrentStatus.text}>
-										{documentationCurrentStatus.percentage}%
-									</strong>{" "}
-									&middot; Health:{" "}
-									<strong className={documentationCurrentStatus.text}>
-										{documentationCurrentStatus.label}
-									</strong>
-								</p>
-							</div>
-						</div>
-					</div>
-					<div className="grid grid-cols-12 gap-6 p-6">
-						<div className="col-span-12 lg:col-span-5 space-y-6">
-							<p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-								Historical Readiness
-							</p>
-							<div className="flex justify-between items-center gap-2 px-2">
-								{documentationHistory.length
-									? documentationHistory.map(
-										(h: ProgramHistoriqueMois) => {
-											const isSelected =
-												h.Mois === selectedDocumentationMonth?.Mois &&
-												h.Annee === selectedDocumentationMonth?.Annee;
-											const status = getDocumentationStatus(h.Valeur);
-											return (
-												<div
-													key={`doc-${h.Mois}-${h.Annee}`}
-													className="flex flex-col items-center gap-1"
-												>
-													<span className={`text-xs font-semibold ${isSelected ? "text-emerald-600" : "text-slate-400"}`}>
-														T: 100%
-													</span>
-													<div
-														className={`rounded-full border-2 flex items-center justify-center transition-all ${status.border} ${status.bg} ${
-															isSelected
-																? `w-20 h-20 shadow-md ${status.shadow}`
-																: "w-14 h-14"
-														}`}
-													>
-														<span className={`font-bold ${status.text} ${isSelected ? "text-sm" : "text-xs"}`}>
-															{status.percentage}%
-														</span>
-													</div>
-													<p
-														className={`text-xs font-bold ${isSelected ? "text-emerald-600" : "text-slate-500"}`}
-													>
-														{(h.Label ?? "").toUpperCase()}
-													</p>
-												</div>
-											);
-										}
-									)
-									: [1, 2, 3, 4].map((i) => (
-										<div
-											key={i}
-											className="flex flex-col items-center gap-1"
-										>
-											<span className="text-xs text-slate-300 font-semibold">
-												T: 100%
-											</span>
-											<div className="w-14 h-14 rounded-full border-2 border-slate-200 flex items-center justify-center">
-												<span className="text-xs font-bold text-slate-300">
-													—
-												</span>
-											</div>
-											<p className="text-xs font-bold text-slate-300">
-												—
-											</p>
-										</div>
-									))}
-							</div>
-						</div>
-						<div className="col-span-12 lg:col-span-7 border-l border-slate-100 lg:pl-8">
-							<div className="flex items-center justify-between mb-3">
-								<p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-									Approval Growth Trend
-								</p>
-								{/* <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-									{documentation?.Average_Hebdo_Mois ?? "—"}% Avg
-								</span> */}
-							</div>
-							<div className="h-44 relative rounded-xl bg-slate-50 border border-slate-100 overflow-hidden">
-								<svg
-									className="w-full h-full overflow-visible"
-									viewBox="0 0 400 100"
-									preserveAspectRatio="none"
-								>
-									{(() => {
-										const trend = documentationHistory;
-										if (!trend.length) return null;
-										const chartLeft = 40;
-										const chartRight = 392;
-										const chartTop = 12;
-										const chartBottom = 88;
-										const maxVal = Math.max(
-											...trend.map(
-												(t) => getDocumentationStatus(t.Valeur).percentage
-											),
-											100
-										);
-										const minVal = Math.min(
-											...trend.map(
-												(t) => getDocumentationStatus(t.Valeur).percentage
-											),
-											0
-										);
-										const range = maxVal - minVal || 1;
-										const valueToY = (value: number) =>
-											chartBottom -
-											((value - minVal) / range) * (chartBottom - chartTop);
-										const pts = trend.map((t, i) => {
-											const status = getDocumentationStatus(t.Valeur);
-											const x =
-												chartLeft +
-												((i + 0.5) / trend.length) *
-													(chartRight - chartLeft);
-											return { x, y: valueToY(status.percentage), status };
-										});
-										return (
-											<>
-												{[25, 50, 75].map((percentage) => {
-													const y = valueToY(percentage);
-													return (
-														<line
-															key={percentage}
-															x1={chartLeft}
-															y1={y}
-															x2={chartRight}
-															y2={y}
-															stroke="#e2e8f0"
-															strokeWidth="1"
-														/>
-													);
-												})}
-												<line
-													x1={chartLeft}
-													y1={valueToY(100)}
-													x2={chartRight}
-													y2={valueToY(100)}
-													stroke="#94a3b8"
-													strokeWidth="1.5"
-													strokeDasharray="5 3"
-												/>
-												{pts.slice(1).map((point, i) => {
-													const previousPoint = pts[i];
-													return (
-														<line
-															key={`doc-line-${trend[i + 1].Mois}-${trend[i + 1].Annee}`}
-															x1={previousPoint.x}
-															y1={previousPoint.y}
-															x2={point.x}
-															y2={point.y}
-															stroke={point.status.chart}
-															strokeLinecap="round"
-															strokeWidth="2.5"
-														/>
-													);
-												})}
-												{pts.map((p, i) => (
-													<circle
-														key={`doc-point-${trend[i].Mois}-${trend[i].Annee}`}
-														cx={p.x}
-														cy={p.y}
-														r="4"
-														fill={p.status.chart}
-													/>
-												))}
-											</>
-										);
-									})()}
-								</svg>
-							</div>
-							<div
-								className="grid mt-2"
-								style={{
-									paddingLeft: "10%",
-									paddingRight: "2%",
-									gridTemplateColumns: `repeat(${documentationHistory.length || 4}, minmax(0, 1fr))`,
-								}}
-							>
-								{documentationHistory.length
-									? documentationHistory.map((h: ProgramHistoriqueMois) => {
-										const status = getDocumentationStatus(h.Valeur);
-										const isSelected =
-											h.Mois === selectedDocumentationMonth?.Mois &&
-											h.Annee === selectedDocumentationMonth?.Annee;
-										return (
-											<div
-												key={`doc-label-${h.Mois}-${h.Annee}`}
-												className="flex flex-col items-center gap-1"
-											>
-												<span className={`text-base leading-none font-black ${status.text}`}>
-													{status.percentage}%
-												</span>
-												<span
-													className={`text-xs font-bold ${isSelected ? "text-emerald-600 font-black" : "text-slate-400"}`}
-												>
-													{(h.Label ?? "").toUpperCase()}
-												</span>
-											</div>
-										);
-									})
-									: ["JAN", "FEB", "MAR", "APR"].map((label) => (
-										<div
-											key={label}
-											className="flex flex-col items-center gap-1 text-slate-300"
-										>
-											<span className="text-base leading-none font-black">—</span>
-											<span className="text-xs font-bold">{label}</span>
-										</div>
-									))}
-							</div>
-						</div>
-					</div>
-				</section>
-			</div>
-		);
-	}, [monthlyData, period, year]);
-
-	if (loading) {
-		return (
-			<main className="flex-1 overflow-hidden">
-				<div className="p-6 sm:p-8 flex items-center justify-center min-h-[400px]">
-					<div className="flex flex-col items-center gap-4">
-						<div className="w-10 h-10 rounded-full border-4 border-primary border-t-transparent animate-spin" />
-						<p className="text-slate-500 font-medium">
-							Chargement des données programme...
-						</p>
-					</div>
+					{readinessCard(
+						apqpValue,
+						toNum(apqp?.Delta_Pts_Vs_M_1),
+						apqp?.Historique_4_Mois,
+						"Planning vs Forecast (APQP Milestones)",
+						"Taux de réalisation",
+						FaSitemap,
+						ACCENTS.violet,
+						"apqp"
+					)}
+					{readinessCard(
+						docValue,
+						toNum(documentation?.Delta_Pts_Vs_M_1),
+						documentation?.Historique_4_Mois,
+						"Documentation Progress",
+						"Progression des approbations",
+						FaBook,
+						ACCENTS.emerald,
+						"documentation"
+					)}
 				</div>
-			</main>
+			</>
 		);
-	}
-
-	if (error) {
-		return (
-			<main className="flex-1 overflow-hidden">
-				<div className="p-6 sm:p-8 flex flex-col items-center justify-center min-h-[400px] gap-4">
-					<div className="w-12 h-12 rounded-full bg-rose-100 flex items-center justify-center">
-						<span className="material-symbols-outlined text-rose-500">
-							error
-						</span>
-					</div>
-					<p className="text-rose-600 font-semibold">{error}</p>
-					<p className="text-slate-400 text-sm">
-						Vérifiez que l&apos;API programme est disponible.
-					</p>
-				</div>
-			</main>
-		);
-	}
+	};
 
 	return (
-		<main className="flex-1 overflow-hidden">
-			<div className="p-6 sm:p-8">
-				{/* Header */}
-				<div className="mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-6">
-					<div className="flex flex-wrap items-center gap-2 mt-2">
-						<span className="w-1 h-8 rounded-full bg-blue-500 block" />
-						<span className="text-xs font-bold uppercase tracking-widest text-blue-500">
-							Program KPI
-						</span>
-					</div>
-					<div className="flex flex-wrap items-center gap-3">
-						<PeriodSelector
-							type={activeTab}
-							period={period}
-							year={year}
-							onPeriodChange={setPeriod}
-							onYearChange={setYear}
-							variant="light"
-						/>
-						<TabSelector
-							activeTab={activeTab}
-							onTabChange={(tab) => setActiveTab(tab)}
-							variant="light"
-						/>
-					</div>
+		<main className="flex flex-col p-3 sm:p-4 [@media(min-height:760px)]:lg:p-5 md:h-full md:min-h-[520px]">
+			{/* Header */}
+			<div className="mb-2 flex shrink-0 flex-wrap items-center justify-between gap-3 [@media(min-height:760px)]:mb-3">
+				<div className="flex items-center gap-2">
+					<span className="block h-8 w-1 rounded-full bg-blue-500" />
+					<span className="text-xs font-bold uppercase tracking-widest text-blue-500">Program KPI</span>
 				</div>
-
-				{activeTab === "weekly" ? <WeeklyProgram /> : <MonthlyProgram />}
+				<div className="flex flex-wrap items-center gap-3">
+					<PeriodSelector
+						type={activeTab}
+						period={period}
+						year={year}
+						onPeriodChange={setPeriod}
+						onYearChange={setYear}
+						variant="light"
+					/>
+					<TabSelector activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab)} variant="light" />
+				</div>
 			</div>
+
+			{loading ? (
+				<div className="flex min-h-[320px] flex-1 flex-col items-center justify-center gap-4">
+					<div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+					<p className="font-medium text-slate-500">Chargement des données programme...</p>
+				</div>
+			) : error ? (
+				<div className="flex min-h-[320px] flex-1 flex-col items-center justify-center gap-2">
+					<p className="font-semibold text-rose-600">{error}</p>
+					<p className="text-sm text-slate-400">Vérifiez que l&apos;API programme est disponible.</p>
+				</div>
+			) : activeTab === "weekly" ? (
+				renderWeekly()
+			) : (
+				renderMonthly()
+			)}
 		</main>
 	);
 }

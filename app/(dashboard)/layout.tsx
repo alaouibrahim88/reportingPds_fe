@@ -50,8 +50,9 @@ export default function DashboardLayout({
 			<div className="flex h-screen">
 				{/* Sidebar in the page colours: dark pages, or white for Programs */}
 				<DesktopSidebar tone={isProgramsPage ? "light" : "dark"} />
+				{/* min-w-0: the column keeps the screen width, the category tabs scroll instead (mobile) */}
 				<div
-					className={`flex flex-col flex-1 min-h-screen ${
+					className={`flex flex-col flex-1 min-w-0 min-h-screen ${
 						isProgramsPage ? "bg-slate-50" : "bg-slate-900"
 					}`}
 				>
