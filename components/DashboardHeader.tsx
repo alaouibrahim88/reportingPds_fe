@@ -1,8 +1,7 @@
 "use client";
 
 import React from "react";
-import { Bell, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
@@ -53,23 +52,8 @@ export function DashboardHeader({ currentCategory, onNavigate, onBack }: Dashboa
             </nav>
           </div>
 
-          {/* Right side - Enhanced Notifications and Profile */}
+          {/* Right side - Profile */}
           <div className="flex items-center space-x-3">
-            {/* Enhanced Notifications */}
-            <div className="relative">
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`relative p-3 rounded-xl transition-all duration-300  ${
-                   "text-slate-300 hover:text-white hover:bg-gradient-to-br hover:from-slate-800 hover:to-slate-700 border border-transparent hover:border-slate-600"
-                }`}
-              >
-                <Bell className="w-5 h-5" />
-                {/* Notification badge */}
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white animate-pulse"></div>
-              </Button>
-            </div>
-
             {/* Enhanced Profile */}
             <div className="relative group">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/30 to-purple-500/30 rounded-full blur-md group-hover:blur-lg transition-all duration-300 opacity-0 group-hover:opacity-100"></div>

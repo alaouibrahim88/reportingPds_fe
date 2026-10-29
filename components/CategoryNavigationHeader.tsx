@@ -4,8 +4,7 @@ import React from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { ModeToggle } from "@/components/ThemeModeToggle"
-import { Bell, User } from "lucide-react"
+import { User } from "lucide-react"
 import Logo from "./Logo"
 interface CategoryNavigationHeaderProps {
 	variant?: "light" | "dark"
@@ -70,17 +69,6 @@ export function CategoryNavigationHeader({
 
 				{/* Right Side Actions */}
 				<div className="flex items-center gap-3">
-					{!isLight && <ModeToggle />}
-					<button
-						className={`relative p-2 rounded-lg transition-colors ${
-							isLight
-								? "text-slate-500 hover:text-slate-900 hover:bg-slate-100"
-								: "text-gray-400 hover:text-white hover:bg-slate-800"
-						}`}
-					>
-						<Bell className="h-5 w-5" />
-						<span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500"></span>
-					</button>
 					<button
 						className={`flex items-center gap-2 p-2 rounded-lg transition-colors ${
 							isLight
