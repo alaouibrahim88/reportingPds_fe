@@ -61,8 +61,11 @@ const routes = [
    },
 ];
 
-// matchDarkPage: on the dark category pages, the dark theme uses the page colors (slate-900)
-function DesktopSidebar({ matchDarkPage = false }: { matchDarkPage?: boolean }) {
+// tone: on the category pages the sidebar follows the page, whatever the theme:
+// "dark" = page colours (slate-900, slight gradient), "light" = white like the Programs page.
+// Without tone it follows the theme.
+function DesktopSidebar({ tone }: { tone?: "dark" | "light" }) {
+  const matchDarkPage = tone === "dark";
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(true);
   const activeRoute =
@@ -77,7 +80,9 @@ function DesktopSidebar({ matchDarkPage = false }: { matchDarkPage?: boolean }) 
     className={cn(
       "relative hidden h-screen border-r bg-background lg:block transition-all duration-300 shrink-0 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
       isCollapsed ? "w-[60px]" : "w-[220px]",
-      matchDarkPage && "dark:border-slate-700/50 dark:bg-slate-900"
+      matchDarkPage && "border-slate-700/50 bg-slate-900 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950",
+      // Light theme colours even when the dark theme is on (tokens reset in globals.css)
+      tone === "light" && "theme-light"
     )}
     >
       <Button
@@ -86,7 +91,7 @@ function DesktopSidebar({ matchDarkPage = false }: { matchDarkPage?: boolean }) 
         className={cn(
           "absolute right-1 top-6 z-10 h-8 w-8 rounded-full border bg-background shadow-sm",
           matchDarkPage &&
-            "dark:border-slate-700 dark:bg-slate-800 dark:text-gray-300 dark:hover:bg-slate-700 dark:hover:text-white"
+            "border-slate-700 bg-slate-800 text-gray-300 hover:bg-slate-700 hover:text-white"
         )}
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
@@ -101,7 +106,7 @@ function DesktopSidebar({ matchDarkPage = false }: { matchDarkPage?: boolean }) 
       <div
         className={cn(
           "flex h-16 items-center border-b px-4",
-          matchDarkPage && "dark:border-slate-700/50"
+          matchDarkPage && "border-slate-700/50"
         )}
       >
         <div
@@ -124,15 +129,15 @@ function DesktopSidebar({ matchDarkPage = false }: { matchDarkPage?: boolean }) 
               "group relative flex h-12 items-center px-4 transition-colors hover:bg-accent/50",
               pathname === `/${route.href}` && "bg-accent",
               isCollapsed && "justify-center px-0",
-              matchDarkPage && "dark:hover:bg-slate-800",
-              matchDarkPage && pathname === `/${route.href}` && "dark:bg-slate-800"
+              matchDarkPage && "hover:bg-slate-800/70",
+              matchDarkPage && pathname === `/${route.href}` && "bg-blue-500/10"
             )}
           >
             {pathname === `/${route.href}` && (
               <div
                 className={cn(
                   "absolute left-0 h-full w-1 bg-primary",
-                  matchDarkPage && "dark:bg-blue-500"
+                  matchDarkPage && "bg-blue-500"
                 )}
               />
             )}
@@ -140,18 +145,18 @@ function DesktopSidebar({ matchDarkPage = false }: { matchDarkPage?: boolean }) 
               size={20}
               className={cn(
                 "shrink-0 text-muted-foreground transition-colors",
-                matchDarkPage && "dark:text-gray-400 dark:group-hover:text-white",
+                matchDarkPage && "text-gray-400 group-hover:text-white",
                 pathname === `/${route.href}` && "text-primary",
-                matchDarkPage && pathname === `/${route.href}` && "dark:text-blue-400",
+                matchDarkPage && pathname === `/${route.href}` && "text-blue-400",
                 !isCollapsed && "mr-2"
               )}
             />
             <span
               className={cn(
                 "text-sm font-medium text-muted-foreground transition-all duration-300",
-                matchDarkPage && "dark:text-gray-300",
+                matchDarkPage && "text-gray-300",
                 pathname === `/${route.href}` && "text-foreground",
-                matchDarkPage && pathname === `/${route.href}` && "dark:text-white",
+                matchDarkPage && pathname === `/${route.href}` && "text-white",
                 isCollapsed && "w-0 opacity-0"
               )}
             >

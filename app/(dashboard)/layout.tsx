@@ -48,7 +48,8 @@ export default function DashboardLayout({
 	if (isCategoryPage) {
 		return (
 			<div className="flex h-screen">
-				<DesktopSidebar matchDarkPage={!isProgramsPage} />
+				{/* Sidebar in the page colours: dark pages, or white for Programs */}
+				<DesktopSidebar tone={isProgramsPage ? "light" : "dark"} />
 				<div
 					className={`flex flex-col flex-1 min-h-screen ${
 						isProgramsPage ? "bg-slate-50" : "bg-slate-900"
