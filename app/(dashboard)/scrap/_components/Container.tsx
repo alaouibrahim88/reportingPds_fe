@@ -74,7 +74,9 @@ function Container() {
   const currentYear = currentIso.year;
   const currentWeek = currentIso.week;
   const [weeklyYear, setWeeklyYear] = useState(currentYear);
-  const [week, setWeek] = useState(currentWeek);
+  // Weeks of the weekly activity panel, in order: the current week by default
+  const [weeks, setWeeks] = useState<number[]>([currentWeek]);
+  const weeksKey = weeks.join(",");
   const [isWeeklyLoading, setIsWeeklyLoading] = useState(false);
   const [yearlyFilter, setYearlyFilter] = useState({
     year: new Date().getFullYear(),
@@ -125,16 +127,17 @@ function Container() {
   useEffect(() => {
     const maxWeek =
       weeklyYear === currentYear ? currentWeek : getIsoWeeksInYear(weeklyYear);
-    if (week > maxWeek) {
-      setWeek(maxWeek);
+    if (weeks.some((week) => week > maxWeek)) {
+      const kept = weeks.filter((week) => week <= maxWeek);
+      setWeeks(kept.length > 0 ? kept : [maxWeek]);
     }
-  }, [weeklyYear, week, currentYear, currentWeek]);
+  }, [weeklyYear, weeks, currentYear, currentWeek]);
 
   useEffect(() => {
     let isMounted = true;
     setIsWeeklyLoading(true);
 
-    fetchWeeklyScrap(week, weeklyYear)
+    fetchWeeklyScrap(weeksKey.split(",").map(Number), weeklyYear)
       .then((data) => {
         if (isMounted) {
           setWeeklyData(data);
@@ -149,7 +152,7 @@ function Container() {
     return () => {
       isMounted = false;
     };
-  }, [week, weeklyYear]);
+  }, [weeksKey, weeklyYear]);
 
   useEffect(() => {
     fetchYearlyScrap(yearlyFilter).then((result) =>
@@ -235,13 +238,13 @@ function Container() {
             />
           </div>
           <ZoneActivity
-            week={week}
+            weeks={weeks}
             year={weeklyYear}
             data={weeklyData}
             loading={isWeeklyLoading}
             availableWeeks={availableWeeks}
             availableYears={availableYears}
-            onWeekChange={setWeek}
+            onWeeksChange={setWeeks}
             onYearChange={setWeeklyYear}
           />
         </div>

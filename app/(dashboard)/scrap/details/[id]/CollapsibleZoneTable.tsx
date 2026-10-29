@@ -490,7 +490,7 @@ const CollapsibleZoneTable = ({
           {months.flatMap((month) => [
             ...(weeksPerMonth[month] || []).map((weekNum) => (
               <th
-                // A week straddling two months (e.g. WK40) appears under both
+                // Each week belongs to one month only (month of its Thursday, set by the API)
                 key={`${month}-wk${weekNum}`}
                 className="border p-1 text-center text-xs font-medium text-muted-foreground"
               >
