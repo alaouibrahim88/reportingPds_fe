@@ -19,7 +19,7 @@ const CATEGORY_PAGES = [
 	"/supplychain",
 ]
 
-const LIGHT_CATEGORY_PAGES = ["/programs", "/rh"]
+const LIGHT_CATEGORY_PAGES = ["/programs", "/rh", "/finance", "/supplychain"]
 
 export default function DashboardLayout({
 	children,
@@ -51,7 +51,7 @@ export default function DashboardLayout({
 	if (isCategoryPage) {
 		return (
 			<div className="flex h-screen">
-				{/* Sidebar in the page colours: dark pages, or white for Programs and RH */}
+				{/* Sidebar in the page colours: dark pages, or white for Programs, RH, Finance and Supply Chain */}
 				<DesktopSidebar tone={isLightPage ? "light" : "dark"} />
 				{/* min-w-0: the column keeps the screen width, the category tabs scroll instead (mobile) */}
 				<div

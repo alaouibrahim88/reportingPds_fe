@@ -1,665 +1,387 @@
 "use client"
 
-import React, { useEffect, useState } from 'react'
-import { PeriodSelector } from '@/components/ui/PeriodSelector'
-import { TabSelector } from '@/components/ui/TabSelector'
-import { useKpiPeriod } from '@/hooks/use-kpi-period'
+import React, { useEffect, useState } from "react"
+import type { IconType } from "react-icons"
+import { FaBoxes, FaChartLine, FaCoins, FaShieldAlt, FaSyncAlt, FaTruck } from "react-icons/fa"
+import { useKpiPeriod } from "@/hooks/use-kpi-period"
 import {
-	FaChartLine,
-	FaTruck,
-	FaShieldAlt,
-	FaBoxes,
-	FaSyncAlt,
-} from 'react-icons/fa'
-type TabType = 'weekly' | 'monthly'
+  BarsChart,
+  Chips,
+  HistoryRow,
+  KpiCard,
+  LoadingState,
+  MONTH_FULL_NAMES,
+  MONTH_NAMES,
+  MONTH_PILL,
+  NoDataBanner,
+  PeriodHeader,
+  Scope,
+  Status,
+  StatusPill,
+  TrendChart,
+  ValueBlock,
+  WEEK_PILL,
+  monthOfWeek,
+  nf0,
+  nf1,
+  nf2,
+  pad,
+  sectionLabel,
+  toNum,
+} from "@/components/kpi/LightKpi"
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// Stock reliability per warehouse: same threshold as before (95 %)
+const WAREHOUSE_THRESHOLD = 95
 
-interface WeeklyHistoryItem {
-	Label: string
-	Annee: number
-	Semaine: number
-	Valeur: number
+// Oldest first, so the selected period is the last one
+function chrono(items: any[] | null | undefined): any[] {
+  return [...(items ?? [])].sort(
+    (a, b) =>
+      (toNum(a?.Annee) ?? 0) * 100 + (toNum(a?.Mois ?? a?.Semaine) ?? 0) - ((toNum(b?.Annee) ?? 0) * 100 + (toNum(b?.Mois ?? b?.Semaine) ?? 0))
+  )
 }
-
-interface WeeklyKpiMetric {
-	Valeur_Semaine: number
-	Variation_Pts_Vs_S_1: number
-	Historique_5_Semaines: WeeklyHistoryItem[]
-}
-
-interface WeeklyInventorySemaine {
-	Taux_Service_Client_OTIF: WeeklyKpiMetric
-	Taux_Service_Fournisseurs_OTIF: WeeklyKpiMetric
-	Fiabilite_Client: WeeklyKpiMetric
-}
-
-interface WeeklyApiData {
-	Inventory_Semaine: WeeklyInventorySemaine
-}
-
-interface MonthlyHistoryJours {
-	Label: string
-	Mois: number
-	Annee: number
-	Valeur_Jours: number
-}
-
-interface MonthlyHistoryPct {
-	Label: string
-	Mois: number
-	Annee: number
-	Valeur: number
-}
-
-interface MonthlyHistoryMEur {
-	Label: string
-	Mois: number
-	Annee: number
-	Valeur_MEUR: number
-}
-
-interface MonthlyApiData {
-	Inventory_Mois: {
-		Rotation_Stocks: {
-			Valeur_Jours: number
-			Variation_Jours_Vs_M_1: number
-			VsLabel: string
-			Suivi_5_Mois: MonthlyHistoryJours[]
-		}
-		Fiabilite_Stocks: {
-			Valeur_Pct: number
-			Variation_Pts_Vs_M_1: number
-			Detail_Warehouses: {
-				Warehouse_A: number
-				Warehouse_B: number
-				Warehouse_C: number
-			}
-			Suivi_5_Mois: MonthlyHistoryPct[]
-		}
-		Cout_Logistique_Total: {
-			Valeur_MEUR: number
-			Delta_MEUR_Vs_M_1: number
-			VsLabel: string
-			Suivi_5_Mois: MonthlyHistoryMEur[]
-		}
-	}
-}
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function formatVariation(v: number): string {
-	return v > 0 ? `+${v.toFixed(1)} pts` : `${v.toFixed(1)} pts`
-}
-
-interface ChartPoint {
-	x: number
-	svgY: number
-	bottomPct: number
-	leftPct: number
-	label: string
-	valeur: number
-}
-
-function computeChartPoints(history: WeeklyHistoryItem[] | null | undefined): {
-	points: ChartPoint[]
-	linePath: string
-	fillPath: string
-} {
-	if (!history || !history.length) return { points: [], linePath: '', fillPath: '' }
-	const values = history.map((h) => h.Valeur)
-	const min = Math.min(...values)
-	const max = Math.max(...values)
-	const range = max === min ? 1 : max - min
-	const pad = range * 0.2
-	const padMin = min - pad
-	const padRange = max + pad - padMin
-	const W = 400
-	const H = 100
-	const last = history.length - 1
-
-	const points: ChartPoint[] = history.map((h, i) => {
-		const x = last === 0 ? W / 2 : (i / last) * W
-		const norm = (h.Valeur - padMin) / padRange
-		const svgY = H - norm * H * 0.8 - H * 0.1
-		const bottomPct = ((H - svgY) / H) * 100
-		const leftPct = last === 0 ? 50 : (i / last) * 100
-		return { x, svgY, bottomPct, leftPct, label: h.Label, valeur: h.Valeur }
-	})
-
-	const linePath = points
-		.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.svgY.toFixed(1)}`)
-		.join(' ')
-	const fillPath = `${linePath} L ${W} ${H} L 0 ${H} Z`
-	return { points, linePath, fillPath }
-}
-
-function pointTransform(i: number, total: number): string {
-	if (i === 0) return 'translate(0, 50%)'
-	if (i === total - 1) return 'translate(-100%, 50%)'
-	return 'translate(-50%, 50%)'
-}
-
-/** Maps values to SVG points for a 100×40 viewBox sparkline. */
-function computeSparklinePts(
-	values: number[] | null | undefined
-): { x: number; y: number }[] {
-	if (!values || values.length < 2) return []
-	const min = Math.min(...values)
-	const max = Math.max(...values)
-	const range = max === min ? 1 : max - min
-	const last = values.length - 1
-	return values.map((v, i) => ({
-		x: +(5 + (i / last) * 90).toFixed(2),
-		y: +(35 - ((v - min) / range) * 25).toFixed(2),
-	}))
-}
-
-function sparklinePtsToPolyline(pts: { x: number; y: number }[]): string {
-	return pts.map((p) => `${p.x},${p.y}`).join(' ')
-}
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
-
-function WeekCircleBadge({
-	label,
-	valeur,
-	target,
-}: {
-	label: string
-	valeur: number
-	target?: number
-}) {
-	return (
-		<div className='flex flex-col items-center gap-2'>
-			<div className='flex h-[76px] w-[76px] flex-col items-center justify-center rounded-full bg-primary/10 ring-2 ring-primary/50 dark:bg-primary/20 dark:ring-primary/60'>
-				<span className='text-xl font-extrabold tracking-tight text-white '>
-					{valeur.toFixed(0)}%
-				</span>
-				{target !== undefined && (
-					<span className='text-[10px] font-semibold text-slate-500 dark:text-slate-400'>
-						Cible: {target}%
-					</span>
-				)}
-			</div>
-			<p className='text-xs font-semibold text-text-light-secondary dark:text-dark-secondary'>
-				{label}
-			</p>
-		</div>
-	)
-}
-
-interface MonthDeltaBadgeProps {
-	value: number
-	unit: string
-	vsLabel: string
-	/** When true, a negative delta is styled as good (primary) */
-	lowerIsBetter?: boolean
-}
-
-function MonthDeltaBadge({
-	value,
-	unit,
-	vsLabel,
-	lowerIsBetter = false,
-}: MonthDeltaBadgeProps) {
-	const safeValue = value ?? 0
-	const isGood = lowerIsBetter ? safeValue <= 0 : safeValue >= 0
-	const colorClass = isGood ? 'text-primary' : 'text-danger'
-	const sign = safeValue > 0 ? '+' : ''
-	return (
-		<div className='flex items-center gap-1'>
-			<p className={`text-xl font-extrabold ${colorClass}`}>
-				{sign}
-				{safeValue.toFixed(2)} {unit}
-			</p>
-			<p className='text-sm font-normal text-text-light-secondary dark:text-dark-secondary'>
-				{vsLabel}
-			</p>
-		</div>
-	)
-}
-
-function CardHeader({
-	title,
-	icon,
-}: {
-	title: string
-	icon: React.ReactNode
-}) {
-	return (
-		<div className='flex items-center justify-between'>
-			<p className='text-sm font-semibold uppercase tracking-wider text-text-light-secondary dark:text-dark-secondary'>
-				{title}
-			</p>
-			<div className='flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 text-text-light-secondary dark:text-dark-secondary'>
-				{icon}
-			</div>
-		</div>
-	)
-}
-
-// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function SupplyChainPage() {
-	const { type: activeTab, setType: setActiveTab, period, setPeriod, year, setYear } =
-		useKpiPeriod('weekly')
+  const { period: week, setPeriod: setWeek, year, setYear } = useKpiPeriod("weekly")
+  const [scope, setScope] = useState<Scope>("all")
+  const [stockView, setStockView] = useState<"trend" | "warehouses">("trend")
+  const [weekly, setWeekly] = useState<any>(null)
+  const [monthly, setMonthly] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-	const [weeklyData, setWeeklyData] = useState<WeeklyApiData | null>(null)
-	const [monthlyData, setMonthlyData] = useState<MonthlyApiData | null>(null)
-	const [loading, setLoading] = useState(true)
+  const { month, year: monthYear } = monthOfWeek(year, week)
 
-	useEffect(() => {
-		async function fetchData() {
-			setLoading(true)
-			try {
-				const url =
-					`/api/supplychain?type=${activeTab}&period=${period}&year=${year}`
-				const res = await fetch(url, { cache: 'no-store' })
-				if (!res.ok) {
-					throw new Error(`HTTP error! status: ${res.status}`)
-				}
-				const json = await res.json()
-				const finalData = json?.data?.data ?? json?.data ?? json
-				if (activeTab === 'weekly') {
-					setWeeklyData(finalData || null)
-				} else {
-					setMonthlyData(finalData || null)
-				}
-			} catch (error) {
-				console.error('Error fetching supply chain data:', error)
-				if (activeTab === 'weekly') {
-					setWeeklyData(null)
-				} else {
-					setMonthlyData(null)
-				}
-			} finally {
-				setLoading(false)
-			}
-		}
-		fetchData()
-	}, [activeTab, period, year])
+  // Weekly indicators for the week, monthly ones for the month of the week
+  useEffect(() => {
+    let cancelled = false
+    async function fetchData() {
+      setLoading(true)
+      setError(null)
+      try {
+        const [w, m] = await Promise.all(
+          [
+            `/api/supplychain?type=weekly&period=${week}&year=${year}`,
+            `/api/supplychain?type=monthly&period=${month}&year=${monthYear}`,
+          ].map(async (url) => {
+            const res = await fetch(url, { cache: "no-store" })
+            if (!res.ok) throw new Error(`Erreur ${res.status} lors du chargement des données Supply Chain`)
+            const json = await res.json()
+            return json?.data?.data ?? json?.data ?? json
+          })
+        )
+        if (!cancelled) {
+          setWeekly(w?.Inventory_Semaine ?? null)
+          setMonthly(m?.Inventory_Mois ?? null)
+        }
+      } catch (err) {
+        if (!cancelled) setError(err instanceof Error ? err.message : "Erreur inconnue")
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    fetchData()
+    return () => {
+      cancelled = true
+    }
+  }, [week, year, month, monthYear])
 
-	if (loading) {
-		return (
-			<main className='flex-1 overflow-hidden bg-slate-900'>
-				<div className='flex min-h-[400px] items-center justify-center p-4 sm:p-6 lg:p-8'>
-					<div className='text-white text-lg'>Chargement des données...</div>
-				</div>
-			</main>
-		)
-	}
+  const single = scope !== "all"
+  const monthShort = `${MONTH_NAMES[month - 1]} ${monthYear}`
+  const monthAxis = (items: any[]) =>
+    items.map((s) => {
+      const m = toNum(s?.Mois) ?? 1
+      const y = toNum(s?.Annee)
+      return y !== null && y !== monthYear ? `${MONTH_NAMES[m - 1]} ${String(y).slice(2)}` : MONTH_NAMES[m - 1]
+    })
 
-	// ── Weekly view ────────────────────────────────────────────────────────────
-	const WeeklyView = () => {
-		const semaine = weeklyData?.Inventory_Semaine
-		if (!semaine) {
-			return (
-				<div className='flex h-40 items-center justify-center text-text-light-secondary dark:text-dark-secondary'>
-					Aucune donnée disponible
-				</div>
-			)
-		}
+  /* ----- Weekly: service rates (%), higher is better ----- */
 
-		const clientOtif = semaine?.Taux_Service_Client_OTIF
-		const fournOtif = semaine?.Taux_Service_Fournisseurs_OTIF
-		const fiabilite = semaine?.Fiabilite_Client
+  const weeklyCard = (key: string, kpi: any, title: string, icon: IconType, iconClass: string, color: string, chart: "bars" | "line") => {
+    const serie = chrono(kpi?.Historique_5_Semaines)
+    const values = serie.map((s) => toNum(s?.Valeur))
+    const targets = serie.map((s) => toNum(s?.Target))
+    const target = toNum(kpi?.Target) ?? targets[targets.length - 1] ?? null
+    const value = toNum(kpi?.Valeur_Semaine)
+    const labels = serie.map((s) => `S${pad(toNum(s?.Semaine) ?? 0)}`)
+    const statusOf = (v: number | null, t: number | null): Status | null => (v === null || t === null ? null : v >= t ? "ok" : "bad")
+    const format = (n: number) => `${nf0.format(n)}%`
+    return (
+      <KpiCard
+        key={key}
+        title={title}
+        icon={icon}
+        iconClass={iconClass}
+        subtitle={<>Hebdomadaire{target !== null && <> · cible {nf1.format(target)} %</>}</>}
+        period={`S${pad(week)}`}
+        periodClass={WEEK_PILL}
+        status={<StatusPill status={statusOf(value, target)} ok="Cible atteinte" bad="Sous la cible" />}
+        className={single ? "md:min-h-[420px]" : ""}
+      >
+        <ValueBlock value={value === null ? "—" : nf1.format(value)} unit="%" variation={{ value: toNum(kpi?.Variation_Pts_Vs_S_1), suffix: " pt", label: "vs S-1" }} />
+        {single && serie.length > 0 && (
+          <>
+            <p className={`${sectionLabel} mt-3 mb-1 shrink-0`}>Historique 5 semaines</p>
+            <HistoryRow
+              pillClass={WEEK_PILL}
+              ringClass="ring-blue-500/30"
+              slots={serie.map((_, i) => ({
+                label: labels[i],
+                value: values[i] === null ? null : format(values[i] as number),
+                status: statusOf(values[i], targets[i] ?? target),
+                selected: i === serie.length - 1,
+              }))}
+            />
+          </>
+        )}
+        <p className={`${sectionLabel} mt-3 mb-1 shrink-0`}>Tendance</p>
+        {chart === "bars" ? (
+          <BarsChart
+            groups={serie.map((_, i) => ({ label: labels[i], values: [values[i]] }))}
+            series={[{ color }]}
+            selectedIndex={serie.length - 1}
+            pillClass={WEEK_PILL}
+            format={format}
+            target={target}
+            barColor={(v, _si, gi) => (gi === serie.length - 1 ? color : `${color}66`)}
+          />
+        ) : (
+          <TrendChart
+            series={[{ values, color }]}
+            labels={labels}
+            selectedIndex={serie.length - 1}
+            pillClass={WEEK_PILL}
+            format={format}
+            target={target}
+          />
+        )}
+      </KpiCard>
+    )
+  }
 
-		if (!clientOtif || !fournOtif || !fiabilite) {
-			return (
-				<div className='flex h-40 items-center justify-center text-text-light-secondary dark:text-dark-secondary'>
-					Aucune donnée disponible
-				</div>
-			)
-		}
+  const clientOtif = weekly?.Taux_Service_Client_OTIF
+  const fournOtif = weekly?.Taux_Service_Fournisseurs_OTIF
+  const fiabClient = weekly?.Fiabilite_Client
+  const weeklyMissing = [clientOtif, fournOtif, fiabClient].every((k) => toNum(k?.Valeur_Semaine) === null)
 
-		const clientHist = clientOtif.Historique_5_Semaines ?? []
-		const maxClientVal = Math.max(...clientHist.map((h) => h.Valeur), 1)
+  const weeklyCards = () => [
+    weeklyCard("client", clientOtif, "Taux de Service Client / OTIF", FaChartLine, "bg-blue-50 text-blue-600", "#2563eb", "bars"),
+    weeklyCard("fournisseurs", fournOtif, "Taux de Service Fournisseurs / OTIF", FaTruck, "bg-sky-50 text-sky-600", "#0284c7", "line"),
+    weeklyCard("fiabilite-client", fiabClient, "Fiabilité Client", FaShieldAlt, "bg-teal-50 text-teal-600", "#0d9488", "line"),
+  ]
 
-		return (
-			<div className='flex flex-col gap-6'>
-				{/* Row 1 – 2 cards side by side */}
-				<div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
-					{/* Card 1: Taux de Service Client OTIF – bar chart */}
-					<div className='flex flex-col gap-5 rounded-xl border border-border-light bg-panel-background-light p-6 shadow-sm dark:border-border-dark dark:bg-panel-background-dark'>
-						<CardHeader
-						title='Taux de Service Client / OTIF'
-						icon={<FaChartLine className='text-sm' />}
-					    />
+  /* ----- Monthly ----- */
 
-						<div className='flex flex-wrap items-end gap-3'>
-						<p className='text-5xl font-extrabold tracking-tighter text-text-light-primary dark:text-dark-primary'>
-							{(clientOtif.Valeur_Semaine ?? 0).toFixed(0)}%
-						</p>
-						</div>
+  const rotation = monthly?.Rotation_Stocks
+  const fiabStocks = monthly?.Fiabilite_Stocks
+  const cout = monthly?.Cout_Logistique_Total
+  const monthlyMissing = [rotation?.Valeur_Jours, fiabStocks?.Valeur_Pct, cout?.Valeur_MEUR].every((v) => toNum(v) === null)
 
-						{/* Bar chart */}
-						<div className='flex flex-col gap-2 pt-1'>
-							<div className='flex h-[100px] items-end gap-2'>
-								{clientHist.map((h, i) => {
-									const barH = Math.max((h.Valeur / maxClientVal) * 80, 4)
-									const isCurrent = i === clientHist.length - 1
-									return (
-										<div
-											key={h.Label}
-											className='flex flex-1 flex-col items-center gap-1.5'
-										>
-											<span className='text-xs font-bold leading-none text-text-light-primary dark:text-dark-primary'>
-												{h.Valeur.toFixed(0)}%
-											</span>
-											<div
-												className={`w-full rounded-t-md ${
-													isCurrent
-														? 'bg-blue-500'
-														: 'bg-blue-500/30 dark:bg-blue-500/25'
-												}`}
-												style={{ height: `${barH}px` }}
-											/>
-										</div>
-									)
-								})}
-							</div>
-							<div className='flex gap-2 border-t border-slate-200/30 pt-2 dark:border-slate-700/40'>
-								{clientHist.map((h) => (
-									<p
-										key={h.Label}
-										className='flex-1 text-center text-xs font-semibold text-text-light-secondary dark:text-dark-secondary'
-									>
-										{`Semaine ${h.Semaine}`}
-									</p>
-								))}
-							</div>
-						</div>
-					</div>
+  const monthlyCard = ({
+    key,
+    kpi,
+    title,
+    icon,
+    iconClass,
+    color,
+    unit,
+    valueKey,
+    historyKey,
+    targetKey,
+    deltaKey,
+    deltaSuffix,
+    lowerIsBetter = false,
+    format,
+    extra,
+  }: {
+    key: string
+    kpi: any
+    title: string
+    icon: IconType
+    iconClass: string
+    color: string
+    unit: string
+    valueKey: string
+    historyKey: string
+    targetKey: string
+    deltaKey: string
+    deltaSuffix: string
+    lowerIsBetter?: boolean
+    format: (n: number) => string
+    extra?: { chips: React.ReactNode; content: React.ReactNode | null }
+  }) => {
+    const serie = chrono(kpi?.Suivi_5_Mois)
+    const values = serie.map((s) => toNum(s?.[historyKey]))
+    const targets = serie.map((s) => toNum(s?.[targetKey]))
+    const target = toNum(kpi?.[targetKey]) ?? targets[targets.length - 1] ?? null
+    const value = toNum(kpi?.[valueKey])
+    const statusOf = (v: number | null, t: number | null): Status | null =>
+      v === null || t === null ? null : (lowerIsBetter ? v <= t : v >= t) ? "ok" : "bad"
+    const labels = monthAxis(serie)
+    const withUnit = (n: number) => `${format(n)}${unit === "%" ? "%" : ""}`
+    return (
+      <KpiCard
+        key={key}
+        title={title}
+        icon={icon}
+        iconClass={iconClass}
+        subtitle={<>Mensuel{target !== null && <> · cible {format(target)} {unit}</>}</>}
+        period={monthShort}
+        periodClass={MONTH_PILL}
+        status={<StatusPill status={statusOf(value, target)} ok="Cible atteinte" bad={lowerIsBetter ? "Cible dépassée" : "Sous la cible"} />}
+        className={single ? "md:min-h-[420px]" : ""}
+      >
+        <ValueBlock
+          value={value === null ? "—" : format(value)}
+          unit={unit}
+          lowerIsBetter={lowerIsBetter}
+          variation={{ value: toNum(kpi?.[deltaKey]), suffix: deltaSuffix, label: kpi?.VsLabel ?? "vs M-1", format: nf2 }}
+        />
+        {single && serie.length > 0 && (
+          <>
+            <p className={`${sectionLabel} mt-3 mb-1 shrink-0`}>Historique 5 mois</p>
+            <HistoryRow
+              pillClass={MONTH_PILL}
+              ringClass="ring-violet-500/30"
+              slots={serie.map((_, i) => ({
+                label: labels[i],
+                value: values[i] === null ? null : withUnit(values[i] as number),
+                status: statusOf(values[i], targets[i] ?? target),
+                selected: i === serie.length - 1,
+              }))}
+            />
+          </>
+        )}
+        {extra ? <div className="mt-3 mb-1 shrink-0">{extra.chips}</div> : <p className={`${sectionLabel} mt-3 mb-1 shrink-0`}>Tendance</p>}
+        {extra?.content ?? (
+          <TrendChart
+            series={[{ values, color, pointColor: target === null ? undefined : (v, i) => (statusOf(v, targets[i] ?? target) === "ok" ? "#059669" : "#dc2626") }]}
+            labels={labels}
+            selectedIndex={serie.length - 1}
+            pillClass={MONTH_PILL}
+            format={withUnit}
+            target={target}
+          />
+        )}
+      </KpiCard>
+    )
+  }
 
-					{/* Card 2: Taux de Service Fournisseurs OTIF – circle badges */}
-					<div className='flex flex-col gap-5 rounded-xl border border-border-light bg-panel-background-light p-6 shadow-sm dark:border-border-dark dark:bg-panel-background-dark'>
-						<CardHeader
-						title='Taux de Service Fournisseurs OTIF'
-						icon={<FaTruck className='text-sm' />}
-					/>
+  const warehouses = Object.entries(fiabStocks?.Detail_Warehouses ?? {}).map(([key, v]) => ({ label: key.replace("Warehouse_", "Entrepôt "), value: toNum(v) }))
 
-						<div className='flex flex-wrap items-end gap-3'>
-						<p className='text-5xl font-extrabold tracking-tighter text-text-light-primary dark:text-dark-primary'>
-							{(fournOtif.Valeur_Semaine ?? 0).toFixed(0)}%
-						</p>
-						</div>
+  const monthlyCards = () => [
+    monthlyCard({
+      key: "rotation",
+      kpi: rotation,
+      title: "Rotation des Stocks",
+      icon: FaBoxes,
+      iconClass: "bg-amber-50 text-amber-600",
+      color: "#d97706",
+      unit: "jours",
+      valueKey: "Valeur_Jours",
+      historyKey: "Valeur_Jours",
+      targetKey: "Target_Jours",
+      deltaKey: "Variation_Jours_Vs_M_1",
+      deltaSuffix: " j",
+      lowerIsBetter: true,
+      format: (n) => nf1.format(n),
+    }),
+    monthlyCard({
+      key: "fiabilite-stocks",
+      kpi: fiabStocks,
+      title: "Taux de Fiabilité des Stocks",
+      icon: FaSyncAlt,
+      iconClass: "bg-violet-50 text-violet-600",
+      color: "#7c3aed",
+      unit: "%",
+      valueKey: "Valeur_Pct",
+      historyKey: "Valeur",
+      targetKey: "Target",
+      deltaKey: "Variation_Pts_Vs_M_1",
+      deltaSuffix: " pt",
+      format: (n) => nf1.format(n),
+      extra: {
+        chips: (
+          <Chips
+            options={[
+              { key: "trend" as const, label: "Évolution 5 mois" },
+              { key: "warehouses" as const, label: "Par entrepôt" },
+            ]}
+            selected={[stockView]}
+            onToggle={(key) => setStockView(key)}
+          />
+        ),
+        content:
+          stockView === "warehouses" ? (
+            <BarsChart
+              groups={warehouses.map((w) => ({ label: w.label, values: [w.value] }))}
+              series={[{ color: "#7c3aed" }]}
+              selectedIndex={-1}
+              pillClass={MONTH_PILL}
+              format={(n) => `${nf1.format(n)}%`}
+              target={WAREHOUSE_THRESHOLD}
+              barColor={(v) => (v >= WAREHOUSE_THRESHOLD ? "#10b981" : "#f59e0b")}
+              empty={`Pas de détail par entrepôt pour ${MONTH_FULL_NAMES[month - 1].toLowerCase()}`}
+            />
+          ) : null,
+      },
+    }),
+    monthlyCard({
+      key: "cout",
+      kpi: cout,
+      title: "Coût Logistique Total",
+      icon: FaCoins,
+      iconClass: "bg-rose-50 text-rose-600",
+      color: "#e11d48",
+      unit: "M€",
+      valueKey: "Valeur_MEUR",
+      historyKey: "Valeur_MEUR",
+      targetKey: "Target_MEUR",
+      deltaKey: "Delta_MEUR_Vs_M_1",
+      deltaSuffix: " M€",
+      lowerIsBetter: true,
+      format: (n) => nf2.format(n),
+    }),
+  ]
 
-				<div className='flex flex-1 items-center justify-around pt-3'>
-					{(fournOtif.Historique_5_Semaines ?? []).map((h) => (
-							<WeekCircleBadge
-								key={h.Label}
-								label={`Semaine ${h.Semaine}`}
-								valeur={h.Valeur}
-							/>
-						))}
-					</div>
-					</div>
-				</div>
+  /* ----- Layout ----- */
 
-				{/* Row 2 – Full-width card: Fiabilité Client */}
-				<div className='flex flex-col gap-5 rounded-xl border border-border-light bg-panel-background-light p-6 shadow-sm dark:border-border-dark dark:bg-panel-background-dark'>
-					<CardHeader
-						title='Fiabilité Client'
-						icon={<FaShieldAlt className='text-sm' />}
-					/>
+  const missing = [
+    scope !== "monthly" && weeklyMissing ? `la semaine ${week}` : null,
+    scope !== "weekly" && monthlyMissing ? `${MONTH_FULL_NAMES[month - 1].toLowerCase()} ${monthYear}` : null,
+  ].filter(Boolean)
+  const missingFile =
+    missing.length > 1 ? "hebdomadaire (INV) et mensuel (INV_MONTH)" : scope !== "monthly" && weeklyMissing ? "hebdomadaire (INV)" : "mensuel (INV_MONTH)"
 
-					<div className='flex flex-wrap items-center gap-10'>
-						{/* Current value circle */}
-					<div className='flex flex-col items-center gap-4'>
-						<div className='flex h-[140px] w-[140px] items-center justify-center rounded-full border-[10px] border-primary/20 bg-primary/10 dark:border-primary/30 dark:bg-primary/20'>
-							<div className='flex flex-col items-center gap-0.5 leading-none'>
-								<span className='text-5xl font-extrabold tracking-tighter text-white '>
-									{(fiabilite.Valeur_Semaine ?? 0).toFixed(0)}%
-								</span>
-							</div>
-						</div>
-					</div>
+  return (
+    <main className="flex flex-col p-3 sm:p-4 [@media(min-height:760px)]:lg:p-5 md:h-full md:min-h-[560px]">
+      <PeriodHeader title="Supply Chain KPI" week={week} year={year} onWeekChange={setWeek} onYearChange={setYear} scope={scope} onScopeChange={setScope} />
 
-						{/* Vertical divider */}
-						<div className='hidden h-36 w-px bg-border-light dark:bg-border-dark lg:block' />
-
-						{/* History circles */}
-						<div className='flex flex-col gap-4'>
-							<p className='text-xs font-semibold uppercase tracking-widest text-text-light-secondary dark:text-dark-secondary'>
-								Historique hebdomadaire
-							</p>
-						<div className='flex flex-wrap items-center gap-5'>
-							{(fiabilite.Historique_5_Semaines ?? []).map((h) => (
-								<WeekCircleBadge
-									key={h.Label}
-									label={`Semaine ${h.Semaine}`}
-									valeur={h.Valeur}
-								/>
-							))}
-						</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		)
-	}
-
-	// ── Monthly view ──────────────────────────────────────────────────────────
-	const MonthlyView = () => {
-		const mois = monthlyData?.Inventory_Mois
-		if (!mois) {
-			return (
-				<div className='flex h-40 items-center justify-center text-text-light-secondary dark:text-dark-secondary'>
-					Aucune donnée disponible
-				</div>
-			)
-		}
-
-		const {
-			Rotation_Stocks: rotation,
-			Fiabilite_Stocks: fiabilite,
-			Cout_Logistique_Total: cout,
-		} = mois
-
-		if (!rotation || !fiabilite || !cout) {
-			return (
-				<div className='flex h-40 items-center justify-center text-text-light-secondary dark:text-dark-secondary'>
-					Aucune donnée disponible
-				</div>
-			)
-		}
-
-		const rotPts = computeSparklinePts(rotation?.Suivi_5_Mois?.map((m) => m.Valeur_Jours))
-		const fibPts = computeSparklinePts(fiabilite?.Suivi_5_Mois?.map((m) => m.Valeur))
-		const coutPts = computeSparklinePts(cout?.Suivi_5_Mois?.map((m) => m.Valeur_MEUR))
-
-		const warehouseEntries = Object.entries(
-			fiabilite.Detail_Warehouses ?? {}
-		) as [string, number][]
-
-		const SparklineChart = ({ pts }: { pts: { x: number; y: number }[] }) => (
-			<div className='relative flex min-h-[12rem] items-center justify-center lg:col-span-2'>
-				<div className='h-20 w-full max-w-lg'>
-					<svg
-						className='h-full w-full'
-						preserveAspectRatio='none'
-						viewBox='0 0 100 40'
-					>
-						<line
-							fill='none'
-							stroke='#3182CE'
-							strokeDasharray='4,4'
-							strokeWidth='0.5'
-							x1='0'
-							x2='100'
-							y1='20'
-							y2='20'
-						/>
-						{pts.length > 0 && (
-							<>
-								<polyline
-									fill='none'
-									points={sparklinePtsToPolyline(pts)}
-									stroke='#DD6B20'
-									strokeWidth='1'
-								/>
-								{pts.map((p, i) => (
-									<circle key={i} cx={p.x} cy={p.y} fill='#DD6B20' r='1.5' />
-								))}
-							</>
-						)}
-					</svg>
-				</div>
-			</div>
-		)
-
-		return (
-			<div className='flex flex-col gap-6'>
-				{/* Card 1: Rotation des Stocks */}
-				<div className='flex h-full flex-col gap-6 rounded-xl border border-border-light bg-panel-background-light p-6 shadow-sm dark:border-border-dark dark:bg-panel-background-dark'>
-						<CardHeader
-						title='Rotation des Stocks'
-						icon={<FaBoxes className='text-sm' />}
-					/>
-					<div className='grid flex-1 grid-cols-1 gap-6 lg:grid-cols-5'>
-						<div className='flex flex-col justify-center gap-8 py-4 lg:col-span-3'>
-							<div className='flex flex-col gap-1'>
-								<p className='text-7xl font-extrabold tracking-tighter text-text-light-primary dark:text-dark-primary'>
-									{rotation.Valeur_Jours ?? '—'}{' '}
-									<span className='text-5xl font-bold'>jours</span>
-								</p>
-								<MonthDeltaBadge
-									value={rotation.Variation_Jours_Vs_M_1 ?? 0}
-									unit='jours'
-									vsLabel={rotation.VsLabel ?? ''}
-									lowerIsBetter
-								/>
-							</div>
-						<div className='flex flex-wrap items-center gap-4'>
-							{(rotation.Suivi_5_Mois ?? []).map((m) => (
-									<div key={m.Label} className='flex flex-col items-center gap-2'>
-										<div className='flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary dark:bg-primary/20'>
-											<span className='text-3xl font-bold'>{m.Valeur_Jours}</span>
-										</div>
-										<p className='text-sm font-semibold text-text-light-secondary dark:text-dark-secondary'>
-											{m.Label}
-										</p>
-									</div>
-								))}
-							</div>
-						</div>
-						<SparklineChart pts={rotPts} />
-					</div>
-				</div>
-
-				{/* Card 2: Taux de Fiabilité des Stocks */}
-				<div className='flex h-full flex-col gap-6 rounded-xl border border-border-light bg-panel-background-light p-6 shadow-sm dark:border-border-dark dark:bg-panel-background-dark'>
-					<CardHeader
-						title='Taux de Fiabilité des Stocks'
-						icon={<FaSyncAlt className='text-sm' />}
-					/>
-					<div className='grid flex-1 grid-cols-1 gap-6 lg:grid-cols-5'>
-						<div className='flex flex-col items-center justify-center gap-6 py-4 lg:col-span-3'>
-							<div className='flex flex-col items-center gap-1'>
-								<p className='text-8xl font-extrabold tracking-tighter text-text-light-primary dark:text-dark-primary'>
-									{(fiabilite.Valeur_Pct ?? 0).toFixed(0)}%
-								</p>
-								<MonthDeltaBadge
-									value={fiabilite.Variation_Pts_Vs_M_1 ?? 0}
-									unit='pts'
-									vsLabel='vs M-1'
-								/>
-							</div>
-							<div className='flex w-full max-w-md flex-col gap-4'>
-								{warehouseEntries.map(([key, val]) => (
-									<div key={key} className='flex items-center gap-4'>
-										<p className='w-28 shrink-0 text-sm font-semibold text-text-light-secondary dark:text-dark-secondary'>
-											{key.replace('_', ' ')}
-										</p>
-										<div className='h-6 w-full rounded bg-gray-200 dark:bg-gray-700'>
-											<div
-												className={`flex h-full items-center justify-end rounded pr-2 text-right text-sm font-bold text-white ${
-													val >= 95 ? 'bg-primary' : 'bg-warning'
-												}`}
-												style={{ width: `${Math.min(val, 100)}%` }}
-											>
-												{val.toFixed(1)}%
-											</div>
-										</div>
-									</div>
-								))}
-							</div>
-						</div>
-						<SparklineChart pts={fibPts} />
-					</div>
-				</div>
-
-				{/* Card 3: Coût Logistique Total */}
-				<div className='flex h-full flex-col gap-6 rounded-xl border border-border-light bg-panel-background-light p-6 shadow-sm dark:border-border-dark dark:bg-panel-background-dark'>
-					<CardHeader
-						title='Coût Logistique Total'
-						icon={<FaTruck className='text-sm' />}
-					/>
-					<div className='grid flex-1 grid-cols-1 gap-6 lg:grid-cols-5'>
-						<div className='flex flex-col justify-center gap-8 py-4 lg:col-span-3'>
-							<div className='flex flex-col gap-1'>
-								<p className='text-7xl font-extrabold tracking-tighter text-text-light-primary dark:text-dark-primary'>
-									€{(cout.Valeur_MEUR ?? 0).toFixed(2)}
-									<span className='text-5xl font-bold'> M</span>
-								</p>
-								<MonthDeltaBadge
-									value={cout.Delta_MEUR_Vs_M_1 ?? 0}
-									unit='M€'
-									vsLabel={cout.VsLabel ?? ''}
-									lowerIsBetter
-								/>
-							</div>
-							<div className='flex flex-wrap items-center gap-4'>
-								{(cout.Suivi_5_Mois ?? []).map((m) => (
-									<div key={m.Label} className='flex flex-col items-center gap-2'>
-										<div className='flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary dark:bg-primary/20'>
-											<span className='text-2xl font-bold'>
-												{(m.Valeur_MEUR ?? 0).toFixed(2)}
-											</span>
-										</div>
-										<p className='text-sm font-semibold text-text-light-secondary dark:text-dark-secondary'>
-											{m.Label}
-										</p>
-									</div>
-								))}
-							</div>
-						</div>
-						<SparklineChart pts={coutPts} />
-					</div>
-				</div>
-			</div>
-		)
-	}
-
-	return (
-		<main className='flex-1 overflow-hidden bg-slate-900'>
-			<div className='p-4 sm:p-6 lg:p-8'>
-				<div className='flex w-full flex-col gap-6'>
-					{/* Header */}
-					<div className='flex flex-wrap items-start justify-between gap-4'>
-						<div className="flex flex-wrap items-center gap-2 mt-2">
-							<span className="w-1 h-8 rounded-full bg-white block" />
-							<span className="text-xs font-bold uppercase tracking-widest text-white">
-								Supply Chain KPI
-							</span>
-						</div>
-						<div className='flex flex-wrap items-center gap-3'>
-							<PeriodSelector
-								type={activeTab}
-								period={period}
-								year={year}
-								onPeriodChange={setPeriod}
-								onYearChange={setYear}
-							/>
-							<TabSelector activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab)} />
-						</div>
-					</div>
-
-					{/* Content */}
-					{activeTab === 'monthly' ? <MonthlyView /> : <WeeklyView />}
-				</div>
-			</div>
-		</main>
-	)
+      {loading ? (
+        <LoadingState label="Chargement des données Supply Chain..." />
+      ) : error ? (
+        <div className="flex min-h-[320px] flex-1 flex-col items-center justify-center gap-2">
+          <p className="font-semibold text-rose-600">{error}</p>
+          <p className="text-sm text-slate-400">Vérifiez que l&apos;API Supply Chain est disponible.</p>
+        </div>
+      ) : (
+        <>
+          {missing.length > 0 && (
+            <NoDataBanner>
+              Aucune donnée Supply Chain pour {missing.join(" et pour ")} : le fichier {missingFile} de cette période n&apos;a pas encore été
+              importé (page Importation).
+            </NoDataBanner>
+          )}
+          <div
+            className={`grid min-h-0 flex-1 grid-cols-1 gap-3 [@media(min-height:900px)]:gap-4 ${
+              scope === "all" ? "md:grid-cols-2 lg:grid-cols-3 lg:grid-rows-2" : "md:grid-cols-3"
+            }`}
+          >
+            {scope !== "monthly" && weeklyCards()}
+            {scope !== "weekly" && monthlyCards()}
+          </div>
+        </>
+      )}
+    </main>
+  )
 }

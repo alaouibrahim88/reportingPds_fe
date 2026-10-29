@@ -1,761 +1,443 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { ArrowUp, ArrowDown, Target } from "lucide-react"
-import { PeriodSelector } from "@/components/ui/PeriodSelector"
-import { TabSelector } from "@/components/ui/TabSelector"
+import { FaChartPie, FaEuroSign, FaExclamationTriangle, FaFileInvoice, FaWallet } from "react-icons/fa"
 import { useKpiPeriod } from "@/hooks/use-kpi-period"
-import { createGetSemaineLabel } from "@/lib/week-labels"
-import { formatMEUR } from "@/lib/utils"
+import {
+  BarsChart,
+  Chips,
+  HistoryRow,
+  KpiCard,
+  Legend,
+  LoadingState,
+  MONTH_FULL_NAMES,
+  MONTH_NAMES,
+  MONTH_PILL,
+  NoDataBanner,
+  PeriodHeader,
+  Scope,
+  Status,
+  StatusPill,
+  TrendChart,
+  ValueBlock,
+  WEEK_PILL,
+  monthOfWeek,
+  nf1,
+  nf2,
+  pad,
+  sectionLabel,
+  toNum,
+  weekBefore,
+} from "@/components/kpi/LightKpi"
 
-type TabType = "weekly" | "monthly"
+const fmtMEUR = (n: number | null) => (n === null ? "—" : nf2.format(n))
 
-interface DerniereSemaine {
-	Label: string
-	Valeur_MEUR?: number
-	Valeur?: number
-	Target?: number
+// Oldest first, so the selected month is the last one
+function chronoMonths(items: any[] | null | undefined): any[] {
+  return [...(items ?? [])].sort((a, b) => (toNum(a.Annee) ?? 0) * 100 + (toNum(a.Mois) ?? 0) - ((toNum(b.Annee) ?? 0) * 100 + (toNum(b.Mois) ?? 0)))
 }
 
-interface SemaineDuMois {
-	Label: string
-	Reel_MEUR?: number
-	Prevision_MEUR?: number
-	Cumul_MEUR?: number
-}
-
-interface ChiffreAffaires {
-	Valeur_Mois_Cumulee_MEUR: number
-	Annee_Reference: number
-	Semaine_Reference: number
-	Dernieres_4_Semaines: DerniereSemaine[]
-	Semaine_Du_Mois: SemaineDuMois[]
-}
-
-interface TauxFacturationLivraison {
-	Valeur_S_1: number
-	Variation_Pts_Vs_S_1: number
-	Dernieres_4_Semaines: DerniereSemaine[]
-}
-
-interface FinanceSemaine {
-	Chiffre_Affaires: ChiffreAffaires
-	Taux_Facturation_Livraison: TauxFacturationLivraison
-}
-
-interface SuiviMois {
-	Label: string
-	Mois: number
-	Annee: number
-	Valeur?: number
-	Valeur_MEUR?: number
-	Target?: number
-	Target_MEUR?: number
-}
-
-interface EfficienceFinanciere {
-	Valeur_Affichee: number
-	Delta_Affiche: number
-	Delta_Unite: string
-	VsLabel: string
-	Suivi_4_Mois: SuiviMois[]
-}
-
-interface ExecutionBudgetaire {
-	Valeur_Affichee: number
-	Delta_Affiche: number
-	Delta_Unite: string
-	VsLabel: string
-	Suivi_4_Mois: SuiviMois[]
-}
-
-interface PaiementsRetard {
-	Valeur_Affichee_MEUR: number
-	Delta_Affiche_MEUR: number
-	Delta_Unite: string
-	VsLabel: string
-	Suivi_4_Mois: SuiviMois[]
-}
-
-interface FinanceMois {
-	Efficience_Financiere: EfficienceFinanciere
-	Execution_Budgetaire: ExecutionBudgetaire
-	Paiements_Retard: PaiementsRetard
-}
-
-// Finance Dashboard Page - Fetches data from /api/finance
 export default function FinancePage() {
-	const { type: activeTab, setType: setActiveTab, period, setPeriod, year, setYear } =
-		useKpiPeriod('weekly')
-	const [weeklyData, setWeeklyData] = useState<FinanceSemaine | null>(null)
-	const [monthlyData, setMonthlyData] = useState<FinanceMois | null>(null)
-	const [loading, setLoading] = useState(true)
-	const [error, setError] = useState<string | null>(null)
+  const { period: week, setPeriod: setWeek, year, setYear } = useKpiPeriod("weekly")
+  const [scope, setScope] = useState<Scope>("all")
+  const [caView, setCaView] = useState<"month" | "last4">("month")
+  const [weekly, setWeekly] = useState<any>(null)
+  const [monthly, setMonthly] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-	useEffect(() => {
-		async function fetchData() {
-			setLoading(true)
-			setError(null)
-			try {
-				const url = `/api/finance?type=${activeTab}&period=${period}&year=${year}`
-				const res = await fetch(url, { cache: "no-store" })
-				if (!res.ok) {
-					throw new Error(`HTTP error! status: ${res.status}`)
-				}
-				const json = await res.json()
-				const finalData = json?.data ?? json
+  const { month, year: monthYear } = monthOfWeek(year, week)
 
-				if (activeTab === "weekly") {
-					setWeeklyData(finalData?.Finance_Semaine ?? null)
-				} else {
-					setMonthlyData(finalData?.Finance_Mois ?? null)
-				}
-			} catch (err) {
-				console.error(`Error fetching finance ${activeTab} data:`, err)
-				setError(err instanceof Error ? err.message : "Failed to load finance data")
-				if (activeTab === "weekly") {
-					setWeeklyData(null)
-				} else {
-					setMonthlyData(null)
-				}
-			} finally {
-				setLoading(false)
-			}
-		}
+  // Weekly indicators for the week, monthly ones for the month of the week
+  useEffect(() => {
+    let cancelled = false
+    async function fetchData() {
+      setLoading(true)
+      setError(null)
+      try {
+        const [w, m] = await Promise.all(
+          [
+            `/api/finance?type=weekly&period=${week}&year=${year}`,
+            `/api/finance?type=monthly&period=${month}&year=${monthYear}`,
+          ].map(async (url) => {
+            const res = await fetch(url, { cache: "no-store" })
+            if (!res.ok) throw new Error(`Erreur ${res.status} lors du chargement des données Finance`)
+            const json = await res.json()
+            return json?.data ?? json
+          })
+        )
+        if (!cancelled) {
+          setWeekly(w?.Finance_Semaine ?? null)
+          setMonthly(m?.Finance_Mois ?? null)
+        }
+      } catch (err) {
+        if (!cancelled) setError(err instanceof Error ? err.message : "Erreur inconnue")
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    fetchData()
+    return () => {
+      cancelled = true
+    }
+  }, [week, year, month, monthYear])
 
-		fetchData()
-	}, [activeTab, period, year])
+  const single = scope !== "all"
+  const monthShort = `${MONTH_NAMES[month - 1]} ${monthYear}`
+  const weekLabel = (n: number) => {
+    const w = weekBefore(year, week, n)
+    return `S${pad(w.week)}`
+  }
 
-	if (loading) {
-		return (
-			<main className="flex-1 overflow-hidden">
-				<div className="p-3 sm:p-4 lg:p-6 flex items-center justify-center min-h-[400px]">
-					<div className="text-white text-lg">Chargement des données...</div>
-				</div>
-			</main>
-		)
-	}
+  /* ----- Weekly ----- */
 
-	if (error) {
-		return (
-			<main className="flex-1 overflow-hidden">
-				<div className="p-3 sm:p-4 lg:p-6 flex items-center justify-center min-h-[400px]">
-					<div className="text-red-500 text-lg">Erreur lors du chargement des données: {error}</div>
-				</div>
-			</main>
-		)
-	}
+  const ca = weekly?.Chiffre_Affaires
+  const taux = weekly?.Taux_Facturation_Livraison
+  const caValue = toNum(ca?.Valeur_Mois_Cumulee_MEUR)
+  const tauxValue = toNum(taux?.Valeur_S_1)
+  const weeklyMissing = Boolean(weekly?.Error) || (caValue === null && tauxValue === null)
 
-	// Monthly KPI Dashboard Content
-	const MonthlyDashboard = () => {
-		if (!monthlyData) {
-			return (
-				<main className="flex-1 overflow-hidden">
-					<div className="p-3 sm:p-4 lg:p-6 flex items-center justify-center min-h-[400px]">
-						<div className="text-gray-400 text-lg">Aucune donnée disponible.</div>
-					</div>
-				</main>
-			)
-		}
-
-		const eff = monthlyData.Efficience_Financiere ?? ({} as EfficienceFinanciere)
-		const exec = monthlyData.Execution_Budgetaire ?? ({} as ExecutionBudgetaire)
-		const paiements = monthlyData.Paiements_Retard ?? ({} as PaiementsRetard)
-		const effSuivi = Array.isArray(eff.Suivi_4_Mois) ? eff.Suivi_4_Mois : []
-		const execSuivi = Array.isArray(exec.Suivi_4_Mois) ? exec.Suivi_4_Mois : []
-		const paiementsSuivi = Array.isArray(paiements.Suivi_4_Mois)
-			? paiements.Suivi_4_Mois
-			: []
-
-		return (
-			<main className="flex-1">
-				<div className="flex flex-col flex-grow gap-6">
-					<div className="flex flex-col gap-6">
-						<div className="flex flex-col gap-5 rounded-xl border border-slate-700/80 bg-slate-900/60 p-6 transition-transform duration-300 cursor-pointer shadow-lg shadow-black/20">
-							<div className="flex flex-col md:flex-row gap-4 items-center">
-								<div className="flex-1 md:pl-8">
-									<p className="text-white text-base font-medium leading-normal">
-										Efficience financière
-									</p>
-									<div className="flex items-end gap-2 mt-1">
-										<p className="text-white tracking-light text-[32px] font-bold leading-tight truncate">
-											{eff.Valeur_Affichee ?? '-'}%
-										</p>
-										<p className={`text-base font-medium ${(eff.Delta_Affiche ?? 0) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-											({eff.Delta_Affiche != null ? (eff.Delta_Affiche >= 0 ? '+' : '') + eff.Delta_Affiche : '-'} {eff.Delta_Unite} {eff.VsLabel})
-										</p>
-									</div>
-									<p className="text-sm text-gray-400 mt-1">
-										Efficacité Globale
-									</p>
-									<div className="flex justify-start items-center mt-4 space-x-3">
-										{eff.Suivi_4_Mois.map((item, i) => (
-											<div
-												key={item.Label}
-												className="flex items-center justify-center w-14 h-14 rounded-full border-2 bg-blue-500/20 text-blue-300 border-blue-400"
-											>
-												<span className="font-bold text-lg">{item.Valeur ?? '-'}</span>
-											</div>
-										))}
-									</div>
-								</div>
-              <div className="w-full md:w-auto md:flex-1">
-                <div className="h-36">
-                  <svg
-                    className="w-full h-full"
-                    fill="none"
-                    viewBox="0 0 320 144"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <line
-                      className="stroke-current text-gray-600"
-                      strokeDasharray="4 4"
-                      x1="0"
-                      x2="320"
-                      y1="28"
-                      y2="28"
-                    />
-                    <text
-                      className="fill-current text-gray-500 text-xs"
-                      x="290"
-                      y="24"
-                    >
-                      Target
-                    </text>
-                    <polyline
-                      className="stroke-current text-yellow-400"
-                      fill="none"
-                      points="40,88 120,40 200,60 280,88"
-                      strokeWidth="2"
-                    />
-                    <circle className="fill-current text-yellow-400" cx="40" cy="88" r="4" />
-                    <circle className="fill-current text-yellow-400" cx="120" cy="40" r="4" />
-                    <circle className="fill-current text-yellow-400" cx="200" cy="60" r="4" />
-                    <circle className="fill-current text-yellow-400" cx="280" cy="88" r="4" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </div>
-						<div className="flex flex-col gap-5 rounded-xl border border-slate-700/80 bg-slate-900/60 p-6 transition-transform duration-300 cursor-pointer shadow-lg shadow-black/20">
-							<div className="flex flex-col md:flex-row gap-4 items-center">
-								<div className="flex-1 md:pl-8">
-									<p className="text-white text-base font-medium leading-normal">
-										Exécution Budgétaire
-									</p>
-									<div className="flex items-end gap-2 mt-1">
-										<p className="text-white tracking-light text-[32px] font-bold leading-tight truncate">
-											{exec.Valeur_Affichee ?? '-'}%
-										</p>
-										<div className={`flex items-center ${(exec.Delta_Affiche ?? 0) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-											<p className="text-base font-medium">
-												{exec.Delta_Affiche != null ? (exec.Delta_Affiche >= 0 ? '+' : '') + exec.Delta_Affiche + ' ' + exec.Delta_Unite : '-'}
-											</p>
-										</div>
-									</div>
-									<p className="text-sm text-gray-400 mt-1">
-										Consommé vs. mois dernier
-									</p>
-									<div className="flex justify-start items-center mt-4 space-x-3">
-										{execSuivi.map((item, i) => (
-											<div
-												key={item?.Label ?? `exec-${i}`}
-												className="flex items-center justify-center w-14 h-14 rounded-full border-2 bg-blue-500/20 text-blue-300 border-blue-400"
-											>
-												<span className="font-bold text-lg">{item?.Valeur ?? '-'}</span>
-											</div>
-										))}
-									</div>
-								</div>
-              <div className="w-full md:w-auto md:flex-1 h-36">
-                <svg
-                  className="w-full h-full"
-                  fill="none"
-                  viewBox="0 0 320 144"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <line
-                    className="stroke-current text-gray-600"
-                    strokeDasharray="4 4"
-                    x1="0"
-                    x2="320"
-                    y1="58"
-                    y2="58"
-                  />
-                  <text className="fill-current text-gray-500 text-xs" x="290" y="54">
-                    Target
-                  </text>
-                  <polyline
-                    className="stroke-current text-yellow-400"
-                    fill="none"
-                    points="40,88 120,68 200,78 280,68"
-                    strokeWidth="2"
-                  />
-                  <circle className="fill-current text-yellow-400" cx="40" cy="88" r="4" />
-                  <circle className="fill-current text-yellow-400" cx="120" cy="68" r="4" />
-                  <circle className="fill-current text-yellow-400" cx="200" cy="78" r="4" />
-                  <circle className="fill-current text-yellow-400" cx="280" cy="68" r="4" />
-                </svg>
-              </div>
-            </div>
-          </div>
-						<div className="flex flex-col gap-5 rounded-xl border border-slate-700/80 bg-slate-900/60 p-6 transition-transform duration-300 cursor-pointer shadow-lg shadow-black/20">
-							<div className="flex flex-col md:flex-row gap-4 items-center">
-								<div className="flex-1 md:pl-8">
-									<p className="text-white text-base font-medium leading-normal">
-										Total des Paiements en Retard
-									</p>
-									<div className="flex items-end gap-2 mt-1">
-										<p className="text-red-500 tracking-light text-[32px] font-bold leading-tight truncate">
-											{formatMEUR(paiements?.Valeur_Affichee_MEUR)} M€
-										</p>
-										<div className={`flex items-center ${(paiements?.Delta_Affiche_MEUR ?? 0) <= 0 ? 'text-green-500' : 'text-red-500'}`}>
-											<p className="text-base font-medium">
-												{(paiements?.Delta_Affiche_MEUR ?? 0) >= 0 ? '+' : ''}{formatMEUR(paiements?.Delta_Affiche_MEUR)} M€
-											</p>
-										</div>
-									</div>
-									<p className="text-sm text-gray-400 mt-1">
-										Amélioration vs mois dernier
-									</p>
-									<div className="flex justify-start items-center mt-4 space-x-3">
-										{paiementsSuivi.map((item, i) => (
-											<div
-												key={item?.Label ?? `paiements-${i}`}
-												className="flex items-center justify-center w-14 h-14 rounded-full border-2 bg-blue-500/20 text-blue-300 border-blue-400"
-											>
-												<span className="font-bold text-lg">{formatMEUR(item?.Valeur_MEUR)}</span>
-											</div>
-										))}
-									</div>
-								</div>
-              <div className="w-full md:w-auto md:flex-1 h-36">
-                <svg
-                  className="w-full h-full"
-                  fill="none"
-                  viewBox="0 0 320 144"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <line
-                    className="stroke-current text-gray-600"
-                    strokeDasharray="4 4"
-                    x1="0"
-                    x2="320"
-                    y1="88"
-                    y2="88"
-                  />
-                  <text className="fill-current text-gray-500 text-xs" x="290" y="84">
-                    Target
-                  </text>
-                  <polyline
-                    className="stroke-current text-yellow-400"
-                    fill="none"
-                    points="40,28 120,48 200,68 280,98"
-                    strokeWidth="2"
-                  />
-                  <circle className="fill-current text-yellow-400" cx="40" cy="28" r="4" />
-                  <circle className="fill-current text-yellow-400" cx="120" cy="48" r="4" />
-                  <circle className="fill-current text-yellow-400" cx="200" cy="68" r="4" />
-                  <circle className="fill-current text-yellow-400" cx="280" cy="98" r="4" />
-                </svg>
-              </div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</main>
-		)
-	}
-
-	const WeeklyDashboard = () => {
-		if (!weeklyData) {
-			return (
-				<main className="flex-1 overflow-hidden">
-					<div className="p-3 sm:p-4 lg:p-6 flex items-center justify-center min-h-[400px]">
-						<div className="text-gray-400 text-lg">Aucune donnée disponible.</div>
-					</div>
-				</main>
-			)
-		}
-
-		const ca = weeklyData.Chiffre_Affaires ?? ({} as ChiffreAffaires)
-		const taux = weeklyData.Taux_Facturation_Livraison ?? ({} as TauxFacturationLivraison)
-		const semaines = Array.isArray(ca?.Semaine_Du_Mois) ? ca.Semaine_Du_Mois : []
-		const derniers4 = Array.isArray(taux?.Dernieres_4_Semaines)
-			? taux.Dernieres_4_Semaines
-			: []
-		const refWeek = ca?.Semaine_Reference ?? 1
-		const getSemaineLabel = createGetSemaineLabel(refWeek, semaines.length)
-		const getSemaineLabelTaux = createGetSemaineLabel(refWeek, derniers4.length)
-
-		return (
-    <main className="flex-1 flex flex-col">
-      <div className="flex-1 grid grid-cols-1 gap-6">
-        <div
-          className="flex flex-col gap-5 rounded-xl border border-slate-700/80 bg-slate-900/60 p-6 transition-transform duration-300 cursor-pointer shadow-lg shadow-black/20"
-        >
-        <p className="text-white text-lg font-semibold leading-normal">
-          Chiffre d’Affaires Réalisé vs. Prévisionnel
-        </p>
-        <div className="flex flex-col gap-4">
-          <div
-            className="flex items-center justify-between pb-4 border-b border-white/10"
-          >
-            <div className="flex flex-col gap-1">
-              <div className="flex items-end gap-2">
-								<p className="text-blue-400 tracking-light text-7xl font-bold leading-tight truncate tabular-nums">
-									<span className="text-blue-400">
-										{formatMEUR(ca?.Valeur_Mois_Cumulee_MEUR)}
-									</span>
-									<span className="text-blue-300/90 text-5xl ml-1">M€</span>
-								</p>
-							</div>
-							<p className="text-sm text-gray-300 font-medium">Cumul du mois</p>
-            </div>
-            <div className="flex items-end gap-4">
-              <div className="flex flex-col text-right">
-                <div className="flex items-center gap-4">
-									{semaines.map((s, idx) => (
-										<div key={getSemaineLabel(idx)} className="flex flex-col items-center gap-2.5">
-											<div
-												className="w-20 h-20 rounded-full bg-slate-700/60 border-2 border-blue-400/80 flex items-center justify-center shadow-xl shadow-blue-500/20 ring-2 ring-blue-500/20"
-											>
-												<span className="text-white text-lg font-bold tabular-nums">
-													{formatMEUR(s.Cumul_MEUR ?? s.Reel_MEUR ?? s.Prevision_MEUR)} M€
-												</span>
-											</div>
-											<span className="text-gray-300 text-sm font-medium">{getSemaineLabel(idx)}</span>
-										</div>
-									))}
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-		{semaines.length > 0 ? (
-		<>
-		<div className="h-60 min-h-[240px] relative pt-8 pb-4 px-6 overflow-visible bg-slate-800/30 rounded-lg border border-slate-700/50">
-          <div className="absolute inset-0 px-6 pt-8 pb-4">
-						{(() => {
-							const items = semaines
-							const getVal = (s: SemaineDuMois | undefined) =>
-								s?.Cumul_MEUR ?? s?.Reel_MEUR ?? s?.Prevision_MEUR ?? 0
-							const values = items.map(getVal)
-							const maxVal = Math.max(...values, 1)
-							const n = items.length
-							const w = 286
-							const h = 112
-							const padTop = 10
-							const padBottom = 10
-							const usableH = h - padTop - padBottom
-							const pts = items.map((s, i) => {
-								const val = getVal(s)
-								const x = n > 1 ? ((2 * i + 1) * w) / (2 * n) : w / 2
-								const cyVal = padTop + (1 - val / maxVal) * usableH
-								return { x, cy: cyVal }
-							})
-							const pathD =
-								pts.length > 1
-									? `M${pts.map((p) => `${p.x} ${p.cy}`).join('L')}`
-									: ''
-							return (
-								<svg
-									className="w-full h-full"
-									fill="none"
-									preserveAspectRatio="none"
-									viewBox={`0 0 ${w} ${h}`}
-									xmlns="http://www.w3.org/2000/svg"
-								>
-									{pathD && (
-										<path
-											d={pathD}
-											stroke="#EAB308"
-											strokeWidth="2.5"
-											strokeLinecap="round"
-											strokeLinejoin="round"
-										/>
-									)}
-									{pts.map((p, i) => (
-										<circle
-											key={getSemaineLabel(i)}
-											cx={p.x}
-											cy={p.cy}
-											fill="#EAB308"
-											r="6"
-											stroke="#fef08a"
-											strokeWidth="2"
-										/>
-									))}
-								</svg>
-							)
-						})()}
-          </div>
-          <div
-						className="absolute inset-0 grid items-end px-6"
-						style={{
-							gridTemplateColumns: `repeat(${Math.max(1, semaines.length)}, minmax(0, 1fr))`,
-						}}
-					>
-						{semaines.map((s, i) => {
-							const items = semaines
-							const getVal = (x: SemaineDuMois | undefined) =>
-								x?.Cumul_MEUR ?? x?.Reel_MEUR ?? x?.Prevision_MEUR ?? 0
-							const val = getVal(s)
-							const maxVal = Math.max(...items.map(getVal), 1)
-							const height = Math.max(40, (val / maxVal) * 90)
-							return (
-								<div
-									key={getSemaineLabel(i)}
-									className={`rounded-t-md relative mx-auto w-1/3 flex justify-center ${i === items.length - 1 ? 'bg-primary' : 'bg-primary/80'}`}
-									style={{ height: `${height}%` }}
-								>
-									<span className="absolute -top-8 left-1/2 -translate-x-1/2 px-3 py-2 rounded-lg text-white text-base font-bold bg-slate-800 border-2 border-slate-500 whitespace-nowrap shadow-xl z-10 min-w-[4rem] text-center">
-										{formatMEUR(val)} M€
-									</span>
-								</div>
-							)
-						})}
-					</div>
-          <div
-            className="absolute top-2 right-6 flex flex-col items-end gap-1.5 z-20"
-          >
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/95 border border-yellow-500/50">
-              <Target className="w-4 h-4 text-yellow-400 shrink-0" strokeWidth={2.5} />
-              <span className="text-sm font-bold text-yellow-300 tabular-nums">
-								{formatMEUR(
-									semaines.reduce(
-										(sum, s) =>
-											sum +
-											(s?.Cumul_MEUR ?? s?.Reel_MEUR ?? s?.Prevision_MEUR ?? 0),
-										0
-									)
-								)}{' '}
-								M€
-							</span>
-            </div>
-            <span className="text-xs font-medium text-gray-400">Objectif cible</span>
-          </div>
-        </div>
-						<div
-							className="grid text-center pt-5 px-6"
-							style={{
-								gridTemplateColumns: `repeat(${Math.max(1, semaines.length)}, minmax(0, 1fr))`,
-							}}
-						>
-							{semaines.map((s, idx) => (
-								<div key={getSemaineLabel(idx)} className="flex flex-col items-center gap-2">
-									<span className="font-bold text-base text-white">{getSemaineLabel(idx)}</span>
-									<span className="text-gray-300 text-sm font-medium tabular-nums">
-										{formatMEUR(s?.Cumul_MEUR ?? s?.Reel_MEUR ?? s?.Prevision_MEUR)} M€
-									</span>
-								</div>
-							))}
-						</div>
-		</>
-		) : (
-						<div className="h-60 min-h-[240px] flex items-center justify-center rounded-lg border border-slate-700/50 bg-slate-800/30">
-							<span className="text-gray-400 text-sm">Aucune donnée pour afficher le graphique</span>
-						</div>
-		)}
-      </div>
-        <div
-          className="flex flex-col gap-5 rounded-xl border border-slate-700/80 bg-slate-900/60 p-6 transition-transform duration-300 cursor-pointer shadow-lg shadow-black/20"
-        >
-						<p className="text-white text-lg font-semibold leading-normal">
-							Taux de Facturation & Livraison
-						</p>
-						<div className="flex items-center justify-between">
-							<div className="flex items-end gap-2">
-								<p className="text-blue-400 tracking-light text-4xl font-bold leading-tight truncate tabular-nums">
-									<span className="text-blue-400">{taux?.Valeur_S_1 ?? '-'}</span>
-									<span className="text-blue-300/90 text-3xl ml-0.5">%</span>
-								</p><s></s>
-							</div>
-							<div className="flex items-center gap-4">
-								{derniers4.map((s, idx) => (
-									<div key={getSemaineLabelTaux(idx)} className="flex flex-col items-center gap-2.5">
-										<div
-											className="w-16 h-16 rounded-full border-2 flex items-center justify-center bg-slate-700/60 border-blue-400/80 shadow-xl shadow-blue-500/20 ring-2 ring-blue-500/20"
-										>
-											<span className="text-white text-base font-bold tabular-nums">{s?.Valeur ?? s?.Valeur_MEUR ?? '-'}%</span>
-										</div>
-										<span className="text-gray-300 text-sm font-medium">{getSemaineLabelTaux(idx)}</span>
-									</div>
-								))}
-							</div>
-						</div>
-        <div className="flex-grow flex flex-col justify-center py-4">
-          {derniers4.length > 0 ? (
+  const caCard = () => {
+    const target = toNum(ca?.Target_Mois_MEUR)
+    const monthWeeks: any[] = ca?.Semaine_Du_Mois ?? []
+    // Weeks of the month up to the selected one have an actual value, the next ones a forecast
+    const lastPast = monthWeeks.reduce((last, s, i) => (s?.Prevision_MEUR === undefined || s?.Prevision_MEUR === null ? i : last), -1)
+    const monthLabels = monthWeeks.map((_, i) => (i <= lastPast ? weekLabel(lastPast - i) : `S${pad(week + (i - lastPast))}`))
+    const last4: any[] = ca?.Dernieres_4_Semaines ?? []
+    const last4Values = last4.map((s) => toNum(s?.Valeur_MEUR))
+    const last4Labels = last4.map((_, i) => weekLabel(last4.length - 1 - i))
+    return (
+      <KpiCard
+        key="ca"
+        title="Chiffre d'Affaires Réalisé vs Prévisionnel"
+        icon={FaEuroSign}
+        iconClass="bg-blue-50 text-blue-600"
+        subtitle={<>Hebdomadaire{target !== null && <> · objectif du mois {nf2.format(target)} M€</>}</>}
+        period={`S${pad(week)}`}
+        periodClass={WEEK_PILL}
+        status={<StatusPill status={caValue === null || target === null ? null : caValue >= target ? "ok" : "bad"} ok="Objectif atteint" bad="Sous l'objectif" />}
+        className={single ? "md:min-h-[420px]" : ""}
+      >
+        <ValueBlock
+          value={fmtMEUR(caValue)}
+          unit="M€"
+          variation={{ value: toNum(ca?.Variation_Pct_Vs_S_1), suffix: " %", label: "vs S-1" }}
+          detail={caValue === null ? null : <>Cumul {MONTH_FULL_NAMES[month - 1].toLowerCase()} à S{pad(week)}</>}
+        />
+        {single && last4.length > 0 && (
           <>
-          <div className="h-52 min-h-[220px] w-full relative pt-6 pb-4 pl-6 pr-16 overflow-visible bg-slate-800/30 rounded-lg border border-slate-700/50">
-            <div
-              className="absolute inset-0 pl-6 pr-16 flex flex-col justify-between z-0 pointer-events-none"
-            >
-              <div className="flex justify-between items-center text-gray-300 text-base font-semibold">
-                <span className="w-10 shrink-0">100%</span>
-                <hr className="flex-1 border-[1.5px] border-dashed border-slate-500 mx-4" />
-              </div>
-              <div className="relative flex justify-between items-center text-gray-300 text-base font-semibold">
-                <span className="w-10 shrink-0">95%</span>
-                <hr className="flex-1 border-[1.5px] border-dashed border-blue-400/70 mx-4" />
-                <span className="absolute -right-14 top-1/2 -translate-y-1/2 flex items-center gap-2 px-2 py-1 rounded bg-slate-800/90 border border-blue-500/50">
-                  <Target className="w-4 h-4 text-blue-400 shrink-0" strokeWidth={2.5} />
-                  <span className="text-sm text-blue-300 font-semibold">target</span>
-                </span>
-              </div>
-              <div className="flex justify-between items-center text-gray-300 text-base font-semibold">
-                <span className="w-10 shrink-0">90%</span>
-                <hr className="flex-1 border-[1.5px] border-dashed border-slate-500 mx-4" />
-              </div>
-              <div className="flex justify-between items-center text-gray-300 text-base font-semibold">
-                <span className="w-10 shrink-0">85%</span>
-                <hr className="flex-1 border-[1.5px] border-dashed border-slate-500 mx-4" />
-              </div>
-            </div>
-            {(() => {
-              const items = derniers4
-              const getVal = (s: DerniereSemaine | undefined) =>
-                s?.Valeur ?? s?.Valeur_MEUR ?? 0
-              const n = items.length
-              const w = 286
-              const h = 160
-              const minPct = 80
-              const maxPct = 100
-              const targetPct = 95
-              const pts = items.map((s, i) => {
-                const val = Math.min(maxPct, Math.max(minPct, getVal(s)))
-                const x = n > 1 ? ((2 * i + 1) * w) / (2 * n) : w / 2
-                const cy = ((maxPct - val) / (maxPct - minPct)) * h
-                return { x, cy }
-              })
-              const pathD =
-                pts.length > 1
-                  ? `M${pts.map((p) => `${p.x} ${p.cy}`).join('L')}`
-                  : ''
-              const targetY = ((maxPct - targetPct) / (maxPct - minPct)) * h
-              return (
-                <svg
-                  className="w-full h-full"
-                  fill="none"
-                  preserveAspectRatio="none"
-                  viewBox={`0 0 ${w} ${h}`}
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <line
-                    className="stroke-current text-primary"
-                    strokeDasharray="6 4"
-                    strokeWidth="2"
-                    x1="0"
-                    x2={w}
-                    y1={targetY}
-                    y2={targetY}
-                  />
-                  {pathD && (
-                    <path
-                      d={pathD}
-                      stroke="#EAB308"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  )}
-                  {pts.map((p, i) => (
-                    <circle
-                      key={getSemaineLabelTaux(i)}
-                      cx={p.x}
-                      cy={p.cy}
-                      fill="#EAB308"
-                      r="6"
-                      stroke="#fef08a"
-                      strokeWidth="2"
-                    />
-                  ))}
-                </svg>
-              )
-            })()}
-            {/* Data point value labels - positioned above each point */}
-            <div
-              className="absolute inset-0 z-10 pointer-events-none grid pt-6 pb-4 pl-6 pr-16"
-              style={{
-                gridTemplateColumns: `repeat(${Math.max(1, derniers4.length)}, minmax(0, 1fr))`,
-              }}
-            >
-              {derniers4.map((s, idx) => (
-                <div
-                  key={getSemaineLabelTaux(idx)}
-                  className="flex flex-col items-center -mt-3"
-                >
-                  <span className="px-3 py-1.5 rounded-lg text-sm font-bold text-yellow-300 bg-slate-800/95 border-2 border-slate-500 whitespace-nowrap shadow-xl">
-                    {(() => {
-                      const v = s?.Valeur ?? s?.Valeur_MEUR
-                      return typeof v === 'number'
-                        ? `${Number(v.toFixed(1))}%`
-                        : '-'
-                    })()}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-						<div
-							className="grid text-center mt-5 px-6"
-							style={{
-								gridTemplateColumns: `repeat(${Math.max(1, derniers4.length)}, minmax(0, 1fr))`,
-							}}
-						>
-							{derniers4.map((s, idx) => (
-								<div key={getSemaineLabelTaux(idx)} className="flex flex-col items-center gap-2">
-									<span className="font-bold text-base text-white">{getSemaineLabelTaux(idx)}</span>
-									<span className="text-gray-300 text-sm font-medium tabular-nums">
-										{s?.Valeur ?? s?.Valeur_MEUR ?? '-'}%
-									</span>
-								</div>
-							))}
-						</div>
+            <p className={`${sectionLabel} mt-3 mb-1 shrink-0`}>CA des 4 dernières semaines (M€)</p>
+            <HistoryRow
+              pillClass={WEEK_PILL}
+              ringClass="ring-blue-500/30"
+              slots={last4.map((_, i) => ({
+                label: last4Labels[i],
+                value: last4Values[i] === null ? null : nf2.format(last4Values[i] as number),
+                status: null,
+                selected: i === last4.length - 1,
+              }))}
+            />
           </>
-          ) : (
-						<div className="h-52 min-h-[220px] flex items-center justify-center rounded-lg border border-slate-700/50 bg-slate-800/30">
-							<span className="text-gray-400 text-sm">Aucune donnée pour afficher le graphique</span>
-						</div>
+        )}
+        <div className="mt-2 mb-1 flex shrink-0 flex-wrap items-center justify-between gap-2">
+          <Chips
+            options={[
+              { key: "month" as const, label: "Semaines du mois" },
+              { key: "last4" as const, label: "4 dernières semaines" },
+            ]}
+            selected={[caView]}
+            onToggle={(key) => setCaView(key)}
+          />
+          {caView === "month" && (
+            <Legend
+              items={[
+                { label: "Réel", color: "#2563eb" },
+                { label: "Prévision", color: "#cbd5e1" },
+              ]}
+            />
           )}
         </div>
-					</div>
-				</div>
-			</main>
-		)
-	}
+        {caView === "month" ? (
+          <BarsChart
+            // Forecast = (objective - cumul) / weeks left: 0 without objective, so not shown then
+            groups={monthWeeks.map((s, i) => ({
+              label: monthLabels[i],
+              values: [toNum(s?.Reel_MEUR), target === null ? null : toNum(s?.Prevision_MEUR)],
+            }))}
+            series={[{ color: "#2563eb" }, { color: "#cbd5e1" }]}
+            selectedIndex={lastPast}
+            pillClass={WEEK_PILL}
+            format={(n) => nf2.format(n)}
+            sub={monthWeeks.map((s, i) => (
+              <span key={i} className="text-[10px] text-slate-400">
+                cumul {fmtMEUR(toNum(s?.Cumul_MEUR))}
+              </span>
+            ))}
+            empty="Pas de chiffre d'affaires sur le mois"
+          />
+        ) : (
+          <BarsChart
+            groups={last4.map((_, i) => ({ label: last4Labels[i], values: [last4Values[i]] }))}
+            series={[{ color: "#2563eb" }]}
+            selectedIndex={last4.length - 1}
+            pillClass={WEEK_PILL}
+            format={(n) => nf2.format(n)}
+            empty="Pas de chiffre d'affaires sur les 4 dernières semaines"
+          />
+        )}
+      </KpiCard>
+    )
+  }
+
+  const tauxCard = () => {
+    const target = toNum(taux?.Target)
+    const history: any[] = taux?.Dernieres_4_Semaines ?? []
+    const values = history.map((s) => toNum(s?.Valeur))
+    const labels = history.map((_, i) => weekLabel(history.length - 1 - i))
+    const statusOf = (v: number | null): Status | null => (v === null || target === null ? null : v >= target ? "ok" : "bad")
+    return (
+      <KpiCard
+        key="taux"
+        title="Taux de Facturation & Livraison"
+        icon={FaFileInvoice}
+        iconClass="bg-sky-50 text-sky-600"
+        subtitle={<>Hebdomadaire{target !== null && <> · cible {nf1.format(target)} %</>}</>}
+        period={`S${pad(week)}`}
+        periodClass={WEEK_PILL}
+        status={<StatusPill status={statusOf(tauxValue)} ok="Cible atteinte" bad="Sous la cible" />}
+        className={single ? "md:min-h-[420px]" : ""}
+      >
+        <ValueBlock value={tauxValue === null ? "—" : nf1.format(tauxValue)} unit="%" variation={{ value: toNum(taux?.Variation_Pts_Vs_S_1), suffix: " pt", label: "vs S-1" }} />
+        {single && history.length > 0 && (
+          <>
+            <p className={`${sectionLabel} mt-3 mb-1 shrink-0`}>Historique 4 semaines</p>
+            <HistoryRow
+              pillClass={WEEK_PILL}
+              ringClass="ring-blue-500/30"
+              slots={history.map((_, i) => ({
+                label: labels[i],
+                value: values[i] === null ? null : `${nf1.format(values[i] as number)}%`,
+                status: statusOf(values[i]),
+                selected: i === history.length - 1,
+              }))}
+            />
+          </>
+        )}
+        <p className={`${sectionLabel} mt-3 mb-1 shrink-0`}>Tendance</p>
+        <TrendChart
+          series={[
+            {
+              values,
+              color: "#0284c7",
+              pointColor: target === null ? undefined : (v) => (v >= target ? "#059669" : "#dc2626"),
+            },
+          ]}
+          labels={labels}
+          selectedIndex={history.length - 1}
+          pillClass={WEEK_PILL}
+          format={(n) => `${nf1.format(n)}%`}
+          target={target}
+        />
+      </KpiCard>
+    )
+  }
+
+  /* ----- Monthly ----- */
+
+  const eff = monthly?.Efficience_Financiere
+  const exec = monthly?.Execution_Budgetaire
+  const paiements = monthly?.Paiements_Retard
+  const monthlyMissing = [eff?.Valeur_Affichee, exec?.Valeur_Affichee, paiements?.Valeur_Affichee_MEUR].every((v) => toNum(v) === null)
+
+  const monthAxis = (items: any[]) =>
+    items.map((s) => {
+      const m = toNum(s?.Mois) ?? 1
+      const y = toNum(s?.Annee)
+      return y !== null && y !== monthYear ? `${MONTH_NAMES[m - 1]} ${String(y).slice(2)}` : MONTH_NAMES[m - 1]
+    })
+
+  const monthlyCard = ({
+    key,
+    kpi,
+    title,
+    icon,
+    iconClass,
+    color,
+    unit,
+    valueKey,
+    historyKey,
+    targetKey,
+    lowerIsBetter = false,
+    format,
+  }: {
+    key: string
+    kpi: any
+    title: string
+    icon: any
+    iconClass: string
+    color: string
+    unit: string
+    valueKey: string
+    historyKey: string
+    targetKey: string
+    lowerIsBetter?: boolean
+    format: (n: number) => string
+  }) => {
+    const serie = chronoMonths(kpi?.Suivi_4_Mois)
+    const values = serie.map((s) => toNum(s?.[historyKey]))
+    const targets = serie.map((s) => toNum(s?.[targetKey]))
+    const target = targets[targets.length - 1] ?? toNum(kpi?.[targetKey]) ?? [...targets].reverse().find((t) => t !== null) ?? null
+    const value = toNum(kpi?.[valueKey])
+    const statusOf = (v: number | null, t: number | null): Status | null =>
+      v === null || t === null ? null : (lowerIsBetter ? v <= t : v >= t) ? "ok" : "bad"
+    const labels = monthAxis(serie)
+    const deltaUnit = kpi?.Delta_Unite === "pts" ? " pt" : kpi?.Delta_Unite ? ` ${kpi.Delta_Unite}` : ""
+    return (
+      <KpiCard
+        key={key}
+        title={title}
+        icon={icon}
+        iconClass={iconClass}
+        subtitle={<>Mensuel{target !== null && <> · cible {format(target)} {unit}</>}</>}
+        period={monthShort}
+        periodClass={MONTH_PILL}
+        status={<StatusPill status={statusOf(value, target)} ok="Cible atteinte" bad={lowerIsBetter ? "Cible dépassée" : "Sous la cible"} />}
+        className={single ? "md:min-h-[420px]" : ""}
+      >
+        <ValueBlock
+          value={value === null ? "—" : format(value)}
+          unit={unit}
+          lowerIsBetter={lowerIsBetter}
+          variation={{ value: toNum(kpi?.Delta_Affiche ?? kpi?.Delta_Affiche_MEUR), suffix: deltaUnit, label: kpi?.VsLabel ?? "vs M-1", format: nf2 }}
+        />
+        {single && serie.length > 0 && (
+          <>
+            <p className={`${sectionLabel} mt-3 mb-1 shrink-0`}>Historique 4 mois</p>
+            <HistoryRow
+              pillClass={MONTH_PILL}
+              ringClass="ring-violet-500/30"
+              slots={serie.map((_, i) => ({
+                label: labels[i],
+                value: values[i] === null ? null : format(values[i] as number),
+                status: statusOf(values[i], targets[i] ?? target),
+                selected: i === serie.length - 1,
+              }))}
+            />
+          </>
+        )}
+        <p className={`${sectionLabel} mt-3 mb-1 shrink-0`}>Tendance</p>
+        <TrendChart
+          series={[
+            {
+              values,
+              color,
+              pointColor: target === null ? undefined : (v, i) => (statusOf(v, targets[i] ?? target) === "ok" ? "#059669" : "#dc2626"),
+            },
+          ]}
+          labels={labels}
+          selectedIndex={serie.length - 1}
+          pillClass={MONTH_PILL}
+          format={(n) => `${format(n)}${unit === "%" ? "%" : ""}`}
+          target={target}
+        />
+      </KpiCard>
+    )
+  }
+
+  const effCard = () =>
+    monthlyCard({
+      key: "eff",
+      kpi: eff,
+      title: "Efficience Financière",
+      icon: FaChartPie,
+      iconClass: "bg-violet-50 text-violet-600",
+      color: "#7c3aed",
+      unit: "%",
+      valueKey: "Valeur_Affichee",
+      historyKey: "Valeur",
+      targetKey: "Target",
+      format: (n) => nf1.format(n),
+    })
+  const execCard = () =>
+    monthlyCard({
+      key: "exec",
+      kpi: exec,
+      title: "Exécution Budgétaire",
+      icon: FaWallet,
+      iconClass: "bg-indigo-50 text-indigo-600",
+      color: "#4f46e5",
+      unit: "%",
+      valueKey: "Valeur_Affichee",
+      historyKey: "Valeur",
+      targetKey: "Target",
+      format: (n) => nf1.format(n),
+    })
+  const paiementsCard = () =>
+    monthlyCard({
+      key: "paiements",
+      kpi: paiements,
+      title: "Total des Paiements en Retard",
+      icon: FaExclamationTriangle,
+      iconClass: "bg-rose-50 text-rose-600",
+      color: "#e11d48",
+      unit: "M€",
+      valueKey: "Valeur_Affichee_MEUR",
+      historyKey: "Valeur_MEUR",
+      targetKey: "Target_MEUR",
+      lowerIsBetter: true,
+      format: (n) => nf2.format(n),
+    })
+
+  /* ----- Layout ----- */
+
+  const missing = [
+    scope !== "monthly" && weeklyMissing ? `la semaine ${week}` : null,
+    scope !== "weekly" && monthlyMissing ? `${MONTH_FULL_NAMES[month - 1].toLowerCase()} ${monthYear}` : null,
+  ].filter(Boolean)
+  const missingFile =
+    missing.length > 1 ? "hebdomadaire (FINANCE) et mensuel (FINANCE_MONTHLY)" : scope !== "monthly" && weeklyMissing ? "hebdomadaire (FINANCE)" : "mensuel (FINANCE_MONTHLY)"
 
   return (
-    <div className="flex-1 overflow-hidden">
-      <div className="p-5">
-        {/* Tab Selector */}
-        <div className="mb-6 flex justify-between items-center">
-			<div className="flex flex-wrap items-center gap-2 mt-2">
-							<span className="w-1 h-8 rounded-full bg-white block" />
-							<span className="text-xs font-bold uppercase tracking-widest text-white">
-								Finance KPI
-							</span>
-						</div>
-          <div className="flex flex-wrap items-center gap-3">
-            <PeriodSelector
-              type={activeTab}
-              period={period}
-              year={year}
-              onPeriodChange={setPeriod}
-              onYearChange={setYear}
-            />
-            <TabSelector
-              activeTab={activeTab}
-              onTabChange={(tab) => setActiveTab(tab)}
-              weeklyLabel="Hebdomadaires"
-              monthlyLabel="Mensuel"
-            />
-          </div>
-        </div>
+    <main className="flex flex-col p-3 sm:p-4 [@media(min-height:760px)]:lg:p-5 md:h-full md:min-h-[560px]">
+      <PeriodHeader title="Finance KPI" week={week} year={year} onWeekChange={setWeek} onYearChange={setYear} scope={scope} onScopeChange={setScope} />
 
-        {/* Conditional Content Rendering */}
-        {activeTab === "monthly" ? <MonthlyDashboard /> : <WeeklyDashboard />}
-      </div>
-    </div>
+      {loading ? (
+        <LoadingState label="Chargement des données Finance..." />
+      ) : error ? (
+        <div className="flex min-h-[320px] flex-1 flex-col items-center justify-center gap-2">
+          <p className="font-semibold text-rose-600">{error}</p>
+          <p className="text-sm text-slate-400">Vérifiez que l&apos;API Finance est disponible.</p>
+        </div>
+      ) : (
+        <>
+          {missing.length > 0 && (
+            <NoDataBanner>
+              Aucune donnée Finance pour {missing.join(" et pour ")} : le fichier {missingFile} de cette période n&apos;a pas encore été importé
+              (page Importation).
+            </NoDataBanner>
+          )}
+          {scope === "weekly" ? (
+            <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 md:grid-cols-2 [@media(min-height:900px)]:gap-4">
+              {caCard()}
+              {tauxCard()}
+            </div>
+          ) : scope === "monthly" ? (
+            <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 md:grid-cols-3 [@media(min-height:900px)]:gap-4">
+              {effCard()}
+              {execCard()}
+              {paiementsCard()}
+            </div>
+          ) : (
+            <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-6 lg:grid-rows-2 [@media(min-height:900px)]:gap-4">
+              <div className="flex min-h-0 lg:col-span-3 [&>section]:flex-1">{caCard()}</div>
+              <div className="flex min-h-0 lg:col-span-3 [&>section]:flex-1">{tauxCard()}</div>
+              <div className="flex min-h-0 lg:col-span-2 [&>section]:flex-1">{effCard()}</div>
+              <div className="flex min-h-0 lg:col-span-2 [&>section]:flex-1">{execCard()}</div>
+              <div className="flex min-h-0 md:col-span-2 lg:col-span-2 [&>section]:flex-1">{paiementsCard()}</div>
+            </div>
+          )}
+        </>
+      )}
+    </main>
   )
 }
