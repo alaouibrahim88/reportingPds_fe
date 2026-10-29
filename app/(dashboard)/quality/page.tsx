@@ -1,8 +1,7 @@
 "use client";
 
 import React, { ReactElement, useEffect, useState } from "react";
-import { PeriodSelector } from "@/components/ui/PeriodSelector";
-import { TabSelector } from "@/components/ui/TabSelector";
+import { PeriodHeader, monthOfWeek } from "@/components/kpi/LightKpi";
 import { useKpiPeriod } from "@/hooks/use-kpi-period";
 import { FaBug, FaFreeCodeCamp, FaMapMarked, FaChartBar, FaCheckDouble, FaChartArea, FaFileExport, FaUsers, FaExclamationTriangle, FaUserInjured } from "react-icons/fa";
 
@@ -313,8 +312,12 @@ function NoDataBanner({ children }: { children: React.ReactNode }) {
 }
 
 export default function QualityPage() {
-	const { type: activeTab, setType: setActiveTab, period, setPeriod, year, setYear } =
-		useKpiPeriod('weekly');
+	// Week and year; the monthly view shows the month of the week, as on the other KPI pages
+	const { period: week, setPeriod: setWeek, year, setYear } = useKpiPeriod('weekly');
+	const [activeTab, setActiveTab] = useState<"weekly" | "monthly">("weekly");
+	const { month, year: monthYear } = monthOfWeek(year, week);
+	const period = activeTab === "weekly" ? week : month;
+	const periodYear = activeTab === "weekly" ? year : monthYear;
 	const [data, setData] = useState<any>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -324,7 +327,7 @@ export default function QualityPage() {
 			setLoading(true);
 			setError(null);
 			try {
-				const url = `/api/quality?type=${activeTab}&period=${period}&year=${year}`;
+				const url = `/api/quality?type=${activeTab}&period=${period}&year=${periodYear}`;
 				const res = await fetch(url, { cache: "no-store" });
 				const json = await res.json();
 				if (!res.ok) {
@@ -341,7 +344,7 @@ export default function QualityPage() {
 			}
 		};
 		fetchData();
-	}, [activeTab, period, year]);
+	}, [activeTab, period, periodYear]);
 
 	const WeeklyQuality = () => {
 		const reclamations = data?.Reclamations_Clients;
@@ -651,7 +654,7 @@ export default function QualityPage() {
 			<>
 				{noData && (
 					<NoDataBanner>
-						Aucune donnée pour {MONTH_FULL_NAMES[period - 1] ?? ""} {year} : les fichiers Quality Monthly de
+						Aucune donnée pour {MONTH_FULL_NAMES[period - 1] ?? ""} {periodYear} : les fichiers Quality Monthly de
 						cette période n&apos;ont pas encore été importés (page Importation).
 					</NoDataBanner>
 				)}
@@ -842,25 +845,18 @@ export default function QualityPage() {
 	return (
 		// From tablet width, the page takes exactly the height under the header (no scroll)
 		<main className="flex flex-col p-3 sm:p-4 [@media(min-height:760px)]:lg:p-5 md:h-full md:min-h-[460px]">
-			{/* Header */}
-			<div className="mb-2 [@media(min-height:760px)]:mb-3 flex shrink-0 flex-wrap justify-between items-center gap-3">
-				<div className="flex items-center gap-2">
-					<span className="w-1 h-8 rounded-full bg-white block" />
-					<span className="text-xs lg:text-sm font-bold uppercase tracking-widest text-white">
-						Quality KPI
-					</span>
-				</div>
-				<div className="flex flex-wrap items-center gap-3">
-					<PeriodSelector
-						type={activeTab}
-						period={period}
-						year={year}
-						onPeriodChange={setPeriod}
-						onYearChange={setYear}
-					/>
-					<TabSelector activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab)} />
-				</div>
-			</div>
+			{/* Header: selected week and month, selectors and the weekly / monthly tabs */}
+			<PeriodHeader
+				title="Quality KPI"
+				week={week}
+				year={year}
+				onWeekChange={setWeek}
+				onYearChange={setYear}
+				scope={activeTab}
+				onScopeChange={(scope) => setActiveTab(scope === "monthly" ? "monthly" : "weekly")}
+				scopes={["weekly", "monthly"]}
+				variant="dark"
+			/>
 
 			{error && (
 				<div className="rounded-2xl border border-red-800/50 bg-red-900/20 p-6 text-red-400 mb-5 flex items-center gap-3">

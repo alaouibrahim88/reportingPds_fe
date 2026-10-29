@@ -532,9 +532,13 @@ export function NoDataBanner({ children }: { children: React.ReactNode }) {
   );
 }
 
+const SCOPE_LABELS: Record<Scope, string> = { all: "Tous", weekly: "Hebdomadaires", monthly: "Mensuels" };
+
 /**
  * Page header: title, the selected week and month in large labels, then the week / month /
- * year selectors and the Tous / Hebdomadaires / Mensuels filter. The month follows the week.
+ * year selectors and the Tous / Hebdomadaires / Mensuels filter (scopes: the tabs offered).
+ * The month follows the week (choosing a month selects its last week).
+ * variant "dark" for the dark category pages (Operations, Quality).
  */
 export function PeriodHeader({
   title,
@@ -544,6 +548,8 @@ export function PeriodHeader({
   onYearChange,
   scope,
   onScopeChange,
+  scopes = ["all", "weekly", "monthly"],
+  variant = "light",
 }: {
   title: string;
   week: number;
@@ -552,21 +558,30 @@ export function PeriodHeader({
   onYearChange: (year: number) => void;
   scope: Scope;
   onScopeChange: (scope: Scope) => void;
+  scopes?: Scope[];
+  variant?: "light" | "dark";
 }) {
   const { month, year: monthYear } = monthOfWeek(year, week);
   const currentYear = new Date().getFullYear();
   const weeks = Array.from({ length: isoWeeksInYear(year) }, (_, i) => i + 1);
-  const selectClass = "h-9 border-slate-200 bg-white text-sm text-slate-700 hover:bg-slate-50";
+  const dark = variant === "dark";
+  const selectClass = dark
+    ? "h-9 border-slate-700/50 bg-slate-800/50 text-sm text-gray-200 hover:bg-slate-700/50"
+    : "h-9 border-slate-200 bg-white text-sm text-slate-700 hover:bg-slate-50";
+  const contentClass = dark ? "border-slate-700 bg-slate-800 text-gray-200" : "";
+  // The period that the shown indicators do not use is dimmed
+  const weekDim = scope === "monthly" ? "opacity-50" : "";
+  const monthDim = scope === "weekly" ? "opacity-50" : "";
   return (
     <div className="mb-2 flex shrink-0 flex-wrap items-center justify-between gap-3 [@media(min-height:760px)]:mb-3">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="block h-8 w-1 rounded-full bg-blue-500" />
-        <span className="mr-2 text-xs font-bold uppercase tracking-widest text-blue-500">{title}</span>
-        <span className={`rounded-lg px-3 py-1 text-sm font-black ${WEEK_PILL}`}>
+        <span className={`block h-8 w-1 rounded-full ${dark ? "bg-white" : "bg-blue-500"}`} />
+        <span className={`mr-2 text-xs font-bold uppercase tracking-widest lg:text-sm ${dark ? "text-white" : "text-blue-500"}`}>{title}</span>
+        <span className={`rounded-lg px-3 py-1 text-sm font-black transition-opacity ${WEEK_PILL} ${weekDim}`}>
           Semaine {week}
           <span className="ml-2 text-xs font-semibold text-blue-100">{weekRange(year, week)}</span>
         </span>
-        <span className={`rounded-lg px-3 py-1 text-sm font-black ${MONTH_PILL}`}>
+        <span className={`rounded-lg px-3 py-1 text-sm font-black transition-opacity ${MONTH_PILL} ${monthDim}`}>
           {MONTH_FULL_NAMES[month - 1]} {monthYear}
         </span>
       </div>
@@ -575,7 +590,7 @@ export function PeriodHeader({
           <SelectTrigger className={`w-[150px] ${selectClass}`} aria-label="Semaine">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="max-h-72">
+          <SelectContent className={`max-h-72 ${contentClass}`}>
             {[...weeks].reverse().map((w) => (
               <SelectItem key={w} value={String(w)}>
                 S{pad(w)} · {shortDate.format(isoWeekMonday(year, w))}
@@ -587,7 +602,7 @@ export function PeriodHeader({
           <SelectTrigger className={`w-[140px] ${selectClass}`} aria-label="Mois">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className={contentClass}>
             {MONTH_FULL_NAMES.map((name, i) => (
               <SelectItem key={name} value={String(i + 1)}>
                 {name}
@@ -606,7 +621,7 @@ export function PeriodHeader({
           <SelectTrigger className={`w-[96px] ${selectClass}`} aria-label="Année">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className={contentClass}>
             {[currentYear - 1, currentYear].map((y) => (
               <SelectItem key={y} value={String(y)}>
                 {y}
@@ -614,14 +629,12 @@ export function PeriodHeader({
             ))}
           </SelectContent>
         </Select>
-        <div role="tablist" aria-label="Indicateurs affichés" className="flex rounded-lg border border-slate-200 bg-white p-0.5 shadow-sm">
-          {(
-            [
-              ["all", "Tous"],
-              ["weekly", "Hebdomadaires"],
-              ["monthly", "Mensuels"],
-            ] as [Scope, string][]
-          ).map(([key, label]) => (
+        <div
+          role="tablist"
+          aria-label="Indicateurs affichés"
+          className={`flex rounded-lg border p-0.5 shadow-sm ${dark ? "border-slate-700/50 bg-slate-800/50" : "border-slate-200 bg-white"}`}
+        >
+          {scopes.map((key) => (
             <button
               key={key}
               type="button"
@@ -629,10 +642,14 @@ export function PeriodHeader({
               aria-selected={scope === key}
               onClick={() => onScopeChange(key)}
               className={`rounded-md px-3 py-1.5 text-sm font-semibold transition-colors ${
-                scope === key ? "bg-blue-600 text-white shadow-sm" : "text-slate-600 hover:bg-slate-100"
+                scope === key
+                  ? "bg-blue-600 text-white shadow-sm"
+                  : dark
+                    ? "text-gray-300 hover:bg-slate-700/50 hover:text-white"
+                    : "text-slate-600 hover:bg-slate-100"
               }`}
             >
-              {label}
+              {SCOPE_LABELS[key]}
             </button>
           ))}
         </div>

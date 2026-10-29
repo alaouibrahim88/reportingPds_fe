@@ -1,6 +1,5 @@
 "use client";
-import { PeriodSelector } from "@/components/ui/PeriodSelector";
-import { TabSelector } from "@/components/ui/TabSelector";
+import { PeriodHeader, monthOfWeek, type Scope } from "@/components/kpi/LightKpi";
 import { useKpiPeriod } from "@/hooks/use-kpi-period";
 import React, { useEffect, useState } from "react";
 import type { IconType } from "react-icons";
@@ -445,8 +444,12 @@ function NoDataBanner({ children }: { children: React.ReactNode }) {
 /* ---------------- Page ---------------- */
 
 export default function ProgramsPage() {
-	const { type: activeTab, setType: setActiveTab, period, setPeriod, year, setYear } = useKpiPeriod("weekly");
-	const [programData, setProgramData] = useState<any>(null);
+	// Week and year; the monthly indicators are those of the month of the week
+	const { period: week, setPeriod: setWeek, year, setYear } = useKpiPeriod("weekly");
+	const [scope, setScope] = useState<Scope>("all");
+	const { month, year: monthYear } = monthOfWeek(year, week);
+	const [weeklyData, setWeeklyData] = useState<any>(null);
+	const [monthlyData, setMonthlyData] = useState<any>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
@@ -456,10 +459,21 @@ export default function ProgramsPage() {
 			setLoading(true);
 			setError(null);
 			try {
-				const res = await fetch(`/api/program?type=${activeTab}&period=${period}&year=${year}`, { cache: "no-store" });
-				if (!res.ok) throw new Error("Failed to fetch program data");
-				const json = await res.json();
-				if (!cancelled) setProgramData(json?.data?.data ?? json?.data ?? json);
+				const [w, m] = await Promise.all(
+					[
+						`/api/program?type=weekly&period=${week}&year=${year}`,
+						`/api/program?type=monthly&period=${month}&year=${monthYear}`,
+					].map(async (url) => {
+						const res = await fetch(url, { cache: "no-store" });
+						if (!res.ok) throw new Error("Failed to fetch program data");
+						const json = await res.json();
+						return json?.data?.data ?? json?.data ?? json;
+					})
+				);
+				if (!cancelled) {
+					setWeeklyData(w?.Program_Semaine ?? null);
+					setMonthlyData(m?.Program_Mois ?? null);
+				}
 			} catch (err) {
 				if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load program data");
 			} finally {
@@ -470,14 +484,15 @@ export default function ProgramsPage() {
 		return () => {
 			cancelled = true;
 		};
-	}, [activeTab, period, year]);
+	}, [week, year, month, monthYear]);
 
-	const renderWeekly = () => {
-		const data = programData?.Program_Semaine ?? {};
+	// Weekly cards; compact (Tous view): without the history circles
+	const renderWeekly = (compact: boolean) => {
+		const data = weeklyData ?? {};
 		const otd = data.On_Time_Delivery;
 		const equipment = data.Critical_Equipment_Availability;
 		const recruitment = data.Recruitment_Progress;
-		const slots = lastFourWeeks(period, year);
+		const slots = lastFourWeeks(week, year);
 		const historyOf = (history: any[] | undefined) =>
 			slots.map((slot) => (history ?? []).find((h) => toNum(h.Semaine) === slot.week && toNum(h.Annee) === slot.year) ?? null);
 		const selectedIndex = slots.length - 1;
@@ -513,17 +528,21 @@ export default function ProgramsPage() {
 						unit="%"
 						variation={{ value: toNum(kpi?.Variation_Vs_Semaine_Precedente), suffix: " pt", label: "vs S-1" }}
 					/>
-					<p className={`${sectionLabel} mt-3 mb-1 shrink-0 [@media(min-height:760px)]:mt-4`}>Historique 4 semaines</p>
-					<HistoryRow
-						accent={accent}
-						slots={slots.map((slot, i) => ({
-							label: slot.label,
-							value: values[i] === null ? null : `${nf1.format(values[i] as number)}%`,
-							status: percentStatus(values[i], target),
-							target: `${nf1.format(target)}%`,
-							selected: i === selectedIndex,
-						}))}
-					/>
+					{!compact && (
+						<>
+							<p className={`${sectionLabel} mt-3 mb-1 shrink-0 [@media(min-height:760px)]:mt-4`}>Historique 4 semaines</p>
+							<HistoryRow
+								accent={accent}
+								slots={slots.map((slot, i) => ({
+									label: slot.label,
+									value: values[i] === null ? null : `${nf1.format(values[i] as number)}%`,
+									status: percentStatus(values[i], target),
+									target: `${nf1.format(target)}%`,
+									selected: i === selectedIndex,
+								}))}
+							/>
+						</>
+					)}
 					<div className="mt-3 mb-1 flex shrink-0 items-center justify-between [@media(min-height:760px)]:mt-4">
 						<p className={sectionLabel}>Tendance</p>
 						<Legend items={[{ label: "Cible", color: "#94a3b8", dashed: true }]} />
@@ -547,78 +566,76 @@ export default function ProgramsPage() {
 		const hiresMtd = toNum(recruitment?.Total_Hires_MTD);
 		const forecastMtd = toNum(recruitment?.Total_Forecast_MTD);
 
-		return (
-			<>
-				{!hasData && (
-					<NoDataBanner>
-						Aucune donnée pour la semaine {period} de {year} : le fichier Program hebdomadaire de cette période n&apos;a
-						pas encore été importé (page Importation).
-					</NoDataBanner>
-				)}
-				<div className="grid min-h-0 flex-1 grid-cols-1 gap-3 md:grid-cols-3 [@media(min-height:900px)]:gap-4">
-					{percentCard(otd, "On Time Delivery (OTD)", FaTruck, ACCENTS.blue, "otd")}
-					{percentCard(equipment, "Critical Equipment Availability", FaCogs, ACCENTS.violet, "equipment")}
+		return {
+			missing: !hasData,
+			cards: [
+				percentCard(otd, "On Time Delivery (OTD)", FaTruck, ACCENTS.blue, "otd"),
+				percentCard(equipment, "Critical Equipment Availability", FaCogs, ACCENTS.violet, "equipment"),
 
-					<section className={`${cardClass} ${ACCENTS.emerald.border}`}>
-						<CardHeader
-							icon={FaUserPlus}
-							title="Recruitment Progress vs Forecast"
-							subtitle="Réel vs forecast (effectif)"
-							accent={ACCENTS.emerald}
-							right={<StatusPill status={recruitmentStatus(recruitPct)} />}
-						/>
-						<ValueBlock
-							value={recruitReel === null ? "—" : `${nf1.format(recruitReel)} / ${recruitForecast === null ? "—" : nf1.format(recruitForecast)}`}
-							variation={{ value: toNum(recruitment?.Variation_Reel_Vs_Semaine_Precedente), suffix: "", label: "vs S-1" }}
-							detail={
-								recruitReel === null ? null : (
-									<>
-										{fmtPct(recruitPct)} de réalisation · MTD {hiresMtd ?? "—"}/{forecastMtd ?? "—"}
-									</>
-								)
-							}
-						/>
-						<p className={`${sectionLabel} mt-3 mb-1 shrink-0 [@media(min-height:760px)]:mt-4`}>Historique 4 semaines</p>
-						<HistoryRow
-							accent={ACCENTS.emerald}
-							slots={slots.map((slot, i) => ({
-								label: slot.label,
-								value: reelValues[i] === null ? null : `${reelValues[i]}/${forecastValues[i] ?? "—"}`,
-								status: recruitmentStatus(toNum(recruitHistory[i]?.Pct)),
-								target: forecastValues[i] === null ? undefined : `${forecastValues[i]}`,
-								selected: i === selectedIndex,
-							}))}
-						/>
-						<div className="mt-3 mb-1 flex shrink-0 items-center justify-between [@media(min-height:760px)]:mt-4">
-							<p className={sectionLabel}>Réel vs forecast</p>
-							<Legend
-								items={[
-									{ label: "Réel", color: ACCENTS.emerald.color },
-									{ label: "Forecast", color: "#94a3b8", dashed: true },
-								]}
+				<section key="recruitment" className={`${cardClass} ${ACCENTS.emerald.border}`}>
+					<CardHeader
+						icon={FaUserPlus}
+						title="Recruitment Progress vs Forecast"
+						subtitle="Réel vs forecast (effectif)"
+						accent={ACCENTS.emerald}
+						right={<StatusPill status={recruitmentStatus(recruitPct)} />}
+					/>
+					<ValueBlock
+						value={recruitReel === null ? "—" : `${nf1.format(recruitReel)} / ${recruitForecast === null ? "—" : nf1.format(recruitForecast)}`}
+						variation={{ value: toNum(recruitment?.Variation_Reel_Vs_Semaine_Precedente), suffix: "", label: "vs S-1" }}
+						detail={
+							recruitReel === null ? null : (
+								<>
+									{fmtPct(recruitPct)} de réalisation · MTD {hiresMtd ?? "—"}/{forecastMtd ?? "—"}
+								</>
+							)
+						}
+					/>
+					{!compact && (
+						<>
+							<p className={`${sectionLabel} mt-3 mb-1 shrink-0 [@media(min-height:760px)]:mt-4`}>Historique 4 semaines</p>
+							<HistoryRow
+								accent={ACCENTS.emerald}
+								slots={slots.map((slot, i) => ({
+									label: slot.label,
+									value: reelValues[i] === null ? null : `${reelValues[i]}/${forecastValues[i] ?? "—"}`,
+									status: recruitmentStatus(toNum(recruitHistory[i]?.Pct)),
+									target: forecastValues[i] === null ? undefined : `${forecastValues[i]}`,
+									selected: i === selectedIndex,
+								}))}
 							/>
-						</div>
-						<ColumnChart
-							series={[
-								{ values: reelValues, color: ACCENTS.emerald.color },
-								{ values: forecastValues, color: "#94a3b8", dashed: true, showValues: false },
+						</>
+					)}
+					<div className="mt-3 mb-1 flex shrink-0 items-center justify-between [@media(min-height:760px)]:mt-4">
+						<p className={sectionLabel}>Réel vs forecast</p>
+						<Legend
+							items={[
+								{ label: "Réel", color: ACCENTS.emerald.color },
+								{ label: "Forecast", color: "#94a3b8", dashed: true },
 							]}
-							format={(n) => nf1.format(n)}
-							labels={slots.map((s) => s.label)}
-							selectedIndex={selectedIndex}
 						/>
-					</section>
-				</div>
-			</>
-		);
+					</div>
+					<ColumnChart
+						series={[
+							{ values: reelValues, color: ACCENTS.emerald.color },
+							{ values: forecastValues, color: "#94a3b8", dashed: true, showValues: false },
+						]}
+						format={(n) => nf1.format(n)}
+						labels={slots.map((s) => s.label)}
+						selectedIndex={selectedIndex}
+					/>
+				</section>,
+			],
+		};
 	};
 
-	const renderMonthly = () => {
-		const data = programData?.Program_Mois ?? {};
+	// Monthly cards (month of the selected week); compact (Tous view): without the history
+	const renderMonthly = (compact: boolean) => {
+		const data = monthlyData ?? {};
 		const budget = data.Budget_Vs_Actual;
 		const apqp = data.APQP_Milestones;
 		const documentation = data.Documentation_Progress;
-		const slots = lastFourMonths(period, year);
+		const slots = lastFourMonths(month, monthYear);
 		const historyOf = (history: any[] | undefined) =>
 			slots.map((slot) => (history ?? []).find((h) => toNum(h.Mois) === slot.month && toNum(h.Annee) === slot.year) ?? null);
 		const selectedIndex = slots.length - 1;
@@ -667,17 +684,21 @@ export default function ProgramsPage() {
 						unit="%"
 						variation={{ value: delta, suffix: " pt", label: "vs M-1" }}
 					/>
-					<p className={`${sectionLabel} mt-3 mb-1 shrink-0 [@media(min-height:760px)]:mt-4`}>Historique 4 mois</p>
-					<HistoryRow
-						accent={accent}
-						slots={slots.map((slot, i) => ({
-							label: slot.label,
-							value: values[i] === null ? null : `${values[i]}%`,
-							status: readinessStatus(values[i])?.level ?? null,
-							target: "100%",
-							selected: i === selectedIndex,
-						}))}
-					/>
+					{!compact && (
+						<>
+							<p className={`${sectionLabel} mt-3 mb-1 shrink-0 [@media(min-height:760px)]:mt-4`}>Historique 4 mois</p>
+							<HistoryRow
+								accent={accent}
+								slots={slots.map((slot, i) => ({
+									label: slot.label,
+									value: values[i] === null ? null : `${values[i]}%`,
+									status: readinessStatus(values[i])?.level ?? null,
+									target: "100%",
+									selected: i === selectedIndex,
+								}))}
+							/>
+						</>
+					)}
 					<div className="mt-3 mb-1 flex shrink-0 items-center justify-between [@media(min-height:760px)]:mt-4">
 						<p className={sectionLabel}>{chartTitle}</p>
 						<Legend items={[{ label: "Cible", color: "#94a3b8", dashed: true }]} />
@@ -693,131 +714,126 @@ export default function ProgramsPage() {
 			);
 		};
 
-		return (
-			<>
-				{!hasData && (
-					<NoDataBanner>
-						Aucune donnée pour {MONTH_FULL_NAMES[period - 1]} {year} : le fichier Program mensuel de cette période
-						n&apos;a pas encore été importé (page Importation).
-					</NoDataBanner>
-				)}
-				<div className="grid min-h-0 flex-1 grid-cols-1 gap-3 md:grid-cols-3 [@media(min-height:900px)]:gap-4">
-					<section className={`${cardClass} ${ACCENTS.blue.border}`}>
-						<CardHeader
-							icon={FaMoneyBillWave}
-							title="Budget vs Actual (CAPEX/OPEX)"
-							subtitle="Part du budget non consommée"
-							accent={ACCENTS.blue}
-							right={
-								selectedBudgetStatus && (
-									<StatusPill
-										status={selectedBudgetStatus.level}
-										label={`${selectedBudgetStatus.percentage}% ${selectedBudgetStatus.label}`}
-									/>
-								)
-							}
-						/>
-						<ValueBlock
-							value={fmtMoney(selectedBudget.actual)}
-							detail={selectedBudget.budget === null ? null : <>Budget {fmtMoney(selectedBudget.budget)}</>}
-						/>
-						<div className="mt-3 mb-1 flex shrink-0 items-center justify-between [@media(min-height:760px)]:mt-4">
-							<p className={sectionLabel}>Historique 4 mois</p>
-							<Legend
-								items={[
-									{ label: "Budget", color: "#cbd5e1" },
-									{ label: "Actual", color: ACCENTS.blue.color },
-								]}
-							/>
-						</div>
-						<BudgetBars slots={budgetSlots} />
-						<div className="mt-1 grid shrink-0 grid-cols-4 gap-2 text-center text-[11px]">
-							{budgetSlots.map((slot) => {
-								const st = budgetStatus(slot.actual, slot.budget);
-								// Month (highlighted when selected), then its budget status
-								return (
-									<div key={slot.label} className="flex flex-col items-center gap-0.5">
-										<span
-											className={
-												slot.selected
-													? `whitespace-nowrap rounded-full px-2 py-0.5 font-black text-white ${ACCENTS.blue.pill}`
-													: "py-0.5 font-semibold text-slate-500"
-											}
-										>
-											{slot.label}
-										</span>
-										<span className={`text-[10px] font-bold ${st ? STATUS_STYLES[st.level].text : "text-slate-300"}`}>
-											{st ? `${st.percentage}%` : "—"}
-										</span>
-									</div>
-								);
-							})}
-						</div>
-						<div className="mt-3 mb-1 flex shrink-0 items-center justify-between [@media(min-height:760px)]:mt-4">
-							<p className={sectionLabel}>Dépenses mensuelles</p>
-							<Legend
-								items={[
-									{ label: "Budget", color: "#94a3b8", dashed: true },
-									{ label: "Actual", color: ACCENTS.blue.color },
-								]}
-							/>
-						</div>
-						<ColumnChart
-							series={[
-								{ values: budgetSlots.map((s) => s.actual), color: ACCENTS.blue.color },
-								{ values: budgetSlots.map((s) => s.budget), color: "#94a3b8", dashed: true, showValues: false },
+		return {
+			missing: !hasData,
+			cards: [
+				<section key="budget" className={`${cardClass} ${ACCENTS.blue.border}`}>
+					<CardHeader
+						icon={FaMoneyBillWave}
+						title="Budget vs Actual (CAPEX/OPEX)"
+						subtitle="Part du budget non consommée"
+						accent={ACCENTS.blue}
+						right={
+							selectedBudgetStatus && (
+								<StatusPill
+									status={selectedBudgetStatus.level}
+									label={`${selectedBudgetStatus.percentage}% ${selectedBudgetStatus.label}`}
+								/>
+							)
+						}
+					/>
+					<ValueBlock
+						value={fmtMoney(selectedBudget.actual)}
+						detail={selectedBudget.budget === null ? null : <>Budget {fmtMoney(selectedBudget.budget)}</>}
+					/>
+					{!compact && (
+						<>
+							<div className="mt-3 mb-1 flex shrink-0 items-center justify-between [@media(min-height:760px)]:mt-4">
+								<p className={sectionLabel}>Historique 4 mois</p>
+								<Legend
+									items={[
+										{ label: "Budget", color: "#cbd5e1" },
+										{ label: "Actual", color: ACCENTS.blue.color },
+									]}
+								/>
+							</div>
+							<BudgetBars slots={budgetSlots} />
+							<div className="mt-1 grid shrink-0 grid-cols-4 gap-2 text-center text-[11px]">
+								{budgetSlots.map((slot) => {
+									const st = budgetStatus(slot.actual, slot.budget);
+									// Month (highlighted when selected), then its budget status
+									return (
+										<div key={slot.label} className="flex flex-col items-center gap-0.5">
+											<span
+												className={
+													slot.selected
+														? `whitespace-nowrap rounded-full px-2 py-0.5 font-black text-white ${ACCENTS.blue.pill}`
+														: "py-0.5 font-semibold text-slate-500"
+												}
+											>
+												{slot.label}
+											</span>
+											<span className={`text-[10px] font-bold ${st ? STATUS_STYLES[st.level].text : "text-slate-300"}`}>
+												{st ? `${st.percentage}%` : "—"}
+											</span>
+										</div>
+									);
+								})}
+							</div>
+						</>
+					)}
+					<div className="mt-3 mb-1 flex shrink-0 items-center justify-between [@media(min-height:760px)]:mt-4">
+						<p className={sectionLabel}>Dépenses mensuelles</p>
+						<Legend
+							items={[
+								{ label: "Budget", color: "#94a3b8", dashed: true },
+								{ label: "Actual", color: ACCENTS.blue.color },
 							]}
-							format={(n) => fmtMoney(n)}
-							labels={labels}
-							selectedIndex={selectedIndex}
 						/>
-					</section>
+					</div>
+					<ColumnChart
+						series={[
+							{ values: budgetSlots.map((s) => s.actual), color: ACCENTS.blue.color },
+							{ values: budgetSlots.map((s) => s.budget), color: "#94a3b8", dashed: true, showValues: false },
+						]}
+						format={(n) => fmtMoney(n)}
+						labels={labels}
+						selectedIndex={selectedIndex}
+					/>
+				</section>,
 
-					{readinessCard(
-						apqpValue,
-						toNum(apqp?.Delta_Pts_Vs_M_1),
-						apqp?.Historique_4_Mois,
-						"Planning vs Forecast (APQP Milestones)",
-						"Taux de réalisation",
-						FaSitemap,
-						ACCENTS.violet,
-						"apqp"
-					)}
-					{readinessCard(
-						docValue,
-						toNum(documentation?.Delta_Pts_Vs_M_1),
-						documentation?.Historique_4_Mois,
-						"Documentation Progress",
-						"Progression des approbations",
-						FaBook,
-						ACCENTS.emerald,
-						"documentation"
-					)}
-				</div>
-			</>
-		);
+				readinessCard(
+					apqpValue,
+					toNum(apqp?.Delta_Pts_Vs_M_1),
+					apqp?.Historique_4_Mois,
+					"Planning vs Forecast (APQP Milestones)",
+					"Taux de réalisation",
+					FaSitemap,
+					ACCENTS.violet,
+					"apqp"
+				),
+				readinessCard(
+					docValue,
+					toNum(documentation?.Delta_Pts_Vs_M_1),
+					documentation?.Historique_4_Mois,
+					"Documentation Progress",
+					"Progression des approbations",
+					FaBook,
+					ACCENTS.emerald,
+					"documentation"
+				),
+			],
+		};
 	};
+
+	const compact = scope === "all";
+	const weeklyParts = renderWeekly(compact);
+	const monthlyParts = renderMonthly(compact);
+	const missing = [
+		scope !== "monthly" && weeklyParts.missing ? `la semaine ${week} de ${year}` : null,
+		scope !== "weekly" && monthlyParts.missing ? `${MONTH_FULL_NAMES[month - 1]} ${monthYear}` : null,
+	].filter(Boolean);
+	const missingFiles =
+		missing.length > 1
+			? "les fichiers Program hebdomadaire (PROGRAM) et mensuel (PROGRAM_MONTHLY) de ces périodes n'ont pas encore été importés"
+			: `le fichier Program ${
+					scope !== "monthly" && weeklyParts.missing ? "hebdomadaire (PROGRAM)" : "mensuel (PROGRAM_MONTHLY)"
+				} de cette période n'a pas encore été importé`;
 
 	return (
 		<main className="flex flex-col p-3 sm:p-4 [@media(min-height:760px)]:lg:p-5 md:h-full md:min-h-[520px]">
-			{/* Header */}
-			<div className="mb-2 flex shrink-0 flex-wrap items-center justify-between gap-3 [@media(min-height:760px)]:mb-3">
-				<div className="flex items-center gap-2">
-					<span className="block h-8 w-1 rounded-full bg-blue-500" />
-					<span className="text-xs font-bold uppercase tracking-widest text-blue-500">Program KPI</span>
-				</div>
-				<div className="flex flex-wrap items-center gap-3">
-					<PeriodSelector
-						type={activeTab}
-						period={period}
-						year={year}
-						onPeriodChange={setPeriod}
-						onYearChange={setYear}
-						variant="light"
-					/>
-					<TabSelector activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab)} variant="light" />
-				</div>
-			</div>
+			{/* Header: selected week and month, selectors and the Tous / Hebdomadaires / Mensuels filter */}
+			<PeriodHeader title="Program KPI" week={week} year={year} onWeekChange={setWeek} onYearChange={setYear} scope={scope} onScopeChange={setScope} />
 
 			{loading ? (
 				<div className="flex min-h-[320px] flex-1 flex-col items-center justify-center gap-4">
@@ -829,10 +845,22 @@ export default function ProgramsPage() {
 					<p className="font-semibold text-rose-600">{error}</p>
 					<p className="text-sm text-slate-400">Vérifiez que l&apos;API programme est disponible.</p>
 				</div>
-			) : activeTab === "weekly" ? (
-				renderWeekly()
 			) : (
-				renderMonthly()
+				<>
+					{missing.length > 0 && (
+						<NoDataBanner>
+							Aucune donnée pour {missing.join(" et pour ")} : {missingFiles} (page Importation).
+						</NoDataBanner>
+					)}
+					<div
+						className={`grid min-h-0 flex-1 grid-cols-1 gap-3 [@media(min-height:900px)]:gap-4 ${
+							scope === "all" ? "md:grid-cols-2 lg:grid-cols-3 lg:grid-rows-2" : "md:grid-cols-3"
+						}`}
+					>
+						{scope !== "monthly" && weeklyParts.cards}
+						{scope !== "weekly" && monthlyParts.cards}
+					</div>
+				</>
 			)}
 		</main>
 	);

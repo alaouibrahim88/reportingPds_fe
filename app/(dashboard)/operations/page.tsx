@@ -1,8 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { PeriodSelector } from "@/components/ui/PeriodSelector"
-import { TabSelector } from "@/components/ui/TabSelector"
+import { PeriodHeader, monthOfWeek } from "@/components/kpi/LightKpi"
 import { useKpiPeriod } from "@/hooks/use-kpi-period"
 
 // The API sends the numbers as strings, and null for a period that was not imported
@@ -437,8 +436,12 @@ function KpiCard({
 }
 
 export default function OperationsPage() {
-	const { type: activeTab, setType: setActiveTab, period, setPeriod, year, setYear } =
-		useKpiPeriod('weekly')
+	// Week and year; the monthly view shows the month of the week, as on the other KPI pages
+	const { period: week, setPeriod: setWeek, year, setYear } = useKpiPeriod('weekly')
+	const [activeTab, setActiveTab] = useState<'weekly' | 'monthly'>('weekly')
+	const { month, year: monthYear } = monthOfWeek(year, week)
+	const period = activeTab === 'weekly' ? week : month
+	const periodYear = activeTab === 'weekly' ? year : monthYear
 	const [weeklyData, setWeeklyData] = useState<WeeklyData | null>(null)
 	const [monthlyData, setMonthlyData] = useState<MonthlyData | null>(null)
 	const [loading, setLoading] = useState(true)
@@ -447,7 +450,7 @@ export default function OperationsPage() {
 		async function fetchData() {
 			setLoading(true)
 			try {
-				const url = `/api/operations?type=${activeTab}&period=${period}&year=${year}`
+				const url = `/api/operations?type=${activeTab}&period=${period}&year=${periodYear}`
 				const res = await fetch(url, { cache: 'no-store' })
 				if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
 				const json = await res.json()
@@ -466,7 +469,7 @@ export default function OperationsPage() {
 			}
 		}
 		fetchData()
-	}, [activeTab, period, year])
+	}, [activeTab, period, periodYear])
 
 	const isWeekly = activeTab === 'weekly'
 	const data = isWeekly ? weeklyData : monthlyData
@@ -479,31 +482,24 @@ export default function OperationsPage() {
 		: null
 	const periodLabel = isWeekly
 		? `la semaine ${period} de ${year}`
-		: `${MONTH_FULL_NAMES[period - 1] ?? ''} ${year}`
+		: `${MONTH_FULL_NAMES[period - 1] ?? ''} ${periodYear}`
 	const noData = views !== null && views.every((v) => v.value === null)
 
 	return (
 		// From tablet width, the page takes exactly the height under the header (no scroll)
 		<main className="flex flex-col p-3 sm:p-4 [@media(min-height:760px)]:lg:p-5 md:h-full md:min-h-[440px]">
-			{/* Header */}
-			<div className="mb-2 [@media(min-height:760px)]:mb-3 flex shrink-0 flex-wrap justify-between items-center gap-3">
-				<div className="flex items-center gap-2">
-					<span className="w-1 h-8 rounded-full bg-white block" />
-					<span className="text-xs lg:text-sm font-bold uppercase tracking-widest text-white">
-						Operations KPI
-					</span>
-				</div>
-				<div className="flex flex-wrap items-center gap-3">
-					<PeriodSelector
-						type={activeTab}
-						period={period}
-						year={year}
-						onPeriodChange={setPeriod}
-						onYearChange={setYear}
-					/>
-					<TabSelector activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab)} />
-				</div>
-			</div>
+			{/* Header: selected week and month, selectors and the weekly / monthly tabs */}
+			<PeriodHeader
+				title="Operations KPI"
+				week={week}
+				year={year}
+				onWeekChange={setWeek}
+				onYearChange={setYear}
+				scope={activeTab}
+				onScopeChange={(scope) => setActiveTab(scope === 'monthly' ? 'monthly' : 'weekly')}
+				scopes={['weekly', 'monthly']}
+				variant="dark"
+			/>
 
 			{loading ? (
 				<div className="flex flex-1 items-center justify-center min-h-[300px]">
