@@ -6,6 +6,7 @@ import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { User } from "lucide-react"
 import Logo from "./Logo"
+import { LogoutButton } from "./LogoutButton"
 interface CategoryNavigationHeaderProps {
 	variant?: "light" | "dark"
 }
@@ -67,8 +68,57 @@ export function CategoryNavigationHeader({
 					</nav>
 				</div>
 
+				{/* Company brand in the free space (hidden where the tabs need it) */}
+				<div className="hidden min-w-0 flex-1 items-center justify-center px-6 md:flex lg:hidden xl:flex">
+					<div className="flex items-center gap-4">
+						{/* White chip: the logo stays readable on the dark pages */}
+						<div
+							className={`flex items-center rounded-lg bg-white px-3 py-1 ${
+								isLight ? "ring-1 ring-slate-200" : "shadow-sm ring-1 ring-white/10"
+							}`}
+						>
+							<Image
+								src="/polydesignlogo.webp"
+								alt="Polydesign, EXCO automotive solutions"
+								width={127}
+								height={40}
+								className="h-10 w-auto"
+								priority
+							/>
+						</div>
+						<div
+							className={`hidden h-9 border-l pl-4 2xl:flex 2xl:flex-col 2xl:justify-center ${
+								isLight ? "border-slate-200" : "border-slate-700"
+							}`}
+						>
+							<span
+								className={`text-[10px] font-semibold uppercase tracking-[0.2em] ${
+									isLight ? "text-slate-400" : "text-slate-500"
+								}`}
+							>
+								Reporting
+							</span>
+							<span
+								className={`text-sm font-semibold leading-tight ${
+									isLight ? "text-[#0b3f7a]" : "text-slate-200"
+								}`}
+							>
+								Polydesign Systems
+							</span>
+						</div>
+					</div>
+				</div>
+
 				{/* Right Side Actions */}
 				<div className="flex items-center gap-3">
+					{/* Same button as the other pages, in the header colours */}
+					<LogoutButton
+						className={`h-8 px-3 text-sm ${
+							isLight
+								? "border-slate-300 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+								: "border-slate-600 bg-transparent text-gray-300 hover:bg-slate-800 hover:text-white"
+						}`}
+					/>
 					<button
 						className={`flex items-center gap-2 p-2 rounded-lg transition-colors ${
 							isLight
