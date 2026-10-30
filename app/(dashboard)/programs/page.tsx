@@ -654,11 +654,12 @@ export default function ProgramsPage() {
 		const docValue = toNum(documentation?.Readiness_Mois_Courant);
 		const hasData = selectedBudget.actual !== null || apqpValue !== null || docValue !== null;
 
-		// APQP milestones and documentation: % per month, target 100 %
+		// APQP milestones and documentation: % per month, against the imported target (100 % when none)
 		const readinessCard = (
 			value: number | null,
 			delta: number | null,
 			history: any[] | undefined,
+			targetValue: number | null,
 			title: string,
 			chartTitle: string,
 			icon: IconType,
@@ -666,7 +667,9 @@ export default function ProgramsPage() {
 			key: string
 		) => {
 			const status = readinessStatus(value);
-			const values = historyOf(history).map((h) => {
+			const target = targetValue ?? 100;
+			const months = historyOf(history);
+			const values = months.map((h) => {
 				const v = toNum(h?.Valeur);
 				return v === null ? null : Math.round(v);
 			});
@@ -675,7 +678,7 @@ export default function ProgramsPage() {
 					<CardHeader
 						icon={icon}
 						title={title}
-						subtitle="Cible : 100 %"
+						subtitle={`Cible : ${nf1.format(target)} %`}
 						accent={accent}
 						right={status && <StatusPill status={status.level} label={status.label} />}
 					/>
@@ -693,7 +696,7 @@ export default function ProgramsPage() {
 									label: slot.label,
 									value: values[i] === null ? null : `${values[i]}%`,
 									status: readinessStatus(values[i])?.level ?? null,
-									target: "100%",
+									target: `${nf1.format(toNum(months[i]?.Target) ?? target)}%`,
 									selected: i === selectedIndex,
 								}))}
 							/>
@@ -705,7 +708,7 @@ export default function ProgramsPage() {
 					</div>
 					<ColumnChart
 						series={[{ values, color: accent.color }]}
-						target={100}
+						target={target}
 						format={(n) => `${n}%`}
 						labels={labels}
 						selectedIndex={selectedIndex}
@@ -796,6 +799,7 @@ export default function ProgramsPage() {
 					apqpValue,
 					toNum(apqp?.Delta_Pts_Vs_M_1),
 					apqp?.Historique_4_Mois,
+					toNum(apqp?.Target),
 					"Planning vs Forecast (APQP Milestones)",
 					"Taux de réalisation",
 					FaSitemap,
@@ -806,6 +810,7 @@ export default function ProgramsPage() {
 					docValue,
 					toNum(documentation?.Delta_Pts_Vs_M_1),
 					documentation?.Historique_4_Mois,
+					toNum(documentation?.Target),
 					"Documentation Progress",
 					"Progression des approbations",
 					FaBook,
