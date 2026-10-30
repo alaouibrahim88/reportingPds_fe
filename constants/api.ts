@@ -53,6 +53,9 @@ export const INTERNAL_API_ENDPOINTS = {
 	},
 	dashboardKpiCategory: '/GetExecutiveHorizonIndicateursWeekly',
 	uploadFilesKPICategories: '/ImportExcel/excel',
+	importOverview: '/GetImportOverview',
+	importFile: '/GetImportFile',
+	importTemplate: '/GetImportTemplate',
 } as const
 
 

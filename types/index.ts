@@ -196,31 +196,6 @@ export interface Cell {
   id: string | number;
 }
 
-// File Upload Types
-export interface UploadedFile {
-	id: string
-	name: string
-	uploadDate: string
-	status: 'uploaded' | 'uploading' | 'error'
-	size?: number
-}
-
-export type FilesByDepartment = Record<string, UploadedFile[]>
-
-export interface FileUploadContextType {
-	files: FilesByDepartment
-	uploadFile: (
-		departmentId: string,
-		file: File,
-		payload: {
-			domain: string
-			annee: string
-		},
-	) => Promise<void>
-	deleteFile: (departmentId: string, fileId: string) => void
-	getFilesForDepartment: (departmentId: string) => UploadedFile[]
-}
-
 // KPI Dashboard Types
 export interface NavigationItem {
 	id: string

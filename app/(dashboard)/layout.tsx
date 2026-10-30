@@ -21,6 +21,9 @@ const CATEGORY_PAGES = [
 
 const LIGHT_CATEGORY_PAGES = ["/programs", "/rh", "/finance", "/supplychain"]
 
+// Default-layout pages sized to the screen (they lay out their own content without scrolling)
+const FULL_HEIGHT_PAGES = ["/importation"]
+
 export default function DashboardLayout({
 	children,
 }: {
@@ -74,6 +77,29 @@ export default function DashboardLayout({
 	}
 
 	// Default layout (with sidebar)
+	if (FULL_HEIGHT_PAGES.includes(pathname)) {
+		return (
+			<div className="flex h-screen">
+				<DesktopSidebar />
+				<div className="flex flex-col flex-1 min-w-0 h-screen">
+					<header className="flex items-center justify-between px-4 sm:px-6 py-1.5 bg-background">
+						<div className="flex flex-row items-center justify-between w-full">
+							<BreadCrumbHeader />
+							<div className="gap-2 sm:gap-4 flex items-center">
+								{isAuthenticated && <LogoutButton className="h-8 px-3 text-sm" />}
+							</div>
+						</div>
+					</header>
+					<Separator />
+					{/* The page fills the rest of the screen; it scrolls only below its minimum size (phones) */}
+					<div className="flex-1 min-h-0 overflow-auto">
+						<div className="h-full text-foreground">{children}</div>
+					</div>
+				</div>
+			</div>
+		)
+	}
+
 	return (
 		<div className="flex h-screen">
 			<DesktopSidebar />
