@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation"
 import { User } from "lucide-react"
 import Logo from "./Logo"
 import { LogoutButton } from "./LogoutButton"
+import { PolydesignLogo } from "./PolydesignLogo"
 interface CategoryNavigationHeaderProps {
 	variant?: "light" | "dark"
 }
@@ -68,45 +69,10 @@ export function CategoryNavigationHeader({
 					</nav>
 				</div>
 
-				{/* Company brand in the free space (hidden where the tabs need it) */}
-				<div className="hidden min-w-0 flex-1 items-center justify-center px-6 md:flex lg:hidden xl:flex">
-					<div className="flex items-center gap-4">
-						{/* White chip: the logo stays readable on the dark pages */}
-						<div
-							className={`flex items-center rounded-lg bg-white px-3 py-1 ${
-								isLight ? "ring-1 ring-slate-200" : "shadow-sm ring-1 ring-white/10"
-							}`}
-						>
-							<Image
-								src="/polydesignlogo.webp"
-								alt="Polydesign, EXCO automotive solutions"
-								width={127}
-								height={40}
-								className="h-10 w-auto"
-								priority
-							/>
-						</div>
-						<div
-							className={`hidden h-9 border-l pl-4 2xl:flex 2xl:flex-col 2xl:justify-center ${
-								isLight ? "border-slate-200" : "border-slate-700"
-							}`}
-						>
-							<span
-								className={`text-[10px] font-semibold uppercase tracking-[0.2em] ${
-									isLight ? "text-slate-400" : "text-slate-500"
-								}`}
-							>
-								Reporting
-							</span>
-							<span
-								className={`text-sm font-semibold leading-tight ${
-									isLight ? "text-[#0b3f7a]" : "text-slate-200"
-								}`}
-							>
-								Polydesign Systems
-							</span>
-						</div>
-					</div>
+				{/* Company logo next to the account actions (hidden where the tabs need the space) */}
+				<div className="hidden min-w-0 flex-1 items-center justify-end pl-6 pr-5 md:flex lg:hidden xl:flex">
+					<PolydesignLogo tone={isLight ? "light" : "dark"} />
+					<span className={`ml-5 h-8 w-px ${isLight ? "bg-slate-200" : "bg-slate-700"}`} />
 				</div>
 
 				{/* Right Side Actions */}
